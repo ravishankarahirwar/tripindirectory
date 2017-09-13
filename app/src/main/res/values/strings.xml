@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">TripinDirectory</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Location</string>
+
+    <string name="hint">Mumbai to Ahmedabad Trailer 22MT 40FT Platform for Container</string>
+
+    <string-array name="planets_array">
+        <item>Mundra</item>
+        <item>Junagadh</item>
+        <item>Gwalior</item>
+        <item>Banglore</item>
+        <item>Hyderabad</item>
+        <item>Vishakhaptanam</item>
+        <item>Mumbai</item>
+        <item>Ahmedabad</item>
+
+        <item>18 FT</item>
+        <item>19 FT</item>
+        <item>20 FT</item>
+        <item>22 FT</item>
+        <item>24 FT</item>
+        <item>40 FT</item>
+
+        <item>7 MT</item>
+        <item>7.5 MT</item>
+        <item>9 MT</item>
+        <item>15 MT</item>
+        <item>20 MT</item>
+        <item>22 MT</item>
+        <item>24 MT</item>
+        <item>26 MT</item>
+        <item>32 MT</item>
+
+        <item>Full Body</item>
+        <item>Half Body</item>
+        <item>Platform</item>
+        <item>Semi Low</item>
+        <item>Low Bed</item>
+
+        <item>Truck</item>
+        <item>Trailer</item>
+        <item>ODC</item>
+
+        <item>Container</item>
+        <item>Import</item>
+        <item>Export</item>
+
+        <item>To</item>
+        <item>For</item>
+    </string-array>
+</resources>

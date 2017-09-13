@@ -1,0 +1,210 @@
+package directory.tripin.com.tripindirectory;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
+import directory.tripin.com.tripindirectory.manager.PartnersManager;
+import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
+import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
+
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
+
+    private MultiAutoCompleteTextView mSearchBox;
+    private TextView mSearchResult;
+    private Button mSearch;
+    private String mSearchText;
+
+    private Context mContext;
+
+    private PartnersManager mPartnerManager;
+    private RecyclerView mPartnerList;
+
+    private GetPartnersResponse mPartnerListResponse;
+    private PartnersAdapter mPartnersAdapter;
+
+    String[] str={"Andoid","Jelly Bean","Froyo",
+            "Ginger Bread","Eclipse Indigo","Eclipse Juno"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mContext = this;
+        mPartnerManager = new PartnersManager(mContext);
+
+
+        mSearchBox = (MultiAutoCompleteTextView )this.findViewById(R.id.search_box);
+        mSearchBox.setTokenizer(new SpaceTokenizer());
+
+        mSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    init(mSearchBox.getText().toString());
+//                    fetchPartners(mSearchBox.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mSearchBox.setThreshold(1);
+        mSearchBox.setAdapter( ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
+
+
+
+//        mSearchResult = (TextView)this.findViewById(R.id.search_result);
+//
+//        mSearch= (Button) this.findViewById(R.id.search);
+
+//        mSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mSearchText = mSearchBox.getText().toString();
+////                int toIndex = mSearchText.indexOf("to");
+//                String[] words = mSearchText.split("\\s+");
+//
+//                int index = Arrays.asList(mSearchText.split("\\s+")).indexOf("to");
+//                String source = words[index - 1];
+//                String destination = words[index + 1];
+//
+////                String text = "I love you so much";
+////                String wordToFind = "love";
+////                Pattern word = Pattern.compile(wordToFind);
+////                Matcher match = word.matcher(text);
+////                int found = match.
+//                mSearchResult.setText(source + " , " + destination);
+//
+//            }
+//        });
+    }
+
+    private void init(String enquiry) {
+        mContext = this;
+        mPartnerManager = new PartnersManager(mContext);
+
+        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
+
+        LinearLayoutManager verticalLayoutManager =
+                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mPartnerList.setLayoutManager(verticalLayoutManager);
+
+        fetchPartners(enquiry);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void fetchPartners(String enquiry) {
+
+        mPartnerManager.getPartnersList(enquiry, "", "", "", "",
+                "", "", "", new PartnersManager.GetPartnersListener() {
+                    @Override
+                    public void onSuccess(GetPartnersResponse getPartnersResponse) {
+                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+                        mPartnerListResponse = getPartnersResponse;
+                        mPartnersAdapter = new PartnersAdapter(mPartnerListResponse);
+                        mPartnerList.setAdapter(mPartnersAdapter);
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+}
