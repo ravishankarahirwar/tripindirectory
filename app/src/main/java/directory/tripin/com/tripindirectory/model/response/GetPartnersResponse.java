@@ -27,6 +27,30 @@ public class GetPartnersResponse implements Response {
         private String _id;
         private String name;
         private String address;
+
+       private ContactData contact;
+
+        public class ContactData {
+            private String name;
+            private String contact;
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getContact() {
+                return contact;
+            }
+
+            public void setContact(String contact) {
+                this.contact = contact;
+            }
+        }
+
         private String mobile;
         private String score;
 
@@ -68,6 +92,14 @@ public class GetPartnersResponse implements Response {
 
         public void setScore(String score) {
             this.score = score;
+        }
+
+        public ContactData getContact() {
+            return contact;
+        }
+
+        public void setContact(ContactData contact) {
+            this.contact = contact;
         }
     }
 }

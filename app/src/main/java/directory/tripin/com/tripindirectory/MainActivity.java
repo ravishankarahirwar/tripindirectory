@@ -1,22 +1,24 @@
 package directory.tripin.com.tripindirectory;
 
-
-
 import android.Manifest;
 import android.app.ProgressDialog;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -31,7 +33,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -45,12 +46,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,10 +62,12 @@ import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int CONTACT_LOADER_ID = 3;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int FINE_LOCATION_PERMISSIONS = 1;
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 2;
     /**
      * Represents a geographical location.
      */
@@ -75,16 +78,16 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mPartnerList;
     private GetPartnersResponse mPartnerListResponse;
     private PartnersAdapter mPartnersAdapter;
-
     /**
      * Provides the entry point to the Fused Location Provider API.
      */
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
     private LocationRequest mLocationRequest;
-
     private ProgressDialog pd;
+    private CursorLoader mCursorLoader;
 
+    public static final ArrayList<String> mContactNumberList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +136,6 @@ public class MainActivity extends AppCompatActivity
                     pd.setMessage("loading");
                     pd.show();
                     init(mSearchBox.getText().toString());
-
-//                    fetchPartners(mSearchBox.getText().toString());
                     return true;
                 }
                 return false;
@@ -143,6 +144,8 @@ public class MainActivity extends AppCompatActivity
 
         mSearchBox.setThreshold(1);
         mSearchBox.setAdapter(ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
+
+        getContactsPermission();
     }
 
     private void init(String enquiry) {
@@ -185,7 +188,6 @@ public class MainActivity extends AppCompatActivity
             getLocationsPermission();
 //            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -286,48 +288,31 @@ public class MainActivity extends AppCompatActivity
                     Logger.v("Locations permission : true");
 
                     createLocationRequest();
-
-
                 } else {
-
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Logger.v("Locations permission : false");
                 }
             }
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Logger.v("Contacts permission : true");
+
+                    getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Logger.v("Contacts permission : false");
+                }
+            }
             // other 'case' lines to check for other
             // permissions this app might request
-        }
-    }
-
-    private void getLocations() {
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Logger.v("Permissions not granted ");
-        } else {
-            mFusedLocationClient.getLastLocation()
-                    .addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Location> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                mLastLocation = task.getResult();
-                                Logger.v("Latitude" + mLastLocation.getLatitude());
-                                Logger.v("Longitude" + mLastLocation.getLongitude());
-                            } else {
-                                Logger.v("getLastLocation:exception " + task.getException());
-
-                            }
-                        }
-                    });
         }
     }
 
@@ -348,28 +333,7 @@ public class MainActivity extends AppCompatActivity
         task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                // ...
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                } else {
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                            mLocationCallback,
-                            null /* Looper */);
-
-//                    getLocations();
-                }
+                callFusedLocationApi();
             }
         });
 
@@ -402,29 +366,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == 1) {
-
             if (resultCode == RESULT_OK) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                } else {
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                            mLocationCallback,
-                            null /* Looper */);
-                }
+                callFusedLocationApi();
             }
-
             if (resultCode == RESULT_CANCELED) {
                 //Write your code if there's no result
                 Logger.v("permission for gps denied");
@@ -432,43 +377,95 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void callFusedLocationApi() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            getLocationsPermission();
+//            return;
+        } else {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                    mLocationCallback,
+                    null /* Looper */);
+        }
+    }
+
     private void getLocationName() {
         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
-        String result = null;
         try {
             List<Address> addressList = geocoder.getFromLocation(
                     mLastLocation.getLatitude(), mLastLocation.getLongitude(), 1);
             if (addressList != null && addressList.size() > 0) {
+
                 Address address = addressList.get(0);
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
-                    sb.append(address.getAddressLine(i)).append("\n");
-                }
-                sb.append(address.getLocality()).append("\n");
-                sb.append(address.getPostalCode()).append("\n");
-                sb.append(address.getCountryName());
-                result = sb.toString();
 
 //                Logger.v("Address : " + result);
 //                Logger.v("Locale "+address.getLocale().toString());
-                Logger.v("Locality "+address.getLocality());
-                Logger.v("SubLocality "+address.getSubLocality());
+                Logger.v("Locality " + address.getLocality());
+                Logger.v("SubLocality " + address.getSubLocality());
 //                Logger.v("Address line One " + address.getAddressLine(0));
 //                Logger.v("Postal code " + address.getPostalCode());
 //                Logger.v("FeatureName"+address.getFeatureName());
 //                Logger.v("Premises"+address.getPremises());
 //                Logger.v("Admin Area"+address.getAdminArea());
 
-                if(mSearchBox.getText().length() == 0){
-                    mSearchBox.setText(address.getLocality());
-                    init(mSearchBox.getText().toString());
-                    stopLocationUpdates();
-                }
+                mSearchBox.setText(address.getLocality());
+//                mSearchBox.setText(address.getSubLocality());
+                pd = new ProgressDialog(MainActivity.this);
+                pd.setMessage("loading");
+                pd.show();
+                init(mSearchBox.getText().toString());
+                stopLocationUpdates();
+
             }
         } catch (IOException e) {
-            Logger.v("Unable connect to Geocoder " + e);
+            Logger.v("Unable to connect to Geocoder " + e);
         }
     }
+
+    private void getContactsPermission() {
+
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CONTACTS},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+
+            Logger.v("Contacts permission provided");
+            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
+        }
+    }
+
 
     @Override
     protected void onPause() {
@@ -478,5 +475,80 @@ public class MainActivity extends AppCompatActivity
 
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projectionFields = new String[]{ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,};
+
+        mCursorLoader = new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI,
+                projectionFields, null, null, null);
+
+        return mCursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.getCount() > 0) {
+            while (data.moveToNext()) {
+
+                String id = data.getString(data.getColumnIndex(ContactsContract.Contacts._ID));
+
+                Cursor phoneCursor = getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                        new String[]{id},
+                        null);
+                if (phoneCursor != null) {
+                    if (phoneCursor.moveToNext()) {
+                        String phoneNumber = phoneCursor.getString(
+                                phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        /**
+                         * If we use phoneUtils no need of the following if condition
+                         */
+                     /*   String num = phoneNumber;
+                        num = num.replace(" ", "");
+                        if (phoneNumber.length() > 10) {
+                            phoneNumber = num.substring(num.length() - 10);
+                            Logger.v("Number formatted: " + phoneNumber);
+                        }*/
+                        mContactNumberList.add(phoneNumber);
+                    }
+                    phoneCursor.close();
+                }
+            }
+        }
+
+        for (int i = 0; i < mContactNumberList.size(); i++) {
+            Logger.v("Number Contact " + mContactNumberList.get(i));
+        }
+
+        Logger.v("Number of contacts : " + String.valueOf(mContactNumberList.size()));
+
+        /**
+         * PhoneUtils method
+         */
+      /*  for (String contact : mContactNumberList) {
+            for (String number : mNumberList) {
+                if (PhoneNumberUtils.compare(contact, number)) {
+                    mMatchCount++;
+                    Logger.v("Number matched : "+ number);
+                }
+            }
+        }*/
+
+        /*for (String number : mNumberList) {
+            if (mContactNumberList.contains(number) || mContactNumberList.contains("+91" + number) || mContactNumberList.contains("+91 " + number) || mContactNumberList.contains("+91-" + number)) {
+                mMatchCount++;
+                Logger.v("Number matched : " + number);
+            }
+        }*/
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        loader.reset();
     }
 }

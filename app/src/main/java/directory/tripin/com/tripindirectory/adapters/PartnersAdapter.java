@@ -3,6 +3,7 @@ package directory.tripin.com.tripindirectory.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 
 
@@ -38,8 +40,8 @@ public class PartnersAdapter extends RecyclerView.Adapter<PartnersAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder,final int position) {
-        holder.mCompanyName .setText(mPartnersList.getData().get(position).getName());
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        holder.mCompanyName.setText(mPartnersList.getData().get(position).getName());
         String mobileNo = mPartnersList.getData().get(position).getMobile();
         Pattern pattern = Pattern.compile("\\d{10}");
         Matcher matcher = pattern.matcher(mobileNo);
@@ -50,7 +52,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<PartnersAdapter.ViewHo
             holder.mContact.setText(mPartnersList.getData().get(position).getMobile());
         }
 
-        holder.mCalll.setOnClickListener(new View.OnClickListener() {
+        holder.mCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String mobileNo = mPartnersList.getData().get(position).getMobile();
@@ -60,12 +62,24 @@ public class PartnersAdapter extends RecyclerView.Adapter<PartnersAdapter.ViewHo
                     mobileNo = matcher.group(0);
                 }
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel:"+ Uri.encode(mobileNo.trim())));
+                callIntent.setData(Uri.parse("tel:" + Uri.encode(mobileNo.trim())));
                 callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(callIntent);
             }
         });
-        holder.mAddress .setText(mPartnersList.getData().get(position).getAddress());
+        holder.mAddress.setText(mPartnersList.getData().get(position).getAddress());
+
+        holder.mAddToCommonContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addContact = new Intent(Intent.ACTION_INSERT);
+                addContact.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                addContact.putExtra(ContactsContract.Intents.Insert.COMPANY,mPartnersList.getData().get(position).getName()); //Company Name
+                addContact.putExtra(ContactsContract.Intents.Insert.PHONE, mPartnersList.getData().get(position).getContact().getContact());
+                addContact.putExtra(ContactsContract.Intents.Insert.NAME, mPartnersList.getData().get(position).getContact().getName());//Contact Name
+                mContext.startActivity(addContact);
+            }
+        });
     }
 
     @Override
