@@ -1,6 +1,10 @@
 package directory.tripin.com.tripindirectory;
 
+
+
 import android.Manifest;
+import android.app.ProgressDialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -71,12 +75,16 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mPartnerList;
     private GetPartnersResponse mPartnerListResponse;
     private PartnersAdapter mPartnersAdapter;
+
     /**
      * Provides the entry point to the Fused Location Provider API.
      */
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
     private LocationRequest mLocationRequest;
+
+    private ProgressDialog pd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,17 +123,17 @@ public class MainActivity extends AppCompatActivity
                     getLocationName();
                 }
             }
-
-            ;
         };
-
-
 
         mSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    pd = new ProgressDialog(MainActivity.this);
+                    pd.setMessage("loading");
+                    pd.show();
                     init(mSearchBox.getText().toString());
+
 //                    fetchPartners(mSearchBox.getText().toString());
                     return true;
                 }
@@ -212,15 +220,17 @@ public class MainActivity extends AppCompatActivity
                 "", "", "", new PartnersManager.GetPartnersListener() {
                     @Override
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
-                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
-                        mPartnersAdapter = new PartnersAdapter(mPartnerListResponse);
+                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse);
                         mPartnerList.setAdapter(mPartnersAdapter);
+                        pd.dismiss();
                     }
 
                     @Override
                     public void onFailed() {
-                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+                        pd.dismiss();
+//                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
                     }
                 });
     }
