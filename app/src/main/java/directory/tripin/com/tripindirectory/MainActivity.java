@@ -138,8 +138,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void init(String enquiry) {
-//        mContext = this;
-//        mPartnerManager = new PartnersManager(mContext);
 
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
 
@@ -471,5 +469,4 @@ public class MainActivity extends AppCompatActivity
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
-
 }
