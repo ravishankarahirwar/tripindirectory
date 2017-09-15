@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:elevation="8dp"
             android:layout_margin="8dp"
-            app:cardCornerRadius="4dp"
+            app:cardCornerRadius="0dp"
             android:layout_height="wrap_content">
 
             <MultiAutoCompleteTextView
@@ -30,6 +30,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionSearch"
+                android:drawableLeft="@drawable/ic_search"
+                android:drawableTint="#b50015"
                 android:paddingLeft="4dp"
                 android:backgroundTint="@android:color/transparent"
                 android:hint="@string/hint"
