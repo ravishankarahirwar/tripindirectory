@@ -86,6 +86,17 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //            } else {
 //                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
 //            }
+//=======
+//            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
+//            final Pattern pattern = Pattern.compile("\\d{10}");
+//            Matcher matcher = pattern.matcher(mobileNo);
+//            if (matcher.find()) {
+//                mobileNo = matcher.group(0);
+//                itemViewHolder.mContact.setText(mobileNo);
+//            } else {
+//                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
+//            }
+//>>>>>>> 22b1f00f42b9817f322d16b0d5e2b266e2d277f4
 
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
