@@ -95,8 +95,9 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<String> mContactNumberName = new ArrayList<>();
     private ArrayList<String> mMatchedContacts = new ArrayList<>();
 
-    private Map<String,String> mContactMap = new HashMap<String, String>();
-    private ArrayList<Map<String,String>> mContactDetails = new ArrayList<>();
+    private Map<String, String> mContactMap = new HashMap<String, String>();
+    private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
                         List<Contact> contacts = new ArrayList<Contact>();
-                        Contact contact1 = new Contact("Ravi" , "841290002");
+                        Contact contact1 = new Contact("Ravi", "841290002");
                         contacts.add(contact1);
 
                         mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
@@ -520,20 +521,9 @@ public class MainActivity extends AppCompatActivity
                                 phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                         String contactName = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        /**
-                         * If we use phoneUtils no need of the following if condition
-                         */
-                     /*   String num = phoneNumber;
-                        num = num.replace(" ", "");
-                        if (phoneNumber.length() > 10) {
-                            phoneNumber = num.substring(num.length() - 10);
-                            Logger.v("Number formatted: " + phoneNumber);
-                        }*/
                         mContactNumberList.add(phoneNumber);
                         mContactNumberName.add(contactName);
-                        mContactMap.put(phoneNumber,contactName);
-
-
+                        mContactMap.put(phoneNumber, contactName);
                     }
                     mContactDetails.add(mContactMap);
 
@@ -543,29 +533,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         for (int i = 0; i < mContactNumberList.size(); i++) {
-            Logger.v("Number Contact " +mContactNumberName.get(i)+ ": "+ mContactNumberList.get(i));
+            Logger.v("Number Contact " + mContactNumberName.get(i) + ": " + mContactNumberList.get(i));
         }
 
         Logger.v("Number of contacts : " + String.valueOf(mContactNumberList.size()));
-
-        /**
-         * PhoneUtils method
-         */
-      /*  for (String contact : mContactNumberList) {
-            for (String number : mNumberList) {
-                if (PhoneNumberUtils.compare(contact, number)) {
-                    mMatchCount++;
-                    Logger.v("Number matched : "+ number);
-                }
-            }
-        }*/
-
-        /*for (String number : mNumberList) {
-            if (mContactNumberList.contains(number) || mContactNumberList.contains("+91" + number) || mContactNumberList.contains("+91 " + number) || mContactNumberList.contains("+91-" + number)) {
-                mMatchCount++;
-                Logger.v("Number matched : " + number);
-            }
-        }*/
     }
 
     @Override
@@ -582,26 +553,12 @@ public class MainActivity extends AppCompatActivity
 
                     mMatchedContacts.add(contact);
                     Logger.v("Contact matched : " + partnersResponse.getContact().getName() + ": " + contact);
-                    if(mContactMap.containsKey(contact)){
+                    if (mContactMap.containsKey(contact)) {
 
                         Logger.v("Contact names according to cell :" + mContactMap.get(contact) + ": " + contact);
                     }
                 }
             }
-
-
-     /*   for (Map<String, String> entry : mContactDetails) {
-            for (String key : entry.keySet())
-                for(String contacts: mMatchedContacts){
-                    if(key.equals(contacts)){
-                        Logger.v("Contact names according to cell :" + entry.get(key));
-
-                }
-            }
-        }*/
-
         Logger.v("No of matched contacts " + mMatchedContacts.size());
-
     }
-
 }

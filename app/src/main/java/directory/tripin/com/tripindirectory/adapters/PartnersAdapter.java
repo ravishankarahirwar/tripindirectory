@@ -73,7 +73,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final int directoryItemPosition = position - (mContacts.size() + 2);
             itemViewHolder.mCompanyName.setText(mPartnersList.getData().get(directoryItemPosition).getName());
             String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
-            Pattern pattern = Pattern.compile("\\d{10}");
+            final Pattern pattern = Pattern.compile("\\d{10}");
             Matcher matcher = pattern.matcher(mobileNo);
             if (matcher.find()) {
                 mobileNo = matcher.group(0);
