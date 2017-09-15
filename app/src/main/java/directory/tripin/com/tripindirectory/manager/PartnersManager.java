@@ -30,10 +30,10 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
 
     public void getPartnersList(String source, String destination, String vehicle,
                                 String payload, String length, String goodsType, String serviceType,
-                                String limit, GetPartnersListener getPartnersListenerCallback) {
+                                String lat,String lng, GetPartnersListener getPartnersListenerCallback) {
         this.mGetPartnersListener = getPartnersListenerCallback;
         getPartners(source, destination, vehicle, payload, length,
-                goodsType, serviceType, limit);
+                goodsType, serviceType, lat, lng);
 
     }
 
@@ -58,10 +58,10 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
 
     @Override
     public void getPartners(String source, String destination, String vehicle, String payload,
-                            String length, String goodsType, String serviceType, String limit) {
+                            String length, String goodsType, String serviceType, String lat, String lng) {
         RquestHandler rquestHandler = new RquestHandler(mContext);
         rquestHandler.send(mRequestProvider.getPartnersRequest(source, destination, vehicle,
-                payload, length, goodsType, serviceType, limit, this));
+                payload, length, goodsType, serviceType, lat, lng, this));
     }
 
     public interface GetPartnersListener {

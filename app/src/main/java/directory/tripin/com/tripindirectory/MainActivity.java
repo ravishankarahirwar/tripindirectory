@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
     private Map<String, String> mContactMap = new HashMap<String, String>();
     private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
 
+    private boolean isFromLocationButton = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +115,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
+
+        LinearLayoutManager verticalLayoutManager =
+                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mPartnerList.setLayoutManager(verticalLayoutManager);
+
         mContext = this;
         mPartnerManager = new PartnersManager(mContext);
 
@@ -125,14 +132,26 @@ public class MainActivity extends AppCompatActivity
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                for (Location location : locationResult.getLocations()) {
+                Location location = locationResult.getLocations().get(0);
+//                for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
                     // ...
                     mLastLocation = location;
-                    Logger.v("Locations :" + location.getLatitude() + "," + location.getLongitude());
+                    Logger.v("Locations :" + location.getLatitude() + "," + location.getLatitude());
 
-                    getLocationName();
-                }
+                    if(isFromLocationButton) {
+                        getLocationName();
+                    } else {
+                        if(locationResult != null) {
+                            mMatchedContacts.clear();
+                            pd = new ProgressDialog(MainActivity.this);
+                            pd.setMessage("loading");
+                            pd.show();
+                            fetchPartners("", String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                            stopLocationUpdates();
+                        }
+                    }
+//                }
             }
         };
 
@@ -140,10 +159,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                    mAllContact.clear();
+//                    mMatchedContacts.clear();
+                    mMatchedContacts.clear();
                     pd = new ProgressDialog(MainActivity.this);
                     pd.setMessage("loading");
                     pd.show();
-                    init(mSearchBox.getText().toString());
+                    fetchPartners(mSearchBox.getText().toString(), "null", "null");
                     return true;
                 }
                 return false;
@@ -154,17 +176,8 @@ public class MainActivity extends AppCompatActivity
         mSearchBox.setAdapter(ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
 
         getContactsPermission();
-    }
+        getLocationsPermission();
 
-    private void init(String enquiry) {
-
-        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
-
-        LinearLayoutManager verticalLayoutManager =
-                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mPartnerList.setLayoutManager(verticalLayoutManager);
-
-        fetchPartners(enquiry);
     }
 
     @Override
@@ -193,6 +206,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.location_button) {
+            isFromLocationButton = true;
+            mMatchedContacts.clear();
             getLocationsPermission();
 //            return true;
         }
@@ -224,10 +239,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void fetchPartners(String enquiry) {
+    private void fetchPartners(String enquiry, String lat, String lng) {
 
         mPartnerManager.getPartnersList(enquiry, "", "", "", "",
-                "", "", "", new PartnersManager.GetPartnersListener() {
+                "", "", lat, lng, new PartnersManager.GetPartnersListener() {
                     @Override
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
@@ -244,7 +259,9 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void onFailed() {
-                        pd.dismiss();
+//                        if(pd.isShowing()){
+//                            pd.dismiss();
+//                        }
 //                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -436,7 +453,7 @@ public class MainActivity extends AppCompatActivity
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
                 pd.show();
-                init(mSearchBox.getText().toString());
+                fetchPartners(mSearchBox.getText().toString(), "null", "null");
                 stopLocationUpdates();
 
             }
@@ -518,17 +535,20 @@ public class MainActivity extends AppCompatActivity
 
     private void checkForNumbersMatched() {
 
-        for (Contact contact : mAllContact) {
-            for (GetPartnersResponse.PartnersData partnersResponse : mPartnerListResponse.getData()) {
+        for(int i=0; i<mPartnerListResponse.getData().size();i++) {
+            for (Contact contact : mAllContact) {
+                String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
 
-                if (PhoneNumberUtils.compare(partnersResponse.getContact().getContact(), contact.getPhone())) {
+                if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
                     mMatchedContacts.add(contact);
+                    break;
                 }
             }
-            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts);
-            mPartnerList.setAdapter(mPartnersAdapter);
-            pd.dismiss();
         }
+
+        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts);
+        mPartnerList.setAdapter(mPartnersAdapter);
+        pd.dismiss();
         Logger.v("No of matched contacts " + mMatchedContacts.size());
     }
 }
