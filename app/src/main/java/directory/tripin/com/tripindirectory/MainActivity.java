@@ -2,11 +2,13 @@ package directory.tripin.com.tripindirectory;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -59,6 +61,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
+import directory.tripin.com.tripindirectory.database.TripinDirectoryContract;
+import directory.tripin.com.tripindirectory.database.TripinDirectoryDbHelper;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.model.response.Contact;
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity
     private Map<String, String> mContactMap = new HashMap<String, String>();
     private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
 
+    private TripinDirectoryDbHelper mDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +122,8 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
         mPartnerManager = new PartnersManager(mContext);
+
+        mDbHelper = new TripinDirectoryDbHelper(mContext);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -226,7 +233,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fetchPartners(String enquiry) {
-
         mPartnerManager.getPartnersList(enquiry, "", "", "", "",
                 "", "", "", new PartnersManager.GetPartnersListener() {
                     @Override
@@ -251,9 +257,7 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-
     private void getLocationsPermission() {
-
         if (ContextCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -396,16 +400,8 @@ public class MainActivity extends AppCompatActivity
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
             getLocationsPermission();
-//            return;
+
         } else {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback,
@@ -422,18 +418,10 @@ public class MainActivity extends AppCompatActivity
 
                 Address address = addressList.get(0);
 
-//                Logger.v("Address : " + result);
-//                Logger.v("Locale "+address.getLocale().toString());
                 Logger.v("Locality " + address.getLocality());
                 Logger.v("SubLocality " + address.getSubLocality());
-//                Logger.v("Address line One " + address.getAddressLine(0));
-//                Logger.v("Postal code " + address.getPostalCode());
-//                Logger.v("FeatureName"+address.getFeatureName());
-//                Logger.v("Premises"+address.getPremises());
-//                Logger.v("Admin Area"+address.getAdminArea());
 
                 mSearchBox.setText(address.getLocality());
-//                mSearchBox.setText(address.getSubLocality());
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
                 pd.show();
@@ -447,7 +435,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getContactsPermission() {
-
         if (ContextCompat.checkSelfPermission(mContext,
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -479,7 +466,6 @@ public class MainActivity extends AppCompatActivity
 //            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
         }
     }
-
 
     @Override
     protected void onPause() {
@@ -554,11 +540,75 @@ public class MainActivity extends AppCompatActivity
                     mMatchedContacts.add(contact);
                     Logger.v("Contact matched : " + partnersResponse.getContact().getName() + ": " + contact);
                     if (mContactMap.containsKey(contact)) {
-
                         Logger.v("Contact names according to cell :" + mContactMap.get(contact) + ": " + contact);
                     }
                 }
             }
         Logger.v("No of matched contacts " + mMatchedContacts.size());
+
+
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, /*mSearchBox.getText().toString()*/ "Mumbai");
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, /*mMatchedContacts.get(0)*/  "9594896562");
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME,/*mContactMap.get(mMatchedContacts.get(0)*/ "Testing");
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
+        Logger.v("New Row Id : " + newRowId);
+
+
+        readDatabase();
+
+    }
+
+
+    private void readDatabase() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+    // Define a projection that specifies which columns from the database
+    // you will actually use after this query.
+        String[] projection = {
+                TripinDirectoryContract.DirectoryEntry._ID,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME
+        };
+
+    // Filter results WHERE "title" = 'My Title'
+        String selection = TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " = ?"  /*+ " AND " + KEY_TYPE + "=?"*/ ;
+        String[] selectionArgs = { "Mumbai" };
+
+    // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                TripinDirectoryContract.DirectoryEntry._ID + " DESC";
+
+        Cursor cursor = db.query(
+                TripinDirectoryContract.DirectoryEntry.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToNext()) {
+             String name = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME));
+             String contact = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO));
+             String enquiry = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY));
+
+                Logger.v("db Name: "+ name);
+                Logger.v("db Contact: "+ contact);
+                Logger.v("db Enquiry: "+ enquiry);
+            }
+            cursor.close();
+        }
+
     }
 }

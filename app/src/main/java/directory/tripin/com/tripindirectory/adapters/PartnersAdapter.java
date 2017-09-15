@@ -19,7 +19,6 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.model.response.Contact;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 
-
 /**
  * Created by Yogesh N. Tikam on 13/9/2017.
  */
@@ -112,8 +111,6 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
         }
-
-
     }
 
     @Override
