@@ -91,9 +91,8 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog pd;
     private CursorLoader mCursorLoader;
 
-    private ArrayList<String> mContactNumberList = new ArrayList<>();
-    private ArrayList<String> mContactNumberName = new ArrayList<>();
-    private ArrayList<String> mMatchedContacts = new ArrayList<>();
+    private ArrayList<Contact> mAllContact = new ArrayList<>();
+    private ArrayList<Contact> mMatchedContacts = new ArrayList<>();
 
     private Map<String, String> mContactMap = new HashMap<String, String>();
     private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
@@ -237,9 +236,9 @@ public class MainActivity extends AppCompatActivity
                         Contact contact1 = new Contact("Nitesh K. Bagadia" , "9820193701");
                         contacts.add(contact1);
 
-                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
-                        mPartnerList.setAdapter(mPartnersAdapter);
-                        pd.dismiss();
+//                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
+//                        mPartnerList.setAdapter(mPartnersAdapter);
+//                        pd.dismiss();
                         checkForNumbersMatched();
                     }
 
@@ -476,7 +475,7 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             Logger.v("Contacts permission provided");
-//            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
+            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
         }
     }
 
@@ -493,12 +492,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projectionFields = new String[]{ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,};
-
-        mCursorLoader = new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI,
-                projectionFields, null, null, null);
-
+        mCursorLoader = new CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
         return mCursorLoader;
     }
 
@@ -506,37 +500,15 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.getCount() > 0) {
             while (data.moveToNext()) {
+               String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
-                String id = data.getString(data.getColumnIndex(ContactsContract.Contacts._ID));
-
-                Cursor phoneCursor = getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        null,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                        new String[]{id},
-                        null);
-                if (phoneCursor != null) {
-                    if (phoneCursor.moveToNext()) {
-                        String phoneNumber = phoneCursor.getString(
-                                phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-                        String contactName = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        mContactNumberList.add(phoneNumber);
-                        mContactNumberName.add(contactName);
-                        mContactMap.put(phoneNumber, contactName);
-                    }
-                    mContactDetails.add(mContactMap);
-
-                    phoneCursor.close();
-                }
+                String phonenumber = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        Contact contact = new Contact(name, phonenumber);
+                        mAllContact.add(contact);
+                        mContactMap.put(phonenumber, name);
             }
+            data.close();
         }
-
-        for (int i = 0; i < mContactNumberList.size(); i++) {
-            Logger.v("Number Contact " + mContactNumberName.get(i) + ": " + mContactNumberList.get(i));
-        }
-
-        Logger.v("Number of contacts : " + String.valueOf(mContactNumberList.size()));
     }
 
     @Override
@@ -546,19 +518,17 @@ public class MainActivity extends AppCompatActivity
 
     private void checkForNumbersMatched() {
 
-        for (String contact : mContactNumberList)
+        for (Contact contact : mAllContact) {
             for (GetPartnersResponse.PartnersData partnersResponse : mPartnerListResponse.getData()) {
 
-                if (PhoneNumberUtils.compare(partnersResponse.getContact().getContact(), contact)) {
-
+                if (PhoneNumberUtils.compare(partnersResponse.getContact().getContact(), contact.getPhone())) {
                     mMatchedContacts.add(contact);
-                    Logger.v("Contact matched : " + partnersResponse.getContact().getName() + ": " + contact);
-                    if (mContactMap.containsKey(contact)) {
-
-                        Logger.v("Contact names according to cell :" + mContactMap.get(contact) + ": " + contact);
-                    }
                 }
             }
+            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts);
+            mPartnerList.setAdapter(mPartnersAdapter);
+            pd.dismiss();
+        }
         Logger.v("No of matched contacts " + mMatchedContacts.size());
     }
 }

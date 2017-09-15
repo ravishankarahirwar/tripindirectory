@@ -11,6 +11,10 @@ public class Contact {
     private String phone;
     private String directoryName;
 
+    public Contact() {
+
+    }
+
     public Contact(String name, String phone) {
         this.name = name;
         this.phone = phone;

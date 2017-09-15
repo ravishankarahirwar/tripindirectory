@@ -59,15 +59,30 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if(holder instanceof SectionViewHolder) {
             SectionViewHolder sectionViewHolder = (SectionViewHolder)holder;
             if (position == 0 ) {
-                sectionViewHolder.title.setText("Your Contacts");
+                if (mContacts.size() <= 0) {
+                    sectionViewHolder.title.setText("Your Contacts match 0");
+                } else {
+                    sectionViewHolder.title.setText("Your Contacts");
+                }
             } else {
                 sectionViewHolder.title.setText("Directory Contact");
             }
 
-        }else if(holder instanceof ContactViewHolder) {
+        } else if(holder instanceof ContactViewHolder) {
             ContactViewHolder contactViewHolder = (ContactViewHolder)holder;
             contactViewHolder.name.setText(mContacts.get(position-1).getName());
             contactViewHolder.number.setText(mContacts.get(position-1).getPhone());
+
+            contactViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                    callIntent.setData(Uri.parse("tel:" + Uri.encode(mContacts.get(position-1).getPhone())));
+                    callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(callIntent);
+                }
+            });
+
         } else {
             ItemViewHolder itemViewHolder = (ItemViewHolder)holder;
             final int directoryItemPosition = position - (mContacts.size() + 2);
@@ -188,9 +203,11 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class ContactViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView number;
+        private ImageView mCall;
 
         public ContactViewHolder(View view) {
             super(view);
+            mCall = itemView.findViewById(R.id.call);
             name = (TextView) view.findViewById(R.id.contact_name);
             number = (TextView) view.findViewById(R.id.contact_no);
         }
