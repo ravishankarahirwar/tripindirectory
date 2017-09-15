@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,8 +53,10 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -87,8 +90,12 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog pd;
     private CursorLoader mCursorLoader;
 
-    public static final ArrayList<String> mContactNumberList = new ArrayList<>();
+    private ArrayList<String> mContactNumberList = new ArrayList<>();
+    private ArrayList<String> mContactNumberName = new ArrayList<>();
+    private ArrayList<String> mMatchedContacts = new ArrayList<>();
 
+    private Map<String,String> mContactMap = new HashMap<String, String>();
+    private ArrayList<Map<String,String>> mContactDetails = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,6 +234,7 @@ public class MainActivity extends AppCompatActivity
                         mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse);
                         mPartnerList.setAdapter(mPartnersAdapter);
                         pd.dismiss();
+                        checkForNumbersMatched();
                     }
 
                     @Override
@@ -505,6 +513,8 @@ public class MainActivity extends AppCompatActivity
                     if (phoneCursor.moveToNext()) {
                         String phoneNumber = phoneCursor.getString(
                                 phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                        String contactName = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                         /**
                          * If we use phoneUtils no need of the following if condition
                          */
@@ -515,14 +525,20 @@ public class MainActivity extends AppCompatActivity
                             Logger.v("Number formatted: " + phoneNumber);
                         }*/
                         mContactNumberList.add(phoneNumber);
+                        mContactNumberName.add(contactName);
+                        mContactMap.put(phoneNumber,contactName);
+
+
                     }
+                    mContactDetails.add(mContactMap);
+
                     phoneCursor.close();
                 }
             }
         }
 
         for (int i = 0; i < mContactNumberList.size(); i++) {
-            Logger.v("Number Contact " + mContactNumberList.get(i));
+            Logger.v("Number Contact " +mContactNumberName.get(i)+ ": "+ mContactNumberList.get(i));
         }
 
         Logger.v("Number of contacts : " + String.valueOf(mContactNumberList.size()));
@@ -551,4 +567,36 @@ public class MainActivity extends AppCompatActivity
     public void onLoaderReset(Loader<Cursor> loader) {
         loader.reset();
     }
+
+    private void checkForNumbersMatched() {
+
+        for (String contact : mContactNumberList)
+            for (GetPartnersResponse.PartnersData partnersResponse : mPartnerListResponse.getData()) {
+
+                if (PhoneNumberUtils.compare(partnersResponse.getContact().getContact(), contact)) {
+
+                    mMatchedContacts.add(contact);
+                    Logger.v("Contact matched : " + partnersResponse.getContact().getName() + ": " + contact);
+                    if(mContactMap.containsKey(contact)){
+
+                        Logger.v("Contact names according to cell :" + mContactMap.get(contact) + ": " + contact);
+                    }
+                }
+            }
+
+
+     /*   for (Map<String, String> entry : mContactDetails) {
+            for (String key : entry.keySet())
+                for(String contacts: mMatchedContacts){
+                    if(key.equals(contacts)){
+                        Logger.v("Contact names according to cell :" + entry.get(key));
+
+                }
+            }
+        }*/
+
+        Logger.v("No of matched contacts " + mMatchedContacts.size());
+
+    }
+
 }
