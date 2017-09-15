@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
                         List<Contact> contacts = new ArrayList<Contact>();
-                        Contact contact1 = new Contact("Ravi" , "841290002");
+                        Contact contact1 = new Contact("Nitesh K. Bagadia" , "9820193701");
                         contacts.add(contact1);
 
                         mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);

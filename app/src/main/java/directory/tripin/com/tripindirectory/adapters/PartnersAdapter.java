@@ -58,7 +58,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if(holder instanceof SectionViewHolder) {
             SectionViewHolder sectionViewHolder = (SectionViewHolder)holder;
-            if (position > 0 ) {
+            if (position == 0 ) {
                 sectionViewHolder.title.setText("Your Contacts");
             } else {
                 sectionViewHolder.title.setText("Directory Contact");
@@ -66,21 +66,26 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         }else if(holder instanceof ContactViewHolder) {
             ContactViewHolder contactViewHolder = (ContactViewHolder)holder;
-            contactViewHolder.name.setText("Contact Name");
-            contactViewHolder.number.setText("111111111");
+            contactViewHolder.name.setText(mContacts.get(position-1).getName());
+            contactViewHolder.number.setText(mContacts.get(position-1).getPhone());
         } else {
             ItemViewHolder itemViewHolder = (ItemViewHolder)holder;
             final int directoryItemPosition = position - (mContacts.size() + 2);
             itemViewHolder.mCompanyName.setText(mPartnersList.getData().get(directoryItemPosition).getName());
-            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
-            Pattern pattern = Pattern.compile("\\d{10}");
-            Matcher matcher = pattern.matcher(mobileNo);
-            if (matcher.find()) {
-                mobileNo = matcher.group(0);
-                itemViewHolder.mContact.setText(mobileNo);
-            } else {
-                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
-            }
+
+            String contactName = mPartnersList.getData().get(directoryItemPosition).getContact().getName();
+            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
+            itemViewHolder.mContact.setText(contactName + ":" + mobileNo);
+
+//            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
+//            Pattern pattern = Pattern.compile("\\d{10}");
+//            Matcher matcher = pattern.matcher(mobileNo);
+//            if (matcher.find()) {
+//                mobileNo = matcher.group(0);
+//                itemViewHolder.mContact.setText(mobileNo);
+//            } else {
+//                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
+//            }
 
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -88,10 +93,10 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     String contactName = mPartnersList.getData().get(directoryItemPosition).getContact().getName();
                     String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
 //                    Pattern pattern = Pattern.compile("\\d{10}");
-                    Matcher matcher = pattern.matcher(contactName + " : " + mobileNo);
-                    if (matcher.find()) {
-                        mobileNo = matcher.group(0);
-                    }
+//                    Matcher matcher = pattern.matcher(contactName + " : " + mobileNo);
+//                    if (matcher.find()) {
+//                        mobileNo = matcher.group(0);
+//                    }
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
                     callIntent.setData(Uri.parse("tel:" + Uri.encode(mobileNo.trim())));
                     callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -103,12 +108,21 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemViewHolder.mAddToCommonContact.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent addContact = new Intent(Intent.ACTION_INSERT);
-                    addContact.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-                    addContact.putExtra(ContactsContract.Intents.Insert.COMPANY,mPartnersList.getData().get(position).getName()); //Company Name
-                    addContact.putExtra(ContactsContract.Intents.Insert.PHONE, mPartnersList.getData().get(position).getContact().getContact());
-                    addContact.putExtra(ContactsContract.Intents.Insert.NAME, mPartnersList.getData().get(position).getContact().getName());//Contact Name
-                    mContext.startActivity(addContact);
+
+                    String contactName = mPartnersList.getData().get(directoryItemPosition).getName();
+                    String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
+
+                    Contact contact1 = new Contact(contactName , mobileNo);
+                    mContacts.add(contact1);
+                    mPartnersList.getData().remove(directoryItemPosition);
+                    notifyDataSetChanged();
+
+//                    Intent addContact = new Intent(Intent.ACTION_INSERT);
+//                    addContact.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+//                    addContact.putExtra(ContactsContract.Intents.Insert.COMPANY,mPartnersList.getData().get(position).getName()); //Company Name
+//                    addContact.putExtra(ContactsContract.Intents.Insert.PHONE, mPartnersList.getData().get(position).getContact().getContact());
+//                    addContact.putExtra(ContactsContract.Intents.Insert.NAME, mPartnersList.getData().get(position).getContact().getName());//Contact Name
+//                    mContext.startActivity(addContact);
                 }
             });
         }
@@ -161,7 +175,6 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public static class ContactViewHolder extends RecyclerView.ViewHolder {
-
         public TextView name;
         public TextView number;
 
@@ -169,7 +182,6 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(view);
             name = (TextView) view.findViewById(R.id.contact_name);
             number = (TextView) view.findViewById(R.id.contact_no);
-
         }
     }
 }
