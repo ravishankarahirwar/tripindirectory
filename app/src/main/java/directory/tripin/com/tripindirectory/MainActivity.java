@@ -58,6 +58,7 @@ import java.util.Locale;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
+import directory.tripin.com.tripindirectory.model.response.Contact;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
@@ -224,7 +225,11 @@ public class MainActivity extends AppCompatActivity
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
-                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse);
+                        List<Contact> contacts = new ArrayList<Contact>();
+                        Contact contact1 = new Contact("Ravi" , "841290002");
+                        contacts.add(contact1);
+
+                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
                         mPartnerList.setAdapter(mPartnersAdapter);
                         pd.dismiss();
                     }
@@ -462,7 +467,7 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             Logger.v("Contacts permission provided");
-            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
+//            getSupportLoaderManager().initLoader(CONTACT_LOADER_ID, new Bundle(), this);
         }
     }
 
