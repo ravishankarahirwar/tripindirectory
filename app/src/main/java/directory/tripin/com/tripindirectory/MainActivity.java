@@ -13,6 +13,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +37,7 @@ import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -70,6 +72,7 @@ import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
     public static final int CONTACT_LOADER_ID = 3;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -220,7 +223,14 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.location_button) {
             isFromLocationButton = true;
             mMatchedContacts.clear();
+//            startVoiceRecognitionActivity();
             getLocationsPermission();
+//            return true;
+        } else if (id == R.id.location_mic) {
+            isFromLocationButton = true;
+            mMatchedContacts.clear();
+            startVoiceRecognitionActivity();
+//            getLocationsPermission();
 //            return true;
         }
         return super.onOptionsItemSelected(item);
@@ -408,6 +418,18 @@ public class MainActivity extends AppCompatActivity
                 Logger.v("permission for gps denied");
             }
         }
+
+        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Fill the list view with the strings the recognizer thought it
+            // could have heard
+            ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            Toast.makeText(MainActivity.this, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
+            String enquiry = matches.get(0).toString();
+            mSearchBox.setText("");
+            mSearchBox.setText(enquiry);
+            fetchPartners(enquiry, "null", "null");
+
+        }
     }
 
     private void callFusedLocationApi() {
@@ -550,4 +572,16 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
     }
+
+
+    //-------------------- Voice -----------
+    public void startVoiceRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Speak Enquiry");
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
+
 }

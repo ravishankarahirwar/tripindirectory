@@ -4,7 +4,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Location</string>
+    <string name="action_location">Location</string>
+    <string name="action_mice">Location</string>
+
 
     <string name="hint">Mumbai to Ahmedabad Trailer 22MT 40FT Platform for Container</string>
 
