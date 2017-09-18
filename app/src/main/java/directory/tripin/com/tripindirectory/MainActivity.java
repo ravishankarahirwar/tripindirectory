@@ -2,13 +2,11 @@ package directory.tripin.com.tripindirectory;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -61,7 +59,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
-import directory.tripin.com.tripindirectory.database.TripinDirectoryContract;
 import directory.tripin.com.tripindirectory.database.TripinDirectoryDbHelper;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
@@ -102,6 +99,9 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
 
     private TripinDirectoryDbHelper mDbHelper;
+
+    private boolean isFromLocationButton = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +119,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
+
+        LinearLayoutManager verticalLayoutManager =
+                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mPartnerList.setLayoutManager(verticalLayoutManager);
+
         mContext = this;
         mPartnerManager = new PartnersManager(mContext);
 
@@ -132,14 +138,26 @@ public class MainActivity extends AppCompatActivity
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                for (Location location : locationResult.getLocations()) {
-                    // Update UI with location data
-                    // ...
-                    mLastLocation = location;
-                    Logger.v("Locations :" + location.getLatitude() + "," + location.getLongitude());
+                Location location = locationResult.getLocations().get(0);
+//                for (Location location : locationResult.getLocations()) {
+                // Update UI with location data
+                // ...
+                mLastLocation = location;
+                Logger.v("Locations :" + location.getLatitude() + "," + location.getLatitude());
 
+                if (isFromLocationButton) {
                     getLocationName();
+                } else {
+                    if (locationResult != null) {
+                        mMatchedContacts.clear();
+                        pd = new ProgressDialog(MainActivity.this);
+                        pd.setMessage("loading");
+                        pd.show();
+                        fetchPartners("", String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                        stopLocationUpdates();
+                    }
                 }
+//                }
             }
         };
 
@@ -147,10 +165,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                    mAllContact.clear();
+//                    mMatchedContacts.clear();
+                    mMatchedContacts.clear();
                     pd = new ProgressDialog(MainActivity.this);
                     pd.setMessage("loading");
                     pd.show();
-                    init(mSearchBox.getText().toString());
+                    fetchPartners(mSearchBox.getText().toString(), "null", "null");
                     return true;
                 }
                 return false;
@@ -161,17 +182,8 @@ public class MainActivity extends AppCompatActivity
         mSearchBox.setAdapter(ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
 
         getContactsPermission();
-    }
+        getLocationsPermission();
 
-    private void init(String enquiry) {
-
-        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
-
-        LinearLayoutManager verticalLayoutManager =
-                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mPartnerList.setLayoutManager(verticalLayoutManager);
-
-        fetchPartners(enquiry);
     }
 
     @Override
@@ -200,6 +212,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.location_button) {
+            isFromLocationButton = true;
+            mMatchedContacts.clear();
             getLocationsPermission();
 //            return true;
         }
@@ -231,15 +245,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void fetchPartners(String enquiry) {
+    private void fetchPartners(String enquiry, String lat, String lng) {
+
         mPartnerManager.getPartnersList(enquiry, "", "", "", "",
-                "", "", "", new PartnersManager.GetPartnersListener() {
+                "", "", lat, lng, new PartnersManager.GetPartnersListener() {
                     @Override
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
                         List<Contact> contacts = new ArrayList<Contact>();
-                        Contact contact1 = new Contact("Nitesh K. Bagadia" , "9820193701");
+                        Contact contact1 = new Contact("Nitesh K. Bagadia", "9820193701");
                         contacts.add(contact1);
 
 //                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
@@ -250,7 +265,9 @@ public class MainActivity extends AppCompatActivity
 
                     @Override
                     public void onFailed() {
-                        pd.dismiss();
+//                        if(pd.isShowing()){
+//                            pd.dismiss();
+//                        }
 //                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -424,7 +441,7 @@ public class MainActivity extends AppCompatActivity
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
                 pd.show();
-                init(mSearchBox.getText().toString());
+                fetchPartners(mSearchBox.getText().toString(), "null", "null");
                 stopLocationUpdates();
 
             }
@@ -478,7 +495,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        mCursorLoader = new CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
+        mCursorLoader = new CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         return mCursorLoader;
     }
 
@@ -486,12 +503,12 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.getCount() > 0) {
             while (data.moveToNext()) {
-               String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
                 String phonenumber = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        Contact contact = new Contact(name, phonenumber);
-                        mAllContact.add(contact);
-                        mContactMap.put(phonenumber, name);
+                Contact contact = new Contact(name, phonenumber);
+                mAllContact.add(contact);
+                mContactMap.put(phonenumber, name);
             }
             data.close();
         }
@@ -504,85 +521,20 @@ public class MainActivity extends AppCompatActivity
 
     private void checkForNumbersMatched() {
 
-        for (Contact contact : mAllContact) {
-            for (GetPartnersResponse.PartnersData partnersResponse : mPartnerListResponse.getData()) {
+        for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
+            for (Contact contact : mAllContact) {
+                String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
 
-                if (PhoneNumberUtils.compare(partnersResponse.getContact().getContact(), contact.getPhone())) {
+                if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
                     mMatchedContacts.add(contact);
-
-                    Logger.v("Contact matched : " + partnersResponse.getContact().getName() + ": " + contact);
-                    if (mContactMap.containsKey(contact)) {
-                        Logger.v("Contact names according to cell :" + mContactMap.get(contact) + ": " + contact);
-                    }
-
+                    break;
                 }
             }
-            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts, mSearchBox.getText().toString());
-            mPartnerList.setAdapter(mPartnersAdapter);
-            pd.dismiss();
         }
+
+        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts, mSearchBox.getText().toString());
+        mPartnerList.setAdapter(mPartnersAdapter);
+        pd.dismiss();
         Logger.v("No of matched contacts " + mMatchedContacts.size());
-
-/*
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, *//*mSearchBox.getText().toString()*//* "Mumbai");
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, *//*mMatchedContacts.get(0) *//* "9594896562");
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME,*//*mContactMap.get(mMatchedContacts.get(0)*//* "Testing");
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
-        Logger.v("New Row Id : " + newRowId);
-
-
-        readDatabase();*/
-
-    }
-
-    private void readDatabase() {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-    // Define a projection that specifies which columns from the database
-    // you will actually use after this query.
-        String[] projection = {
-                TripinDirectoryContract.DirectoryEntry._ID,
-                TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY,
-                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO,
-                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME
-        };
-
-    // Filter results WHERE "title" = 'My Title'
-        String selection = TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " = ?"  /*+ " AND " + KEY_TYPE + "=?"*/ ;
-        String[] selectionArgs = { "Mumbai" };
-
-    // How you want the results sorted in the resulting Cursor
-        String sortOrder =
-                TripinDirectoryContract.DirectoryEntry._ID + " DESC";
-
-        Cursor cursor = db.query(
-                TripinDirectoryContract.DirectoryEntry.TABLE_NAME,                     // The table to query
-                projection,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                selectionArgs,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
-
-        if (cursor != null) {
-            if (cursor.moveToNext()) {
-             String name = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME));
-             String contact = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO));
-             String enquiry = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY));
-
-                Logger.v("db Name: "+ name);
-                Logger.v("db Contact: "+ contact);
-                Logger.v("db Enquiry: "+ enquiry);
-            }
-            cursor.close();
-        }
     }
 }

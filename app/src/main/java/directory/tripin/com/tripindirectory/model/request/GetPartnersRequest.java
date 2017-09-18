@@ -12,5 +12,7 @@ public interface GetPartnersRequest {
     String LENGTH = "length";
     String GOODS_TYPE = "goodsType";
     String SERVICE_TYPE = "serviceType";
+    String LAT = "lat";
+    String LNG = "lng";
     String LIMIT = "limit";
 }
