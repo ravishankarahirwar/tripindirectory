@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
@@ -40,7 +40,6 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private TripinDirectoryDbHelper mDbHelper;
     private String mEnquiry;
 
-    private ArrayList<String> mEnquiryList = new ArrayList<>();
 
     public PartnersAdapter(Context context, GetPartnersResponse partnersResponse, List<Contact> contacts, String enquiry) {
         mPartnersList = partnersResponse;
@@ -48,6 +47,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mContext = context;
         mEnquiry = enquiry;
         mDbHelper = new TripinDirectoryDbHelper(mContext);
+        readDatabase();
     }
 
     @Override
@@ -102,27 +102,12 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
             itemViewHolder.mContact.setText(contactName + ":" + mobileNo);
 
-//            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
-//            Pattern pattern = Pattern.compile("\\d{10}");
-//            Matcher matcher = pattern.matcher(mobileNo);
-//            if (matcher.find()) {
-//                mobileNo = matcher.group(0);
-//                itemViewHolder.mContact.setText(mobileNo);
-//            } else {
-//                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
-//            }
-
-
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String contactName = mPartnersList.getData().get(directoryItemPosition).getContact().getName();
                     String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
-//                    Pattern pattern = Pattern.compile("\\d{10}");
-//                    Matcher matcher = pattern.matcher(contactName + " : " + mobileNo);
-//                    if (matcher.find()) {
-//                        mobileNo = matcher.group(0);
-//                    }
+
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
                     callIntent.setData(Uri.parse("tel:" + Uri.encode(mobileNo.trim())));
                     callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -168,21 +153,20 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void insertContact(String contactName, String mobileNo) {
 
-            // Gets the data repository in write mode
-            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-            // Create a new map of values, where column names are the keys
-            ContentValues values = new ContentValues();
-            values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, mEnquiry);
-            values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, mobileNo);
-            values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME, contactName);
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, mEnquiry);
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, mobileNo);
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME, contactName);
 
-            // Insert the new row, returning the primary key value of the new row
-            long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
-            Logger.v("New Row Id : " + newRowId);
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
+        Logger.v("New Row Id : " + newRowId);
 
-            readDatabase();
-
+//            readDatabase();
     }
 
     private void readDatabase() {
@@ -198,7 +182,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         };
 
         // Filter results WHERE "title" = 'My Title'
-        String selection = TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " = ?"  /*+ " AND " + KEY_TYPE + "=?"*/;
+        String selection = TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " = ?";
         String[] selectionArgs = {mEnquiry};
 
         // How you want the results sorted in the resulting Cursor
@@ -216,18 +200,21 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         );
 
         if (cursor != null) {
-            if (cursor.moveToNext()) {
-                String name = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME));
-                String contact = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO));
-                String enquiry = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY));
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    String name = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME));
+                    String contact = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO));
+                    String enquiry = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY));
 
-//                mEnquiryList.add(name);
+                    Logger.v("db Name: " + name);
+                    Logger.v("db Contact: " + contact);
+                    Logger.v("db Enquiry: " + enquiry);
 
-                Logger.v("db Name: " + name);
-                Logger.v("db Contact: " + contact);
-                Logger.v("db Enquiry: " + enquiry);
+                    Contact databaseContact = new Contact(name, contact);
+                    mContacts.add(databaseContact);
+                }
+                cursor.close();
             }
-            cursor.close();
         }
     }
 
@@ -270,4 +257,5 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mAddToCommonContact = itemView.findViewById(R.id.add);
         }
     }
+    
 }
