@@ -52,4 +52,6 @@
         <item>To</item>
         <item>For</item>
     </string-array>
+
+    <string name="contact_saved_snackbar_text">This contact has been added to your contacts</string>
 </resources>

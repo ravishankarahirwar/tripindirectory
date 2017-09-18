@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
@@ -60,6 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
+import directory.tripin.com.tripindirectory.database.TripinDirectoryDbHelper;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.model.response.Contact;
@@ -98,7 +100,12 @@ public class MainActivity extends AppCompatActivity
     private Map<String, String> mContactMap = new HashMap<String, String>();
     private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
 
+    private TripinDirectoryDbHelper mDbHelper;
+
     private boolean isFromLocationButton = false;
+
+    private RelativeLayout mContentMainParent ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +123,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mContentMainParent = (RelativeLayout) findViewById(R.id.content_main_parent_layout);
+
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
 
         LinearLayoutManager verticalLayoutManager =
@@ -124,6 +133,8 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
         mPartnerManager = new PartnersManager(mContext);
+
+        mDbHelper = new TripinDirectoryDbHelper(mContext);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -135,23 +146,23 @@ public class MainActivity extends AppCompatActivity
             public void onLocationResult(LocationResult locationResult) {
                 Location location = locationResult.getLocations().get(0);
 //                for (Location location : locationResult.getLocations()) {
-                    // Update UI with location data
-                    // ...
-                    mLastLocation = location;
-                    Logger.v("Locations :" + location.getLatitude() + "," + location.getLatitude());
+                // Update UI with location data
+                // ...
+                mLastLocation = location;
+                Logger.v("Locations :" + location.getLatitude() + "," + location.getLatitude());
 
-                    if(isFromLocationButton) {
-                        getLocationName();
-                    } else {
-                        if(locationResult != null) {
-                            mMatchedContacts.clear();
-                            pd = new ProgressDialog(MainActivity.this);
-                            pd.setMessage("loading");
-                            pd.show();
-                            fetchPartners("", String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
-                            stopLocationUpdates();
-                        }
+                if (isFromLocationButton) {
+                    getLocationName();
+                } else {
+                    if (locationResult != null) {
+                        mMatchedContacts.clear();
+                        pd = new ProgressDialog(MainActivity.this);
+                        pd.setMessage("loading");
+                        pd.show();
+                        fetchPartners("", String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                        stopLocationUpdates();
                     }
+                }
 //                }
             }
         };
@@ -243,12 +254,14 @@ public class MainActivity extends AppCompatActivity
     private void fetchPartners(String enquiry, String lat, String lng) {
 
         mPartnerManager.getPartnersList(enquiry, "", "", "", "",
-                "", "", lat, lng,"0","20", new PartnersManager.GetPartnersListener() {
+                "", "", lat, lng, "0", "20", new PartnersManager.GetPartnersListener() {
                     @Override
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
                         mPartnerListResponse = getPartnersResponse;
                         List<Contact> contacts = new ArrayList<Contact>();
+                        Contact contact1 = new Contact("Nitesh K. Bagadia", "9820193701");
+                        contacts.add(contact1);
 
                         checkForNumbersMatched();
                     }
@@ -259,9 +272,7 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-
     private void getLocationsPermission() {
-
         if (ContextCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -404,16 +415,8 @@ public class MainActivity extends AppCompatActivity
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
             getLocationsPermission();
-//            return;
+
         } else {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback,
@@ -431,7 +434,6 @@ public class MainActivity extends AppCompatActivity
                 Address address = addressList.get(0);
 
                 mSearchBox.setText(address.getLocality());
-//                mSearchBox.setText(address.getSubLocality());
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
                 pd.show();
@@ -445,7 +447,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getContactsPermission() {
-
         if (ContextCompat.checkSelfPermission(mContext,
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -478,7 +479,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        mCursorLoader = new CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
+        mCursorLoader = new CursorLoader(this, ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         return mCursorLoader;
     }
 
@@ -499,12 +499,12 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.getCount() > 0) {
             while (data.moveToNext()) {
-               String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
                 String phonenumber = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        Contact contact = new Contact(name, phonenumber);
-                        mAllContact.add(contact);
-                        mContactMap.put(phonenumber, name);
+                Contact contact = new Contact(name, phonenumber);
+                mAllContact.add(contact);
+                mContactMap.put(phonenumber, name);
             }
             data.close();
         }
@@ -516,11 +516,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void checkForNumbersMatched() {
-        new MatchContact().execute(null,null,null);
+        new MatchContact().execute(null, null, null);
         Logger.v("No of matched contacts " + mMatchedContacts.size());
     }
 
-    class MatchContact extends AsyncTask<Void,Void,Void> {
+    class MatchContact extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -529,14 +529,15 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts);
+            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
+                    mSearchBox.getText().toString(), mContentMainParent);
             mPartnerList.setAdapter(mPartnersAdapter);
             pd.dismiss();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            for(int i=0; i<mPartnerListResponse.getData().size();i++) {
+            for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
                 for (Contact contact : mAllContact) {
                     String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
 

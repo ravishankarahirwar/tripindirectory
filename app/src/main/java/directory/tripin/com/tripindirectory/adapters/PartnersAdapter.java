@@ -1,24 +1,28 @@
 package directory.tripin.com.tripindirectory.adapters;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.database.TripinDirectoryContract;
+import directory.tripin.com.tripindirectory.database.TripinDirectoryDbHelper;
+import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.response.Contact;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
-
 
 /**
  * Created by Yogesh N. Tikam on 13/9/2017.
@@ -34,18 +38,29 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Contact> mContacts;
     private Context mContext;
 
-    public PartnersAdapter(Context context, GetPartnersResponse partnersResponse, List<Contact> contacts) {
+    private TripinDirectoryDbHelper mDbHelper;
+    private String mEnquiry;
+
+    private RelativeLayout mContentMainParent;
+
+    private Snackbar mSnackbar;
+
+    public PartnersAdapter(Context context, GetPartnersResponse partnersResponse, List<Contact> contacts, String enquiry, View parentView) {
         mPartnersList = partnersResponse;
         mContacts = contacts;
         mContext = context;
+        mEnquiry = enquiry;
+        mDbHelper = new TripinDirectoryDbHelper(mContext);
+        mContentMainParent = (RelativeLayout) parentView;
+        readDatabase();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == SECTION_TYPE) {
+        if (viewType == SECTION_TYPE) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.section, parent, false);
             return new SectionViewHolder(itemView);
-        } else if(viewType == CONTACT_TYPE) {
+        } else if (viewType == CONTACT_TYPE) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
             return new ContactViewHolder(itemView);
         } else {
@@ -56,9 +71,9 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if(holder instanceof SectionViewHolder) {
-            SectionViewHolder sectionViewHolder = (SectionViewHolder)holder;
-            if (position == 0 ) {
+        if (holder instanceof SectionViewHolder) {
+            SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
+            if (position == 0) {
                 if (mContacts.size() <= 0) {
                     sectionViewHolder.title.setText("Your Contacts match 0");
                 } else {
@@ -68,23 +83,23 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 sectionViewHolder.title.setText("Directory Contact");
             }
 
-        } else if(holder instanceof ContactViewHolder) {
-            ContactViewHolder contactViewHolder = (ContactViewHolder)holder;
-            contactViewHolder.name.setText(mContacts.get(position-1).getName());
-            contactViewHolder.number.setText(mContacts.get(position-1).getPhone());
+        } else if (holder instanceof ContactViewHolder) {
+            ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
+            contactViewHolder.name.setText(mContacts.get(position - 1).getName());
+            contactViewHolder.number.setText(mContacts.get(position - 1).getPhone());
 
             contactViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                    callIntent.setData(Uri.parse("tel:" + Uri.encode(mContacts.get(position-1).getPhone())));
+                    callIntent.setData(Uri.parse("tel:" + Uri.encode(mContacts.get(position - 1).getPhone())));
                     callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(callIntent);
                 }
             });
 
         } else {
-            ItemViewHolder itemViewHolder = (ItemViewHolder)holder;
+            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             final int directoryItemPosition = position - (mContacts.size() + 2);
             itemViewHolder.mCompanyName.setText(mPartnersList.getData().get(directoryItemPosition).getName());
 
@@ -92,37 +107,12 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
             itemViewHolder.mContact.setText(contactName + ":" + mobileNo);
 
-//            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
-//            Pattern pattern = Pattern.compile("\\d{10}");
-//            Matcher matcher = pattern.matcher(mobileNo);
-//            if (matcher.find()) {
-//                mobileNo = matcher.group(0);
-//                itemViewHolder.mContact.setText(mobileNo);
-//            } else {
-//                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
-//            }
-//=======
-//            String mobileNo = mPartnersList.getData().get(directoryItemPosition).getMobile();
-//            final Pattern pattern = Pattern.compile("\\d{10}");
-//            Matcher matcher = pattern.matcher(mobileNo);
-//            if (matcher.find()) {
-//                mobileNo = matcher.group(0);
-//                itemViewHolder.mContact.setText(mobileNo);
-//            } else {
-//                itemViewHolder.mContact.setText(mPartnersList.getData().get(directoryItemPosition).getMobile());
-//            }
-//>>>>>>> 22b1f00f42b9817f322d16b0d5e2b266e2d277f4
-
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String contactName = mPartnersList.getData().get(directoryItemPosition).getContact().getName();
                     String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
-//                    Pattern pattern = Pattern.compile("\\d{10}");
-//                    Matcher matcher = pattern.matcher(contactName + " : " + mobileNo);
-//                    if (matcher.find()) {
-//                        mobileNo = matcher.group(0);
-//                    }
+
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
                     callIntent.setData(Uri.parse("tel:" + Uri.encode(mobileNo.trim())));
                     callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -138,27 +128,20 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     String contactName = mPartnersList.getData().get(directoryItemPosition).getName();
                     String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
 
-                    Contact contact1 = new Contact(contactName , mobileNo);
+                    Contact contact1 = new Contact(contactName, mobileNo);
                     mContacts.add(contact1);
                     mPartnersList.getData().remove(directoryItemPosition);
                     notifyDataSetChanged();
 
-//                    Intent addContact = new Intent(Intent.ACTION_INSERT);
-//                    addContact.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-//                    addContact.putExtra(ContactsContract.Intents.Insert.COMPANY,mPartnersList.getData().get(position).getName()); //Company Name
-//                    addContact.putExtra(ContactsContract.Intents.Insert.PHONE, mPartnersList.getData().get(position).getContact().getContact());
-//                    addContact.putExtra(ContactsContract.Intents.Insert.NAME, mPartnersList.getData().get(position).getContact().getName());//Contact Name
-//                    mContext.startActivity(addContact);
+                    insertContact(contactName, mobileNo);
                 }
             });
         }
-
-
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0 || position == mContacts.size()+1) {
+        if (position == 0 || position == mContacts.size() + 1) {
             return SECTION_TYPE;
         } else if (position > 0 && position <= mContacts.size()) {
             return CONTACT_TYPE;
@@ -173,20 +156,73 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return totalItem;
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
-        private TextView mCompanyName;
-        private TextView mContact;
-        private TextView mAddress;
-        private ImageView mCall;
-        private ImageView mAddToCommonContact;
+    private void insertContact(String contactName, String mobileNo) {
 
-        public ItemViewHolder(View itemView) {
-            super(itemView);
-            mCompanyName = itemView.findViewById(R.id.company_name);
-            mContact = itemView.findViewById(R.id.contact_no);
-            mAddress = itemView.findViewById(R.id.address);
-            mCall = itemView.findViewById(R.id.call);
-            mAddToCommonContact = itemView.findViewById(R.id.add);
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, mEnquiry);
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, mobileNo);
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME, contactName);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
+        Logger.v("New Row Id : " + newRowId);
+
+        mSnackbar = Snackbar.make(mContentMainParent, R.string.contact_saved_snackbar_text, Snackbar.LENGTH_LONG);
+        mSnackbar.show();
+
+//            readDatabase();
+    }
+
+    private void readDatabase() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                TripinDirectoryContract.DirectoryEntry._ID,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO,
+                TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " = ?";
+        String[] selectionArgs = {mEnquiry};
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                TripinDirectoryContract.DirectoryEntry._ID + " DESC";
+
+        Cursor cursor = db.query(
+                TripinDirectoryContract.DirectoryEntry.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    String name = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME));
+                    String contact = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO));
+                    String enquiry = cursor.getString(cursor.getColumnIndex(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY));
+
+                    Logger.v("db Name: " + name);
+                    Logger.v("db Contact: " + contact);
+                    Logger.v("db Enquiry: " + enquiry);
+
+                    Contact databaseContact = new Contact(name, contact);
+                    mContacts.add(databaseContact);
+                }
+                cursor.close();
+            }
         }
     }
 
@@ -212,4 +248,22 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             number = (TextView) view.findViewById(R.id.contact_no);
         }
     }
+
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
+        private TextView mCompanyName;
+        private TextView mContact;
+        private TextView mAddress;
+        private ImageView mCall;
+        private ImageView mAddToCommonContact;
+
+        public ItemViewHolder(View itemView) {
+            super(itemView);
+            mCompanyName = itemView.findViewById(R.id.company_name);
+            mContact = itemView.findViewById(R.id.contact_no);
+            mAddress = itemView.findViewById(R.id.address);
+            mCall = itemView.findViewById(R.id.call);
+            mAddToCommonContact = itemView.findViewById(R.id.add);
+        }
+    }
+
 }
