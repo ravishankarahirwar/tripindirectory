@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -248,7 +249,7 @@ public class MainActivity extends AppCompatActivity
     private void fetchPartners(String enquiry, String lat, String lng) {
 
         mPartnerManager.getPartnersList(enquiry, "", "", "", "",
-                "", "", lat, lng, new PartnersManager.GetPartnersListener() {
+                "", "", lat, lng, "0", "20", new PartnersManager.GetPartnersListener() {
                     @Override
                     public void onSuccess(GetPartnersResponse getPartnersResponse) {
 //                        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
@@ -257,18 +258,11 @@ public class MainActivity extends AppCompatActivity
                         Contact contact1 = new Contact("Nitesh K. Bagadia", "9820193701");
                         contacts.add(contact1);
 
-//                        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, contacts);
-//                        mPartnerList.setAdapter(mPartnersAdapter);
-//                        pd.dismiss();
                         checkForNumbersMatched();
                     }
 
                     @Override
                     public void onFailed() {
-//                        if(pd.isShowing()){
-//                            pd.dismiss();
-//                        }
-//                        Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -434,9 +428,6 @@ public class MainActivity extends AppCompatActivity
 
                 Address address = addressList.get(0);
 
-                Logger.v("Locality " + address.getLocality());
-                Logger.v("SubLocality " + address.getSubLocality());
-
                 mSearchBox.setText(address.getLocality());
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
@@ -520,21 +511,38 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void checkForNumbersMatched() {
+        new MatchContact().execute(null, null, null);
+        Logger.v("No of matched contacts " + mMatchedContacts.size());
+    }
 
-        for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
-            for (Contact contact : mAllContact) {
-                String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
-
-                if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
-                    mMatchedContacts.add(contact);
-                    break;
-                }
-            }
+    class MatchContact extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
-        mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts, mSearchBox.getText().toString());
-        mPartnerList.setAdapter(mPartnersAdapter);
-        pd.dismiss();
-        Logger.v("No of matched contacts " + mMatchedContacts.size());
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
+                    mSearchBox.getText().toString());
+            mPartnerList.setAdapter(mPartnersAdapter);
+            pd.dismiss();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
+                for (Contact contact : mAllContact) {
+                    String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
+
+                    if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
+                        mMatchedContacts.add(contact);
+                        break;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

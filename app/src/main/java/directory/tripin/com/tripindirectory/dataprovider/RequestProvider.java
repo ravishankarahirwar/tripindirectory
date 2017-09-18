@@ -30,7 +30,7 @@ public class RequestProvider {
 
     public Request getPartnersRequest(String source, String destination, String vehicle,
                                       String payload, String length, String goodsType,
-                                      String serviceType, String lat, String lng, RequestListener listener) {
+                                      String serviceType, String lat, String lng, String start, String end, RequestListener listener) {
 
         Map<String, String> params = new HashMap<>();
         params.put(GetPartnersRequest.SOURCE, source);
@@ -42,6 +42,8 @@ public class RequestProvider {
         params.put(GetPartnersRequest.SERVICE_TYPE, serviceType);
         params.put(GetPartnersRequest.LAT, lat);
         params.put(GetPartnersRequest.LNG, lng);
+        params.put(GetPartnersRequest.START, start);
+        params.put(GetPartnersRequest.END, end);
 
         return new Request.RequestBuilder(mContext, listener)
                 .type(Request.Method.POST)
