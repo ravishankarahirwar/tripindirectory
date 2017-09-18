@@ -517,29 +517,28 @@ public class MainActivity extends AppCompatActivity
 
                 }
             }
-            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts);
+            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts, mSearchBox.getText().toString());
             mPartnerList.setAdapter(mPartnersAdapter);
             pd.dismiss();
         }
         Logger.v("No of matched contacts " + mMatchedContacts.size());
 
-
-
+/*
         // Gets the data repository in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, /*mSearchBox.getText().toString()*/ "Mumbai");
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, /*mMatchedContacts.get(0)*/  "9594896562");
-        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME,/*mContactMap.get(mMatchedContacts.get(0)*/ "Testing");
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY, *//*mSearchBox.getText().toString()*//* "Mumbai");
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO, *//*mMatchedContacts.get(0) *//* "9594896562");
+        values.put(TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME,*//*mContactMap.get(mMatchedContacts.get(0)*//* "Testing");
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
         Logger.v("New Row Id : " + newRowId);
 
 
-        readDatabase();
+        readDatabase();*/
 
     }
 
@@ -585,6 +584,5 @@ public class MainActivity extends AppCompatActivity
             }
             cursor.close();
         }
-
     }
 }
