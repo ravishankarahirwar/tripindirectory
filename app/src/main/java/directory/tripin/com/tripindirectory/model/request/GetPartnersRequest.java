@@ -15,4 +15,6 @@ public interface GetPartnersRequest {
     String LAT = "lat";
     String LNG = "lng";
     String LIMIT = "limit";
+    String START = "start";
+    String END = "end";
 }
