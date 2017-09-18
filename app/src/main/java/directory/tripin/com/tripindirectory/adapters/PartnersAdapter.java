@@ -257,5 +257,5 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mAddToCommonContact = itemView.findViewById(R.id.add);
         }
     }
-    
+
 }
