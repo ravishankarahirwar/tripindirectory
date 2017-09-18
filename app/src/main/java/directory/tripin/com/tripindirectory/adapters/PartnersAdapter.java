@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -40,13 +41,17 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private TripinDirectoryDbHelper mDbHelper;
     private String mEnquiry;
 
+    private RelativeLayout mContentMainParent;
 
-    public PartnersAdapter(Context context, GetPartnersResponse partnersResponse, List<Contact> contacts, String enquiry) {
+    private Snackbar mSnackbar;
+
+    public PartnersAdapter(Context context, GetPartnersResponse partnersResponse, List<Contact> contacts, String enquiry, View parentView) {
         mPartnersList = partnersResponse;
         mContacts = contacts;
         mContext = context;
         mEnquiry = enquiry;
         mDbHelper = new TripinDirectoryDbHelper(mContext);
+        mContentMainParent = (RelativeLayout) parentView;
         readDatabase();
     }
 
@@ -165,6 +170,9 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(TripinDirectoryContract.DirectoryEntry.TABLE_NAME, null, values);
         Logger.v("New Row Id : " + newRowId);
+
+        mSnackbar = Snackbar.make(mContentMainParent, R.string.contact_saved_snackbar_text, Snackbar.LENGTH_LONG);
+        mSnackbar.show();
 
 //            readDatabase();
     }

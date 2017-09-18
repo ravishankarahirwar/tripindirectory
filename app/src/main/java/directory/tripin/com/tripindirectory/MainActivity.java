@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
@@ -103,6 +104,8 @@ public class MainActivity extends AppCompatActivity
 
     private boolean isFromLocationButton = false;
 
+    private RelativeLayout mContentMainParent ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +122,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mContentMainParent = (RelativeLayout) findViewById(R.id.content_main_parent_layout);
 
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
 
@@ -525,7 +530,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
-                    mSearchBox.getText().toString());
+                    mSearchBox.getText().toString(), mContentMainParent);
             mPartnerList.setAdapter(mPartnersAdapter);
             pd.dismiss();
         }

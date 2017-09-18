@@ -16,7 +16,7 @@ public class TripinDirectoryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TripinDirectoryContract.DirectoryEntry.TABLE_NAME + " (" +
                     TripinDirectoryContract.DirectoryEntry._ID + " INTEGER PRIMARY KEY," +
-                    TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " TEXT," +
+                    TripinDirectoryContract.DirectoryEntry.COLUMN_ENQUIRY + " TEXT COLLATE NOCASE," +
                     TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NO + " TEXT," +
                     TripinDirectoryContract.DirectoryEntry.COLUMN_CONTACT_NAME + " TEXT" + ")";
 
