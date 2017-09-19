@@ -519,7 +519,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data.getCount() > 0) {
+        if ((!data.isClosed()) && data.getCount() > 0) {
             while (data.moveToNext()) {
                 String name = data.getString(data.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 
