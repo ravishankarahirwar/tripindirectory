@@ -30,7 +30,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -73,8 +72,8 @@ import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     public static final int CONTACT_LOADER_ID = 3;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int FINE_LOCATION_PERMISSIONS = 1;
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity
      * Represents a geographical location.
      */
     protected Location mLastLocation;
-    private MultiAutoCompleteTextView mSearchBox;
     private Context mContext;
     private PartnersManager mPartnerManager;
     private RecyclerView mPartnerList;
@@ -113,19 +111,17 @@ public class MainActivity extends AppCompatActivity
      * Search_Field
      */
     private MultiAutoCompleteTextView mSearchField;
-    private ImageView mHamburgerMenu;
+
     private ImageView mLocationBtn;
     private ImageView mVoiceSearch;
-
-    ActionBarDrawerToggle mToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setContentInsetStartWithNavigation(0); //for reducing gap b/w Hamburger menu and MultiAutocompleteTextView
         setSupportActionBar(toolbar);
-
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -148,9 +144,6 @@ public class MainActivity extends AppCompatActivity
         mPartnerManager = new PartnersManager(mContext);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-/*        mSearchBox = (MultiAutoCompleteTextView) this.findViewById(R.id.search_box);
-        mSearchBox.setTokenizer(new SpaceTokenizer());*/  //TODO
 
         initCustomSearch();
 
@@ -180,26 +173,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-     /*   mSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {//TODO
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                    mAllContact.clear();
-//                    mMatchedContacts.clear();
-                    mMatchedContacts.clear();
-                    pd = new ProgressDialog(MainActivity.this);
-                    pd.setMessage("loading");
-                    pd.show();
-                    fetchPartners(mSearchBox.getText().toString(), "null", "null");
-                    return true;
-                }
-                return false;
-            }
-        });*/
-
-//        mSearchBox.setThreshold(1); //TODO
-//        mSearchBox.setAdapter(ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));//TODO
-
         getContactsPermission();
         getLocationsPermission();
     }
@@ -207,13 +180,10 @@ public class MainActivity extends AppCompatActivity
     /**
      * Search_Field
      */
-
     private void initCustomSearch() {
         mSearchField = (MultiAutoCompleteTextView) this.findViewById(R.id.search_field);
         mSearchField.setTokenizer(new SpaceTokenizer());
-//        friendChooser.setInputType(InputType.TYPE_CLASS_TEXT);
 
-        mHamburgerMenu = (ImageView) this.findViewById(R.id.menu);
         mVoiceSearch = (ImageView) this.findViewById(R.id.voice_search);
         mLocationBtn = (ImageView) this.findViewById(R.id.location);
         mSearchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -234,17 +204,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         mSearchField.setThreshold(1);
-        mSearchField.setAdapter(ArrayAdapter.createFromResource(MainActivity.this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
-
-
-        mHamburgerMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(mContext, "Menu Pressed", Toast.LENGTH_LONG).show();
-                mDrawer.openDrawer(GravityCompat.START, true);
-                mHamburgerMenu.animate();
-            }
-        });
+        mSearchField.setAdapter(ArrayAdapter.createFromResource(MainActivity.this, R.array.planets_array,
+                android.R.layout.simple_dropdown_item_1line));
 
         mVoiceSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,13 +238,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     @Override
