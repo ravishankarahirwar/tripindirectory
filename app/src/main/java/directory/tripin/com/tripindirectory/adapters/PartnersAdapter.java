@@ -7,8 +7,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -70,7 +74,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof SectionViewHolder) {
             SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
             if (position == 0) {
@@ -99,7 +103,7 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
 
         } else {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             final int directoryItemPosition = position - (mContacts.size() + 2);
             itemViewHolder.mCompanyName.setText(mPartnersList.getData().get(directoryItemPosition).getName());
 
@@ -137,34 +141,63 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
 
-            itemViewHolder.mMessage.setOnClickListener(new View.OnClickListener() {
+            itemViewHolder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    String companyName = mPartnersList.getData().get(directoryItemPosition).getName();
+                    String address = mPartnersList.getData().get(directoryItemPosition).getAddress();
+                    String contactPerson = mPartnersList.getData().get(directoryItemPosition).getContact().getName();
                     String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
 
-                    // Create the text message with a string
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_VIEW);
-                    sendIntent.putExtra("address", mobileNo);
-                    sendIntent.setType("vnd.android-dir/mms-sms");
-
-                    // Verify that the intent will resolve to an activity
-                    if (sendIntent.resolveActivity(mContext.getPackageManager()) != null) {
-                        mContext.startActivity(sendIntent);
-                    }
+                    insertFavorites(companyName, contactPerson, mobileNo, address);
                 }
             });
 
-            itemViewHolder.mLocation.setOnClickListener(new View.OnClickListener() {
+            itemViewHolder.mPopupMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String address = mPartnersList.getData().get(directoryItemPosition).getAddress();
+                    MenuBuilder menuBuilder = new MenuBuilder(mContext);
+                    MenuInflater inflater = new MenuInflater(mContext);
+                    inflater.inflate(R.menu.menu_popup, menuBuilder);
+                    MenuPopupHelper optionsMenu = new MenuPopupHelper(mContext, menuBuilder, view);
+                    optionsMenu.setForceShowIcon(true);
+                    // Set Item Click Listener
+                    menuBuilder.setCallback(new MenuBuilder.Callback() {
+                        @Override
+                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.location_option:
+                                    //handle menu1 click
+                                    String address = mPartnersList.getData().get(directoryItemPosition).getAddress();
 
-                    Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + address);
-                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                    if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
-                        mContext.startActivity(mapIntent);
-                    }
+                                    Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + address);
+                                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                    if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                                        mContext.startActivity(mapIntent);
+                                    }
+                                    break;
+                                case R.id.message_option:
+                                    //handle menu2 click
+                                    String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
+                                    // Create the text message with a string
+                                    Intent sendIntent = new Intent();
+                                    sendIntent.setAction(Intent.ACTION_VIEW);
+                                    sendIntent.putExtra("address", mobileNo);
+                                    sendIntent.setType("vnd.android-dir/mms-sms");
+                                    // Verify that the intent will resolve to an activity
+                                    if (sendIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                                        mContext.startActivity(sendIntent);
+                                    }
+                                    break;
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        public void onMenuModeChange(MenuBuilder menu) {
+                        }
+                    });
+                    optionsMenu.show();
                 }
             });
         }
@@ -257,6 +290,27 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+
+    private void insertFavorites(String companyName, String companyPerson, String companyContactNo, String companyAddress) {
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_PERSON, companyPerson);
+        values.put(TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_NAME, companyName);
+        values.put(TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_CONTACT_NO, companyContactNo);
+        values.put(TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_ADDRESS, companyAddress);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(TripinDirectoryContract.FavoritesEntry.FAVORITE_TABLE_NAME, null, values);
+        Logger.v("New Row Id : " + newRowId);
+
+        mSnackbar = Snackbar.make(mContentMainParent, R.string.contact_added_favorites_text, Snackbar.LENGTH_LONG);
+        mSnackbar.show();
+    }
+
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
 
         public TextView title;
@@ -286,8 +340,8 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private TextView mAddress;
         private ImageView mCall;
         private ImageView mAddToCommonContact;
-        private ImageView mLocation;
-        private ImageView mMessage;
+        private ImageView mFavorite;
+        private ImageView mPopupMenu;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -295,8 +349,8 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mContact = itemView.findViewById(R.id.contact_no);
             mAddress = itemView.findViewById(R.id.address);
             mCall = itemView.findViewById(R.id.call);
-            mLocation = itemView.findViewById(R.id.locate);
-            mMessage = itemView.findViewById(R.id.message);
+            mFavorite = itemView.findViewById(R.id.favorite);
+            mPopupMenu = itemView.findViewById(R.id.popup);
             mAddToCommonContact = itemView.findViewById(R.id.add);
         }
     }

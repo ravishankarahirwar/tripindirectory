@@ -23,6 +23,17 @@ public class TripinDirectoryDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TripinDirectoryContract.DirectoryEntry.TABLE_NAME;
 
+    private static final String CREATE_FAVORITES_ENTRIES =
+            "CREATE TABLE IF NOT EXISTS " + TripinDirectoryContract.FavoritesEntry.FAVORITE_TABLE_NAME + " (" +
+                    TripinDirectoryContract.FavoritesEntry._ID + " INTEGER PRIMARY KEY," +
+                    TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_NAME + " TEXT," +
+                    TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_PERSON + " TEXT," +
+                    TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_CONTACT_NO + " TEXT," +
+                    TripinDirectoryContract.FavoritesEntry.COLUMN_COMPANY_ADDRESS + " TEXT" + ")";
+
+    private static final String FAVORITES_DELETE_ENTRIES =
+            "DROP TABLE IF EXISTS " + TripinDirectoryContract.FavoritesEntry.FAVORITE_TABLE_NAME;
+
     public TripinDirectoryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -30,6 +41,7 @@ public class TripinDirectoryDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL(CREATE_FAVORITES_ENTRIES);
     }
 
     @Override
@@ -37,6 +49,7 @@ public class TripinDirectoryDbHelper extends SQLiteOpenHelper {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);
+        sqLiteDatabase.execSQL(FAVORITES_DELETE_ENTRIES);
         onCreate(sqLiteDatabase);
     }
 

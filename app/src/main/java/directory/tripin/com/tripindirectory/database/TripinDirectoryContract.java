@@ -20,4 +20,12 @@ public final class TripinDirectoryContract {
         public static final String COLUMN_CONTACT_NO = "contact_number";
         public static final String COLUMN_CONTACT_NAME = "contact_name";
     }
+
+    public class FavoritesEntry implements BaseColumns {
+        public static final String FAVORITE_TABLE_NAME = "favorites";
+        public static final String COLUMN_COMPANY_NAME = "company_name";
+        public static final String COLUMN_COMPANY_PERSON= "company_person";
+        public static final String COLUMN_COMPANY_CONTACT_NO = "company_contact_number";
+        public static final String COLUMN_COMPANY_ADDRESS = "company_address";
+    }
 }

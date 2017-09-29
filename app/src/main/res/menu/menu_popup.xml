@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/location_option"
+        android:orderInCategory="100"
+        android:title="@string/menu_location_text"
+        android:icon="@drawable/ic_locate"
+        android:iconTint="#b50015"/>
+
+    <item
+        android:id="@+id/message_option"
+        android:orderInCategory="100"
+        android:title="@string/menu_Message_text"
+        android:icon="@drawable/ic_message"
+        android:iconTint="#b50015"/>
+</menu>
