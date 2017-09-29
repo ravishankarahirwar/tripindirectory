@@ -136,6 +136,37 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     insertContact(contactName, mobileNo);
                 }
             });
+
+            itemViewHolder.mMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String mobileNo = mPartnersList.getData().get(directoryItemPosition).getContact().getContact();
+
+                    // Create the text message with a string
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_VIEW);
+                    sendIntent.putExtra("address", mobileNo);
+                    sendIntent.setType("vnd.android-dir/mms-sms");
+
+                    // Verify that the intent will resolve to an activity
+                    if (sendIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                        mContext.startActivity(sendIntent);
+                    }
+                }
+            });
+
+            itemViewHolder.mLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String address = mPartnersList.getData().get(directoryItemPosition).getAddress();
+
+                    Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + address);
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                        mContext.startActivity(mapIntent);
+                    }
+                }
+            });
         }
     }
 
@@ -255,6 +286,8 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private TextView mAddress;
         private ImageView mCall;
         private ImageView mAddToCommonContact;
+        private ImageView mLocation;
+        private ImageView mMessage;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -262,8 +295,9 @@ public class PartnersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mContact = itemView.findViewById(R.id.contact_no);
             mAddress = itemView.findViewById(R.id.address);
             mCall = itemView.findViewById(R.id.call);
+            mLocation = itemView.findViewById(R.id.locate);
+            mMessage = itemView.findViewById(R.id.message);
             mAddToCommonContact = itemView.findViewById(R.id.add);
         }
     }
-
 }

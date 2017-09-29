@@ -30,10 +30,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -63,7 +64,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter;
-import directory.tripin.com.tripindirectory.database.TripinDirectoryDbHelper;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.model.response.Contact;
@@ -72,8 +72,8 @@ import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     public static final int CONTACT_LOADER_ID = 3;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int FINE_LOCATION_PERMISSIONS = 1;
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
      * Represents a geographical location.
      */
     protected Location mLastLocation;
-    private MultiAutoCompleteTextView mSearchBox;
     private Context mContext;
     private PartnersManager mPartnerManager;
     private RecyclerView mPartnerList;
@@ -101,26 +100,33 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Contact> mMatchedContacts = new ArrayList<>();
 
     private Map<String, String> mContactMap = new HashMap<String, String>();
-    private ArrayList<Map<String, String>> mContactDetails = new ArrayList<>(); //Stores contact name + contact directory  with the former as key
-
-    private TripinDirectoryDbHelper mDbHelper;
 
     private boolean isFromLocationButton = false;
 
-    private RelativeLayout mContentMainParent ;
+    private RelativeLayout mContentMainParent;
+
+    private DrawerLayout mDrawer;
+
+    /**
+     * Search_Field
+     */
+    private MultiAutoCompleteTextView mSearchField;
+
+    private ImageView mLocationBtn;
+    private ImageView mVoiceSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setContentInsetStartWithNavigation(0); //for reducing gap b/w Hamburger menu and MultiAutocompleteTextView
         setSupportActionBar(toolbar);
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -137,12 +143,9 @@ public class MainActivity extends AppCompatActivity
         mContext = this;
         mPartnerManager = new PartnersManager(mContext);
 
-        mDbHelper = new TripinDirectoryDbHelper(mContext);
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mSearchBox = (MultiAutoCompleteTextView) this.findViewById(R.id.search_box);
-        mSearchBox.setTokenizer(new SpaceTokenizer());
+        initCustomSearch();
 
         mLocationCallback = new LocationCallback() {
             @Override
@@ -170,7 +173,20 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        mSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        getContactsPermission();
+        getLocationsPermission();
+    }
+
+    /**
+     * Search_Field
+     */
+    private void initCustomSearch() {
+        mSearchField = (MultiAutoCompleteTextView) this.findViewById(R.id.search_field);
+        mSearchField.setTokenizer(new SpaceTokenizer());
+
+        mVoiceSearch = (ImageView) this.findViewById(R.id.voice_search);
+        mLocationBtn = (ImageView) this.findViewById(R.id.location);
+        mSearchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -180,19 +196,38 @@ public class MainActivity extends AppCompatActivity
                     pd = new ProgressDialog(MainActivity.this);
                     pd.setMessage("loading");
                     pd.show();
-                    fetchPartners(mSearchBox.getText().toString(), "null", "null");
+                    fetchPartners(mSearchField.getText().toString(), "null", "null");
                     return true;
                 }
                 return false;
             }
         });
 
-        mSearchBox.setThreshold(1);
-        mSearchBox.setAdapter(ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_dropdown_item_1line));
+        mSearchField.setThreshold(1);
+        mSearchField.setAdapter(ArrayAdapter.createFromResource(MainActivity.this, R.array.planets_array,
+                android.R.layout.simple_dropdown_item_1line));
 
-        getContactsPermission();
-        getLocationsPermission();
+        mVoiceSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFromLocationButton = true;
+                mMatchedContacts.clear();
 
+                pd = new ProgressDialog(MainActivity.this);
+                pd.setMessage("loading");
+                pd.show();
+                startVoiceRecognitionActivity();
+            }
+        });
+
+        mLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFromLocationButton = true;
+                mMatchedContacts.clear();
+                getLocationsPermission();
+            }
+        });
     }
 
     @Override
@@ -206,13 +241,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -223,15 +251,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.location_button) {
             isFromLocationButton = true;
             mMatchedContacts.clear();
-//            startVoiceRecognitionActivity();
             getLocationsPermission();
-//            return true;
         } else if (id == R.id.location_mic) {
             isFromLocationButton = true;
             mMatchedContacts.clear();
             startVoiceRecognitionActivity();
-//            getLocationsPermission();
-//            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -425,8 +449,10 @@ public class MainActivity extends AppCompatActivity
             ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             Toast.makeText(MainActivity.this, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
             String enquiry = matches.get(0).toString();
-            mSearchBox.setText("");
-            mSearchBox.setText(enquiry);
+//            mSearchBox.setText("");  //TODO
+//            mSearchBox.setText(enquiry); //TODO
+            mSearchField.setText("");
+            mSearchField.setText(enquiry);
             fetchPartners(enquiry, "null", "null");
 
         }
@@ -455,13 +481,14 @@ public class MainActivity extends AppCompatActivity
 
                 Address address = addressList.get(0);
 
-                mSearchBox.setText(address.getLocality());
+//                mSearchBox.setText(address.getLocality());  //TODO
+                mSearchField.setText(address.getLocality());
                 pd = new ProgressDialog(MainActivity.this);
                 pd.setMessage("loading");
                 pd.show();
-                fetchPartners(mSearchBox.getText().toString(), "null", "null");
+//                fetchPartners(mSearchBox.getText().toString(), "null", "null");//TODO
+                fetchPartners(mSearchField.getText().toString(), "null", "null");
                 stopLocationUpdates();
-
             }
         } catch (IOException e) {
             Logger.v("Unable to connect to Geocoder " + e);
@@ -542,6 +569,16 @@ public class MainActivity extends AppCompatActivity
         Logger.v("No of matched contacts " + mMatchedContacts.size());
     }
 
+    //-------------------- Voice -----------
+    public void startVoiceRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Speak Enquiry");
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
+
     class MatchContact extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -551,10 +588,14 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+//            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
+//                    mSearchBox.getText().toString(), mContentMainParent); //TODO
             mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
-                    mSearchBox.getText().toString(), mContentMainParent);
+                    mSearchField.getText().toString(), mContentMainParent);
             mPartnerList.setAdapter(mPartnersAdapter);
-            pd.dismiss();
+            if (pd != null) {
+                pd.dismiss();
+            }
         }
 
         @Override
@@ -572,16 +613,4 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
     }
-
-
-    //-------------------- Voice -----------
-    public void startVoiceRecognitionActivity() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Speak Enquiry");
-        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
-    }
-
 }
