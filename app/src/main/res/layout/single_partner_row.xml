@@ -90,19 +90,19 @@
                 android:tint="#b50015"/>
 
             <ImageView
-                android:id="@+id/locate"
+                android:id="@+id/favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:src="@drawable/ic_locate"
+                android:src="@drawable/ic_favorite"
                 android:tint="#b50015"/>
 
             <ImageView
-                android:id="@+id/message"
+                android:id="@+id/popup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:src="@drawable/ic_message"
+                android:src="@drawable/ic_popup"
                 android:tint="#b50015"/>
 
         </LinearLayout>
