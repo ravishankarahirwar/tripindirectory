@@ -590,9 +590,14 @@ public class MainActivity extends AppCompatActivity
             super.onPostExecute(aVoid);
 //            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
 //                    mSearchBox.getText().toString(), mContentMainParent); //TODO
-            mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
-                    mSearchField.getText().toString(), mContentMainParent);
-            mPartnerList.setAdapter(mPartnersAdapter);
+            if(mPartnerListResponse != null && mPartnerListResponse.getData().size() > 0) {
+
+                mPartnersAdapter = new PartnersAdapter(MainActivity.this, mPartnerListResponse, mMatchedContacts,
+                        mSearchField.getText().toString(), mContentMainParent);
+                mPartnerList.setAdapter(mPartnersAdapter);
+            } else {
+                Toast.makeText(MainActivity.this, "No data found", Toast.LENGTH_SHORT).show();
+            }
             if (pd != null) {
                 pd.dismiss();
             }
@@ -600,13 +605,15 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected Void doInBackground(Void... voids) {
-            for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
-                for (Contact contact : mAllContact) {
-                    String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
+            if(mPartnerListResponse != null && mPartnerListResponse.getData().size() > 0) {
+                for (int i = 0; i < mPartnerListResponse.getData().size(); i++) {
+                    for (Contact contact : mAllContact) {
+                        String sContat = mPartnerListResponse.getData().get(i).getContact().getContact();
 
-                    if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
-                        mMatchedContacts.add(contact);
-                        break;
+                        if (PhoneNumberUtils.compare(sContat, contact.getPhone())) {
+                            mMatchedContacts.add(contact);
+                            break;
+                        }
                     }
                 }
             }
