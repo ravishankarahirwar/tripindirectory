@@ -105,7 +105,7 @@ public class MainActivity1 extends AppCompatActivity {
                 mSearchField.setCursorVisible(true);
             }
         });
-
-
     }
+
+
 }

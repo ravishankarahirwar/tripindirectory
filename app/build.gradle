@@ -67,4 +67,6 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
     compile 'com.ms-square:expandableTextView:0.1.4'
     testCompile 'junit:junit:4.12'
+    compile 'gun0912.ted:tedpermission:2.0.3'
+
 }
