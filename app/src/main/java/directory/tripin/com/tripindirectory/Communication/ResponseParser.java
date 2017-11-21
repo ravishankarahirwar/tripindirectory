@@ -14,6 +14,7 @@ import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
 import directory.tripin.com.tripindirectory.factory.Response;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 
 /**
@@ -64,6 +65,12 @@ public class ResponseParser {
                         Logger.v(getPartnersResponse.toString());
                         Logger.v( getPartnersResponse.getData().get(0).getName());
                     }
+                    break;
+
+
+                case ApiTag.ELASTIC_SEARCH: //1
+                    ElasticSearchResponse elasticSearchResponse = gson.fromJson(jsonObject.toString(), ElasticSearchResponse.class);
+                    response = elasticSearchResponse;
                     break;
             }
         } catch (JsonSyntaxException eJsonSyntaxException) {

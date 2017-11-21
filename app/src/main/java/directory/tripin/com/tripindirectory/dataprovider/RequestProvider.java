@@ -2,11 +2,16 @@ package directory.tripin.com.tripindirectory.dataprovider;
 
 import android.content.Context;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
+import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
 import directory.tripin.com.tripindirectory.model.request.GetPartnersRequest;
 
 
@@ -52,4 +57,33 @@ public class RequestProvider {
                 .tag(ApiTag.GET_PARTNERS)
                 .build();
     }
+
+    public Request getElasticSearchRequest(String query, RequestListener listener) {
+
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put("Content-Type", "application/json");
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put(ElasticSearchRequest.QUERY_STRING, query);
+            jsonBody.put(ElasticSearchRequest.FROM, "1");
+            jsonBody.put(ElasticSearchRequest.SIZE, "5");
+        } catch (JSONException eJsonException) {
+            eJsonException.printStackTrace();
+        }
+
+        final String requestBody = jsonBody.toString();
+        Logger.v("rawData string generated from data in activity:  " + requestBody);
+
+        return new Request.RequestBuilder(mContext, listener)
+                .type(Request.Method.SEND_JSON)
+                .url(ApiProvider.getApiByTag(ApiTag.ELASTIC_SEARCH))
+                .headerParams(headerParams)
+//                .postParams(params)
+                .rawData(requestBody)
+                .tag(ApiTag.ELASTIC_SEARCH)
+                .build();
+
+    }
+
 }

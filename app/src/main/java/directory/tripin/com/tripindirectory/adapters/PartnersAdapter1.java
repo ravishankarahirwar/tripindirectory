@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 
 /**
  * Created by Yogesh N. Tikam on 11/16/2017.
@@ -31,9 +32,11 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int CONTACT_TYPE_1 = 1;
     private static final int DIRECTORY_TYPE_1 = 2;
     private Context mContext;
+    private ElasticSearchResponse mElasticSearchResponse;
 
-    public PartnersAdapter1(Context context) {
+    public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
+        mElasticSearchResponse = elasticSearchResponse;
     }
 
     @Override
@@ -57,24 +60,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
 
             final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-
-            /**
-             *Logic for animating partner card
-             */
-      /*  itemViewHolder.mCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!itemViewHolder.isTranslated) {
-                    itemViewHolder.mCardView.animate().translationX(150);
-                    itemViewHolder.mOption.setVisibility(View.VISIBLE);
-                    itemViewHolder.isTranslated = true;
-                } else {
-                    itemViewHolder.isTranslated = false;
-                    itemViewHolder.mOption.setVisibility(View.GONE);
-                    itemViewHolder.mCardView.animate().translationX(0);
-                }
-            }
-        });*/
 
             itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -114,7 +99,10 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             });
 
-            itemViewHolder.mAddress.setText("Office No 301, The summit business bay (Omkar) Next to WEH Metro Station, Andheri East, Mumbai - 400093,Aao dekhayein tumhe ande ka funda, dhim tana dhinchak dhinchak");
+            itemViewHolder.mCompany.setText(mElasticSearchResponse.getData().get(position-1).getName());
+            itemViewHolder.mAddress.setText(mElasticSearchResponse.getData().get(position-1).getAddress());
+
+//            itemViewHolder.mAddress.setText("Office No 301, The summit business bay (Omkar) Next to WEH Metro Station, Andheri East, Mumbai - 400093,Aao dekhayein tumhe ande ka funda, dhim tana dhinchak dhinchak");
 
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -151,7 +139,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return 10;
+        return mElasticSearchResponse.getData().size()+1;
     }
 
     @Override
@@ -173,9 +161,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        private boolean isTranslated = false;
         private CardView mCardView;
-        private ImageView mOption;
         private ImageView mUpvote;
         private ImageView mDownvote;
         private TextView mRanking;
@@ -184,17 +170,18 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         private int mRank;
         private ExpandableTextView mAddress;
         private TextView mCall;
+        private TextView mCompany;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             mCardView = (CardView) itemView.findViewById(R.id.partner_card_view);
-            mOption = (ImageView) itemView.findViewById(R.id.option);
             mUpvote = (ImageView) itemView.findViewById(R.id.upvote);
             mDownvote = (ImageView) itemView.findViewById(R.id.downvote);
             mRanking = (TextView) itemView.findViewById(R.id.ranking);
             mRank = 0;
             mCall = (TextView) itemView.findViewById(R.id.call);
             mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
+            mCompany = (TextView) itemView.findViewById(R.id.company_name);
         }
     }
 }
