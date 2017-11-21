@@ -65,6 +65,9 @@ public class RequestProvider {
 
     public Request getElasticSearchRequest(String query, RequestListener listener) {
 
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put("Content-Type", "application/json");
+
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put(ElasticSearchRequest.QUERY_STRING, query);

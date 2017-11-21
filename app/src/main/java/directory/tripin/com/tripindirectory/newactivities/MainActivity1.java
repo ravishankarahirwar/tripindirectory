@@ -81,12 +81,12 @@ public class MainActivity1 extends AppCompatActivity {
             public void onPermissionGranted() {
                 getDeviceId();
                 getToken();
-                Toast.makeText(mContext, "Permission Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "Permission Granted", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-                Toast.makeText(mContext, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
             }
 
         };
@@ -188,9 +188,11 @@ public class MainActivity1 extends AppCompatActivity {
         mTokenManager.getCurrentToken(new TokenManager.TokenListener() {
             @Override
             public void onSuccess(TokenResponse tokenResponse) {
-                Logger.v("Token: " + tokenResponse.getData());
-                String token = tokenResponse.getData();
-                mPreferenceManager.setToken(token);
+                if(tokenResponse != null) {
+                    Logger.v("Token: " + tokenResponse.getData().getToken());
+                    String token = tokenResponse.getData().getToken();
+                    mPreferenceManager.setToken(token);
+                }
             }
 
             @Override

@@ -10,7 +10,7 @@ import directory.tripin.com.tripindirectory.factory.Response;
 public class TokenResponse implements Response {
 
     private String status;
-    private String data;
+    private Data data;
 
     public String getStatus() {
         return status;
@@ -20,11 +20,32 @@ public class TokenResponse implements Response {
         this.status = status;
     }
 
-    public String getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(Data data) {
         this.data = data;
+    }
+
+    public class Data {
+        private String token;
+        private String userId;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
     }
 }
