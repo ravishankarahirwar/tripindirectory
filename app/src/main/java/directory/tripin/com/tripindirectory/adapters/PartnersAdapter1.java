@@ -20,9 +20,11 @@ import android.widget.Toast;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 
 /**
@@ -36,10 +38,12 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int DIRECTORY_TYPE_1 = 2;
     private Context mContext;
     private ElasticSearchResponse mElasticSearchResponse;
+    private PreferenceManager mPreferenceManager;
 
     public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
         mElasticSearchResponse = elasticSearchResponse;
+        mPreferenceManager = PreferenceManager.getInstance(mContext);
     }
 
     @Override
@@ -63,6 +67,13 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
 
             final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+//            Like dislike functionality
+//            ArrayList<String> userLiked = mElasticSearchResponse.getData().get(position-1).getUserLiked();
+//
+//            if(userLiked.contains(mPreferenceManager.getUserId())) {
+//                itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+//                itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
+//            }
 
             itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
                 @Override

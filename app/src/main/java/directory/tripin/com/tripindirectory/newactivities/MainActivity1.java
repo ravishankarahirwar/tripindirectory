@@ -191,7 +191,10 @@ public class MainActivity1 extends AppCompatActivity {
                 if(tokenResponse != null) {
                     Logger.v("Token: " + tokenResponse.getData().getToken());
                     String token = tokenResponse.getData().getToken();
+                    String userId = tokenResponse.getData().getUserId();
+
                     mPreferenceManager.setToken(token);
+                    mPreferenceManager.setUserId(userId);
                 }
             }
 

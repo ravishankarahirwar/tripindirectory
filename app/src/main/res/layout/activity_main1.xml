@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/toolbar"
-        android:layout_margin="16dp"
+        android:layout_margin="8dp"
         android:background="@android:color/white"
         android:drawableLeft="@drawable/ic_search_vector"
         android:drawableTint="#9E9E9E"
