@@ -8,5 +8,7 @@ package directory.tripin.com.tripindirectory.dataprovider;
 public class ApiTag {
 
     public static final int GET_PARTNERS = 1;
+
+    public static final int ELASTIC_SEARCH = 2;
 }
 

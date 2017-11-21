@@ -7,4 +7,6 @@ package directory.tripin.com.tripindirectory.role;
 public interface IGetPartnerOptions {
     void getPartners(String source, String destination, String vehicle,
                      String payload, String length, String goodsType, String serviceType, String lat, String lng,String start, String end);
+
+    void getElasticSearch(String query);
 }
