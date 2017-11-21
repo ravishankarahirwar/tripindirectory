@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:color/white"
+              android:orientation="vertical"
+              xmlns:tools="http://schemas.android.com/tools">
+    <!--<TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:singleLine="true"
+        android:textAllCaps="true"
+        android:background="@android:color/transparent"
+        android:textSize="16sp"
+        android:id="@+id/section_text"
+        android:textStyle="bold" />-->
+
+    <TextView
+        android:id="@+id/section_text"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="Directory"
+        android:textColor="#ef463d"
+        android:textSize="13sp"
+        android:layout_marginLeft="16dp"
+        android:gravity="center"/>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_below="@+id/section_text"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#1e000000"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
+</RelativeLayout>
