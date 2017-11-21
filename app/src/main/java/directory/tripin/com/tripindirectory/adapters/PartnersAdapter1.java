@@ -102,7 +102,14 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemViewHolder.mCompany.setText(mElasticSearchResponse.getData().get(position-1).getName());
             itemViewHolder.mAddress.setText(mElasticSearchResponse.getData().get(position-1).getAddress());
 
-//            itemViewHolder.mAddress.setText("Office No 301, The summit business bay (Omkar) Next to WEH Metro Station, Andheri East, Mumbai - 400093,Aao dekhayein tumhe ande ka funda, dhim tana dhinchak dhinchak");
+            String strLike = mElasticSearchResponse.getData().get(position-1).getLike();
+            String strdisLike = mElasticSearchResponse.getData().get(position-1).getDislike();
+
+            int like = Integer.parseInt(strLike);
+            int disLike = Integer.parseInt(strdisLike);
+
+            itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
+
 
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,7 +129,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                                             Logger.v("Dialog number selected :" + phoneNumbers.get(item));
                                         }
                                     });
-
 
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
