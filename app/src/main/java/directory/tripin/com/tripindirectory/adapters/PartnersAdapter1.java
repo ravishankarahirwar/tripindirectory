@@ -2,7 +2,9 @@ package directory.tripin.com.tripindirectory.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -111,33 +114,47 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
 
 
+            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mElasticSearchResponse.getData().get(position-1).getMobile();
+
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final ArrayList<String> phoneNumbers = new ArrayList<>();
-                    phoneNumbers.add("809556321");
-                    phoneNumbers.add("959698745");
 
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle("Looks like there are multiple phone numbers.")
-                            .setCancelable(false)
-                            .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int item) {
+                    if (mMobileData.length > 1) {
 
-                                            Logger.v("Dialog number selected :" + phoneNumbers.get(item));
-                                        }
-                                    });
-
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
+                        for (int i = 0; i < mMobileData.length; i++) {
+                            phoneNumbers.add(mMobileData[i].getCellNo());
                         }
-                    });
 
-                    builder.create();
-                    builder.show();
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle("Looks like there are multiple phone numbers.")
+                                .setCancelable(false)
+                                .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int item) {
+
+                                                Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                callNumber(phoneNumbers.get(item));
+                                            }
+                                        });
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+
+                        builder.create();
+                        builder.show();
+                    } else if(mMobileData.length == 1)  {
+
+                       callNumber(mMobileData[0].getCellNo());
+                    } else {
+                        Toast.makeText(mContext,"Mobile number not present for this contact",Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -189,5 +206,12 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
             mCompany = (TextView) itemView.findViewById(R.id.company_name);
         }
+    }
+
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callIntent);
     }
 }
