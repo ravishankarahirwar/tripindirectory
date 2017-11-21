@@ -22,12 +22,12 @@
         android:layout_margin="16dp"
         android:background="@android:color/white"
         android:drawableLeft="@drawable/ic_search_vector"
-        android:drawableTint="#cccccc"
+        android:drawableTint="#9E9E9E"
         android:hint="Type your Enquiry"
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:paddingLeft="8dp"
-        android:textColor="#cccccc"/>
+        android:textColor="#4a4a4a"/>
 
     <!--<RelativeLayout
         android:id="@+id/relativeLayout"
@@ -63,9 +63,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/partner_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/search_field"
-        android:layout_marginTop="16dp"/>
-
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_field"/>
 
 </RelativeLayout>

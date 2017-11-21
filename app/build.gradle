@@ -65,5 +65,6 @@ dependencies {
     compile 'com.lapism:searchview:5.0.0-alpha6'
     compile 'com.google.android:flexbox:0.3.0'
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
+    compile 'com.ms-square:expandableTextView:0.1.4'
     testCompile 'junit:junit:4.12'
 }
