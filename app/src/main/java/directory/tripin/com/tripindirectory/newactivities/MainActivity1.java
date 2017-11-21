@@ -1,6 +1,7 @@
 package directory.tripin.com.tripindirectory.newactivities;
 
 import android.app.ProgressDialog;
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -9,17 +10,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import directory.tripin.com.tripindirectory.MainActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.manager.TokenManager;
+import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
+import directory.tripin.com.tripindirectory.model.response.TokenResponse;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 
 public class MainActivity1 extends AppCompatActivity {
@@ -30,6 +47,8 @@ public class MainActivity1 extends AppCompatActivity {
     private MultiAutoCompleteTextView mSearchField;
     private RecyclerView mPartnerList;
     private PartnersAdapter1 mPartnerAdapter1;
+    private PreferenceManager mPreferenceManager;
+    private TokenManager mTokenManager;
 
     private PartnersManager mPartnersManager;
 
@@ -49,11 +68,34 @@ public class MainActivity1 extends AppCompatActivity {
         mContext = MainActivity1.this;
 
         mPartnersManager = new PartnersManager(mContext);
+        mPreferenceManager = PreferenceManager.getInstance(mContext);
+        mTokenManager = new TokenManager(mContext);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
+
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                getDeviceId();
+                getToken();
+//                Toast.makeText(mContext, "Permission Granted", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+//                Toast.makeText(mContext, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+        };
+
+        TedPermission.with(this)
+                .setPermissionListener(permissionlistener)
+                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                .setPermissions(Manifest.permission.READ_PHONE_STATE)
+                .check();
 
         mSearchField = (MultiAutoCompleteTextView) this.findViewById(R.id.search_field);
         mSearchField.setTokenizer(new SpaceTokenizer());
@@ -134,5 +176,47 @@ public class MainActivity1 extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String getDeviceId() {
+        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        mPreferenceManager.setDeviceId(telephonyManager.getDeviceId());
+        return telephonyManager.getDeviceId();
+    }
+
+    private void getToken() {
+        mTokenManager.getCurrentToken(new TokenManager.TokenListener() {
+            @Override
+            public void onSuccess(TokenResponse tokenResponse) {
+                if(tokenResponse != null) {
+                    Logger.v("Token: " + tokenResponse.getData().getToken());
+                    String token = tokenResponse.getData().getToken();
+                    mPreferenceManager.setToken(token);
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+                Logger.v(message);
+            }
+        }, generateRawData(mPreferenceManager.getDeviceId()));
+
+    }
+
+    private String generateRawData(String deviceId) {
+
+        JSONObject jsonBody = new JSONObject();
+
+        try {
+            jsonBody.put(GetAuthToken.DEVICE_ID, deviceId);
+
+        } catch (JSONException eJsonException) {
+            eJsonException.printStackTrace();
+        }
+
+        final String requestBody = jsonBody.toString();
+        Logger.v("rawData string generated from data in activity:  " + requestBody);
+
+        return requestBody;
     }
 }

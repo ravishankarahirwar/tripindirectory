@@ -12,6 +12,9 @@ import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.model.request.CommonHeader;
+
 import directory.tripin.com.tripindirectory.model.request.GetPartnersRequest;
 
 
@@ -29,10 +32,12 @@ public class RequestProvider {
 
     private Context mContext;
 
+    private PreferenceManager mPreference;
+
     public RequestProvider(Context context) {
         mContext = context;
+        mPreference = PreferenceManager.getInstance(mContext);
     }
-
     public Request getPartnersRequest(String source, String destination, String vehicle,
                                       String payload, String length, String goodsType,
                                       String serviceType, String lat, String lng, String start, String end, RequestListener listener) {
@@ -86,4 +91,16 @@ public class RequestProvider {
 
     }
 
+    public Request getTokenRequest(String rawData, RequestListener listener) {
+
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put("Content-Type", "application/json");
+        return new Request.RequestBuilder(mContext, listener)
+                .type(Request.Method.SEND_JSON)
+                .url(ApiProvider.getApiByTag(ApiTag.GET_TOKEN))
+                .rawData(rawData)
+                .headerParams(headerParams)
+                .tag(ApiTag.GET_TOKEN)
+                .build();
+    }
 }
