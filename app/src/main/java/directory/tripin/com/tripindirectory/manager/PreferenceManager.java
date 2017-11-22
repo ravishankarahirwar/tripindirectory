@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 public class PreferenceManager {
     public static final String PREF_TOKEN = "token";
     public static final String DEVICE_ID = "device_id";
+    public static final String USER_ID = "user_id";
+
 
     public static final String PREF_GROUP_ID = "group_id";
     public static final String PREF_FIRST_TIME = "first_time";
@@ -58,6 +60,16 @@ public class PreferenceManager {
 
     public void setDeviceId(String deviceId) {
         editor.putString(DEVICE_ID, deviceId);
+        editor.commit();
+    }
+
+    public String getUserId() {
+        String userId = sInstance.getString(USER_ID, null);
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        editor.putString(USER_ID, userId);
         editor.commit();
     }
 

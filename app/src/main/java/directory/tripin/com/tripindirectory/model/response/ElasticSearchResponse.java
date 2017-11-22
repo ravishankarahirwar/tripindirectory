@@ -1,6 +1,7 @@
 package directory.tripin.com.tripindirectory.model.response;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import directory.tripin.com.tripindirectory.factory.Response;
 
@@ -36,6 +37,8 @@ public class ElasticSearchResponse implements Response {
         private Lat_lng lat_lng;
 
         private Mobile[] mobile;
+        private ArrayList<String> userLiked = new ArrayList<>();
+        private ArrayList<String> userDisliked = new ArrayList<>();
 
         public String[] getPhone() {
             return phone;
@@ -79,6 +82,22 @@ public class ElasticSearchResponse implements Response {
 
         public String getDislike() {
             return dislike;
+        }
+
+        public ArrayList<String> getUserLiked() {
+            return userLiked;
+        }
+
+        public void setUserLiked(ArrayList<String> userLiked) {
+            this.userLiked = userLiked;
+        }
+
+        public ArrayList<String> getUserDisliked() {
+            return userDisliked;
+        }
+
+        public void setUserDisliked(ArrayList<String> userDisliked) {
+            this.userDisliked = userDisliked;
         }
 
         public void setDislike(String dislike) {
