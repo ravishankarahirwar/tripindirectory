@@ -9,6 +9,7 @@ import directory.tripin.com.tripindirectory.factory.RequestListener;
 import directory.tripin.com.tripindirectory.factory.Response;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
+import directory.tripin.com.tripindirectory.model.response.LikeDislikeResponse;
 import directory.tripin.com.tripindirectory.role.IGetPartnerOptions;
 
 
@@ -25,6 +26,8 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
     private GetPartnersListener mGetPartnersListener;
 
     private ElasticSearchListener mElasticSearchListener;
+
+    private LikeDislikeListener mLikeDislikeListener;
 
     public PartnersManager(Context context) {
         this.mContext = context;
@@ -44,6 +47,11 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
         getElasticSearch(query);
     }
 
+    public void likeDislikeRequest(String orgId, String point, LikeDislikeListener likeDislikeListener) {
+        this.mLikeDislikeListener = likeDislikeListener;
+        getLikeDislikeRank(orgId, point);
+    }
+
     @Override
     public void onResponse(int responseResult, int apiTag, Response response) {
         switch (apiTag) {
@@ -54,6 +62,11 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
             case ApiTag.ELASTIC_SEARCH:
                 mElasticSearchListener.onSuccess((ElasticSearchResponse) response);
                 break;
+
+            case ApiTag.LIKE_DISLIKE:
+                mLikeDislikeListener.onSuccess((LikeDislikeResponse) response);
+                break;
+
         }
     }
 
@@ -65,6 +78,9 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
                 break;
             case ApiTag.ELASTIC_SEARCH:
                 mElasticSearchListener.onFailed();
+                break;
+            case ApiTag.LIKE_DISLIKE:
+                mLikeDislikeListener.onFailed();
                 break;
         }
     }
@@ -83,6 +99,12 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
         rquestHandler.send(mRequestProvider.getElasticSearchRequest(query, this));
     }
 
+    @Override
+    public void getLikeDislikeRank(String orgId, String point) {
+        RquestHandler rquestHandler = new RquestHandler(mContext);
+        rquestHandler.send(mRequestProvider.getLikeDislikeRequest(orgId, point, this));
+    }
+
     public interface GetPartnersListener {
         void onSuccess(GetPartnersResponse getPartnersResponse);
 
@@ -91,6 +113,12 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
 
     public interface ElasticSearchListener {
         void onSuccess(ElasticSearchResponse elasticSearchResponse);
+
+        void onFailed();
+    }
+
+    public interface LikeDislikeListener {
+        void onSuccess(LikeDislikeResponse likeDislikeResponse);
 
         void onFailed();
     }

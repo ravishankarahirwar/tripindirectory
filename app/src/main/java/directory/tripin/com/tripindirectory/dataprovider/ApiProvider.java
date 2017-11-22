@@ -13,7 +13,7 @@ public class ApiProvider {
 
         switch (apiTag) {
 
-            case ApiTag.GET_PARTNERS : // 1
+            case ApiTag.GET_PARTNERS: // 1
                 url = BASE_URL + "getPartner";
                 break;
 
@@ -22,8 +22,12 @@ public class ApiProvider {
                 url = BASE_URL + "elastic/searchDirectory";
                 break;
 
-            case ApiTag.GET_TOKEN : // 2
+            case ApiTag.GET_TOKEN: // 3
                 url = BASE_URL + "person/addPersonByDeviceID";
+                break;
+
+            case ApiTag.LIKE_DISLIKE: // 4
+                url = BASE_URL + "org/vote";
                 break;
 
             default:

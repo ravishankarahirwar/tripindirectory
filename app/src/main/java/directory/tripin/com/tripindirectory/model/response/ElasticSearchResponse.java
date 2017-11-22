@@ -6,7 +6,7 @@ import java.util.List;
 import directory.tripin.com.tripindirectory.factory.Response;
 
 /**
- * Created by Yogesh N. Tikam on 11/21/2017.
+ * Created by Yogesh N. Tikam on 21/11/2017.
  */
 
 public class ElasticSearchResponse implements Response {
@@ -37,8 +37,27 @@ public class ElasticSearchResponse implements Response {
         private Lat_lng lat_lng;
 
         private Mobile[] mobile;
-        private ArrayList<String> userLiked = new ArrayList<>();
-        private ArrayList<String> userDisliked = new ArrayList<>();
+//        private ArrayList<String> userLiked = new ArrayList<>();
+//        private ArrayList<String> userDisliked = new ArrayList<>();
+
+        private String[]  userLiked;
+        private String[] userDisliked;
+
+        public String[] getUserLiked() {
+            return userLiked;
+        }
+
+        public void setUserLiked(String[] userLiked) {
+            this.userLiked = userLiked;
+        }
+
+        public String[] getUserDisliked() {
+            return userDisliked;
+        }
+
+        public void setUserDisliked(String[] userDisliked) {
+            this.userDisliked = userDisliked;
+        }
 
         public String[] getPhone() {
             return phone;
@@ -84,21 +103,21 @@ public class ElasticSearchResponse implements Response {
             return dislike;
         }
 
-        public ArrayList<String> getUserLiked() {
-            return userLiked;
-        }
-
-        public void setUserLiked(ArrayList<String> userLiked) {
-            this.userLiked = userLiked;
-        }
-
-        public ArrayList<String> getUserDisliked() {
-            return userDisliked;
-        }
-
-        public void setUserDisliked(ArrayList<String> userDisliked) {
-            this.userDisliked = userDisliked;
-        }
+//        public ArrayList<String> getUserLiked() {
+//            return userLiked;
+//        }
+//
+//        public void setUserLiked(ArrayList<String> userLiked) {
+//            this.userLiked = userLiked;
+//        }
+//
+//        public ArrayList<String> getUserDisliked() {
+//            return userDisliked;
+//        }
+//
+//        public void setUserDisliked(ArrayList<String> userDisliked) {
+//            this.userDisliked = userDisliked;
+//        }
 
         public void setDislike(String dislike) {
             this.dislike = dislike;

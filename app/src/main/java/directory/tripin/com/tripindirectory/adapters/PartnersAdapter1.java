@@ -20,12 +20,13 @@ import android.widget.Toast;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
+import directory.tripin.com.tripindirectory.model.response.LikeDislikeResponse;
 
 /**
  * Created by Yogesh N. Tikam on 11/16/2017.
@@ -36,14 +37,20 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int SECTION_TYPE_1 = 0;
     private static final int CONTACT_TYPE_1 = 1;
     private static final int DIRECTORY_TYPE_1 = 2;
+    private static final String UPVOTED = "1";
+    private static final String DOWNVOTED = "-1";
+
     private Context mContext;
     private ElasticSearchResponse mElasticSearchResponse;
     private PreferenceManager mPreferenceManager;
+
+    private PartnersManager mPartnersManager;
 
     public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
         mElasticSearchResponse = elasticSearchResponse;
         mPreferenceManager = PreferenceManager.getInstance(mContext);
+        mPartnersManager = new PartnersManager(mContext);
     }
 
     @Override
@@ -75,6 +82,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 //                itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
 //            }
 
+/*
             itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -112,12 +120,77 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                     }
                 }
             });
+*/
 
-            itemViewHolder.mCompany.setText(mElasticSearchResponse.getData().get(position-1).getName());
-            itemViewHolder.mAddress.setText(mElasticSearchResponse.getData().get(position-1).getAddress());
+            final String orgId = mElasticSearchResponse.getData().get(position - 1).get_id();
 
-            String strLike = mElasticSearchResponse.getData().get(position-1).getLike();
-            String strdisLike = mElasticSearchResponse.getData().get(position-1).getDislike();
+            final String[] userLiked = mElasticSearchResponse.getData().get(position-1).getUserLiked();
+            final String[] userDisLiked = mElasticSearchResponse.getData().get(position-1).getUserDisliked();
+
+            for (String liked: userLiked ) {
+                if(liked.equals(mPreferenceManager.getUserId())) {
+                    itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                    itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
+                }
+            }
+
+            for (String unLiked: userDisLiked ) {
+                if(unLiked.equals(mPreferenceManager.getUserId())) {
+                    itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                    itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
+                }
+            }
+
+            itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!itemViewHolder.isUpVoted) {
+                        itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
+                        if (itemViewHolder.isDownVoted) {
+                            itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mDownvote.setBackgroundResource(0);
+                            itemViewHolder.isDownVoted = false;
+                        }
+                        itemViewHolder.isUpVoted = true;
+                        callLikeDislikeApi(orgId, UPVOTED);
+                    } else {
+                        itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mUpvote.setBackgroundResource(0);
+                        itemViewHolder.isUpVoted = false;
+                        callLikeDislikeApi(orgId, UPVOTED);
+                    }
+                }
+            });
+
+            itemViewHolder.mDownvote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!itemViewHolder.isDownVoted) {
+
+                        itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), android.graphics.PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
+                        if (itemViewHolder.isUpVoted) {
+                            itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mUpvote.setBackgroundResource(0);
+                            itemViewHolder.isUpVoted = false;
+                        }
+                        itemViewHolder.isDownVoted = true;
+                        callLikeDislikeApi(orgId, DOWNVOTED);
+                    } else {
+                        itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mDownvote.setBackgroundResource(0);
+                        itemViewHolder.isDownVoted = false;
+                        callLikeDislikeApi(orgId, DOWNVOTED);
+                    }
+                }
+            });
+
+            itemViewHolder.mCompany.setText(mElasticSearchResponse.getData().get(position - 1).getName());
+            itemViewHolder.mAddress.setText(mElasticSearchResponse.getData().get(position - 1).getAddress());
+
+            String strLike = mElasticSearchResponse.getData().get(position - 1).getLike();
+            String strdisLike = mElasticSearchResponse.getData().get(position - 1).getDislike();
 
             int like = Integer.parseInt(strLike);
             int disLike = Integer.parseInt(strdisLike);
@@ -125,7 +198,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
 
 
-            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mElasticSearchResponse.getData().get(position-1).getMobile();
+            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mElasticSearchResponse.getData().get(position - 1).getMobile();
 
             itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -160,11 +233,11 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                         builder.create();
                         builder.show();
-                    } else if(mMobileData.length == 1)  {
+                    } else if (mMobileData.length == 1) {
 
-                       callNumber(mMobileData[0].getCellNo());
+                        callNumber(mMobileData[0].getCellNo());
                     } else {
-                        Toast.makeText(mContext,"Mobile number not present for this contact",Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, "Mobile number not present for this contact", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -173,7 +246,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return mElasticSearchResponse.getData().size()+1;
+        return mElasticSearchResponse.getData().size() + 1;
     }
 
     @Override
@@ -183,6 +256,27 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
             return DIRECTORY_TYPE_1;
         }
+    }
+
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callIntent);
+    }
+
+    private void callLikeDislikeApi(String orgId, String vote) {
+        mPartnersManager.likeDislikeRequest(orgId, vote, new PartnersManager.LikeDislikeListener() {
+            @Override
+            public void onSuccess(LikeDislikeResponse likeDislikeResponse) {
+                Logger.v("Like Dislike Api Success");
+            }
+
+            @Override
+            public void onFailed() {
+                Logger.v("Like Dislike Api Failed");
+            }
+        });
     }
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
@@ -217,12 +311,5 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
             mCompany = (TextView) itemView.findViewById(R.id.company_name);
         }
-    }
-
-    private void callNumber(String number) {
-        Intent callIntent = new Intent(Intent.ACTION_DIAL);
-        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
-        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(callIntent);
     }
 }

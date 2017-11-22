@@ -11,11 +11,10 @@ import java.util.Map;
 import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
 import directory.tripin.com.tripindirectory.helper.Logger;
-import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
-import directory.tripin.com.tripindirectory.model.request.CommonHeader;
-
+import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
 import directory.tripin.com.tripindirectory.model.request.GetPartnersRequest;
+import directory.tripin.com.tripindirectory.model.request.LikeDislikeRequest;
 
 
 /**
@@ -38,6 +37,7 @@ public class RequestProvider {
         mContext = context;
         mPreference = PreferenceManager.getInstance(mContext);
     }
+
     public Request getPartnersRequest(String source, String destination, String vehicle,
                                       String payload, String length, String goodsType,
                                       String serviceType, String lat, String lng, String start, String end, RequestListener listener) {
@@ -101,6 +101,32 @@ public class RequestProvider {
                 .rawData(rawData)
                 .headerParams(headerParams)
                 .tag(ApiTag.GET_TOKEN)
+                .build();
+    }
+
+    public Request getLikeDislikeRequest(String orgId, String point, RequestListener listener) {
+
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put(LikeDislikeRequest.TOKEN, mPreference.getToken());
+        headerParams.put("Content-Type", "application/json");
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put(LikeDislikeRequest.ORG_ID, orgId);
+            jsonBody.put(LikeDislikeRequest.POINT, point);
+        } catch (JSONException eJsonException) {
+            eJsonException.printStackTrace();
+        }
+
+        final String requestBody = jsonBody.toString();
+        Logger.v("rawData string generated from data in activity:  " + requestBody);
+
+        return new Request.RequestBuilder(mContext, listener)
+                .type(Request.Method.SEND_JSON)
+                .url(ApiProvider.getApiByTag(ApiTag.LIKE_DISLIKE))
+                .rawData(requestBody)
+                .headerParams(headerParams)
+                .tag(ApiTag.LIKE_DISLIKE)
                 .build();
     }
 }
