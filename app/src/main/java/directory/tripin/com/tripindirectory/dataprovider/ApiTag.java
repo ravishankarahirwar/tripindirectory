@@ -13,6 +13,8 @@ public class ApiTag {
 
     public static final int GET_TOKEN = 3;
 
+    public static final int LIKE_DISLIKE = 4;
+
 
 }
 

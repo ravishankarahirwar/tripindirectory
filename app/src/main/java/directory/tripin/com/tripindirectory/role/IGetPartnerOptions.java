@@ -9,4 +9,6 @@ public interface IGetPartnerOptions {
                      String payload, String length, String goodsType, String serviceType, String lat, String lng,String start, String end);
 
     void getElasticSearch(String query);
+
+    void getLikeDislikeRank(String orgId, String point);
 }
