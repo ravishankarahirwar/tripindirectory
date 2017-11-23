@@ -5,6 +5,7 @@ package directory.tripin.com.tripindirectory.model.request;
  */
 
 public interface ElasticSearchRequest {
+    String TOKEN = "token";
     String QUERY_STRING = "queryString";
     String FROM = "from";
     String SIZE = "size";

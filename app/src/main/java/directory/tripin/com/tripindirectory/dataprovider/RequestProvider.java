@@ -67,6 +67,7 @@ public class RequestProvider {
 
         Map<String, String> headerParams = new HashMap<>();
         headerParams.put("Content-Type", "application/json");
+        headerParams.put(ElasticSearchRequest.TOKEN, mPreference.getToken());
 
         JSONObject jsonBody = new JSONObject();
         try {
