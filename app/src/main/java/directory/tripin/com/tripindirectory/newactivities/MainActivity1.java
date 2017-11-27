@@ -112,7 +112,6 @@ public class MainActivity1 extends AppCompatActivity {
          * By default Mumbai would be search destination
          */
         mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
-        performElasticSearch(mSearchField.getText().toString());
 
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
        /* mPartnerAdapter1 = new PartnersAdapter1(mContext);
@@ -195,6 +194,8 @@ public class MainActivity1 extends AppCompatActivity {
 
                     mPreferenceManager.setToken(token);
                     mPreferenceManager.setUserId(userId);
+                    performElasticSearch(mSearchField.getText().toString());
+
                 }
             }
 
