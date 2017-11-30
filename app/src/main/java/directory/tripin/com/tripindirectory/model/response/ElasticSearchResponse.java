@@ -20,9 +20,38 @@ public class ElasticSearchResponse implements Response {
     public void setData(ArrayList<PartnerData> data) {
         this.data = data;
     }
-    public class PartnerData {
+    public class Phone {
+        private String _id;
+        private String landline;
+        private String ext;
 
-        private String[] phone;
+        public String get_id() {
+            return _id;
+        }
+
+        public void set_id(String _id) {
+            this._id = _id;
+        }
+
+        public String getLandline() {
+            return landline;
+        }
+
+        public void setLandline(String landline) {
+            this.landline = landline;
+        }
+
+        public String getExt() {
+            return ext;
+        }
+
+        public void setExt(String ext) {
+            this.ext = ext;
+        }
+    }
+    public class PartnerData {
+        private ArrayList<Phone> phone;
+//        private String[] phone;
 
         private String _id;
 
@@ -59,11 +88,11 @@ public class ElasticSearchResponse implements Response {
             this.userDisliked = userDisliked;
         }
 
-        public String[] getPhone() {
+        public ArrayList<Phone> getPhone() {
             return phone;
         }
 
-        public void setPhone(String[] phone) {
+        public void setPhone(ArrayList<Phone> phone) {
             this.phone = phone;
         }
 
