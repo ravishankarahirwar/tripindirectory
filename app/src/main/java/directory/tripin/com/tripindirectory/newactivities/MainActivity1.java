@@ -1,18 +1,22 @@
 package directory.tripin.com.tripindirectory.newactivities;
 
-import android.app.ProgressDialog;
 import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -21,23 +25,24 @@ import android.widget.Toast;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import directory.tripin.com.tripindirectory.MainActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
-import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
 import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
+import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.TokenResponse;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class MainActivity1 extends AppCompatActivity {
 
@@ -54,7 +59,6 @@ public class MainActivity1 extends AppCompatActivity {
 
     private ProgressDialog pd;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +66,13 @@ public class MainActivity1 extends AppCompatActivity {
 
         init();
         setListeners();
+        if (mPreferenceManager.isFirstTime()) {
+            Logger.v("First Time app opened");
+            startActivity(new Intent(mContext, TutorialScreensActivity.class));
+            searchBarTutorial();
+        } else {
+            Logger.v("Multiple times app opened");
+        }
     }
 
     private void init() {
@@ -111,16 +122,13 @@ public class MainActivity1 extends AppCompatActivity {
         /**
          * By default Mumbai would be search destination
          */
-        mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
+
+        if(!mPreferenceManager.isFirstTime()) {
+            mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
+            performElasticSearch(mSearchField.getText().toString());
+        }
 
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
-       /* mPartnerAdapter1 = new PartnersAdapter1(mContext);
-
-        LinearLayoutManager verticalLayoutManager =
-                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mPartnerList.setLayoutManager(verticalLayoutManager);
-
-        mPartnerList.setAdapter(mPartnerAdapter1);*/
     }
 
     private void setListeners() {
@@ -149,7 +157,6 @@ public class MainActivity1 extends AppCompatActivity {
 
     private void performElasticSearch(String query) {
         mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), new PartnersManager.ElasticSearchListener() {
-
             @Override
             public void onSuccess(ElasticSearchResponse elasticSearchResponse) {
                 Logger.v("Elastic Search success");
@@ -158,13 +165,12 @@ public class MainActivity1 extends AppCompatActivity {
                 }
 
                 mPartnerAdapter1 = new PartnersAdapter1(mContext, elasticSearchResponse);
-
                 LinearLayoutManager verticalLayoutManager =
                         new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
                 mPartnerList.setLayoutManager(verticalLayoutManager);
-
                 mPartnerList.setAdapter(mPartnerAdapter1);
 
+                hideSoftKeyboard();
             }
 
             @Override
@@ -187,7 +193,7 @@ public class MainActivity1 extends AppCompatActivity {
         mTokenManager.getCurrentToken(new TokenManager.TokenListener() {
             @Override
             public void onSuccess(TokenResponse tokenResponse) {
-                if(tokenResponse != null) {
+                if (tokenResponse != null) {
                     Logger.v("Token: " + tokenResponse.getData().getToken());
                     String token = tokenResponse.getData().getToken();
                     String userId = tokenResponse.getData().getUserId();
@@ -204,23 +210,54 @@ public class MainActivity1 extends AppCompatActivity {
                 Logger.v(message);
             }
         }, generateRawData(mPreferenceManager.getDeviceId()));
-
     }
 
     private String generateRawData(String deviceId) {
-
         JSONObject jsonBody = new JSONObject();
-
         try {
             jsonBody.put(GetAuthToken.DEVICE_ID, deviceId);
 
         } catch (JSONException eJsonException) {
             eJsonException.printStackTrace();
         }
-
         final String requestBody = jsonBody.toString();
         Logger.v("rawData string generated from data in activity:  " + requestBody);
-
         return requestBody;
     }
+
+    private void searchBarTutorial() {
+        new MaterialTapTargetPrompt.Builder((Activity) mContext)
+                .setPrimaryText("Search Box")
+                .setSecondaryText("Enter your search text here and click the search icon on the keyboard")
+                .setBackgroundColour(ContextCompat.getColor(mContext, R.color.primaryColor))
+                .setPromptBackground(new RectanglePromptBackground())
+                .setFocalColour(ContextCompat.getColor(mContext, R.color.primaryDarkColor))
+                .setPromptFocal(new RectanglePromptFocal())
+                .setAutoDismiss(false)
+                .setAutoFinish(false)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setTarget(R.id.search_field)
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                            //Do something such as storing a value so that this prompt is never shown again
+                            prompt.finish();
+                            mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
+                            performElasticSearch(mSearchField.getText().toString());
+                        }
+                    }
+                }).show();
+    }
+
+    /**
+     * Hides the soft keyboard
+     */
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
 }
