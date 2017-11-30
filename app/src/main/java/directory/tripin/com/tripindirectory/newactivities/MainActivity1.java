@@ -68,6 +68,7 @@ public class MainActivity1 extends AppCompatActivity {
         setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
+            startActivity(new Intent(mContext, TutorialScreensActivity.class));
             searchBarTutorial();
         } else {
             Logger.v("Multiple times app opened");
@@ -126,16 +127,8 @@ public class MainActivity1 extends AppCompatActivity {
             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
             performElasticSearch(mSearchField.getText().toString());
         }
-        
+
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
-       /* mPartnerAdapter1 = new PartnersAdapter1(mContext);
-
-        LinearLayoutManager verticalLayoutManager =
-                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mPartnerList.setLayoutManager(verticalLayoutManager);
-
-        mPartnerList.setAdapter(mPartnerAdapter1);*/
-
     }
 
     private void setListeners() {
@@ -252,10 +245,6 @@ public class MainActivity1 extends AppCompatActivity {
                             prompt.finish();
                             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
                             performElasticSearch(mSearchField.getText().toString());
-//                            InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            if(imm.isAcceptingText()) {
-//                                imm.hideSoftInputFromInputMethod(((Activity) mContext).getCurrentFocus().getWindowToken(), 0);
-//                            }
                         }
                     }
                 }).show();

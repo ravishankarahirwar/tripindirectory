@@ -71,4 +71,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.android.volley:volley:1.0.0'
     compile 'uk.co.samuelwall:material-tap-target-prompt:2.4.1'
+    compile 'com.github.apl-devs:appintro:v4.2.2'
 }
