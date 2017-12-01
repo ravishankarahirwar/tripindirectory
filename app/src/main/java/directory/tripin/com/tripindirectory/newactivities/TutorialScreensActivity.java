@@ -21,15 +21,15 @@ public class TutorialScreensActivity extends AppIntro2 {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addSlide(AppIntroFragment.newInstance("100+ Category", "", "Groups by category", "", R.drawable.ic_arrow_forward_white,
+        addSlide(AppIntroFragment.newInstance("Search", "", "Best search result for your enquiry", "", R.drawable.ic_search,
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 Color.WHITE,
                 Color.WHITE));
-        addSlide(AppIntroFragment.newInstance("Join Group", "", "Join as many as group you want in one click", "", R.drawable.ic_arrow_downward,
+        addSlide(AppIntroFragment.newInstance("Up Vote", "", "Give an up-vote if you like ", "", R.drawable.ic_arrow_upward,
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 Color.WHITE,
                 Color.WHITE));
-        addSlide(AppIntroFragment.newInstance("Add Group", "", "You can add your group so other can join", "", R.drawable.ic_arrow_upward,
+        addSlide(AppIntroFragment.newInstance("Down Vote", "", "Give an down-vote if you not like", "", R.drawable.ic_arrow_downward,
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 Color.WHITE,
                 Color.WHITE));

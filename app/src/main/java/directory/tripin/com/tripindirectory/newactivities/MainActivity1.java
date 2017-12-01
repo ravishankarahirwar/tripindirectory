@@ -68,6 +68,7 @@ public class MainActivity1 extends AppCompatActivity {
         setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
+            mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
             searchBarTutorial();
         } else {
@@ -245,6 +246,7 @@ public class MainActivity1 extends AppCompatActivity {
                             prompt.finish();
                             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
                             performElasticSearch(mSearchField.getText().toString());
+                            mPreferenceManager.setFirstTime(false);
                         }
                     }
                 }).show();
