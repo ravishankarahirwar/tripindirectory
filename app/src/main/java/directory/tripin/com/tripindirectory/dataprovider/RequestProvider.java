@@ -15,6 +15,7 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
 import directory.tripin.com.tripindirectory.model.request.GetPartnersRequest;
 import directory.tripin.com.tripindirectory.model.request.LikeDislikeRequest;
+import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
 
 
 /**
@@ -63,7 +64,7 @@ public class RequestProvider {
                 .build();
     }
 
-    public Request getElasticSearchRequest(String query, RequestListener listener) {
+    public Request getElasticSearchRequest(String query, String from_which_page, String page_size, RequestListener listener) {
 
         Map<String, String> headerParams = new HashMap<>();
         headerParams.put("Content-Type", "application/json");
@@ -72,8 +73,8 @@ public class RequestProvider {
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put(ElasticSearchRequest.QUERY_STRING, query);
-            jsonBody.put(ElasticSearchRequest.FROM, "1");
-            jsonBody.put(ElasticSearchRequest.SIZE, "5");
+            jsonBody.put(ElasticSearchRequest.FROM, from_which_page);
+            jsonBody.put(ElasticSearchRequest.SIZE, page_size);
         } catch (JSONException eJsonException) {
             eJsonException.printStackTrace();
         }

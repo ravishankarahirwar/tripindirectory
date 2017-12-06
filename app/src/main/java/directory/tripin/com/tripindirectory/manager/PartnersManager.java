@@ -42,9 +42,9 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
                 goodsType, serviceType, lat, lng, start, end);
     }
 
-    public void getElasticSearchRequest(String query, ElasticSearchListener elasticSearchCallback) {
+    public void getElasticSearchRequest(String query, String from_which_page, String page_size, ElasticSearchListener elasticSearchCallback) {
         this.mElasticSearchListener = elasticSearchCallback;
-        getElasticSearch(query);
+        getElasticSearch(query, from_which_page, page_size);
     }
 
     public void likeDislikeRequest(String orgId, String point, LikeDislikeListener likeDislikeListener) {
@@ -94,9 +94,9 @@ public class PartnersManager implements RequestListener, IGetPartnerOptions {
     }
 
     @Override
-    public void getElasticSearch(String query) {
+    public void getElasticSearch(String query, String from_which_page, String page_size) {
         RquestHandler rquestHandler = new RquestHandler(mContext);
-        rquestHandler.send(mRequestProvider.getElasticSearchRequest(query, this));
+        rquestHandler.send(mRequestProvider.getElasticSearchRequest(query, from_which_page, page_size,this));
     }
 
     @Override

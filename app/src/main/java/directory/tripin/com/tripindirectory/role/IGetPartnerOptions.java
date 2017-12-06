@@ -8,7 +8,7 @@ public interface IGetPartnerOptions {
     void getPartners(String source, String destination, String vehicle,
                      String payload, String length, String goodsType, String serviceType, String lat, String lng,String start, String end);
 
-    void getElasticSearch(String query);
+    void getElasticSearch(String query, String from_which_page, String page_size);
 
     void getLikeDislikeRank(String orgId, String point);
 }
