@@ -28,6 +28,7 @@ import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.LikeDislikeResponse;
+import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.CirclePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal;
@@ -50,11 +51,32 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private PartnersManager mPartnersManager;
 
+    private OnBottomReachedListener mOnBottomReachedListener;
+
+    private ArrayList<String> mOrgIdList = new ArrayList<>();
+    private ArrayList<String[]> mUserLikedList = new ArrayList<>();
+    private ArrayList<String[]> mUserDislikedList = new ArrayList<>();
+    private ArrayList< ElasticSearchResponse.PartnerData.Mobile[]> mMobileList = new ArrayList<>();
+    private ArrayList<String> mCompanyList = new ArrayList<>();
+    private ArrayList<String> mAddressList = new ArrayList<>();
+    private ArrayList<String> mLikeList = new ArrayList<>();
+    private ArrayList<String> mDislikeList = new ArrayList<>();
+
+    private int mCount = 0;
+
     public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
         mElasticSearchResponse = elasticSearchResponse;
         mPreferenceManager = PreferenceManager.getInstance(mContext);
         mPartnersManager = new PartnersManager(mContext);
+        mOnBottomReachedListener = (OnBottomReachedListener) mContext;
+        initLists();
+    }
+
+    public void addNewList( ElasticSearchResponse latestElasticSearchResponse) {
+        mElasticSearchResponse =latestElasticSearchResponse;
+        initLists();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -68,7 +90,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    @Override
+/*    @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof SectionViewHolder) {
             SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
@@ -222,11 +244,169 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             }
         }
+    }*/
+
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof SectionViewHolder) {
+            SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
+
+            sectionViewHolder.title.setText("Directory");
+
+        } else {
+            final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+
+            final String orgId = mOrgIdList.get(position - 1);
+
+            final String[] userLiked = mUserLikedList.get(position - 1);
+            final String[] userDisLiked = mUserDislikedList.get(position - 1);
+
+            if (userLiked.length > 0) {
+                for (String liked : userLiked) {
+                    if (liked.equals(mPreferenceManager.getUserId())) {
+                        itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
+                        itemViewHolder.isUpVoted = true;
+                    }
+                }
+            } else {
+                itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                itemViewHolder.mUpvote.setBackgroundResource(0);
+                itemViewHolder.isUpVoted = false;
+            }
+
+            if (userDisLiked.length > 0) {
+                for (String unLiked : userDisLiked) {
+                    if (unLiked.equals(mPreferenceManager.getUserId())) {
+                        itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                        itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
+                        itemViewHolder.isDownVoted = true;
+                    }
+                }
+            } else {
+                itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                itemViewHolder.mDownvote.setBackgroundResource(0);
+                itemViewHolder.isDownVoted = false;
+            }
+
+            if(!mPreferenceManager.isFirstTime()) {
+                itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemViewHolder.isUpvoteClicked = true;
+                        if (!itemViewHolder.isUpVoted) {
+                            itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mUpvote.setBackgroundResource(R.drawable.circle_shape);
+                            if (itemViewHolder.isDownVoted) {
+                                itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                                itemViewHolder.mDownvote.setBackgroundResource(0);
+                                itemViewHolder.isDownVoted = false;
+                            }
+                            itemViewHolder.isUpVoted = true;
+                            callLikeDislikeApi(orgId, UPVOTED, itemViewHolder);
+                        } else {
+                            itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mUpvote.setBackgroundResource(0);
+                            itemViewHolder.isUpVoted = false;
+                            callLikeDislikeApi(orgId, UPVOTED, itemViewHolder);
+                        }
+                    }
+                });
+            }
+
+            if(!mPreferenceManager.isFirstTime()) {
+                itemViewHolder.mDownvote.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemViewHolder.isUpvoteClicked = false;
+                        if (!itemViewHolder.isDownVoted) {
+                            itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
+                            if (itemViewHolder.isUpVoted) {
+                                itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                                itemViewHolder.mUpvote.setBackgroundResource(0);
+                                itemViewHolder.isUpVoted = false;
+                            }
+                            itemViewHolder.isDownVoted = true;
+                            callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
+                        } else {
+                            itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mDownvote.setBackgroundResource(0);
+                            itemViewHolder.isDownVoted = false;
+                            callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
+                        }
+                    }
+                }); }
+
+            itemViewHolder.mCompany.setText(mCompanyList.get(position - 1));
+            itemViewHolder.mAddress.setText(mAddressList.get(position - 1));
+
+            String strLike = mLikeList.get(position - 1);
+            String strdisLike = mDislikeList.get(position - 1);
+
+            int like = Integer.parseInt(strLike);
+            int disLike = Integer.parseInt(strdisLike);
+
+            itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
+
+            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mMobileList.get(position - 1);
+
+            if(! mPreferenceManager.isFirstTime()) {
+                itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final ArrayList<String> phoneNumbers = new ArrayList<>();
+
+                        if (mMobileData.length > 1) {
+
+                            for (int i = 0; i < mMobileData.length; i++) {
+                                phoneNumbers.add(mMobileData[i].getCellNo());
+                            }
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int item) {
+
+                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                    callNumber(phoneNumbers.get(item));
+                                                }
+                                            });
+
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User cancelled the dialog
+                                }
+                            });
+
+                            builder.create();
+                            builder.show();
+                        } else if (mMobileData.length == 1) {
+
+                            callNumber(mMobileData[0].getCellNo());
+                        } else {
+                            Toast.makeText(mContext, "Mobile number not present for this contact", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+            if (mPreferenceManager.isFirstTime()) {
+                if (position == 2) {
+                    upVoteTutorial(itemViewHolder);
+                }
+            }
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mElasticSearchResponse.getData().size() + 1;
+//        return mElasticSearchResponse.getData().size() + 1;
+//        return getCount();
+        return  mCount;
     }
 
     @Override
@@ -234,6 +414,9 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (position == 0) {
             return SECTION_TYPE_1;
         } else {
+            if(position == getItemCount()-1) {
+                mOnBottomReachedListener.onBottomReached(position);
+            }
             return DIRECTORY_TYPE_1;
         }
     }
@@ -333,6 +516,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void callTutorial(ItemViewHolder itemViewHolder) {
+        Logger.v("Inside call tutorial start");
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
                 .setPrimaryText("Call Button ")
                 .setSecondaryText("Call the current partner")
@@ -354,6 +538,8 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
                     }
                 }).show();
+
+        Logger.v("Inside call tutorial end");
     }
 
     private void upVoteTutorial(final ItemViewHolder itemViewHolder) {
@@ -377,9 +563,12 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
                     }
                 }).show();
+//        downVoteTutorial(itemViewHolder);
     }
 
     private void downVoteTutorial(final ItemViewHolder itemViewHolder) {
+
+        Logger.v("Inside downvote tutorial start");
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
                 .setPrimaryText("Down-Vote button")
                 .setSecondaryText("Decreases the ranking of the current partner")
@@ -397,10 +586,11 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                             //Do something such as storing a value so that this prompt is never shown again
                             prompt.finish();
                             callTutorial(itemViewHolder);
-                            mPreferenceManager.setFirstTime(false);
+//                            mPreferenceManager.setFirstTime(false);
                         }
                     }
                 }).show();
+//        callTutorial(itemViewHolder);
     }
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
@@ -437,5 +627,33 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
             mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
             mCompany = (TextView) itemView.findViewById(R.id.company_name);
         }
+    }
+
+/*    private int getCount() {
+
+        int count = 0;
+
+        for(int i = 0 ; i < mElasticSearchResponseList.size(); i++) {
+
+            count = count + mElasticSearchResponseList.get(i).getData().size();
+        }
+
+        return count;
+
+    }*/
+
+    private void initLists() {
+        for(int i =0 ; i < mElasticSearchResponse.getData().size(); i ++) {
+
+            mOrgIdList.add(mElasticSearchResponse.getData().get(i).get_id());
+            mUserLikedList.add( mElasticSearchResponse.getData().get(i).getUserLiked());
+            mUserDislikedList.add( mElasticSearchResponse.getData().get(i).getUserDisliked());
+            mCompanyList.add(mElasticSearchResponse.getData().get(i).getName());
+            mAddressList.add(mElasticSearchResponse.getData().get(i).getAddress());
+            mMobileList.add(mElasticSearchResponse.getData().get(i).getMobile());
+            mLikeList.add(mElasticSearchResponse.getData().get(i).getLike());
+            mDislikeList.add(mElasticSearchResponse.getData().get(i).getDislike());
+        }
+        mCount = mCount+mElasticSearchResponse.getData().size();
     }
 }
