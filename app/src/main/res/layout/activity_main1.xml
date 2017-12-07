@@ -66,4 +66,10 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/search_field"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/create_company"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>

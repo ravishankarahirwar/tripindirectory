@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
@@ -58,6 +60,8 @@ public class MainActivity1 extends AppCompatActivity {
     private PartnersManager mPartnersManager;
 
     private ProgressDialog pd;
+
+    FloatingActionButton mFloatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,14 @@ public class MainActivity1 extends AppCompatActivity {
         }
 
         mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
+
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.create_company);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+            }
+        });
     }
 
     private void setListeners() {
