@@ -59,4 +59,19 @@
     <string name="menu_location_text">Location</string>
     <string name="menu_Message_text">Message</string>
     <string name="contact_added_favorites_text">This contact has been added to Favorites</string>
+
+    <string name="company_name">Company Name</string>
+    <string name="contact_person">Contact Person</string>
+    <string name="contact_person_name">Person name</string>
+    <string name="contact_person_number">Person number</string>
+
+    <string name="add_person">Add Person</string>
+    <string name="company_landline_number">Company Landline Numbers</string>
+    <string name="add_landline_number">Add Landline Number</string>
+    <string name="company_address">Company Address</string>
+    <string name="full_address">Full Address</string>
+    <string name="city_town_village">City/Town/Village</string>
+    <string name="state">State</string>
+    <string name="pincode">Pincode</string>
+    <string name="email_iD">Email ID</string>
 </resources>
