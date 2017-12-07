@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "510392713431",
+    "firebase_url": "https://tripin-directory.firebaseio.com",
+    "project_id": "tripin-directory",
+    "storage_bucket": "tripin-directory.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510392713431:android:78304a075137058b",
+        "android_client_info": {
+          "package_name": "directory.tripin.com.tripindirectory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510392713431-tu9q406801i8u27h6bnbmn2m01c6qofj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "directory.tripin.com.tripindirectory",
+            "certificate_hash": "74c27a30375c24385a6b8242546f3040b262d017"
+          }
+        },
+        {
+          "client_id": "510392713431-snqobk4gsg2t2leojtv5e33c7fhte7cf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBlqKhFE2v6WKukjKtdA2ZJxW2shMw6So"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510392713431-snqobk4gsg2t2leojtv5e33c7fhte7cf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
