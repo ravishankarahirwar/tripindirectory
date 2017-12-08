@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 
+import android.os.Handler;
+
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -71,6 +73,10 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private LinearLayoutManager mVerticalLayoutManager;
 
     boolean isListenerExecuted = false;
+
+    private int mLastPosition;
+
+    private  boolean shouldElastiSearchCall = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +231,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private void performElasticSearch(String query) {
         mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), String.valueOf(mFromWhichEntry), String.valueOf(mPageSize), new PartnersManager.ElasticSearchListener() {
             @Override
-            public void onSuccess(ElasticSearchResponse elasticSearchResponse) {
+            public void onSuccess(final ElasticSearchResponse elasticSearchResponse) {
                 Logger.v("Elastic Search success");
                 if (pd != null) {
                     pd.dismiss();
@@ -240,7 +246,15 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
                     hideSoftKeyboard();
                 } else if(elasticSearchResponse.getData().size() != 0){
-                    mPartnerAdapter1.addNewList(elasticSearchResponse);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPartnerAdapter1.addNewList(elasticSearchResponse);
+                        }
+                    }, 2000);
+                } else if (elasticSearchResponse.getData().size() == 0) {
+                        mPartnerAdapter1.stopLoad();
+                        shouldElastiSearchCall = false;
                 }
                     isListenerExecuted = false;
             }
@@ -333,13 +347,20 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         }
     }
 
+    /**
+     *  Call back listener for Pagination
+     *  @param lastPosition
+     */
     @Override
     public void onBottomReached(int lastPosition) {
         if(!isListenerExecuted) {
             Logger.v("Reached the end of the list with position: " + lastPosition);
+            mLastPosition = lastPosition;
             mFromWhichEntry = mFromWhichEntry + mPageSize;
-            performElasticSearch(mSearchField.getText().toString());
-            showProgressDialog();
+            if(shouldElastiSearchCall) {
+                performElasticSearch(mSearchField.getText().toString());
+            }
+//            showProgressDialog();
             isListenerExecuted = true;
         }
     }
