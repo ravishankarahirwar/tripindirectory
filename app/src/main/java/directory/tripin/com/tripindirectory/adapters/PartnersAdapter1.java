@@ -58,14 +58,17 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private ArrayList<String> mOrgIdList = new ArrayList<>();
     private ArrayList<String[]> mUserLikedList = new ArrayList<>();
     private ArrayList<String[]> mUserDislikedList = new ArrayList<>();
-    private ArrayList<ElasticSearchResponse.PartnerData.Mobile[]> mMobileList = new ArrayList<>();
+
+    private ArrayList< ElasticSearchResponse.PartnerData.Mobile[]> mMobileList = new ArrayList<>();
     private ArrayList<String> mCompanyList = new ArrayList<>();
     private ArrayList<String> mAddressList = new ArrayList<>();
     private ArrayList<String> mLikeList = new ArrayList<>();
     private ArrayList<String> mDislikeList = new ArrayList<>();
 
     private int mCount = 0;
+
     private boolean mIsLoading = true;
+
 
     public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
@@ -76,8 +79,8 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         initLists();
     }
 
-    public void addNewList(ElasticSearchResponse latestElasticSearchResponse) {
-        mElasticSearchResponse = latestElasticSearchResponse;
+    public void addNewList( ElasticSearchResponse latestElasticSearchResponse) {
+        mElasticSearchResponse =latestElasticSearchResponse;
         initLists();
         notifyDataSetChanged();
     }
@@ -262,6 +265,8 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+
+
     @Override
     public int getItemCount() {
         return mCount+2;
@@ -287,33 +292,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void callLikeDislikeApi(String orgId, String vote, final ItemViewHolder itemViewHolder) {
-//        final RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF,
-//                0.5f,  Animation.RELATIVE_TO_SELF, 0.5f);
-////        rotate.setAnimationListener(new Animation.AnimationListener() {
-////            @Override
-////            public void onAnimationStart(Animation animation) {
-////
-////            }
-////
-////            @Override
-////            public void onAnimationEnd(Animation animation) {
-////
-////            }
-////
-////            @Override
-////            public void onAnimationRepeat(Animation animation) {
-////
-////            }
-////        });
-//        rotate.setDuration(500);
-//        rotate.setRepeatCount(Animation.INFINITE);
-//        if(itemViewHolder.isUpvoteClicked) {
-//
-//            itemViewHolder.mUpvote.startAnimation(rotate);
-//        } else {
-//            itemViewHolder.mDownvote.startAnimation(rotate);
-//        }
-
 
         mPartnersManager.likeDislikeRequest(orgId, vote, new PartnersManager.LikeDislikeListener() {
             @Override
@@ -363,7 +341,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
 
-//                rotate.cancel();
             }
 
             @Override
@@ -424,7 +401,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void downVoteTutorial(final ItemViewHolder itemViewHolder) {
-
         Logger.v("Inside downvote tutorial start");
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
                 .setPrimaryText("Down-Vote button")

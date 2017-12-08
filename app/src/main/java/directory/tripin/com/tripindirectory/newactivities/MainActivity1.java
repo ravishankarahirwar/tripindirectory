@@ -344,6 +344,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             if (inputMethodManager != null) {
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             }
+
         }
     }
 
