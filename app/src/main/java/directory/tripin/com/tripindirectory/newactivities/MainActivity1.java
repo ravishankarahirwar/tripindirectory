@@ -6,8 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
+
+import android.os.Handler;
+
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -41,12 +45,13 @@ import directory.tripin.com.tripindirectory.manager.TokenManager;
 import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.TokenResponse;
+import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
-public class MainActivity1 extends AppCompatActivity {
+public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener{
 
     ArrayAdapter<String> monthAdapter = null;
     String months[] = null;
@@ -63,6 +68,16 @@ public class MainActivity1 extends AppCompatActivity {
 
     FloatingActionButton mFloatingActionButton;
 
+    private int mFromWhichEntry = 1;
+    private int mPageSize = 5;
+    private LinearLayoutManager mVerticalLayoutManager;
+
+    boolean isListenerExecuted = false;
+
+    private int mLastPosition;
+
+    private  boolean shouldElastiSearchCall = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +87,7 @@ public class MainActivity1 extends AppCompatActivity {
         setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
-            mPreferenceManager.setFirstTime(false);
+//            mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
             searchBarTutorial();
         } else {
@@ -128,7 +143,7 @@ public class MainActivity1 extends AppCompatActivity {
          * By default Mumbai would be search destination
          */
 
-        if(!mPreferenceManager.isFirstTime()) {
+        if (!mPreferenceManager.isFirstTime()) {
             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
             performElasticSearch(mSearchField.getText().toString());
         }
@@ -157,33 +172,91 @@ public class MainActivity1 extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    pd = new ProgressDialog(MainActivity1.this);
-                    pd.setMessage("loading");
-                    pd.show();
+                   showProgressDialog();
                     performElasticSearch(mSearchField.getText().toString());
                     return true;
                 }
                 return false;
             }
         });
+
+        //Pagination
+/*
+        mPartnerList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = mVerticalLayoutManager.getChildCount();
+                int totalItemCount = mVerticalLayoutManager.getItemCount();
+                int firstVisibleItemPosition = mVerticalLayoutManager.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = mVerticalLayoutManager.findLastVisibleItemPosition();
+
+
+                Logger.v("Child Count : " + visibleItemCount);
+                Logger.v("Total Item Count : " + totalItemCount);
+                Logger.v("First Visible Item position : " + firstVisibleItemPosition);
+                Logger.v("Last Visible Item position : " + lastVisibleItemPosition);
+
+                       */
+/*if ((totalItemCount - visibleItemCount) <= (firstVisibleItemPosition + mPageSize)) {
+                           // End has been reached, Do something
+                           Logger.v("Recycler view should get cALLED");
+                       }*//*
+
+
+//                if ( firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
+//                if (visibleItemCount+1 < mPageSize) {
+//                if (lastVisibleItemPosition == mFromWhichEntry + mPageSize -1) {
+//                if ((totalItemCount - visibleItemCount) >= (firstVisibleItemPosition + mPageSize)) {
+
+
+//                if ((totalItemCount <= (lastVisibleItemPosition + visibleItemCount))) {
+//                if ((totalItemCount <= (lastVisibleItemPosition + firstVisibleItemPosition))) {
+//                if ((totalItemCount <= (lastVisibleItemPosition+1))) {
+                if (firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
+                    //End of list
+                    Logger.v("Recycler view should get called");
+                    mFromWhichEntry = mFromWhichEntry + mPageSize;
+//                    performElasticSearch(mSearchField.getText().toString());
+                }
+            }
+        });*/
     }
 
     private void performElasticSearch(String query) {
-        mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), new PartnersManager.ElasticSearchListener() {
+        mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), String.valueOf(mFromWhichEntry), String.valueOf(mPageSize), new PartnersManager.ElasticSearchListener() {
             @Override
-            public void onSuccess(ElasticSearchResponse elasticSearchResponse) {
+            public void onSuccess(final ElasticSearchResponse elasticSearchResponse) {
                 Logger.v("Elastic Search success");
                 if (pd != null) {
                     pd.dismiss();
                 }
 
-                mPartnerAdapter1 = new PartnersAdapter1(mContext, elasticSearchResponse);
-                LinearLayoutManager verticalLayoutManager =
-                        new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-                mPartnerList.setLayoutManager(verticalLayoutManager);
-                mPartnerList.setAdapter(mPartnerAdapter1);
+                if (mFromWhichEntry == 1) {
+                    mPartnerAdapter1 = new PartnersAdapter1(mContext, elasticSearchResponse);
+                    mVerticalLayoutManager =
+                            new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                    mPartnerList.setLayoutManager(mVerticalLayoutManager);
+                    mPartnerList.setAdapter(mPartnerAdapter1);
 
-                hideSoftKeyboard();
+                    hideSoftKeyboard();
+                } else if(elasticSearchResponse.getData().size() != 0){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPartnerAdapter1.addNewList(elasticSearchResponse);
+                        }
+                    }, 2000);
+                } else if (elasticSearchResponse.getData().size() == 0) {
+                        mPartnerAdapter1.stopLoad();
+                        shouldElastiSearchCall = false;
+                }
+                    isListenerExecuted = false;
             }
 
             @Override
@@ -213,11 +286,9 @@ public class MainActivity1 extends AppCompatActivity {
 
                     mPreferenceManager.setToken(token);
                     mPreferenceManager.setUserId(userId);
-                    performElasticSearch(mSearchField.getText().toString());
-
+//                    performElasticSearch(mSearchField.getText().toString());
                 }
             }
-
             @Override
             public void onFailed(String message) {
                 Logger.v(message);
@@ -258,7 +329,7 @@ public class MainActivity1 extends AppCompatActivity {
                             prompt.finish();
                             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
                             performElasticSearch(mSearchField.getText().toString());
-                            mPreferenceManager.setFirstTime(false);
+//                            mPreferenceManager.setFirstTime(false);
                         }
                     }
                 }).show();
@@ -268,10 +339,36 @@ public class MainActivity1 extends AppCompatActivity {
      * Hides the soft keyboard
      */
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
+        if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            }
+
         }
     }
 
+    /**
+     *  Call back listener for Pagination
+     *  @param lastPosition
+     */
+    @Override
+    public void onBottomReached(int lastPosition) {
+        if(!isListenerExecuted) {
+            Logger.v("Reached the end of the list with position: " + lastPosition);
+            mLastPosition = lastPosition;
+            mFromWhichEntry = mFromWhichEntry + mPageSize;
+            if(shouldElastiSearchCall) {
+                performElasticSearch(mSearchField.getText().toString());
+            }
+//            showProgressDialog();
+            isListenerExecuted = true;
+        }
+    }
+
+    private void showProgressDialog() {
+            pd = new ProgressDialog(MainActivity1.this);
+            pd.setMessage("Loading");
+            pd.show();
+    }
 }

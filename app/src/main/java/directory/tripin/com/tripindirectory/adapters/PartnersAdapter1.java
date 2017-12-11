@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.LikeDislikeResponse;
+import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.CirclePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal;
@@ -41,6 +43,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int SECTION_TYPE_1 = 0;
     private static final int CONTACT_TYPE_1 = 1;
     private static final int DIRECTORY_TYPE_1 = 2;
+    private static final int LOADING_TYPE = 3;
     private static final String UPVOTED = "1";
     private static final String DOWNVOTED = "-1";
 
@@ -50,11 +53,36 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private PartnersManager mPartnersManager;
 
+    private OnBottomReachedListener mOnBottomReachedListener;
+
+    private ArrayList<String> mOrgIdList = new ArrayList<>();
+    private ArrayList<String[]> mUserLikedList = new ArrayList<>();
+    private ArrayList<String[]> mUserDislikedList = new ArrayList<>();
+
+    private ArrayList< ElasticSearchResponse.PartnerData.Mobile[]> mMobileList = new ArrayList<>();
+    private ArrayList<String> mCompanyList = new ArrayList<>();
+    private ArrayList<String> mAddressList = new ArrayList<>();
+    private ArrayList<String> mLikeList = new ArrayList<>();
+    private ArrayList<String> mDislikeList = new ArrayList<>();
+
+    private int mCount = 0;
+
+    private boolean mIsLoading = true;
+
+
     public PartnersAdapter1(Context context, ElasticSearchResponse elasticSearchResponse) {
         mContext = context;
         mElasticSearchResponse = elasticSearchResponse;
         mPreferenceManager = PreferenceManager.getInstance(mContext);
         mPartnersManager = new PartnersManager(mContext);
+        mOnBottomReachedListener = (OnBottomReachedListener) mContext;
+        initLists();
+    }
+
+    public void addNewList( ElasticSearchResponse latestElasticSearchResponse) {
+        mElasticSearchResponse =latestElasticSearchResponse;
+        initLists();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -62,6 +90,9 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (viewType == SECTION_TYPE_1) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.section1, parent, false);
             return new SectionViewHolder(itemView);
+        } else if (viewType == LOADING_TYPE) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.loading_row1, parent, false);
+            return new LoadingViewHolder(itemView);
         } else {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_partner_row1, parent, false);
             return new ItemViewHolder(itemView);
@@ -75,13 +106,22 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             sectionViewHolder.title.setText("Directory");
 
-        } else {
+        } else if (holder instanceof LoadingViewHolder){
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+
+            if(mIsLoading) {
+                loadingViewHolder.progressBar.setIndeterminate(true);
+            } else {
+                loadingViewHolder.progressBar.setVisibility(View.GONE);
+            }
+
+        }else {
             final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
 
-            final String orgId = mElasticSearchResponse.getData().get(position - 1).get_id();
+            final String orgId = mOrgIdList.get(position - 1);
 
-            final String[] userLiked = mElasticSearchResponse.getData().get(position - 1).getUserLiked();
-            final String[] userDisLiked = mElasticSearchResponse.getData().get(position - 1).getUserDisliked();
+            final String[] userLiked = mUserLikedList.get(position - 1);
+            final String[] userDisLiked = mUserDislikedList.get(position - 1);
 
             if (userLiked.length > 0) {
                 for (String liked : userLiked) {
@@ -111,7 +151,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                 itemViewHolder.isDownVoted = false;
             }
 
-            if(!mPreferenceManager.isFirstTime()) {
+            if (!mPreferenceManager.isFirstTime()) {
                 itemViewHolder.mUpvote.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -136,44 +176,45 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                 });
             }
 
-            if(!mPreferenceManager.isFirstTime()) {
-            itemViewHolder.mDownvote.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemViewHolder.isUpvoteClicked = false;
-                    if (!itemViewHolder.isDownVoted) {
-                        itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), android.graphics.PorterDuff.Mode.SRC_IN);
-                        itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
-                        if (itemViewHolder.isUpVoted) {
-                            itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
-                            itemViewHolder.mUpvote.setBackgroundResource(0);
-                            itemViewHolder.isUpVoted = false;
+            if (!mPreferenceManager.isFirstTime()) {
+                itemViewHolder.mDownvote.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        itemViewHolder.isUpvoteClicked = false;
+                        if (!itemViewHolder.isDownVoted) {
+                            itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_white), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mDownvote.setBackgroundResource(R.drawable.circle_shape);
+                            if (itemViewHolder.isUpVoted) {
+                                itemViewHolder.mUpvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                                itemViewHolder.mUpvote.setBackgroundResource(0);
+                                itemViewHolder.isUpVoted = false;
+                            }
+                            itemViewHolder.isDownVoted = true;
+                            callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
+                        } else {
+                            itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
+                            itemViewHolder.mDownvote.setBackgroundResource(0);
+                            itemViewHolder.isDownVoted = false;
+                            callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
                         }
-                        itemViewHolder.isDownVoted = true;
-                        callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
-                    } else {
-                        itemViewHolder.mDownvote.setColorFilter(ContextCompat.getColor(mContext, R.color.arrow_grey), android.graphics.PorterDuff.Mode.SRC_IN);
-                        itemViewHolder.mDownvote.setBackgroundResource(0);
-                        itemViewHolder.isDownVoted = false;
-                        callLikeDislikeApi(orgId, DOWNVOTED, itemViewHolder);
                     }
-                }
-            }); }
+                });
+            }
 
-            itemViewHolder.mCompany.setText(mElasticSearchResponse.getData().get(position - 1).getName());
-            itemViewHolder.mAddress.setText(mElasticSearchResponse.getData().get(position - 1).getAddress());
+            itemViewHolder.mCompany.setText(mCompanyList.get(position - 1));
+            itemViewHolder.mAddress.setText(mAddressList.get(position - 1));
 
-            String strLike = mElasticSearchResponse.getData().get(position - 1).getLike();
-            String strdisLike = mElasticSearchResponse.getData().get(position - 1).getDislike();
+            String strLike = mLikeList.get(position - 1);
+            String strdisLike = mDislikeList.get(position - 1);
 
             int like = Integer.parseInt(strLike);
             int disLike = Integer.parseInt(strdisLike);
 
             itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
 
-            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mElasticSearchResponse.getData().get(position - 1).getMobile();
+            final ElasticSearchResponse.PartnerData.Mobile[] mMobileData = mMobileList.get(position - 1);
 
-            if(! mPreferenceManager.isFirstTime()) {
+            if (!mPreferenceManager.isFirstTime()) {
                 itemViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -224,16 +265,21 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+
+
     @Override
     public int getItemCount() {
-        return mElasticSearchResponse.getData().size() + 1;
+        return mCount+2;
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
             return SECTION_TYPE_1;
-        } else {
+        } else if (position == mCount+1) {
+            mOnBottomReachedListener.onBottomReached(position);
+            return LOADING_TYPE;
+        }else {
             return DIRECTORY_TYPE_1;
         }
     }
@@ -246,33 +292,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void callLikeDislikeApi(String orgId, String vote, final ItemViewHolder itemViewHolder) {
-//        final RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF,
-//                0.5f,  Animation.RELATIVE_TO_SELF, 0.5f);
-////        rotate.setAnimationListener(new Animation.AnimationListener() {
-////            @Override
-////            public void onAnimationStart(Animation animation) {
-////
-////            }
-////
-////            @Override
-////            public void onAnimationEnd(Animation animation) {
-////
-////            }
-////
-////            @Override
-////            public void onAnimationRepeat(Animation animation) {
-////
-////            }
-////        });
-//        rotate.setDuration(500);
-//        rotate.setRepeatCount(Animation.INFINITE);
-//        if(itemViewHolder.isUpvoteClicked) {
-//
-//            itemViewHolder.mUpvote.startAnimation(rotate);
-//        } else {
-//            itemViewHolder.mDownvote.startAnimation(rotate);
-//        }
-
 
         mPartnersManager.likeDislikeRequest(orgId, vote, new PartnersManager.LikeDislikeListener() {
             @Override
@@ -322,7 +341,6 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 itemViewHolder.mRanking.setText(String.valueOf(like - disLike));
 
-//                rotate.cancel();
             }
 
             @Override
@@ -333,6 +351,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void callTutorial(ItemViewHolder itemViewHolder) {
+        Logger.v("Inside call tutorial start");
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
                 .setPrimaryText("Call Button ")
                 .setSecondaryText("Call the current partner")
@@ -354,6 +373,8 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
                     }
                 }).show();
+
+        Logger.v("Inside call tutorial end");
     }
 
     private void upVoteTutorial(final ItemViewHolder itemViewHolder) {
@@ -380,6 +401,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void downVoteTutorial(final ItemViewHolder itemViewHolder) {
+        Logger.v("Inside downvote tutorial start");
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
                 .setPrimaryText("Down-Vote button")
                 .setSecondaryText("Decreases the ranking of the current partner")
@@ -397,10 +419,30 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
                             //Do something such as storing a value so that this prompt is never shown again
                             prompt.finish();
                             callTutorial(itemViewHolder);
-                            mPreferenceManager.setFirstTime(false);
+//                            mPreferenceManager.setFirstTime(false);
                         }
                     }
                 }).show();
+    }
+
+    public void stopLoad() {
+            mIsLoading = false;
+            notifyDataSetChanged();
+    }
+
+    private void initLists() {
+        for (int i = 0; i < mElasticSearchResponse.getData().size(); i++) {
+
+            mOrgIdList.add(mElasticSearchResponse.getData().get(i).get_id());
+            mUserLikedList.add(mElasticSearchResponse.getData().get(i).getUserLiked());
+            mUserDislikedList.add(mElasticSearchResponse.getData().get(i).getUserDisliked());
+            mCompanyList.add(mElasticSearchResponse.getData().get(i).getName());
+            mAddressList.add(mElasticSearchResponse.getData().get(i).getAddress());
+            mMobileList.add(mElasticSearchResponse.getData().get(i).getMobile());
+            mLikeList.add(mElasticSearchResponse.getData().get(i).getLike());
+            mDislikeList.add(mElasticSearchResponse.getData().get(i).getDislike());
+        }
+        mCount = mCount + mElasticSearchResponse.getData().size();
     }
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
@@ -409,6 +451,15 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         public SectionViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.section_text);
+        }
+    }
+
+    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar progressBar;
+
+        public LoadingViewHolder(View view) {
+            super(view);
+            progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         }
     }
 
