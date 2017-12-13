@@ -1,13 +1,12 @@
 package directory.tripin.com.tripindirectory.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
-import directory.tripin.com.tripindirectory.MainActivity;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
 
 
 /**
@@ -38,7 +37,7 @@ public class SplashActivity extends AppCompatActivity {
      * If user not login/first time login this screen will appear
      */
     private void startMainActivity() {
-        Intent i = new Intent(SplashActivity.this, MainActivity.class);
+        Intent i = new Intent(SplashActivity.this, MainActivity1.class);
         startActivity(i);
         finish();
     }

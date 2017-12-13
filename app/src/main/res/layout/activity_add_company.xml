@@ -134,6 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="Next"
+            android:onClick="submit"
             app:layout_constraintEnd_toEndOf="@+id/input_layout_state"
             app:layout_constraintStart_toStartOf="@+id/input_layout_state"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_state" />
