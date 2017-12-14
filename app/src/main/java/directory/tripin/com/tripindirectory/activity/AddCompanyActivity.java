@@ -8,11 +8,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,8 +37,13 @@ public class AddCompanyActivity extends AppCompatActivity {
 
     private static final String TAG = "AddCompanyActivity" ;
     //firebase module fields
-    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private EditText mCompanyNmae;
+    private EditText mCompanyAddress;
+    private EditText mCompanyCity;
+    private EditText mCompanyState;
+
 
     //form ui;
 
@@ -44,6 +53,27 @@ public class AddCompanyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_company);
         init();
         setListners();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        CollectionReference cities = db.collection("partners");
+        DocumentReference docRef = db.collection("partners").document(mAuth.getUid());
+
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
+                mCompanyNmae.setText(company.getmCompanyName());
+                mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
+                mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
+                mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+            }
+        });
+
 
     }
 
@@ -91,6 +121,35 @@ public class AddCompanyActivity extends AppCompatActivity {
         //firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        mCompanyNmae = (EditText)this.findViewById(R.id.company_name);
+        mCompanyAddress  = (EditText)this.findViewById(R.id.input_company_address);
+        mCompanyCity  = (EditText)this.findViewById(R.id.input_city);
+        mCompanyState  = (EditText)this.findViewById(R.id.input_state);
+
+//
+//        val addPerson = findViewById<TextView>(R.id.add_person)
+//                val addLandLine = findViewById<TextView>(R.id.add_landline)
+//                var countPerson = 1
+//        addPerson.setOnClickListener {
+//            ++countPerson
+//            val inflater = layoutInflater
+//            val view = inflater.inflate(R.layout.include_add_person, null)
+//            val main = findViewById<LinearLayout>(R.id.add_person_layout)
+//                    val count = findViewById<TextView>(R.id.count)
+//                    count.setText("" + countPerson + ".")
+//            main.addView(view)
+//        }
+//        var countLandline = 1
+//        addLandLine.setOnClickListener {
+//            ++countLandline
+//            val inflater = layoutInflater
+//            val view = inflater.inflate(R.layout.include_add_landline, null)
+//            val main = findViewById<LinearLayout>(R.id.landline_number_layout)
+//                    val count = findViewById<TextView>(R.id.countLandline)
+//                    count.setText("" + countLandline + ".")
+//            main.addView(view)
+//        }
+//    }
     }
     private void setListners(){
         //firebase db listner
@@ -109,12 +168,18 @@ public class AddCompanyActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
+        String companyName = mCompanyNmae.getText().toString();
+        String companyAddress = mCompanyAddress.getText().toString();
+        String companyCity = mCompanyCity.getText().toString();
+        String companyState = mCompanyState.getText().toString();
+
+
         List<ContactPersonPojo> contactPersonPojos = new ArrayList<>();
         contactPersonPojos.add(new ContactPersonPojo("Pranav","7845122585"));
         contactPersonPojos.add(new ContactPersonPojo("Shubham","8394876737"));
         contactPersonPojos.add(new ContactPersonPojo("Ravi","8394856737"));
 
-        CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo("andheri","mumbai","maharashtra");
+        CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
 
         List<String> urllist = new ArrayList<>();
         urllist.add("url1");
@@ -131,7 +196,7 @@ public class AddCompanyActivity extends AppCompatActivity {
 
 
         PartnerInfoPojo partnerInfoPojo =
-                new PartnerInfoPojo("ABC company",
+                new PartnerInfoPojo(companyName,
                         contactPersonPojos,
                         "78456215",
                         companyAddressPojo,
