@@ -30,6 +30,9 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -42,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
@@ -86,6 +90,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     private  boolean shouldElastiSearchCall = true;
 
+    private static int SPLASH_SHOW_TIME = 1000;
+    private static final int RC_SIGN_IN = 123;
+
+    FirebaseAuth auth;
+
 
 
 
@@ -107,6 +116,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             Logger.v("Multiple times app opened");
         }
     }
+
 
     private void init() {
         mContext = MainActivity1.this;
@@ -167,7 +177,25 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity1.this, EmailPassLoginActivity.class));
+                auth = FirebaseAuth.getInstance();
+                if (auth.getCurrentUser() != null) {
+                    // already signed in
+                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+
+                } else {
+                    // not signed in
+                    startActivityForResult(
+                            // Get an instance of AuthUI based on the default app
+                            AuthUI.getInstance().createSignInIntentBuilder()
+                                    .setAvailableProviders(
+                                            Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                    .build(),
+                            RC_SIGN_IN);
+
+                }
             }
         });
 
@@ -249,6 +277,47 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
 
     }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            // Successfully signed in
+            if (resultCode == RESULT_OK) {
+                //signed in
+                showSnackbar(R.string.sign_in_done);
+                startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+                return;
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    showSnackbar(R.string.sign_in_cancelled);
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showSnackbar(R.string.no_internet_connection);
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    showSnackbar(R.string.unknown_error);
+                    return;
+                }
+            }
+
+            showSnackbar(R.string.unknown_sign_in_response);
+        }
+    }
+
+    void showSnackbar(int m){
+        Toast.makeText(this,getString(m),Toast.LENGTH_LONG).show();
+    }
+
 
 
 

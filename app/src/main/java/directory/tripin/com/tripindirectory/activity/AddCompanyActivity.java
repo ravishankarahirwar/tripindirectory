@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -26,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,8 @@ public class AddCompanyActivity extends AppCompatActivity {
     private EditText mCompanyAddress;
     private EditText mCompanyCity;
     private EditText mCompanyState;
+
+
 
 
     //form ui;
@@ -98,7 +103,6 @@ public class AddCompanyActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 // user is now signed out
-                                startActivity(new Intent(AddCompanyActivity.this, SplashActivity.class));
                                 finish();
                             }
                         });
@@ -126,6 +130,8 @@ public class AddCompanyActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
+
 
     private void init() {
         //firebase
