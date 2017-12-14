@@ -192,7 +192,6 @@ public class AddCompanyActivity extends AppCompatActivity {
 
         CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
 
-
         List<String> urllist = new ArrayList<>();
         urllist.add("url1");
         urllist.add("url2");
