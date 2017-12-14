@@ -12,3 +12,5 @@
 /.local.properties
 /.idea
 /.idea/misc.xml
+app/app-prod-release.apk
+local.properties
