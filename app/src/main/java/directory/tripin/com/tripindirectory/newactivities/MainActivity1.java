@@ -19,6 +19,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +30,11 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
@@ -77,6 +85,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private int mLastPosition;
 
     private  boolean shouldElastiSearchCall = true;
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,9 +167,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+                startActivity(new Intent(MainActivity1.this, EmailPassLoginActivity.class));
             }
         });
+
+
+
+
     }
 
     private void setListeners() {
@@ -226,7 +243,14 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 }
             }
         });*/
+
+
+
+
+
     }
+
+
 
     private void performElasticSearch(String query) {
         mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), String.valueOf(mFromWhichEntry), String.valueOf(mPageSize), new PartnersManager.ElasticSearchListener() {
