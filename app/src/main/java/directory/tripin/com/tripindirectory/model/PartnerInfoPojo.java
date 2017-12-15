@@ -11,7 +11,7 @@ public class PartnerInfoPojo {
 
     private String mCompanyName;
     private List<ContactPersonPojo> mContactPersonsList;
-    private String mCompanyLandLineNumber;
+    private List<String> mCompanyLandLineNumbers;
     private CompanyAddressPojo mCompanyAdderss;
     private List<String> mImagesUrl;
     private boolean isVerified = false;
@@ -21,10 +21,10 @@ public class PartnerInfoPojo {
     public PartnerInfoPojo() {
     }
 
-    public PartnerInfoPojo(String mCompanyName, List<ContactPersonPojo> mContactPersonsList, String mCompanyLandLineNumber, CompanyAddressPojo mCompanyAdderss, List<String> mImagesUrl, boolean isVerified, Map<String, Boolean> mSourceCities, Map<String, Boolean> mDestinationCities) {
+    public PartnerInfoPojo(String mCompanyName, List<ContactPersonPojo> mContactPersonsList, List<String> companyLandLineNumbers, CompanyAddressPojo mCompanyAdderss, List<String> mImagesUrl, boolean isVerified, Map<String, Boolean> mSourceCities, Map<String, Boolean> mDestinationCities) {
         this.mCompanyName = mCompanyName;
         this.mContactPersonsList = mContactPersonsList;
-        this.mCompanyLandLineNumber = mCompanyLandLineNumber;
+        this.mCompanyLandLineNumbers = companyLandLineNumbers;
         this.mCompanyAdderss = mCompanyAdderss;
         this.mImagesUrl = mImagesUrl;
         this.isVerified = isVerified;
@@ -40,15 +40,15 @@ public class PartnerInfoPojo {
         this.mSourceCities = mSourceCities;
     }
 
-    public Map<String, Boolean> getmDestinationCities() {
+    public Map<String, Boolean> getDestinationCities() {
         return mDestinationCities;
     }
 
-    public void setmDestinationCities(Map<String, Boolean> mDestinationCities) {
+    public void setDestinationCities(Map<String, Boolean> mDestinationCities) {
         this.mDestinationCities = mDestinationCities;
     }
 
-    public List<String> getmImagesUrl() {
+    public List<String> getImagesUrl() {
         return mImagesUrl;
     }
 
@@ -60,7 +60,7 @@ public class PartnerInfoPojo {
         isVerified = verified;
     }
 
-    public void setmImagesUrl(List<String> mImagesUrl) {
+    public void setImagesUrl(List<String> mImagesUrl) {
         this.mImagesUrl = mImagesUrl;
     }
 
@@ -68,7 +68,7 @@ public class PartnerInfoPojo {
         return mCompanyName;
     }
 
-    public void setmCompanyName(String mCompanyName) {
+    public void setCompanyName(String mCompanyName) {
         this.mCompanyName = mCompanyName;
     }
 
@@ -76,23 +76,23 @@ public class PartnerInfoPojo {
         return mContactPersonsList;
     }
 
-    public void setmContactPersonsList(List<ContactPersonPojo> mContactPersonsList) {
+    public void setContactPersonsList(List<ContactPersonPojo> mContactPersonsList) {
         this.mContactPersonsList = mContactPersonsList;
     }
 
-    public String getmCompanyLandLineNumber() {
-        return mCompanyLandLineNumber;
+    public List<String> getmCompanyLandLineNumbers() {
+        return mCompanyLandLineNumbers;
     }
 
-    public void setmCompanyLandLineNumber(String mCompanyLandLineNumber) {
-        this.mCompanyLandLineNumber = mCompanyLandLineNumber;
+    public void setmCompanyLandLineNumbers(List<String> mCompanyLandLineNumbers) {
+        this.mCompanyLandLineNumbers = mCompanyLandLineNumbers;
     }
 
     public CompanyAddressPojo getmCompanyAdderss() {
         return mCompanyAdderss;
     }
 
-    public void setmCompanyAdderss(CompanyAddressPojo mCompanyAdderss) {
+    public void setCompanyAdderss(CompanyAddressPojo mCompanyAdderss) {
         this.mCompanyAdderss = mCompanyAdderss;
     }
 }
