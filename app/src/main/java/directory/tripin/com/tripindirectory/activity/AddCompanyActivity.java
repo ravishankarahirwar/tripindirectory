@@ -1,10 +1,15 @@
 package directory.tripin.com.tripindirectory.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +36,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +45,16 @@ import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
+import directory.tripin.com.tripindirectory.model.AddImage;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
+import directory.tripin.com.tripindirectory.model.ImageData;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 
-public class AddCompanyActivity extends AppCompatActivity {
+public class AddCompanyActivity extends AppCompatActivity implements AddImage, EasyImagePickUP.ImagePickerListener {
 
     private static final String TAG = "AddCompanyActivity";
     //firebase module fields
@@ -68,6 +78,18 @@ public class AddCompanyActivity extends AppCompatActivity {
     List<String> companyLandlineNumbers;
     //form ui;
 
+    boolean canSubmit = true;
+    boolean areImagesUploaded = false;
+    RecyclerView recyclerView;
+    List<ImageData> images;
+    List<Uri> imagesUriList;
+    EasyImagePickUP easyImagePickUP;
+    ImagesRecyclarAdapter imagesRecyclarAdapter;
+    int position;
+    private StorageReference mStorageRef;
+    ProgressDialog progressDialog;
+    List<String> mUrlList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +97,22 @@ public class AddCompanyActivity extends AppCompatActivity {
         init();
         setListners();
 
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mUrlList = new ArrayList<>();
+
+        //initially add 3 blank ImageData Objects
+        images = new ArrayList<>();
+        images.add(new ImageData());
+        images.add(new ImageData());
+        images.add(new ImageData());
+        imagesRecyclarAdapter = new ImagesRecyclarAdapter(images,this,this);
+
+        fetchImagesURL();
+        fetchUserDataandDispaly();
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void fetchUserDataandDispaly() {
 
         CollectionReference cities = db.collection("partners");
         DocumentReference docRef = db.collection("partners").document(mAuth.getUid());
@@ -94,26 +127,57 @@ public class AddCompanyActivity extends AppCompatActivity {
                     mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
                     mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
 
-                if(company.getmContactPersonsList().size() > 1) {
-                    String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                    String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                    mPersonName.setText(name);
-                    mPersonContact.setText(number);
+                    if(company.getmContactPersonsList().size() > 1) {
+                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                        mPersonName.setText(name);
+                        mPersonContact.setText(number);
 
-                    for(int i=1; i < company.getmContactPersonsList().size(); i++) {
-                        String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
-                        String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                        addContactPerson( name1,  number1);
+                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
+                            String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
+                            String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+                            addContactPerson( name1,  number1);
+                        }
+                    } else {
+                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                        mPersonName.setText(name);
+                        mPersonContact.setText(number);
                     }
-                } else {
-                    String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                    String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                    mPersonName.setText(name);
-                    mPersonContact.setText(number);
-                }
 
+                }
+            }});
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    private void fetchImagesURL() {
+
+        db.collection("partners").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+                    mUrlList = partnerInfoPojo.getImagesUrl();
+                    if(mUrlList!=null){
+                        for(int i=0;i<mUrlList.size();i++){
+                            images.get(i).setmImageUrl(mUrlList.get(i));
+                        }
+                        imagesRecyclarAdapter.notifyDataSetChanged();
+                    }
+
+                }
             }
-        }});
+        });
+
+
+        recyclerView.setAdapter(imagesRecyclarAdapter);
     }
 
     @Override
@@ -163,12 +227,59 @@ public class AddCompanyActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onPickClicked(int position) {
+        easyImagePickUP.imagepicker(1);
+        Log.e("tagg", "onPickClicked");
+        this.position = position;
+
+    }
+
+    @Override
+    public void onCancelClicked(int position) {
+        Log.e("tagg", "onCancel");
+
+        images.set(position, new ImageData());
+        imagesRecyclarAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onPicked(int i, String s, Bitmap bitmap, Uri uri) {
+        Log.e("tagg", "onPicked" + s);
+        images.set(position, new ImageData(uri, bitmap));
+        imagesUriList.add(uri);
+        imagesRecyclarAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCropped(int i, String s, Bitmap bitmap, Uri uri) {
+        Log.e("tagg", "onPicked" + s);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        easyImagePickUP.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        easyImagePickUP.request_permission_result(requestCode, permissions, grantResults);
+    }
+
 
 
     private void init() {
         //firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        easyImagePickUP = new EasyImagePickUP(this);
+        imagesUriList = new ArrayList<>();
+
 
         mContactPersons = new ArrayList<AddPerson>();
         mLandlineNumbers = new ArrayList<AddPerson>();
@@ -198,6 +309,9 @@ public class AddCompanyActivity extends AppCompatActivity {
         AddPerson addLandline = new AddPerson(mContext);
         addLandline.setPersonName(mLandlineNmber);
         mLandlineNumbers.add(addLandline);
+
+        recyclerView = findViewById(R.id.imageslist);
+
 
         mAddPerson.setOnClickListener(new View.OnClickListener() {
                     @Override
