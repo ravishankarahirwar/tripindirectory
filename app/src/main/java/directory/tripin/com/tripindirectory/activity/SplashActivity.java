@@ -41,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                startMainActivity();
+
             }
         }, SPLASH_SHOW_TIME);
     }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -200,6 +201,7 @@ public class AddCompanyActivity extends AppCompatActivity {
         contactPersonPojos.add(new ContactPersonPojo("Ravi", "8394856737"));
 
         CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
+
 
         List<String> urllist = new ArrayList<>();
         urllist.add("url1");
