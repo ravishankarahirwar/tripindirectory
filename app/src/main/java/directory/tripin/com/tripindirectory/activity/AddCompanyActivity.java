@@ -73,11 +73,14 @@ public class AddCompanyActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
-                mCompanyNmae.setText(company.getmCompanyName());
-                mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
-                mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
-                mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+                if(documentSnapshot.exists()){
+                    PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
+                    mCompanyNmae.setText(company.getmCompanyName());
+                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
+                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
+                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+                }
+
             }
         });
 
