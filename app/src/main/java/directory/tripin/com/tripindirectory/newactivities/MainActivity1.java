@@ -6,23 +6,22 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import android.os.IBinder;
-import android.support.design.widget.FloatingActionButton;
-
 import android.os.Handler;
-
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -30,11 +29,18 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
@@ -42,14 +48,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
+import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
+import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.TokenResponse;
@@ -59,37 +71,32 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
-public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener{
+public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener {
 
+    private static final int RC_SIGN_IN = 123;
+    private static int SPLASH_SHOW_TIME = 1000;
     ArrayAdapter<String> monthAdapter = null;
-    String months[] = null;
+    List<String> companynamesuggestions = null;
+    Task<QuerySnapshot> mSuggestionsTask;
+    FloatingActionButton mFloatingActionButton;
+    boolean isListenerExecuted = false;
+    FirebaseAuth auth;
+    Query query;
+    FirestoreRecyclerOptions<PartnerInfoPojo> options;
+    FirestoreRecyclerAdapter adapter;
     private Context mContext;
     private MultiAutoCompleteTextView mSearchField;
     private RecyclerView mPartnerList;
     private PartnersAdapter1 mPartnerAdapter1;
     private PreferenceManager mPreferenceManager;
     private TokenManager mTokenManager;
-
     private PartnersManager mPartnersManager;
-
     private ProgressDialog pd;
-
-    FloatingActionButton mFloatingActionButton;
-
     private int mFromWhichEntry = 1;
     private int mPageSize = 5;
     private LinearLayoutManager mVerticalLayoutManager;
-
-    boolean isListenerExecuted = false;
-
     private int mLastPosition;
-
-    private  boolean shouldElastiSearchCall = true;
-
-
-
-
-
+    private boolean shouldElastiSearchCall = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +113,39 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         } else {
             Logger.v("Multiple times app opened");
         }
+
+        mPartnerList.setLayoutManager(new LinearLayoutManager(this));
+
+        //get all doucuments
+
+        query = FirebaseFirestore.getInstance()
+                .collection("partners");
+        options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
+                .setQuery(query, PartnerInfoPojo.class).build();
+        adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+            @Override
+            public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
+                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
+                holder.mCompany.setText(model.getmCompanyName());
+            }
+            @Override
+            public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.single_partner_row1, group, false);
+                return new PartnersViewHolder(view);
+            }
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Logger.v("on Data changed");
+            }
+        };
+
+        mPartnerList.setAdapter(adapter);
+
+
     }
+
 
     private void init() {
         mContext = MainActivity1.this;
@@ -114,6 +153,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mPartnersManager = new PartnersManager(mContext);
         mPreferenceManager = PreferenceManager.getInstance(mContext);
         mTokenManager = new TokenManager(mContext);
+        companynamesuggestions = new ArrayList<>();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -141,14 +181,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 .setPermissions(Manifest.permission.READ_PHONE_STATE)
                 .check();
 
-        mSearchField = (MultiAutoCompleteTextView) this.findViewById(R.id.search_field);
+        mSearchField = this.findViewById(R.id.search_field);
         mSearchField.setTokenizer(new SpaceTokenizer());
 
         mSearchField.setThreshold(1);
 
-        months = getResources().getStringArray(R.array.planets_array);
-        monthAdapter = new ArrayAdapter<String>(this, R.layout.hint_completion_layout, R.id.tvHintCompletion, months);
-        mSearchField.setAdapter(monthAdapter);
 
         mSearchField.setCursorVisible(false);
 
@@ -157,31 +194,64 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
          */
 
         if (!mPreferenceManager.isFirstTime()) {
-            mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
-            performElasticSearch(mSearchField.getText().toString());
+            mSearchField.setHint("Type company name to search");
+            //performElasticSearch(mSearchField.getText().toString());
         }
 
-        mPartnerList = (RecyclerView) findViewById(R.id.partner_list);
+        mPartnerList = findViewById(R.id.partner_list);
 
-        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.create_company);
+        mFloatingActionButton = findViewById(R.id.create_company);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity1.this, EmailPassLoginActivity.class));
+                auth = FirebaseAuth.getInstance();
+                if (auth.getCurrentUser() != null) {
+                    // already signed in
+                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+
+                } else {
+                    // not signed in
+                    startActivityForResult(
+                            // Get an instance of AuthUI based on the default app
+                            AuthUI.getInstance().createSignInIntentBuilder()
+                                    .setAvailableProviders(
+                                            Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                    .build(),
+                            RC_SIGN_IN);
+
+                }
             }
         });
-
-
 
 
     }
 
     private void setListeners() {
 
+        mSearchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence charSequence, int i, int i1, int i2) {
+                //fetch autosuggestions
+                fetchAutoSuggestions(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
         mSearchField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSearchField.setCursorVisible(true);
+                Logger.v("on searchfield tapped!!");
             }
         });
 
@@ -189,67 +259,141 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                   showProgressDialog();
-                    performElasticSearch(mSearchField.getText().toString());
+                    setAdapter(mSearchField.getText().toString().trim());
                     return true;
                 }
                 return false;
             }
         });
 
-        //Pagination
-/*
-        mPartnerList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int visibleItemCount = mVerticalLayoutManager.getChildCount();
-                int totalItemCount = mVerticalLayoutManager.getItemCount();
-                int firstVisibleItemPosition = mVerticalLayoutManager.findFirstVisibleItemPosition();
-                int lastVisibleItemPosition = mVerticalLayoutManager.findLastVisibleItemPosition();
-
-
-                Logger.v("Child Count : " + visibleItemCount);
-                Logger.v("Total Item Count : " + totalItemCount);
-                Logger.v("First Visible Item position : " + firstVisibleItemPosition);
-                Logger.v("Last Visible Item position : " + lastVisibleItemPosition);
-
-                       */
-/*if ((totalItemCount - visibleItemCount) <= (firstVisibleItemPosition + mPageSize)) {
-                           // End has been reached, Do something
-                           Logger.v("Recycler view should get cALLED");
-                       }*//*
-
-
-//                if ( firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
-//                if (visibleItemCount+1 < mPageSize) {
-//                if (lastVisibleItemPosition == mFromWhichEntry + mPageSize -1) {
-//                if ((totalItemCount - visibleItemCount) >= (firstVisibleItemPosition + mPageSize)) {
-
-
-//                if ((totalItemCount <= (lastVisibleItemPosition + visibleItemCount))) {
-//                if ((totalItemCount <= (lastVisibleItemPosition + firstVisibleItemPosition))) {
-//                if ((totalItemCount <= (lastVisibleItemPosition+1))) {
-                if (firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
-                    //End of list
-                    Logger.v("Recycler view should get called");
-                    mFromWhichEntry = mFromWhichEntry + mPageSize;
-//                    performElasticSearch(mSearchField.getText().toString());
-                }
-            }
-        });*/
-
-
-
-
 
     }
 
+    private void fetchAutoSuggestions(String s) {
+
+        FirebaseFirestore.getInstance()
+                .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Logger.v("on queried fetch Complete!!");
+                        if (task.isSuccessful()) {
+                            companynamesuggestions.clear();
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
+                                companynamesuggestions.add(document.get("mCompanyName").toString());
+                            }
+                            Set<String> hs = new LinkedHashSet<>();
+                            hs.addAll(companynamesuggestions);
+                            companynamesuggestions.clear();
+                            companynamesuggestions.addAll(hs);
+                            monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
+                            mSearchField.setAdapter(monthAdapter);
+                            Logger.v("adapter set!!");
+
+                        } else {
+                            Log.d("onComplete", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
+
+
+    private void setAdapter(String s) {
+        adapter.stopListening();
+        adapter.notifyDataSetChanged();
+
+        //update your query here
+
+        query = FirebaseFirestore.getInstance()
+                .collection("partners");
+
+        if (!s.equals("")) {
+            query = FirebaseFirestore.getInstance()
+                    .collection("partners").whereEqualTo("mCompanyName", s);
+        }
+        options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
+                .setQuery(query, PartnerInfoPojo.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+            @Override
+            public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
+                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
+                holder.mCompany.setText(model.getmCompanyName());
+            }
+
+            @Override
+            public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.single_partner_row1, group, false);
+                return new PartnersViewHolder(view);
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Logger.v("on Data changed");
+            }
+        };
+
+        mPartnerList.setAdapter(adapter);
+        adapter.startListening();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            // Successfully signed in
+            if (resultCode == RESULT_OK) {
+                //signed in
+                showSnackbar(R.string.sign_in_done);
+                startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+                return;
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    showSnackbar(R.string.sign_in_cancelled);
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showSnackbar(R.string.no_internet_connection);
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    showSnackbar(R.string.unknown_error);
+                    return;
+                }
+            }
+
+            showSnackbar(R.string.unknown_sign_in_response);
+        }
+    }
+
+    void showSnackbar(int m) {
+        Toast.makeText(this, getString(m), Toast.LENGTH_LONG).show();
+    }
 
 
     private void performElasticSearch(String query) {
@@ -269,7 +413,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                     mPartnerList.setAdapter(mPartnerAdapter1);
 
                     hideSoftKeyboard();
-                } else if(elasticSearchResponse.getData().size() != 0){
+                } else if (elasticSearchResponse.getData().size() != 0) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -277,10 +421,10 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         }
                     }, 2000);
                 } else if (elasticSearchResponse.getData().size() == 0) {
-                        mPartnerAdapter1.stopLoad();
-                        shouldElastiSearchCall = false;
+                    mPartnerAdapter1.stopLoad();
+                    shouldElastiSearchCall = false;
                 }
-                    isListenerExecuted = false;
+                isListenerExecuted = false;
             }
 
             @Override
@@ -313,6 +457,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 //                    performElasticSearch(mSearchField.getText().toString());
                 }
             }
+
             @Override
             public void onFailed(String message) {
                 Logger.v(message);
@@ -352,7 +497,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             //Do something such as storing a value so that this prompt is never shown again
                             prompt.finish();
                             mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
-                            performElasticSearch(mSearchField.getText().toString());
+                            //performElasticSearch(mSearchField.getText().toString());
 //                            mPreferenceManager.setFirstTime(false);
                         }
                     }
@@ -373,17 +518,18 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     }
 
     /**
-     *  Call back listener for Pagination
-     *  @param lastPosition
+     * Call back listener for Pagination
+     *
+     * @param lastPosition
      */
     @Override
     public void onBottomReached(int lastPosition) {
-        if(!isListenerExecuted) {
+        if (!isListenerExecuted) {
             Logger.v("Reached the end of the list with position: " + lastPosition);
             mLastPosition = lastPosition;
             mFromWhichEntry = mFromWhichEntry + mPageSize;
-            if(shouldElastiSearchCall) {
-                performElasticSearch(mSearchField.getText().toString());
+            if (shouldElastiSearchCall) {
+                //performElasticSearch(mSearchField.getText().toString());
             }
 //            showProgressDialog();
             isListenerExecuted = true;
@@ -391,8 +537,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     }
 
     private void showProgressDialog() {
-            pd = new ProgressDialog(MainActivity1.this);
-            pd.setMessage("Loading");
-            pd.show();
+        pd = new ProgressDialog(MainActivity1.this);
+        pd.setMessage("Loading");
+        pd.show();
     }
 }

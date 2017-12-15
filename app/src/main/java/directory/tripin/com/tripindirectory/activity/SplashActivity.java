@@ -4,6 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Arrays;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
@@ -20,6 +28,10 @@ import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();
     private static int SPLASH_SHOW_TIME = 1000;
+    private static final int RC_SIGN_IN = 123;
+
+    FirebaseAuth auth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +40,8 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startMainActivity();
+               startMainActivity();
+
             }
         }, SPLASH_SHOW_TIME);
     }
@@ -41,5 +54,7 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
+
+
 
 }
