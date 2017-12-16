@@ -37,6 +37,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,8 +88,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     int position;
     private StorageReference mStorageRef;
     StorageReference imagesRef;
-
     ProgressDialog progressDialog;
+    List<String> mUrlList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,13 +100,15 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
+        mUrlList = new ArrayList<>();
+
         //initially add 3 blank ImageData Objects
         images = new ArrayList<>();
         images.add(new ImageData());
         images.add(new ImageData());
         images.add(new ImageData());
 
-        imagesRecyclarAdapter = new ImagesRecyclarAdapter(images, this, this);
+        imagesRecyclarAdapter = new ImagesRecyclarAdapter(images,this,this);
 
         fetchImagesURL();
         fetchUserDataandDispaly();
@@ -127,16 +130,17 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                     mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
                     mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
 
-                    if (company.getmContactPersonsList().size() > 1) {
+
+                    if(company.getmContactPersonsList().size() > 1) {
                         String name = company.getmContactPersonsList().get(0).getmContactPresonName();
                         String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
                         mPersonName.setText(name);
                         mPersonContact.setText(number);
 
-                        for (int i = 1; i < company.getmContactPersonsList().size(); i++) {
+                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
                             String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
                             String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                            addContactPerson(name1, number1);
+                            addContactPerson( name1,  number1);
                         }
                     } else {
                         String name = company.getmContactPersonsList().get(0).getmContactPresonName();
@@ -146,8 +150,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                     }
 
                 }
-            }
-        });
+
+            }});
 
 
     }
@@ -155,7 +159,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     private void fetchImagesURL() {
@@ -163,19 +166,15 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         db.collection("partners").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
-                    if (partnerInfoPojo.getImagesUrl() != null) {
-                        List<String> mUrlList ;
-                        mUrlList = partnerInfoPojo.getImagesUrl();
-                        if (mUrlList != null) {
-                            for (int i = 0; i < mUrlList.size(); i++) {
-                                if (mUrlList.get(i) != null)
-                                    images.get(i).setmImageUrl(mUrlList.get(i));
-                            }
-                            imagesRecyclarAdapter.notifyDataSetChanged();
-                        }
 
+                if(task.isSuccessful()){
+                    PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+                    mUrlList = partnerInfoPojo.getImagesUrl();
+                    if(mUrlList!=null){
+                        for(int i=0;i<mUrlList.size();i++){
+                            images.get(i).setmImageUrl(mUrlList.get(i));
+                        }
+                        imagesRecyclarAdapter.notifyDataSetChanged();
                     }
 
                 }
@@ -286,7 +285,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         easyImagePickUP = new EasyImagePickUP(this);
         imagesUriList = new ArrayList<>();
         progressDialog = new ProgressDialog(AddCompanyActivity.this);
-
 
         mContactPersons = new ArrayList<AddPerson>();
         mLandlineNumbers = new ArrayList<AddPerson>();
