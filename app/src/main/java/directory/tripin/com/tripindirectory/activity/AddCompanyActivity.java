@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +17,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,11 +51,15 @@ import java.util.Map;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;
+import directory.tripin.com.tripindirectory.getcity.general.CityAutoCompleteTextView;
+import directory.tripin.com.tripindirectory.getcity.general.MyAutoCompleteAdapter;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.ImageData;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
+import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
+import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 
 public class AddCompanyActivity extends AppCompatActivity implements AddImage, EasyImagePickUP.ImagePickerListener {
@@ -91,6 +99,12 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     ProgressDialog progressDialog;
     List<String> mUrlList;
 
+    private CityAutoCompleteTextView mPickUpCities;
+    private CityAutoCompleteTextView mDropCities;
+    private MyAutoCompleteAdapter mCityAdapter;
+    private static final String[] CITIES = new String[] {
+            "Mumbai", "Rajkot", "Nagpur", "Ahmedabad", "Bhopal","Indore","Kanpur","New Delhi"
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,17 +127,21 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         fetchImagesURL();
         fetchUserDataandDispaly();
 
+        setUpView();
     }
 
     private void fetchUserDataandDispaly() {
+
+    }
+
+    private void setUpView() {
 
         CollectionReference cities = db.collection("partners");
         DocumentReference docRef = db.collection("partners").document(mAuth.getUid());
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {                if (documentSnapshot.exists()) {
                     PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
                     mCompanyNmae.setText(company.getmCompanyName());
                     mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
@@ -142,17 +160,33 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                             String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
                             addContactPerson( name1,  number1);
                         }
-                    } else {
+
+                    } else if(company.getmContactPersonsList().size() == 1) {
                         String name = company.getmContactPersonsList().get(0).getmContactPresonName();
                         String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
                         mPersonName.setText(name);
                         mPersonContact.setText(number);
-                    }
 
+
+                } else if(company.getmContactPersonsList().size() == 1) {
+                String number = company.getmCompanyLandLineNumbers().get(0);
+                mLandlineNmber.setText(number);
                 }
 
-            }});
+                if(company.getmCompanyLandLineNumbers().size() > 1) {
+                    String number = company.getmCompanyLandLineNumbers().get(0);
+                    mLandlineNmber.setText(number);
+                    for (int i = 1; i < company.getmCompanyLandLineNumbers().size(); i++) {
+                        String number1 = company.getmCompanyLandLineNumbers().get(i);
+                        addLandLineNumber(number1);
+                    }
+                    }
+            }
 
+
+
+
+        }});
 
     }
 
@@ -184,6 +218,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
 
         recyclerView.setAdapter(imagesRecyclarAdapter);
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -291,12 +327,16 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         companyLandlineNumbers = new ArrayList<>();
 
         mContext = AddCompanyActivity.this;
-        mCompanyNmae = (EditText) this.findViewById(R.id.company_name);
-        mCompanyAddress = (EditText) this.findViewById(R.id.input_company_address);
-        mCompanyCity = (EditText) this.findViewById(R.id.input_city);
-        mCompanyState = (EditText) this.findViewById(R.id.input_state);
-        mAddPerson = (TextView) this.findViewById(R.id.add_person);
-        mLandLine = (TextView) this.findViewById(R.id.add_landline);
+
+        mCompanyNmae = (EditText)this.findViewById(R.id.company_name);
+        mCompanyAddress  = (EditText)this.findViewById(R.id.input_company_address);
+        mCompanyCity  = (EditText)this.findViewById(R.id.input_city);
+        mCompanyState  = (EditText)this.findViewById(R.id.input_state);
+        mAddPerson = (TextView)this.findViewById(R.id.add_person);
+        mLandLine = (TextView)this.findViewById(R.id.add_landline);
+        mPickUpCities = (CityAutoCompleteTextView) this.findViewById(R.id.city_title);
+        mDropCities = (CityAutoCompleteTextView) this.findViewById(R.id.drop_city);
+        setupCityNameField();
 
         mLandlineNmber = findViewById(R.id.landline_number);
 
@@ -331,9 +371,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
             @Override
             public void onClick(View view) {
                 addLandLineNumber();
-//                LayoutInflater inflater = LayoutInflater.from(AddCompanyActivity.this);
-//                View  addPersonView = inflater.inflate(R.layout.include_add_landline, null);
-//                mAddLandLineLayout.addView(addPersonView);
             }
         });
     }
@@ -389,6 +426,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         AddPerson addPerson = new AddPerson(mContext);
         addPerson.setPersonName(landlineNmber);
 
+        landlineNmber.setText(landlineNumber);
+
         mLandlineNumbers.add(addPerson);
         mAddLandLineLayout.addView(addPersonView);
     }
@@ -400,9 +439,7 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
             db.collection("partners").document(mAuth.getUid()).addSnapshotListener(AddCompanyActivity.this, new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                    //Log.e("onEvent",e.getMessage());
-
+                   //Log.e("onEvent",e.getMessage());
                 }
             });
         }
@@ -437,7 +474,12 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         }
 
 
-        CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress, companyCity, companyState);
+        CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
+
+        List<String> urllist = new ArrayList<>();
+        urllist.add("url1");
+        urllist.add("url2");
+        urllist.add("url3");
 
         Map<String, Boolean> source = new HashMap<>();
         Map<String, Boolean> destination = new HashMap<>();
@@ -509,6 +551,42 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
             }
 
         }
-
+        Toast.makeText(this, "uploaded", Toast.LENGTH_LONG).show();
     }
+
+
+    private void setupCityNameField() {
+        mPickUpCities.setTokenizer(new SpaceTokenizer());
+        mPickUpCities.setThreshold(1);
+        mPickUpCities.setCursorVisible(true);
+
+        mDropCities.setTokenizer(new SpaceTokenizer());
+        mDropCities.setThreshold(1);
+        mDropCities.setCursorVisible(true);
+
+        mCityAdapter = new MyAutoCompleteAdapter(this);
+
+        ArrayAdapter citiesAdapter= new ArrayAdapter<String>(AddCompanyActivity.this,  android.R.layout.simple_dropdown_item_1line, CITIES);
+        mPickUpCities.setAdapter(citiesAdapter);
+        mDropCities.setAdapter(citiesAdapter);
+
+        mPickUpCities.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBar));
+        mDropCities.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBarDestination));
+
+        mPickUpCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String city = (String) adapterView.getItemAtPosition(position);
+//                String cityStr = "";
+//                String[] itemList = city.split(",");
+//                if (itemList.length > 0) {
+//                    cityStr = itemList[0];
+//                }
+
+                mPickUpCities.append(city.toString()+",");
+                mPickUpCities.setSelection(mPickUpCities.getText().length());
+            }
+        });
+    }
+
 }

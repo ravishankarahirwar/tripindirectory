@@ -1,5 +1,7 @@
 package directory.tripin.com.tripindirectory.dataprovider;
 
+import directory.tripin.com.tripindirectory.getcity.rest.ServerParams;
+
 /**
  * Created by Yogesh N. Tikam on 12/09/2017.
  */
@@ -28,6 +30,10 @@ public class ApiProvider {
 
             case ApiTag.LIKE_DISLIKE: // 4
                 url = BASE_URL + "org/vote";
+                break;
+
+            case ApiTag.GOOGLE_API_FOR_CITY : // Url for obtaining city suggestions(getcity package)
+                url = ServerParams.BASE_SERVER_URL + "/place/autocomplete/json?input=";
                 break;
 
             default:

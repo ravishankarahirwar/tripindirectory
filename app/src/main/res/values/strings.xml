@@ -71,7 +71,11 @@
     <string name="company_address">Company Address</string>
     <string name="full_address">Full Address</string>
     <string name="city_town_village">City/Town/Village</string>
+    <string name="pickup_cities">Pickup Cities</string>
+    <string name="drop_cities">Drop Cities</string>
+
     <string name="state">State</string>
+
     <string name="pincode">Pincode</string>
     <string name="email_iD">Email ID</string>
     <string name="sign_in_cancelled">Sign In is cancelled</string>
