@@ -108,6 +108,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
 //            mPreferenceManager.setFirstTime(false);
+            mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
             searchBarTutorial();
         } else {
@@ -297,7 +298,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         }
                     }
                 });
-
     }
 
 

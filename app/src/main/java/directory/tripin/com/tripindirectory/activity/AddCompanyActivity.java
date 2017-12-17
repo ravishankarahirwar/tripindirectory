@@ -1,6 +1,5 @@
 package directory.tripin.com.tripindirectory.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,14 +10,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,15 +33,18 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.getcity.general.CityAutoCompleteTextView;
+import directory.tripin.com.tripindirectory.getcity.general.MyAutoCompleteAdapter;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
+import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 
 public class AddCompanyActivity extends AppCompatActivity {
@@ -67,19 +70,28 @@ public class AddCompanyActivity extends AppCompatActivity {
     private Context mContext;
     List<String> companyLandlineNumbers;
     //form ui;
-
+    private CityAutoCompleteTextView mPickUpCities;
+    private CityAutoCompleteTextView mDropCities;
+    private MyAutoCompleteAdapter mCityAdapter;
+    private static final String[] CITIES = new String[] {
+            "Mumbai", "Rajkot", "Nagpur", "Ahmedabad", "Bhopal","Indore","Kanpur","New Delhi"
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_company);
         init();
         setListners();
-
+        setUpView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+    }
+
+    private void setUpView() {
 
         CollectionReference cities = db.collection("partners");
         DocumentReference docRef = db.collection("partners").document(mAuth.getUid());
@@ -94,28 +106,39 @@ public class AddCompanyActivity extends AppCompatActivity {
                     mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
                     mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
 
-                if(company.getmContactPersonsList().size() > 1) {
-                    String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                    String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                    mPersonName.setText(name);
-                    mPersonContact.setText(number);
+                    if(company.getmContactPersonsList().size() > 1) {
+                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                        mPersonName.setText(name);
+                        mPersonContact.setText(number);
 
-                    for(int i=1; i < company.getmContactPersonsList().size(); i++) {
-                        String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
-                        String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                        addContactPerson( name1,  number1);
+                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
+                            String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
+                            String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+                            addContactPerson( name1,  number1);
+                        }
+                    } else if(company.getmContactPersonsList().size() == 1) {
+                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                        mPersonName.setText(name);
+                        mPersonContact.setText(number);
                     }
-                } else {
-                    String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                    String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                    mPersonName.setText(name);
-                    mPersonContact.setText(number);
+
+                    if(company.getmCompanyLandLineNumbers().size() > 1) {
+                        String number = company.getmCompanyLandLineNumbers().get(0);
+                        mLandlineNmber.setText(number);
+
+                        for(int i=1; i < company.getmCompanyLandLineNumbers().size(); i++) {
+                            String number1= company.getmCompanyLandLineNumbers().get(i);
+                            addLandLineNumber(number1);
+                        }
+                    } else if(company.getmContactPersonsList().size() == 1) {
+                        String number = company.getmCompanyLandLineNumbers().get(0);
+                        mLandlineNmber.setText(number);
+                    }
                 }
-
-            }
-        }});
+            }});
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -181,6 +204,9 @@ public class AddCompanyActivity extends AppCompatActivity {
         mCompanyState  = (EditText)this.findViewById(R.id.input_state);
         mAddPerson = (TextView)this.findViewById(R.id.add_person);
         mLandLine = (TextView)this.findViewById(R.id.add_landline);
+        mPickUpCities = (CityAutoCompleteTextView) this.findViewById(R.id.city_title);
+        mDropCities = (CityAutoCompleteTextView) this.findViewById(R.id.drop_city);
+        setupCityNameField();
 
         mLandlineNmber = findViewById(R.id.landline_number);
 
@@ -210,9 +236,6 @@ public class AddCompanyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addLandLineNumber();
-//                LayoutInflater inflater = LayoutInflater.from(AddCompanyActivity.this);
-//                View  addPersonView = inflater.inflate(R.layout.include_add_landline, null);
-//                mAddLandLineLayout.addView(addPersonView);
             }
         });
    }
@@ -268,6 +291,8 @@ public class AddCompanyActivity extends AppCompatActivity {
         AddPerson addPerson = new AddPerson(mContext);
         addPerson.setPersonName(landlineNmber);
 
+        landlineNmber.setText(landlineNumber);
+
         mLandlineNumbers.add(addPerson);
         mAddLandLineLayout.addView(addPersonView);
     }
@@ -279,9 +304,7 @@ public class AddCompanyActivity extends AppCompatActivity {
             db.collection("partners").document(mAuth.getUid()).addSnapshotListener(AddCompanyActivity.this, new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                    //Log.e("onEvent",e.getMessage());
-
+                   //Log.e("onEvent",e.getMessage());
                 }
             });
         }
@@ -310,9 +333,7 @@ public class AddCompanyActivity extends AppCompatActivity {
             companyLandlineNumbers.add(landlineNumber);
         }
 
-
         CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
-
 
         List<String> urllist = new ArrayList<>();
         urllist.add("url1");
@@ -337,6 +358,41 @@ public class AddCompanyActivity extends AppCompatActivity {
 
         db.collection("partners").document(mAuth.getUid()).set(partnerInfoPojo);
         Toast.makeText(this, "uploaded", Toast.LENGTH_LONG).show();
-
     }
+
+
+    private void setupCityNameField() {
+        mPickUpCities.setTokenizer(new SpaceTokenizer());
+        mPickUpCities.setThreshold(1);
+        mPickUpCities.setCursorVisible(true);
+
+        mDropCities.setTokenizer(new SpaceTokenizer());
+        mDropCities.setThreshold(1);
+        mDropCities.setCursorVisible(true);
+
+        mCityAdapter = new MyAutoCompleteAdapter(this);
+
+        ArrayAdapter citiesAdapter= new ArrayAdapter<String>(AddCompanyActivity.this,  android.R.layout.simple_dropdown_item_1line, CITIES);
+        mPickUpCities.setAdapter(citiesAdapter);
+        mDropCities.setAdapter(citiesAdapter);
+
+        mPickUpCities.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBar));
+        mDropCities.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBarDestination));
+
+        mPickUpCities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String city = (String) adapterView.getItemAtPosition(position);
+//                String cityStr = "";
+//                String[] itemList = city.split(",");
+//                if (itemList.length > 0) {
+//                    cityStr = itemList[0];
+//                }
+
+                mPickUpCities.append(city.toString()+",");
+                mPickUpCities.setSelection(mPickUpCities.getText().length());
+            }
+        });
+    }
+
 }
