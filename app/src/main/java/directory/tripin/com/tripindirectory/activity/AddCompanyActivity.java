@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.activity;
 
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,6 +53,7 @@ import java.util.Map;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;
+
 import directory.tripin.com.tripindirectory.getcity.general.CityAutoCompleteTextView;
 import directory.tripin.com.tripindirectory.getcity.general.MyAutoCompleteAdapter;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
@@ -58,6 +61,7 @@ import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.ImageData;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
+
 import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
 import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
@@ -86,6 +90,7 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     List<String> companyLandlineNumbers;
     //form ui;
 
+
     boolean canSubmit = true;
     boolean areImagesUploaded = false;
     RecyclerView recyclerView;
@@ -98,6 +103,7 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     StorageReference imagesRef;
     ProgressDialog progressDialog;
     List<String> mUrlList;
+
 
     private CityAutoCompleteTextView mPickUpCities;
     private CityAutoCompleteTextView mDropCities;
@@ -141,7 +147,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {                if (documentSnapshot.exists()) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
                     PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
                     mCompanyNmae.setText(company.getmCompanyName());
                     mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
@@ -167,7 +174,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                         mPersonName.setText(name);
                         mPersonContact.setText(number);
 
-
                 } else if(company.getmContactPersonsList().size() == 1) {
                 String number = company.getmCompanyLandLineNumbers().get(0);
                 mLandlineNmber.setText(number);
@@ -190,6 +196,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
 
     }
 
+
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -472,7 +480,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
             String landlineNumber = addPerson.getPersonName().getText().toString();
             companyLandlineNumbers.add(landlineNumber);
         }
-
 
         CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
 
