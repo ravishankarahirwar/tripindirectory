@@ -316,6 +316,8 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         mLandlineNumbers.add(addLandline);
 
         recyclerView = findViewById(R.id.imageslist);
+        recyclerView.hasFixedSize();
+        recyclerView.setNestedScrollingEnabled(false);
 
 
         mAddPerson.setOnClickListener(new View.OnClickListener() {
