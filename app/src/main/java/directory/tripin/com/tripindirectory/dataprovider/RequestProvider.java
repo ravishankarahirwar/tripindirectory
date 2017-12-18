@@ -10,6 +10,7 @@ import java.util.Map;
 
 import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
+import directory.tripin.com.tripindirectory.getcity.rest.ServerParams;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
@@ -129,6 +130,23 @@ public class RequestProvider {
                 .rawData(requestBody)
                 .headerParams(headerParams)
                 .tag(ApiTag.LIKE_DISLIKE)
+                .build();
+    }
+
+    public Request getCityRequest(String cityString, RequestListener listener) {
+
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put("Content-Type", "application/json");
+
+        Map<String, String> postParams = new HashMap<String, String>();
+        postParams.put(ServerParams.INPUT, cityString);
+
+        return new Request.RequestBuilder(mContext, listener)
+                .type(Request.Method.GET)
+                .url(ApiProvider.getApiByTag(ApiTag.GOOGLE_API_FOR_CITY)+postParams.get(ServerParams.INPUT)+"&key="+ ServerParams.YOUR_PLACES_KEY)
+                .postParams(postParams)
+                .headerParams(headerParams)
+                .tag(ApiTag.GOOGLE_API_FOR_CITY)
                 .build();
     }
 }
