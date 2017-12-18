@@ -35,8 +35,6 @@ public class EmailPassLoginActivity extends AppCompatActivity {
         pass= findViewById(R.id.editText3);
         mAuth = FirebaseAuth.getInstance();
         msg = findViewById(R.id.msg);
-
-
     }
 
     @Override
@@ -56,7 +54,6 @@ public class EmailPassLoginActivity extends AppCompatActivity {
             String uid = currentUser.getUid();
             Intent i = new Intent(this,AddCompanyActivity.class);
             i.putExtra("uid",uid);
-
             startActivity(i);
 
         }
