@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.AddImage;
 import directory.tripin.com.tripindirectory.model.ImageData;
 
@@ -55,7 +56,8 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
         }
         if (!imageUrl.isEmpty())
         {
-            Picasso.with(context).load(imageUrl).into(holder.imageButton);
+            Logger.v("setting pic method");
+            Picasso.with(context).load(imageUrl).placeholder(R.drawable.ic_menu_camera).fit().centerCrop().into(holder.imageButton);
         }
 
 
