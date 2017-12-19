@@ -197,7 +197,7 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
     }
 
 
-    }
+
     @Override
     protected void onResume() {
         super.onResume();

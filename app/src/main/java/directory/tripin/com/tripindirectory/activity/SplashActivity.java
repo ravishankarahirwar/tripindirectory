@@ -23,7 +23,7 @@ import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
  * @since 20/01/2017 modified 23/05/2017
  * <p>
  * This is the first class is appear in front of user we just show the Tripin-Shipper icon
- * for 1 second then if user already login Start HomeActivity otherwise start MainActivity
+ * for 1 second then if user already login Start HomeActivity otherwise start CompanyInfoActivity
  */
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();

@@ -1,0 +1,224 @@
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_gray"
+    android:focusable="true" android:focusableInTouchMode="true"
+    tools:context=".FormActivities.CompanyInfoActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_margin="6dp"
+                  android:orientation="vertical"
+                  android:paddingBottom="10dp"
+                  tools:context=".FormActivities.CompanyInfoActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_company_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/company_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center_vertical"
+                    android:hint="@string/company_name"/>
+
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/contact_person"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Contact Persons :"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:id="@+id/add_person_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contact_person"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+
+                <include
+                    layout="@layout/include_add_person"
+                    ></include>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/add_person"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/add_person_layout"
+                android:layout_margin="8dp"
+                android:drawableStart="@drawable/ic_add_circle_black_24dp"
+                android:gravity="center_vertical"
+                android:text="Add"
+                android:textStyle="bold"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/pickup_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Company Landline Numbers :"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:id="@+id/landline_number_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pickup_title"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <include layout="@layout/include_add_landline"></include>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/add_landline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/landline_number_layout"
+                android:layout_centerVertical="false"
+                android:layout_margin="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/ic_add_circle_black_24dp"
+                android:gravity="center_vertical"
+                android:text="Add"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/input_layout_landline_number"
+                app:layout_constraintTop_toBottomOf="@+id/input_layout_landline_number"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/address_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Company Address :"
+                android:textStyle="bold"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_company_address"
+                android:layout_width="368dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/address_title"
+
+                android:layout_margin="8dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintHorizontal_bias="1.0">
+
+                <EditText
+                    android:id="@+id/input_company_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/company_address"
+                    android:textSize="14sp"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_city"
+                android:layout_width="368dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout_company_address"
+
+                android:layout_margin="8dp"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/input_layout_company_address"
+                app:layout_constraintTop_toBottomOf="@+id/input_layout_company_address">
+
+                <EditText
+                    android:id="@+id/input_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/city_town_village"
+                    android:textSize="14sp"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_state"
+                android:layout_width="368dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout_city"
+                android:layout_margin="8dp"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/input_layout_city"
+                app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
+
+                <EditText
+                    android:id="@+id/input_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/state"
+                    android:textSize="14sp"/>
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
