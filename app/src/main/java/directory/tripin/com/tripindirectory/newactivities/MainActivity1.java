@@ -102,10 +102,10 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
+        setContentView(R.layout.activity_home);
 
         init();
-        setListeners();
+//        setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
 //            mPreferenceManager.setFirstTime(false);
@@ -127,7 +127,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
             public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
-                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
+//                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
                 holder.mCompany.setText(model.getmCompanyName());
             }
             @Override
@@ -183,48 +183,48 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 .setPermissions(Manifest.permission.READ_PHONE_STATE)
                 .check();
 
-        mSearchField = this.findViewById(R.id.search_field);
-        mSearchField.setTokenizer(new SpaceTokenizer());
-
-        mSearchField.setThreshold(1);
-
-
-        mSearchField.setCursorVisible(false);
+//        mSearchField = this.findViewById(R.id.search_field);
+//        mSearchField.setTokenizer(new SpaceTokenizer());
+//
+//        mSearchField.setThreshold(1);
+//
+//
+//        mSearchField.setCursorVisible(false);
 
         /**
          * By default Mumbai would be search destination
          */
 
         if (!mPreferenceManager.isFirstTime()) {
-            mSearchField.setHint("Type company name to search");
+//            mSearchField.setHint("Type company name to search");
             //performElasticSearch(mSearchField.getText().toString());
         }
 
-        mPartnerList = findViewById(R.id.partner_list);
+        mPartnerList = findViewById(R.id.transporter_list);
 
-        mFloatingActionButton = findViewById(R.id.create_company);
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth = FirebaseAuth.getInstance();
-                if (auth.getCurrentUser() != null) {
-                    // already signed in
-                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
-
-                } else {
-                    // not signed in
-                    startActivityForResult(
-                            // Get an instance of AuthUI based on the default app
-                            AuthUI.getInstance().createSignInIntentBuilder()
-                                    .setAvailableProviders(
-                                            Collections.singletonList(
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
-                                    .build(),
-                            RC_SIGN_IN);
-
-                }
-            }
-        });
+//        mFloatingActionButton = findViewById(R.id.create_company);
+//        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                auth = FirebaseAuth.getInstance();
+//                if (auth.getCurrentUser() != null) {
+//                    // already signed in
+//                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+//
+//                } else {
+//                    // not signed in
+//                    startActivityForResult(
+//                            // Get an instance of AuthUI based on the default app
+//                            AuthUI.getInstance().createSignInIntentBuilder()
+//                                    .setAvailableProviders(
+//                                            Collections.singletonList(
+//                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                    .build(),
+//                            RC_SIGN_IN);
+//
+//                }
+//            }
+//        });
 
 
     }
@@ -271,32 +271,33 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     private void fetchAutoSuggestions(String s) {
 
-        FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Logger.v("on queried fetch Complete!!");
-                        if (task.isSuccessful()) {
-                            companynamesuggestions.clear();
-                            for (DocumentSnapshot document : task.getResult()) {
-                                Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
-                                companynamesuggestions.add(document.get("mCompanyName").toString());
-                            }
-                            Set<String> hs = new LinkedHashSet<>();
-                            hs.addAll(companynamesuggestions);
-                            companynamesuggestions.clear();
-                            companynamesuggestions.addAll(hs);
-                            monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
-                            mSearchField.setAdapter(monthAdapter);
-                            Logger.v("adapter set!!");
+            FirebaseFirestore.getInstance()
+                    .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            Logger.v("on queried fetch Complete!!");
+                            if (task.isSuccessful()) {
+                                companynamesuggestions.clear();
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
+                                    companynamesuggestions.add(document.get("mCompanyName").toString());
+                                }
+                                Set<String> hs = new LinkedHashSet<>();
+                                hs.addAll(companynamesuggestions);
+                                companynamesuggestions.clear();
+                                companynamesuggestions.addAll(hs);
+                                monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
+                                mSearchField.setAdapter(monthAdapter);
+                                Logger.v("adapter set!!");
 
-                        } else {
-                            Log.d("onComplete", "Error getting documents: ", task.getException());
+                            } else {
+                                Log.d("onComplete", "Error getting documents: ", task.getException());
+                            }
                         }
-                    }
-                });
+                    });
+
     }
 
 
@@ -310,8 +311,18 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 .collection("partners");
 
         if (!s.equals("")) {
-            query = FirebaseFirestore.getInstance()
-                    .collection("partners").whereEqualTo("mCompanyName", s);
+            if (s.contains("To")) {
+                Toast.makeText(this, "Contain To", Toast.LENGTH_LONG).show();
+                String sourceDestination[] = s.split("To");
+                String source = sourceDestination[0].trim();
+                String destination = sourceDestination[1].trim();
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").whereEqualTo("mSourceCities."+ source, true).whereEqualTo("destinationCities."+ destination, true);;
+
+            } else {
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").whereEqualTo("mCompanyName", s);
+            }
         }
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)

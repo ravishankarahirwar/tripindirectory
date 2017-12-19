@@ -85,8 +85,12 @@
     <string name="sign_in_done">Signed In</string>
     <string name="title_activity_main2">Main2Activity</string>
 
-    <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">its a blank fragment</string>
     <string name="form_name">Your Company Data</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_voice_rec">action voice rec</string>
+    <string name="title_activity_main_home">MainHome</string>
 
 </resources>
