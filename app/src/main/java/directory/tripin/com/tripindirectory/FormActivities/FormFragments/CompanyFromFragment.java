@@ -91,7 +91,7 @@ public class CompanyFromFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         Logger.v("uploadingdata1.....");
-        //uploadData();
+        uploadData();
     }
 
     @Override
@@ -177,6 +177,8 @@ public class CompanyFromFragment extends BaseFragment {
                 addLandLineNumber();
             }
         });
+
+        setUpView();
     }
 
     private void addContactPerson() {
@@ -295,33 +297,33 @@ public class CompanyFromFragment extends BaseFragment {
                 if (documentSnapshot.exists()) {
                     PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
                     mCompanyNmae.setText(company.getmCompanyName());
-                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
-                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
-                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+//                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
+//                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
+//                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
 
 
-                    if(company.getmContactPersonsList().size() > 1) {
-                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                        mPersonName.setText(name);
-                        mPersonContact.setText(number);
-
-                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
-                            String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
-                            String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                            addContactPerson( name1,  number1);
-                        }
-
-                    } else if(company.getmContactPersonsList().size() == 1) {
-                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                        mPersonName.setText(name);
-                        mPersonContact.setText(number);
-
-                    } else if(company.getmContactPersonsList().size() == 1) {
-                        String number = company.getmCompanyLandLineNumbers().get(0);
-                        mLandlineNmber.setText(number);
-                    }
+//                    if(company.getmContactPersonsList().size() > 1) {
+//                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+//                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+//                        mPersonName.setText(name);
+//                        mPersonContact.setText(number);
+//
+//                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
+//                            String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
+//                            String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+//                            addContactPerson( name1,  number1);
+//                        }
+//
+//                    } else if(company.getmContactPersonsList().size() == 1) {
+//                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
+//                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+//                        mPersonName.setText(name);
+//                        mPersonContact.setText(number);
+//
+//                    } else if(company.getmContactPersonsList().size() == 1) {
+//                        String number = company.getmCompanyLandLineNumbers().get(0);
+//                        mLandlineNmber.setText(number);
+//                    }
 
 //                    if(company.getmCompanyLandLineNumbers().size() > 1) {
 //                        String number = company.getmCompanyLandLineNumbers().get(0);

@@ -6,40 +6,57 @@ package directory.tripin.com.tripindirectory.model;
 
 public class CompanyAddressPojo {
 
-    private String mAddress;
-    private String mCity;
-    private String mState;
-
-    public CompanyAddressPojo(String mAddress, String mCity, String mState) {
-        this.mAddress = mAddress;
-        this.mCity = mCity;
-        this.mState = mState;
-    }
+    private String address;
+    private String city;
+    private String state;
+    private String pincode;
 
     public CompanyAddressPojo() {
     }
 
-    public String getmAddress() {
-        return mAddress;
+    public CompanyAddressPojo(String address, String city, String state) {
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.pincode = pincode;
     }
 
-    public void setmAddress(String mAddress) {
-        this.mAddress = mAddress;
+    public CompanyAddressPojo(String address, String city, String state, String pincode) {
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.pincode = pincode;
     }
 
-    public String getmCity() {
-        return mCity;
+    public String getAddress() {
+        return address;
     }
 
-    public void setmCity(String mCity) {
-        this.mCity = mCity;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getmState() {
-        return mState;
+    public String getCity() {
+        return city;
     }
 
-    public void setmState(String mState) {
-        this.mState = mState;
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
     }
 }

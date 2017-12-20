@@ -154,9 +154,9 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                 if (documentSnapshot.exists()) {
                     PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
                     mCompanyNmae.setText(company.getmCompanyName());
-                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
-                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
-                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+                    mCompanyAddress.setText(company.getmCompanyAdderss().getAddress().toString());
+                    mCompanyCity.setText(company.getmCompanyAdderss().getCity().toString());
+                    mCompanyState.setText(company.getmCompanyAdderss().getState().toString());
 
                     Iterator pickupCityIterator = company.getmSourceCities().keySet().iterator();
                     while(pickupCityIterator.hasNext()) {
