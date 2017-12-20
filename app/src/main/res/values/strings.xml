@@ -92,5 +92,6 @@
 
     <string name="action_voice_rec">action voice rec</string>
     <string name="title_activity_main_home">MainHome</string>
+    <string name="title_activity_temp">TempActivity</string>
 
 </resources>

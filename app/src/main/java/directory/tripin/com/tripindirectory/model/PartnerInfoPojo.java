@@ -3,6 +3,8 @@ package directory.tripin.com.tripindirectory.model;
 import java.util.List;
 import java.util.Map;
 
+import directory.tripin.com.tripindirectory.model.response.Vehicle;
+
 /**
  * Created by Shubham on 12/12/2017.
  */
@@ -10,11 +12,21 @@ import java.util.Map;
 public class PartnerInfoPojo {
 
     private String mCompanyName;
-    private List<ContactPersonPojo> mContactPersonsList;
-    private List<String> mCompanyLandLineNumbers;
-    private CompanyAddressPojo mCompanyAdderss;
-    private List<String> mImagesUrl;
+    private String natureOfBusiness;
+    private String natureEmail;
+    private String natureWebsite;
+
     private boolean isVerified = false;
+
+    private List<String> mCompanyLandLineNumbers;
+    private List<String> mImagesUrl;
+
+    private List<ContactPersonPojo> mContactPersonsList;
+
+    private List<Vehicle> vehicles;
+
+    private CompanyAddressPojo mCompanyAdderss;
+
     private Map<String,Boolean> mSourceCities;
     private Map<String,Boolean> mDestinationCities;
 
@@ -30,6 +42,38 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public String getNatureOfBusiness() {
+        return natureOfBusiness;
+    }
+
+    public void setNatureOfBusiness(String natureOfBusiness) {
+        this.natureOfBusiness = natureOfBusiness;
+    }
+
+    public String getNatureEmail() {
+        return natureEmail;
+    }
+
+    public void setNatureEmail(String natureEmail) {
+        this.natureEmail = natureEmail;
+    }
+
+    public String getNatureWebsite() {
+        return natureWebsite;
+    }
+
+    public void setNatureWebsite(String natureWebsite) {
+        this.natureWebsite = natureWebsite;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
     }
 
     public Map<String, Boolean> getmSourceCities() {

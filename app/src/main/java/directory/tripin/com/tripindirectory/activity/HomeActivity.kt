@@ -15,8 +15,6 @@ import android.widget.RadioButton
 import com.arlib.floatingsearchview.FloatingSearchView
 import com.google.android.gms.R.id.toolbar
 import directory.tripin.com.tripindirectory.R
-import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.app_bar_home.*
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -57,7 +55,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mSearchView = findViewById(R.id.floating_search_view)
         mSearchView?.attachNavigationDrawerToMenuButton(mDrawerLayout as DrawerLayout)
 
-        nav_view.setNavigationItemSelectedListener(this)
     }
 
     fun viewSetup() {
@@ -77,7 +74,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .setQuery(query, PartnerInfoPojo::class.java).build()
         adapter = object : FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             public override fun onBindViewHolder(holder: PartnersViewHolder, position: Int, model: PartnerInfoPojo) {
-                holder.mAddress.text = model.getmCompanyAdderss().getmAddress()
+                holder.mAddress.text = model.getmCompanyAdderss().getAddress()
                 holder.mCompany.text = model.getmCompanyName()
             }
 
@@ -96,13 +93,13 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPartnerList?.setAdapter(adapter)
 
     }
-    override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
+//    override fun onBackPressed() {
+//        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+//            drawer_layout.closeDrawer(GravityCompat.START)
+//        } else {
+//            super.onBackPressed()
+//        }
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -143,7 +140,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+//        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -176,7 +173,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         adapter = object : FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             public override fun onBindViewHolder(holder: PartnersViewHolder, position: Int, model: PartnerInfoPojo) {
-                holder.mAddress.text = model.getmCompanyAdderss().getmAddress()
+                holder.mAddress.text = model.getmCompanyAdderss().getAddress()
                 holder.mCompany.text = model.getmCompanyName()
             }
 
