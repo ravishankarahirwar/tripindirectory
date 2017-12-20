@@ -29,6 +29,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -98,6 +99,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private LinearLayoutManager mVerticalLayoutManager;
     private int mLastPosition;
     private boolean shouldElastiSearchCall = true;
+    private FloatingSearchView mSearchView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,9 +151,54 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     }
 
+    private void searchViewSetup() {
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+//
+//                SearchSuggestion colorSuggestion = (SearchSuggestion) searchSuggestion;
+//                DataHelper.findColors(getActivity(), colorSuggestion.getBody(),
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSuggestionClicked()");
+//
+//                mLastQuery = searchSuggestion.getBody();
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                Toast.makeText(getApplicationContext(), query,
+                        Toast.LENGTH_SHORT).show();
+                setAdapter(query);
+//                fetchAutoSuggestions(query);
+//                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
+
+//                mLastQuery = query;
+//
+//                DataHelper.findColors(getActivity(), query,
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSearchAction()");
+            }
+        });
+    }
 
     private void init() {
         mContext = MainActivity1.this;
+        mSearchView = (FloatingSearchView)findViewById(R.id.floating_search_view);
 
         mPartnersManager = new PartnersManager(mContext);
         mPreferenceManager = PreferenceManager.getInstance(mContext);
@@ -226,7 +274,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 //            }
 //        });
 
-
+        searchViewSetup();
     }
 
     private void setListeners() {
