@@ -1,43 +1,37 @@
 package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumbersAdapter;
+import directory.tripin.com.tripindirectory.FormActivities.ContactPersonsAdapter;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
-import directory.tripin.com.tripindirectory.getcity.general.CityAutoCompleteTextView;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
-import directory.tripin.com.tripindirectory.model.ImageData;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
-import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
-import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 
 
 /**
@@ -46,52 +40,133 @@ import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 public class CompanyFromFragment extends BaseFragment {
 
 
+    public OnCompanyDataModifiedListner onCompanyDataModifiedListner;
+    DocumentReference mUserDocRef;
+    FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private EditText mCompanyNmae;
-    private EditText mLandlineNmber;
-    private EditText mPersonName;
-    private EditText mPersonContact;
     private EditText mCompanyAddress;
     private EditText mCompanyCity;
     private EditText mCompanyState;
+    private TextView mAddContactPersonTxt;
+    private TextView mAddCompanyTxt;
+    private RecyclerView mPersonsRecyclarView;
+    private RecyclerView mLandlineRecyclarView;
+    private List<ContactPersonPojo> mContactPersonsList;
+    private List<String> mCompanyLandLineNumbers;
+    private ContactPersonsAdapter contactPersonsAdapter;
+    private CompanyLandLineNumbersAdapter companyLandLineNumbersAdapter;
+    PartnerInfoPojo partnerInfoPojo;
 
-    private TextView mAddPerson;
-    private TextView mLandLine;
-    private LinearLayout mAddPersonLayout;
-    private LinearLayout mAddLandLineLayout;
-    private List<AddPerson> mContactPersons;
-    private List<AddPerson> mLandlineNumbers;
-    private Context mContext;
-    List<String> companyLandlineNumbers;
-
-    private StorageReference mStorageRef;
-    StorageReference imagesRef;
-    ProgressDialog progressDialog;
-    List<String> mUrlList;
 
 
     public CompanyFromFragment() {
-        // Required empty public constructor
+        mContactPersonsList = new ArrayList<>();
+        mCompanyLandLineNumbers = new ArrayList<>();
+
+        //creat adapters and set adapters
+        mContactPersonsList.add(new ContactPersonPojo("", ""));
+        contactPersonsAdapter = new ContactPersonsAdapter(mContactPersonsList);
+
+        mCompanyLandLineNumbers.add("");
+        companyLandLineNumbersAdapter = new CompanyLandLineNumbersAdapter(mCompanyLandLineNumbers);
+    }
+
+
+    public void FetchUserData() {
+        //get the updated partner pojo and set all fields if not null
+        auth = FirebaseAuth.getInstance();
+        mUserDocRef = FirebaseFirestore.getInstance()
+                .collection("partners").document(auth.getUid());
+        Logger.v("Fetching Data");
+        mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+
+                    if(partnerInfoPojo.getmContactPersonsList()!=null){
+                        mContactPersonsList.clear();
+                        mContactPersonsList.addAll(partnerInfoPojo.getmContactPersonsList());
+                    }
+
+                    if(partnerInfoPojo.getmContactPersonsList()!=null){
+                        mCompanyLandLineNumbers.clear();
+                        mCompanyLandLineNumbers.addAll(partnerInfoPojo.getmCompanyLandLineNumbers());
+                    }
+
+                    companyLandLineNumbersAdapter.notifyDataSetChanged();
+                    contactPersonsAdapter.notifyDataSetChanged();
+
+                    mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
+                    if(partnerInfoPojo.getmCompanyAdderss()!=null){
+                        mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getmAddress());
+                        mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getmCity());
+                        mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getmState());
+                    }
+
+
+                    Logger.v("On Data Fetch and set Company Data");
+
+                }
+
+            }
+        });
+
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FetchUserData();
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onCompanyDataModifiedListner = (OnCompanyDataModifiedListner) getActivity();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //setUpView();
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Logger.v("uploadingdata1.....");
-        //uploadData();
+        Logger.v("OnPauseCompanyFormFragment");
+
+        //send the modified data to parent activity
+        List<ContactPersonPojo> contacts = new ArrayList<>();
+        for(int i=0;i<mContactPersonsList.size();i++){
+            View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
+            EditText name = v.findViewById(R.id.contact_person_name);
+            EditText number = v.findViewById(R.id.contact_person_number);
+            contacts.add(new ContactPersonPojo(name.getText().toString().trim(),number.getText().toString().trim()));
+        }
+        List<String> landlines = new ArrayList<>();
+        for(int i=0;i<mCompanyLandLineNumbers.size();i++){
+            View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
+            EditText number = v.findViewById(R.id.landline_number);
+            landlines.add(number.getText().toString().trim());
+        }
+        partnerInfoPojo.setContactPersonsList(contacts);
+        partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
+
+        partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
+        partnerInfoPojo
+                .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
+                        mCompanyCity.getText().toString().trim(),
+                        mCompanyState.getText().toString().trim()));
+
+        //onCompanyDataModifiedListner.OnCompanyModified(partnerInfoPojo);
+        mUserDocRef.set(partnerInfoPojo);
+        Toast.makeText(getActivity(),"OnPauseFrag1",Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -100,140 +175,60 @@ public class CompanyFromFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_company_from, container, false);
 
-        init(v);
+        init();
 
-        String companyName = mCompanyNmae.getText().toString();
-        String companyAddress = mCompanyAddress.getText().toString();
-        String companyCity = mCompanyCity.getText().toString();
-        String companyState = mCompanyState.getText().toString();
+        mCompanyNmae = v.findViewById(R.id.company_name);
+        mCompanyAddress = v.findViewById(R.id.input_company_address);
+        mCompanyCity = v.findViewById(R.id.input_city);
+        mCompanyState = v.findViewById(R.id.input_state);
+        mAddContactPersonTxt = v.findViewById(R.id.add_person);
+        mAddCompanyTxt = v.findViewById(R.id.add_landline);
 
-        List<ContactPersonPojo> contactPersonPojos = new ArrayList<>();
+        mPersonsRecyclarView = v.findViewById(R.id.contactpersons_recyclar);
+        mLandlineRecyclarView = v.findViewById(R.id.landlinerecycler);
+        mPersonsRecyclarView.setAdapter(contactPersonsAdapter);
+        mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
 
-        for (int i = 0; i < mContactPersons.size(); i++) {
-            AddPerson addPerson = mContactPersons.get(i);
-            String name = addPerson.getPersonName().getText().toString();
-            String number = addPerson.getPesonContact().getText().toString();
-            contactPersonPojos.add(new ContactPersonPojo(name, number));
-        }
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        mPersonsRecyclarView.setLayoutManager(linearLayoutManager);
+
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
+        linearLayoutManager2.setReverseLayout(true);
+        linearLayoutManager2.setStackFromEnd(true);
+        mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
+        mPersonsRecyclarView.setNestedScrollingEnabled(false);
+        mLandlineRecyclarView.setNestedScrollingEnabled(false);
 
 
-        for (int i = 0; i < mLandlineNumbers.size(); i++) {
-            AddPerson addPerson = mLandlineNumbers.get(i);
-            String landlineNumber = addPerson.getPersonName().getText().toString();
-            companyLandlineNumbers.add(landlineNumber);
-        }
+        mAddContactPersonTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //add a blank Person Object in contact Persons list
+                Logger.v(" add contact person");
+                mContactPersonsList.add(new ContactPersonPojo("", ""));
+                contactPersonsAdapter.notifyDataSetChanged();
+            }
+        });
+
+        mAddCompanyTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //add a blank landline in landline numbers list
+                Logger.v(" add landline person");
+                mCompanyLandLineNumbers.add("");
+                companyLandLineNumbersAdapter.notifyDataSetChanged();
+            }
+        });
+
         return v;
     }
 
-    private void init(View v) {
+    private void init() {
         //firebase
         mAuth = FirebaseAuth.getInstance();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
-
-        progressDialog = new ProgressDialog(getActivity());
-
-        mContactPersons = new ArrayList<AddPerson>();
-        mLandlineNumbers = new ArrayList<AddPerson>();
-        companyLandlineNumbers = new ArrayList<>();
-
-        mContext = getActivity();
-
-        mCompanyNmae = (EditText)v.findViewById(R.id.company_name);
-        mCompanyAddress  = (EditText)v.findViewById(R.id.input_company_address);
-        mCompanyCity  = (EditText)v.findViewById(R.id.input_city);
-        mCompanyState  = (EditText)v.findViewById(R.id.input_state);
-        mAddPerson = (TextView)v.findViewById(R.id.add_person);
-        mLandLine = (TextView)v.findViewById(R.id.add_landline);
-
-
-        mLandlineNmber = v.findViewById(R.id.landline_number);
-
-        mPersonName = v.findViewById(R.id.contact_person_name);
-        mPersonContact = v.findViewById(R.id.contact_person_number);
-
-        AddPerson addPerson = new AddPerson(mContext);
-        addPerson.setPersonName(mPersonName);
-        addPerson.setPesonContact(mPersonContact);
-        mContactPersons.add(addPerson);
-
-        mAddPersonLayout = (LinearLayout) v.findViewById(R.id.add_person_layout);
-        mAddLandLineLayout = (LinearLayout) v.findViewById(R.id.landline_number_layout);
-
-        AddPerson addLandline = new AddPerson(mContext);
-        addLandline.setPersonName(mLandlineNmber);
-        mLandlineNumbers.add(addLandline);
-
-        mAddPerson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addContactPerson();
-            }
-        });
-
-        mLandLine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addLandLineNumber();
-            }
-        });
-    }
-
-    private void addContactPerson() {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View addPersonView = inflater.inflate(R.layout.include_add_person, null);
-        EditText personName = addPersonView.findViewById(R.id.contact_person_name);
-        EditText personContact = addPersonView.findViewById(R.id.contact_person_number);
-
-        AddPerson addPerson = new AddPerson(mContext);
-        addPerson.setPersonName(personName);
-        addPerson.setPesonContact(personContact);
-
-        mContactPersons.add(addPerson);
-        mAddPersonLayout.addView(addPersonView);
-    }
-
-    private void addLandLineNumber() {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View addPersonView = inflater.inflate(R.layout.include_add_landline, null);
-        EditText landlineNmber = addPersonView.findViewById(R.id.landline_number);
-
-        AddPerson addPerson = new AddPerson(mContext);
-        addPerson.setPersonName(landlineNmber);
-
-        mLandlineNumbers.add(addPerson);
-        mAddLandLineLayout.addView(addPersonView);
-    }
-
-    private void addContactPerson(String name, String number) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View addPersonView = inflater.inflate(R.layout.include_add_person, null);
-        EditText personName = addPersonView.findViewById(R.id.contact_person_name);
-        EditText personContact = addPersonView.findViewById(R.id.contact_person_number);
-
-        personName.setText(name);
-        personContact.setText(number);
-
-        AddPerson addPerson = new AddPerson(mContext);
-        addPerson.setPersonName(personName);
-        addPerson.setPesonContact(personContact);
-
-        mContactPersons.add(addPerson);
-        mAddPersonLayout.addView(addPersonView);
-    }
-
-    private void addLandLineNumber(String landlineNumber) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View addPersonView = inflater.inflate(R.layout.include_add_landline, null);
-        EditText landlineNmber = addPersonView.findViewById(R.id.landline_number);
-
-        AddPerson addPerson = new AddPerson(mContext);
-        addPerson.setPersonName(landlineNmber);
-
-        landlineNmber.setText(landlineNumber);
-
-        mLandlineNumbers.add(addPerson);
-        mAddLandLineLayout.addView(addPersonView);
     }
 
     @Override
@@ -241,103 +236,9 @@ public class CompanyFromFragment extends BaseFragment {
 
     }
 
-    private void uploadData() {
-        String companyName = mCompanyNmae.getText().toString();
-        String companyAddress = mCompanyAddress.getText().toString();
-        String companyCity = mCompanyCity.getText().toString();
-        String companyState = mCompanyState.getText().toString();
-
-        List<ContactPersonPojo> contactPersonPojos = new ArrayList<>();
-
-        for (int i = 0; i < mContactPersons.size(); i++) {
-            AddPerson addPerson = mContactPersons.get(i);
-            String name = addPerson.getPersonName().getText().toString();
-            String number = addPerson.getPesonContact().getText().toString();
-            contactPersonPojos.add(new ContactPersonPojo(name, number));
-        }
-
-
-        for (int i = 0; i < mLandlineNumbers.size(); i++) {
-            AddPerson addPerson = mLandlineNumbers.get(i);
-            String landlineNumber = addPerson.getPersonName().getText().toString();
-            companyLandlineNumbers.add(landlineNumber);
-        }
-
-        CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(companyAddress,companyCity,companyState);
-
-        List<String> urllist = new ArrayList<>();
-        urllist.add("url1");
-        urllist.add("url2");
-        urllist.add("url3");
-
-        Map<String, Boolean> source = new HashMap<>();
-        Map<String, Boolean> destination = new HashMap<>();
-
-        PartnerInfoPojo partnerInfoPojo =
-                new PartnerInfoPojo(companyName,
-                        contactPersonPojos,
-                        companyLandlineNumbers,
-                        companyAddressPojo,
-                        urllist, false, source, destination);
-
-        db.collection("partners").document(mAuth.getUid()).set(partnerInfoPojo);
-        Toast.makeText(getActivity(), "Data uploaded!", Toast.LENGTH_LONG).show();
+    public interface OnCompanyDataModifiedListner {
+        public void OnCompanyModified(PartnerInfoPojo partnerInfoPojo);
     }
 
-    private void setUpView() {
-
-        CollectionReference cities = db.collection("partners");
-        DocumentReference docRef = cities.document(mAuth.getUid());
-
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
-                    mCompanyNmae.setText(company.getmCompanyName());
-                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
-                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
-                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
-
-
-                    if(company.getmContactPersonsList().size() > 1) {
-                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                        mPersonName.setText(name);
-                        mPersonContact.setText(number);
-
-                        for(int i=1; i < company.getmContactPersonsList().size(); i++) {
-                            String name1 = company.getmContactPersonsList().get(i).getmContactPresonName();
-                            String number1 = company.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                            addContactPerson( name1,  number1);
-                        }
-
-                    } else if(company.getmContactPersonsList().size() == 1) {
-                        String name = company.getmContactPersonsList().get(0).getmContactPresonName();
-                        String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                        mPersonName.setText(name);
-                        mPersonContact.setText(number);
-
-                    } else if(company.getmContactPersonsList().size() == 1) {
-                        String number = company.getmCompanyLandLineNumbers().get(0);
-                        mLandlineNmber.setText(number);
-                    }
-
-//                    if(company.getmCompanyLandLineNumbers().size() > 1) {
-//                        String number = company.getmCompanyLandLineNumbers().get(0);
-//                        mLandlineNmber.setText(number);
-//                        for (int i = 1; i < company.getmCompanyLandLineNumbers().size(); i++) {
-//                            String number1 = company.getmCompanyLandLineNumbers().get(i);
-//                            addLandLineNumber(number1);
-//                        }
-//                    }
-                }
-
-
-
-
-            }});
-
-    }
 
 }

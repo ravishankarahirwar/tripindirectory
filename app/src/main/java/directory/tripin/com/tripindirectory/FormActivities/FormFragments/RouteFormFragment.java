@@ -62,7 +62,7 @@ public class RouteFormFragment extends BaseFragment {
 
         Logger.v("ONUPDATE");
         if (partnerInfoPojo.getmSourceCities() != null) {
-             listpickup.clear();
+            listpickup.clear();
             pickupHM = partnerInfoPojo.getmSourceCities();
             listpickup.addAll(pickupHM.keySet());
             mPickUpList.setAdapter(adapterp);

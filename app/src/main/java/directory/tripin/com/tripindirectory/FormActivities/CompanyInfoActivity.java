@@ -3,6 +3,7 @@ package directory.tripin.com.tripindirectory.FormActivities;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +28,8 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,7 +51,7 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
-public class CompanyInfoActivity extends AppCompatActivity implements RouteFormFragment.OnPickUpPlace {
+public class CompanyInfoActivity extends AppCompatActivity implements RouteFormFragment.OnPickUpPlace, CompanyFromFragment.OnCompanyDataModifiedListner {
 
     public static final String TAG = "Company Info Activity";
     private ViewPager mViewPager;
@@ -60,6 +63,8 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
     FirebaseAuth auth;
     DocumentReference mUserDocRef;
     Fragment fragment;
+    private PartnerInfoPojo partnerInfoPojo;
+
 
 
 
@@ -71,45 +76,33 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         setSupportActionBar(toolbar);
         toolbar.setSubtitle("Sub Title Test");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        partnerInfoPojo = new PartnerInfoPojo();
+
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.container);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        createViewPager(viewPager);
-
-
-
-        viewPager.setAdapter(adapter);
-        fragment = adapter.getItem(1);
 
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
-
-        mUserDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if(documentSnapshot.exists())
-                ((BaseFragment)fragment).onUpdate(documentSnapshot.toObject(PartnerInfoPojo.class));
-            }
-        });
-
-
+        createViewPager(viewPager);
+        viewPager.setAdapter(adapter);
         createTabIcons();
-
-
-
 
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -202,12 +195,35 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         adapter.addFrag(new FleetFormFragment(), "Tab Fleet");
         adapter.addFrag(new ImagesFormFragment(), "Tab Images");
 
+
+        fragment = adapter.getItem(0);
+        mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+                    ((BaseFragment)fragment)
+                            .onUpdate(partnerInfoPojo);
+                }
+
+            }
+        });
+
+
     }
 
     @Override
     public void OnPickUpClicked(int id) {
         starttheplacesfragment();
         mPlaceCode = id;
+    }
+
+    @Override
+    public void OnCompanyModified(PartnerInfoPojo partnerInfoPojo) {
+        this.partnerInfoPojo.setCompanyAdderss(partnerInfoPojo.getmCompanyAdderss());
+        this.partnerInfoPojo.setCompanyName(partnerInfoPojo.getmCompanyName());
+        this.partnerInfoPojo.setContactPersonsList(partnerInfoPojo.getmContactPersonsList());
+        this.partnerInfoPojo.setmCompanyLandLineNumbers(partnerInfoPojo.getmCompanyLandLineNumbers());
     }
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -255,5 +271,9 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         } catch (GooglePlayServicesNotAvailableException e) {
             // TODO: Handle the error.
         }
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

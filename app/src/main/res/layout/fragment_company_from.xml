@@ -40,7 +40,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:gravity="center_vertical"
-                    android:hint="@string/company_name"/>
+                    android:hint="@string/company_name"
+                    android:textStyle="bold"/>
 
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
@@ -62,31 +63,20 @@
                 android:text="Contact Persons :"
                 android:textStyle="bold"/>
 
-            <LinearLayout
-                android:id="@+id/add_person_layout"
+            <android.support.v7.widget.RecyclerView
+
+                android:id="@+id/contactpersons_recyclar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/contact_person"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-
-                <include
-                    layout="@layout/include_add_person"
-                    ></include>
-
-
-            </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_below="@id/contact_person"
+                android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/add_person"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/add_person_layout"
+                android:layout_below="@+id/contactpersons_recyclar"
                 android:layout_margin="8dp"
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
@@ -110,27 +100,20 @@
                 android:text="Company Landline Numbers :"
                 android:textStyle="bold"/>
 
-            <LinearLayout
-                android:id="@+id/landline_number_layout"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/landlinerecycler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
                 android:layout_below="@+id/pickup_title"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <include layout="@layout/include_add_landline"></include>
-
-            </LinearLayout>
+                android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/add_landline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/landline_number_layout"
+                android:layout_below="@+id/landlinerecycler"
                 android:layout_centerVertical="false"
                 android:layout_margin="8dp"
                 android:layout_marginStart="8dp"
@@ -138,9 +121,7 @@
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
                 android:text="Add"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/input_layout_landline_number"
-                app:layout_constraintTop_toBottomOf="@+id/input_layout_landline_number"/>
+                android:textStyle="bold"/>
 
         </RelativeLayout>
 
@@ -175,7 +156,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/company_address"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -195,7 +177,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/city_town_village"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -214,7 +197,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/state"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    />
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
