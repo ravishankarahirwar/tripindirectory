@@ -57,7 +57,7 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
         if (!imageUrl.isEmpty())
         {
             Logger.v("setting pic method");
-            Picasso.with(context).load(imageUrl).placeholder(R.drawable.ic_menu_camera).fit().centerCrop().into(holder.imageButton);
+            Picasso.with(context).load(imageUrl).placeholder(R.drawable.ic_menu_camera).fit().into(holder.imageButton);
         }
 
 
