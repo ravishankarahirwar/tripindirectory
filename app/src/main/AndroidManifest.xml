@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name=".activity.FavoritesActivity" />
         <activity
             android:name=".newactivities.MainActivity1"
@@ -88,10 +89,8 @@
             android:name=".activity.MainHome"
             android:label="@string/title_activity_main_home"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".activity.TempActivity"
-            android:label="@string/title_activity_temp"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+
     </application>
 
 </manifest>

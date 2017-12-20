@@ -164,6 +164,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
             }
 
+
             @Override
             public void onSearchAction(String query) {
                 Toast.makeText(getApplicationContext(), query,
@@ -171,6 +172,41 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 setAdapter(query);
             }
         });
+
+        /**
+         * By default Mumbai would be search destination
+         */
+
+        if (!mPreferenceManager.isFirstTime()) {
+//            mSearchField.setHint("Type company name to search");
+            //performElasticSearch(mSearchField.getText().toString());
+        }
+
+        mPartnerList = findViewById(R.id.transporter_list);
+
+//        mFloatingActionButton = findViewById(R.id.create_company);
+//        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                auth = FirebaseAuth.getInstance();
+//                if (auth.getCurrentUser() != null) {
+//                    // already signed in
+//                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
+//
+//                } else {
+//                    // not signed in
+//                    startActivityForResult(
+//                            // Get an instance of AuthUI based on the default app
+//                            AuthUI.getInstance().createSignInIntentBuilder()
+//                                    .setAvailableProviders(
+//                                            Collections.singletonList(
+//                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                    .build(),
+//                            RC_SIGN_IN);
+//
+//                }
+//            }
+//        });
 
     }
 
