@@ -308,6 +308,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 //signed in
                 startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
                 showSnackbar(R.string.sign_in_done);
+                startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
                 return;
             } else {
                 // Sign in failed

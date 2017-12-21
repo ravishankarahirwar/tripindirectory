@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="wrap_content"
-                                             android:background="@drawable/roundedcornerbg"
-                                             android:padding="5dp"
-                                             tools:layout_editor_absoluteX="10dp"
-                                             tools:layout_editor_absoluteY="91dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
 
     <Switch
         android:id="@+id/is_available"
@@ -16,6 +15,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="Switch"
+        android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_marginTop="8dp"/>
@@ -76,8 +76,12 @@
         android:id="@+id/input_layout_length"
         android:layout_width="161dp"
         android:layout_height="39dp"
-        tools:layout_editor_absoluteX="190dp"
-        tools:layout_editor_absoluteY="148dp">
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/input_layout_payload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/input_layout_payload"
+        app:layout_constraintTop_toTopOf="@+id/input_layout_payload">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_length"
@@ -89,7 +93,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_driver_name"
-        android:layout_width="341dp"
+        android:layout_width="368dp"
         android:layout_height="45dp"
         tools:layout_editor_absoluteX="12dp"
         tools:layout_editor_absoluteY="191dp">
@@ -103,7 +107,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_driver_number"
-        android:layout_width="341dp"
+        android:layout_width="368dp"
         android:layout_height="49dp"
         tools:layout_editor_absoluteX="12dp"
         tools:layout_editor_absoluteY="244dp">
