@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         android:layout_margin="6dp"
         android:orientation="vertical">
 
@@ -15,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="4dp"
+
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
 
@@ -33,6 +35,7 @@
                 android:layout_height="match_parent"
                 tools:listitem="@layout/item_fleet"
                 android:layout_below="@+id/pickup_title"
+
                 android:nestedScrollingEnabled="false"/>
 
             <TextView
@@ -41,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/vehicle_list"
+
                 android:layout_centerVertical="false"
                 android:layout_margin="8dp"
                 android:layout_marginStart="8dp"

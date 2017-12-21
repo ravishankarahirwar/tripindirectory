@@ -257,7 +257,6 @@ public class CompanyFromFragment extends BaseFragment {
 
             }
         });
-
         return v;
     }
 
@@ -299,6 +298,7 @@ public class CompanyFromFragment extends BaseFragment {
             // gracefully handle failure
             Logger.v("CONTACTS :"+ "Warning: activity result not ok");
         }
+
     }
 
 

@@ -16,7 +16,6 @@
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Log Out" />
-
     </group>
 
     <item android:title="Communicate">

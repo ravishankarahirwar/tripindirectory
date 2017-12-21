@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +43,7 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
  */
 public class FleetFormFragment extends BaseFragment {
 
+
     Query query;
     FirebaseAuth auth;
     DocumentReference mUserDocRef;
@@ -54,8 +55,10 @@ public class FleetFormFragment extends BaseFragment {
     private RecyclerView mVechileList;
     private TextView mAddVechile;
 
+
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
+
 
     }
 
@@ -68,6 +71,7 @@ public class FleetFormFragment extends BaseFragment {
         super.onAttach(activity);
         try {
             this.mContext = activity.getApplicationContext();
+
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
         }
@@ -84,6 +88,7 @@ public class FleetFormFragment extends BaseFragment {
 //        mVehicles.add(vehicle1);
 
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
+
 
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
@@ -112,6 +117,7 @@ public class FleetFormFragment extends BaseFragment {
         });
 
         return rootView;
+
     }
 
 
@@ -127,6 +133,7 @@ public class FleetFormFragment extends BaseFragment {
         // data is passed into the constructor
         public FleetAdapter(Context context, List<Vehicle> data, int type) {
             this.mDataValues = data;
+
         }
 
         // inflates the row layout from xml when needed
@@ -141,12 +148,14 @@ public class FleetFormFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(final PlacesViewHolder holder, final int position) {
             holder.onBind(mContext, holder);
+
         }
 
         // total number of rows
         @Override
         public int getItemCount() {
             return mDataValues.size();
+
         }
 
 
