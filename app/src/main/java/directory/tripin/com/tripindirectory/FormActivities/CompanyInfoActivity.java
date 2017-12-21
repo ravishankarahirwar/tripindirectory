@@ -2,6 +2,8 @@ package directory.tripin.com.tripindirectory.FormActivities;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -49,18 +51,19 @@ import directory.tripin.com.tripindirectory.FormActivities.FormFragments.ImagesF
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.RouteFormFragment;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.Main2Activity;
+import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 
-public class CompanyInfoActivity extends AppCompatActivity {
+public class CompanyInfoActivity extends AppCompatActivity implements EasyImagePickUP.ImagePickerListener {
 
     public static final String TAG = "Company Info Activity";
     private ViewPager mViewPager;
     TabLayout tabLayout;
     ViewPagerAdapter adapter;
-    FirebaseAuth auth;
-    DocumentReference mUserDocRef;
     Fragment fragment;
     private PartnerInfoPojo partnerInfoPojo;
+    EasyImagePickUP easyImagePickUP;
 
 
     @Override
@@ -69,19 +72,14 @@ public class CompanyInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_form);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setSubtitle("Last Update : 10sec ago");
+        toolbar.setSubtitle("Updated 10sec ago");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         partnerInfoPojo = new PartnerInfoPojo();
 
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.container);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-
-        auth = FirebaseAuth.getInstance();
-        mUserDocRef = FirebaseFirestore.getInstance()
-                .collection("partners").document(auth.getUid());
         createViewPager(viewPager);
         viewPager.setAdapter(adapter);
         createTabIcons();
@@ -102,6 +100,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     private void createTabIcons() {
@@ -159,25 +158,17 @@ public class CompanyInfoActivity extends AppCompatActivity {
         adapter.addFrag(new RouteFormFragment(), "Tab Route");
         adapter.addFrag(new FleetFormFragment(), "Tab Fleet");
         adapter.addFrag(new ImagesFormFragment(), "Tab Images");
-
-
-        fragment = adapter.getItem(0);
-        mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
-                    ((BaseFragment)fragment)
-                            .onUpdate(partnerInfoPojo);
-                }
-
-            }
-        });
-
-
     }
 
+    @Override
+    public void onPicked(int from, String filename, Bitmap file, Uri uri) {
+        Logger.v("onpicked");
+    }
 
+    @Override
+    public void onCropped(int from, String filename, Bitmap file, Uri uri) {
+
+    }
 
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -208,6 +199,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
 
 
 

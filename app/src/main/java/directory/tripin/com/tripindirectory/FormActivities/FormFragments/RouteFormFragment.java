@@ -34,7 +34,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +97,7 @@ public class RouteFormFragment extends BaseFragment {
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
 
-        mUserDocRef.addSnapshotListener(getActivity(),new EventListener<DocumentSnapshot>() {
+        mUserDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
@@ -115,9 +114,9 @@ public class RouteFormFragment extends BaseFragment {
                     Logger.v("list pick up null");
                 }
 
-                if(partnerInfoPojo.getDestinationCities()!=null){
+                if(partnerInfoPojo.getmDestinationCities()!=null){
                     dropoffHM.clear();
-                    dropoffHM.putAll(partnerInfoPojo.getDestinationCities());
+                    dropoffHM.putAll(partnerInfoPojo.getmDestinationCities());
                     listdropoff.clear();
                     listdropoff.addAll(dropoffHM.keySet());
                     adapterd.notifyDataSetChanged();
@@ -184,7 +183,7 @@ public class RouteFormFragment extends BaseFragment {
         // inflates the row layout from xml when needed
         @Override
         public PlacesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item_city, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city, parent, false);
             PlacesViewHolder viewHolder = new PlacesViewHolder(view);
             return viewHolder;
         }
@@ -201,6 +200,7 @@ public class RouteFormFragment extends BaseFragment {
                     //remove city
                     if (type == 1) {
                         //remove pickup
+                        //listpickup.remove(position);
                         mUserDocRef.update("mSourceCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -212,7 +212,7 @@ public class RouteFormFragment extends BaseFragment {
                     }
                     if (type == 2) {
                         //remove drop off
-                        //remove pickup
+                        //listdropoff.remove(position);
                         mUserDocRef.update("mDestinationCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -262,16 +262,18 @@ public class RouteFormFragment extends BaseFragment {
                 Logger.v("Place::: " + place.getName());
                 if(mPlaceCode==1){
                     pickupHM.put(place.getName().toString(),true);
-                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
-                    partnerInfoPojo.setmSourceCities(pickupHM);
-                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+                    mUserDocRef.update("mSourceCities",pickupHM);
+//                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+//                    partnerInfoPojo.setmSourceCities(pickupHM);
+//                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
 
                 }
                 if(mPlaceCode==2){
                     dropoffHM.put(place.getName().toString(),true);
-                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
-                    partnerInfoPojo.setDestinationCities(dropoffHM);
-                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+                    mUserDocRef.update("mDestinationCities",dropoffHM);
+//                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+//                    partnerInfoPojo.setDestinationCities(dropoffHM);
+//                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
                 }
                 Toast.makeText(getActivity(),"City Added",Toast.LENGTH_SHORT).show();
 

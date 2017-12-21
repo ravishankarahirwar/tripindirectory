@@ -78,9 +78,9 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
     }
 
     @Override
-    public void onAttach(Activity context) {
+    public void onAttach(Context context) {
         super.onAttach(context);
-        this.mContext = context;
+        mContext = context;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
-        easyImagePickUP = new EasyImagePickUP(getActivity().getParent());
+        easyImagePickUP = new EasyImagePickUP(getActivity());
         imagesUriList = new ArrayList<>();
         progressDialog = new ProgressDialog(getActivity());
         fetchImagesURL();
