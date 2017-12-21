@@ -3,8 +3,10 @@ package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,8 +15,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -23,6 +28,8 @@ import java.util.List;
 
 import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder1;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
 
@@ -32,17 +39,17 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
 public class FleetFormFragment extends BaseFragment {
 
 
-    Query query;
-    FirebaseAuth auth;
-    DocumentReference mUserDocRef;
-    FirestoreRecyclerOptions<PartnerInfoPojo> options;
-    FleetAdapter adapterp;
-    List<Vehicle> mVehicles;
+    private Query query;
+    private FirebaseAuth auth;
+    private DocumentReference mUserDocRef;
+    private FirestoreRecyclerOptions<PartnerInfoPojo> options;
+    private FleetAdapter adapterp;
+    private List<Vehicle> mVehicles;
 
     private Context mContext;
     private RecyclerView mVechileList;
     private TextView mAddVechile;
-
+    private PartnerInfoPojo partnerInfoPojo;
 
     public FleetFormFragment() {
         // Required empty public constructor
@@ -93,6 +100,7 @@ public class FleetFormFragment extends BaseFragment {
 
         mVechileList = rootView.findViewById(R.id.vehicle_list);
         mVechileList.setLayoutManager(new LinearLayoutManager(mContext));
+        mVechileList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mVechileList.setAdapter(adapterp);
 
         mAddVechile.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +116,29 @@ public class FleetFormFragment extends BaseFragment {
 
     }
 
+    public void FetchUserData() {
+        //get the updated partner pojo and set all fields if not null
+        auth = FirebaseAuth.getInstance();
+        mUserDocRef = FirebaseFirestore.getInstance()
+                .collection("partners").document(auth.getUid());
+        Logger.v("Fetching Data");
+        //mLoadingDataLin.setVisibility(View.VISIBLE);
+        mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+
+                    if(partnerInfoPojo.getVehicles()!=null){
+                        mVehicles.clear();
+                        mVehicles.addAll(partnerInfoPojo.getVehicles());
+                    }
+                   Logger.v("On Data Fetch and set Company Data");
+                }
+            }
+        });
+
+    }
 
     public class FleetAdapter extends RecyclerView.Adapter<PlacesViewHolder1> {
 
@@ -132,7 +163,6 @@ public class FleetFormFragment extends BaseFragment {
             return viewHolder;
         }
 
-        // binds the data to the textview in each row
         @Override
         public void onBindViewHolder(final PlacesViewHolder1 holder, final int position) {
             holder.onBind(mContext, holder);

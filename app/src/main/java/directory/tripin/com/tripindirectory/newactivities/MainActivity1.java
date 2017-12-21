@@ -347,8 +347,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         }
                     }
                 });
-
-
                 return;
             } else {
                 // Sign in failed

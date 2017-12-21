@@ -4,49 +4,45 @@
     android:layout_height="match_parent"
     android:background="@color/light_gray"
     tools:context=".FormActivities.CompanyInfoActivity">
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
         android:padding="5dp">
+            <TextView
+                android:id="@+id/pickup_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Fleet:"
+                android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/pickup_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Fleet:"
-            android:textStyle="bold"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vehicle_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_fleet"
+                android:layout_below="@+id/pickup_title"
+                android:nestedScrollingEnabled="false"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/vehicle_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/pickup_title"
+            <TextView
+                android:id="@+id/add_vehicle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/vehicle_list"
 
-            android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_fleet"/>
+                android:layout_centerVertical="false"
+                android:layout_margin="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/ic_add_circle_black_24dp"
+                android:gravity="center_vertical"
+                android:text="Add Truck"
+                android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/add_vehicle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/vehicle_list"
-
-            android:layout_centerVertical="false"
-            android:layout_margin="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:drawableStart="@drawable/ic_add_circle_black_24dp"
-            android:gravity="center_vertical"
-            android:text="Add Truck"
-            android:textStyle="bold"/>
-
-    </RelativeLayout>
+        </RelativeLayout>
 
 
 </android.support.v4.widget.NestedScrollView>

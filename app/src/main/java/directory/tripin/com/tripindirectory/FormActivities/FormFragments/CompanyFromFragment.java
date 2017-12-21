@@ -351,7 +351,6 @@ public class CompanyFromFragment extends BaseFragment {
                 }
                 mCompanyLandLineNumbers.add("");
                 companyLandLineNumbersAdapter.notifyDataSetChanged();
-
             }
         });
 
