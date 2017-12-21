@@ -51,21 +51,16 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
-public class CompanyInfoActivity extends AppCompatActivity implements RouteFormFragment.OnPickUpPlace, CompanyFromFragment.OnCompanyDataModifiedListner {
+public class CompanyInfoActivity extends AppCompatActivity {
 
     public static final String TAG = "Company Info Activity";
     private ViewPager mViewPager;
     TabLayout tabLayout;
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     ViewPagerAdapter adapter;
-    int mPlaceCode = 0;
-    Query query;
     FirebaseAuth auth;
     DocumentReference mUserDocRef;
     Fragment fragment;
     private PartnerInfoPojo partnerInfoPojo;
-
-
 
 
     @Override
@@ -74,7 +69,7 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         setContentView(R.layout.activity_main_form);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setSubtitle("Sub Title Test");
+        toolbar.setSubtitle("Last Update : 10sec ago");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         partnerInfoPojo = new PartnerInfoPojo();
 
@@ -106,37 +101,7 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place::: " + place.getName());
-                if(mPlaceCode==1){
-                   HashMap<String ,HashMap<String,Boolean>> hashMap = new HashMap<>();
-                   HashMap<String,Boolean> hm2 = new HashMap<>();
-                   hm2.put(place.getName().toString(),true);
-                    hashMap.put("mSourceCities",hm2);
-                    mUserDocRef.set(hashMap);
-                    //mUserDocRef.update("mSourceCities."+place.getName(),true);
-
-                }
-                if(mPlaceCode==2){
-                 HashMap<String ,HashMap<String,Boolean>> hashMap = new HashMap<>();
-                    HashMap<String,Boolean> hm2 = new HashMap<>();
-                    hm2.put(place.getName().toString(),true);
-                    hashMap.put("mDestinationCities",hm2);
-                    mUserDocRef.set(hashMap);
-                   // mUserDocRef.update("mSourceCities."+place.getName(),true);
-                }
-
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void createTabIcons() {
@@ -212,19 +177,8 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
 
     }
 
-    @Override
-    public void OnPickUpClicked(int id) {
-        starttheplacesfragment();
-        mPlaceCode = id;
-    }
 
-    @Override
-    public void OnCompanyModified(PartnerInfoPojo partnerInfoPojo) {
-        this.partnerInfoPojo.setCompanyAdderss(partnerInfoPojo.getmCompanyAdderss());
-        this.partnerInfoPojo.setCompanyName(partnerInfoPojo.getmCompanyName());
-        this.partnerInfoPojo.setContactPersonsList(partnerInfoPojo.getmContactPersonsList());
-        this.partnerInfoPojo.setmCompanyLandLineNumbers(partnerInfoPojo.getmCompanyLandLineNumbers());
-    }
+
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -255,23 +209,7 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         }
     }
 
-    private void starttheplacesfragment(){
-        try {
 
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-                    .build();
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                            .setFilter(typeFilter)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
-        }
-    }
 
     @Override
     public void onBackPressed() {

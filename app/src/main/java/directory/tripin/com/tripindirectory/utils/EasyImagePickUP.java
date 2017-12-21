@@ -142,7 +142,7 @@ public class EasyImagePickUP
      */
 
     public boolean isDeviceSupportCamera() {
-        if (this.context.getApplicationContext().getPackageManager().hasSystemFeature(
+        if (this.context.getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA)) {
             // this device has a camera
             return true;
