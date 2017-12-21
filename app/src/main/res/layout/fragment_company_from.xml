@@ -235,6 +235,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
 
@@ -247,6 +248,16 @@
                 android:text="Nature of Business :"
                 android:textStyle="bold"/>
 
+            <ImageView
+                android:id="@+id/nobup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/natureofbusiness_title"
+                android:layout_margin="10dp"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_natureofbusiness"
                 android:layout_width="match_parent"
@@ -254,6 +265,42 @@
                 android:layout_below="@id/natureofbusiness_title"
                 android:layout_margin="10dp"/>
 
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/nobup2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/typesofbusiness_title"
+                android:layout_margin="10dp"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+
+            <TextView
+                android:id="@+id/typesofbusiness_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignStart="@+id/rv_typesofservices"
+                android:layout_marginTop="11dp"
+                android:text="Types of services :"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_typesofservices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/typesofbusiness_title"
+                android:layout_margin="10dp"/>
 
 
         </RelativeLayout>

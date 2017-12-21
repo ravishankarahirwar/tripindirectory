@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumbersAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.ContactPersonsAdapter;
 import directory.tripin.com.tripindirectory.R;
@@ -66,12 +68,17 @@ public class CompanyFromFragment extends BaseFragment {
     private RecyclerView mTypesOfServicesRecyclarView;
     private HashMap<String,Boolean> mNatureofBusinessHashMap;
     private HashMap<String,Boolean> mTypesofServicesHashMap;
+    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
+    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
+
 
     private List<ContactPersonPojo> mContactPersonsList;
     private List<String> mCompanyLandLineNumbers;
     private ContactPersonsAdapter contactPersonsAdapter;
     private CompanyLandLineNumbersAdapter companyLandLineNumbersAdapter;
     private LinearLayout mLoadingDataLin;
+
+    private ImageView togglenoblist,toggletoslist;
 
 
     public CompanyFromFragment() {
@@ -102,6 +109,9 @@ public class CompanyFromFragment extends BaseFragment {
 
         mCompanyLandLineNumbers.add("");
         companyLandLineNumbersAdapter = new CompanyLandLineNumbersAdapter(mCompanyLandLineNumbers);
+
+        checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
+        checkBoxRecyclarAdapter2 = new CheckBoxRecyclarAdapter(mTypesofServicesHashMap);
     }
 
 
@@ -122,15 +132,15 @@ public class CompanyFromFragment extends BaseFragment {
                     if (partnerInfoPojo.getmContactPersonsList() != null) {
                         mContactPersonsList.clear();
                         mContactPersonsList.addAll(partnerInfoPojo.getmContactPersonsList());
+                        contactPersonsAdapter.notifyDataSetChanged();
                     }
 
                     if (partnerInfoPojo.getmCompanyLandLineNumbers() != null) {
                         mCompanyLandLineNumbers.clear();
                         mCompanyLandLineNumbers.addAll(partnerInfoPojo.getmCompanyLandLineNumbers());
+                        companyLandLineNumbersAdapter.notifyDataSetChanged();
                     }
 
-                    companyLandLineNumbersAdapter.notifyDataSetChanged();
-                    contactPersonsAdapter.notifyDataSetChanged();
 
                     mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
 
@@ -140,10 +150,16 @@ public class CompanyFromFragment extends BaseFragment {
                         mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getState());
                     }
 
-                    if(partnerInfoPojo.getmNatureOfBusiness()!=null){
+                    if(partnerInfoPojo.getmNatureOfBusiness() != null){
                         mNatureofBusinessHashMap.clear();
                         mNatureofBusinessHashMap.putAll(partnerInfoPojo.getmNatureOfBusiness());
+                        checkBoxRecyclarAdapter1.notifyDataSetChanged();
+                    }
 
+                    if(partnerInfoPojo.getmTypesOfServices() != null){
+                        mTypesofServicesHashMap.clear();
+                        mTypesofServicesHashMap.putAll(partnerInfoPojo.getmTypesOfServices());
+                        checkBoxRecyclarAdapter2.notifyDataSetChanged();
                     }
 
 
@@ -221,7 +237,14 @@ public class CompanyFromFragment extends BaseFragment {
         HashMap<String,CompanyAddressPojo> hashMap3 = new HashMap<>();
         hashMap3.put("mCompanyAdderss",partnerInfoPojo.getmCompanyAdderss());
         mUserDocRef.set(hashMap3,SetOptions.merge());
-        //mUserDocRef.update("mCompanyAdderss",partnerInfoPojo.getmCompanyAdderss());
+
+        HashMap<String,HashMap<String,Boolean>> hashMap4 = new HashMap<>();
+        hashMap4.put("mNatureOfBusiness",checkBoxRecyclarAdapter1.getmDataMap());
+        mUserDocRef.set(hashMap4,SetOptions.merge());
+
+        HashMap<String,HashMap<String,Boolean>> hashMap5 = new HashMap<>();
+        hashMap5.put("mTypesOfServices",checkBoxRecyclarAdapter2.getmDataMap());
+        mUserDocRef.set(hashMap5,SetOptions.merge());
 
 
     }
@@ -241,24 +264,37 @@ public class CompanyFromFragment extends BaseFragment {
         mAddContactPersonTxt = v.findViewById(R.id.add_person);
         mAddCompanyTxt = v.findViewById(R.id.add_landline);
         mLoadingDataLin = v.findViewById(R.id.ll_loading);
+        togglenoblist =v.findViewById(R.id.nobup);
+        toggletoslist = v.findViewById(R.id.nobup2);
 
 
         mPersonsRecyclarView = v.findViewById(R.id.contactpersons_recyclar);
-        mLandlineRecyclarView = v.findViewById(R.id.landlinerecycler);
         mPersonsRecyclarView.setAdapter(contactPersonsAdapter);
-        mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-//        linearLayoutManager.setReverseLayout(true);
-//        linearLayoutManager.setStackFromEnd(true);
         mPersonsRecyclarView.setLayoutManager(linearLayoutManager);
-
-        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
-//        linearLayoutManager2.setReverseLayout(true);
-//        linearLayoutManager2.setStackFromEnd(true);
-        mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
         mPersonsRecyclarView.setNestedScrollingEnabled(false);
+
+
+        mLandlineRecyclarView = v.findViewById(R.id.landlinerecycler);
+        mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
+        mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
         mLandlineRecyclarView.setNestedScrollingEnabled(false);
+
+        mNatureOfBusinessRecyclarView = v.findViewById(R.id.rv_natureofbusiness);
+        mNatureOfBusinessRecyclarView.setAdapter(checkBoxRecyclarAdapter1);
+        mNatureOfBusinessRecyclarView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mNatureOfBusinessRecyclarView.setNestedScrollingEnabled(false);
+
+        mTypesOfServicesRecyclarView = v.findViewById(R.id.rv_typesofservices);
+        mTypesOfServicesRecyclarView.setAdapter(checkBoxRecyclarAdapter2);
+        mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
+
+
+
+
+
 
 
         mAddContactPersonTxt.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +326,33 @@ public class CompanyFromFragment extends BaseFragment {
                 mCompanyLandLineNumbers.add("");
                 companyLandLineNumbersAdapter.notifyDataSetChanged();
 
+            }
+        });
+
+        toggletoslist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mTypesOfServicesRecyclarView.getVisibility()==View.VISIBLE){
+                    mTypesOfServicesRecyclarView.setVisibility(View.GONE);
+                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                }else {
+                    mTypesOfServicesRecyclarView.setVisibility(View.VISIBLE);
+                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+
+                }
+            }
+        });
+        togglenoblist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mNatureOfBusinessRecyclarView.getVisibility()==View.VISIBLE){
+                    mNatureOfBusinessRecyclarView.setVisibility(View.GONE);
+                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                }else {
+                    mNatureOfBusinessRecyclarView.setVisibility(View.VISIBLE);
+                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+
+                }
             }
         });
         return v;
