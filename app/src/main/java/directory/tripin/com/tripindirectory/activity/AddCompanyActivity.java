@@ -164,11 +164,11 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                         mPickUpCities.append(key);
                     }
 
-                    Iterator dropCityIterator = company.getDestinationCities().keySet().iterator();
-                    while(dropCityIterator.hasNext()) {
-                        String key=(String)dropCityIterator.next();
-                        mDropCities.append(key);
-                    }
+//                    Iterator dropCityIterator = company.getDestinationCities().keySet().iterator();
+//                    while(dropCityIterator.hasNext()) {
+//                        String key=(String)dropCityIterator.next();
+//                        mDropCities.append(key);
+//                    }
 
                     if(company.getmContactPersonsList().size() > 1) {
                         String name = company.getmContactPersonsList().get(0).getmContactPresonName();

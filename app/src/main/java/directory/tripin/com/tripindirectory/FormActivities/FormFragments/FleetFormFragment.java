@@ -77,11 +77,11 @@ public class FleetFormFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVehicles = new ArrayList<>();
-        Vehicle vehicle = new Vehicle();
-        Vehicle vehicle1 = new Vehicle();
-
-        mVehicles.add(vehicle);
-        mVehicles.add(vehicle1);
+//        Vehicle vehicle = new Vehicle();
+//        Vehicle vehicle1 = new Vehicle();
+//
+//        mVehicles.add(vehicle);
+//        mVehicles.add(vehicle1);
 
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
 
@@ -118,17 +118,15 @@ public class FleetFormFragment extends BaseFragment {
     public class FleetAdapter extends RecyclerView.Adapter<PlacesViewHolder> {
 
         private List<Vehicle> mDataValues;
-        private int type = 0;
 
         private void setDataValues(List<Vehicle> dataValues) {
             mDataValues = dataValues;
-            notifyDataSetChanged();
+            this.notifyDataSetChanged();
         }
 
         // data is passed into the constructor
         public FleetAdapter(Context context, List<Vehicle> data, int type) {
             this.mDataValues = data;
-            this.type = type;
         }
 
         // inflates the row layout from xml when needed
