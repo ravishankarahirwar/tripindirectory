@@ -61,7 +61,6 @@ import java.util.Set;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
 import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
@@ -308,7 +307,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             if (resultCode == RESULT_OK) {
                 //signed in
                 showSnackbar(R.string.sign_in_done);
-                startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
                 return;
             } else {
                 // Sign in failed

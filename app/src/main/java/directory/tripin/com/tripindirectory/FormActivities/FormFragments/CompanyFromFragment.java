@@ -96,7 +96,7 @@ public class CompanyFromFragment extends BaseFragment {
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() && task.getResult().exists()) {
                     mLoadingDataLin.setVisibility(View.GONE);
                     partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
 

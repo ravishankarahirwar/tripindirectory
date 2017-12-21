@@ -38,7 +38,6 @@ import java.util.Map;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;

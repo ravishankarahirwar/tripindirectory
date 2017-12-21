@@ -100,32 +100,33 @@ public class RouteFormFragment extends BaseFragment {
         mUserDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                if(documentSnapshot.exists()) {
+                    PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
 
-                Logger.v("Event Triggered, PICK DROP modified");
-                if(partnerInfoPojo.getmSourceCities()!=null){
-                    pickupHM.clear();
-                    pickupHM.putAll(partnerInfoPojo.getmSourceCities());
-                    listpickup.clear();
-                    listpickup.addAll(pickupHM.keySet());
-                    adapterp.notifyDataSetChanged();
-                    Logger.v("list pick up modified");
-                }else {
-                    Logger.v("list pick up null");
+                    Logger.v("Event Triggered, PICK DROP modified");
+                    if (partnerInfoPojo.getmSourceCities() != null) {
+                        pickupHM.clear();
+                        pickupHM.putAll(partnerInfoPojo.getmSourceCities());
+                        listpickup.clear();
+                        listpickup.addAll(pickupHM.keySet());
+                        adapterp.notifyDataSetChanged();
+                        Logger.v("list pick up modified");
+                    } else {
+                        Logger.v("list pick up null");
+                    }
+
+                    if (partnerInfoPojo.getmDestinationCities() != null) {
+                        dropoffHM.clear();
+                        dropoffHM.putAll(partnerInfoPojo.getmDestinationCities());
+                        listdropoff.clear();
+                        listdropoff.addAll(dropoffHM.keySet());
+                        adapterd.notifyDataSetChanged();
+                        Logger.v("list drop modified");
+
+                    } else {
+                        Logger.v("list drop up null");
+                    }
                 }
-
-                if(partnerInfoPojo.getmDestinationCities()!=null){
-                    dropoffHM.clear();
-                    dropoffHM.putAll(partnerInfoPojo.getmDestinationCities());
-                    listdropoff.clear();
-                    listdropoff.addAll(dropoffHM.keySet());
-                    adapterd.notifyDataSetChanged();
-                    Logger.v("list drop modified");
-
-                }else {
-                    Logger.v("list drop up null");
-                }
-
             }
         });
 
