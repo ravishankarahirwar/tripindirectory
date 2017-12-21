@@ -97,7 +97,7 @@ public class RouteFormFragment extends BaseFragment {
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
 
-        mUserDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        mUserDocRef.addSnapshotListener(getActivity(),new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if(documentSnapshot.exists()) {
