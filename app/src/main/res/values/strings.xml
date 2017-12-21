@@ -93,6 +93,8 @@
     <string name="action_voice_rec">action voice rec</string>
     <string name="title_activity_main_home">MainHome</string>
     <string name="title_activity_temp">TempActivity</string>
+    <string name="action_settings">Setting</string>
+
 
     <string-array name="payload">
         <item>Mercury</item>
