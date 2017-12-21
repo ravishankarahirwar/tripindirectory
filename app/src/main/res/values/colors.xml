@@ -11,4 +11,5 @@
 
     <color name="arrow_white">#FFFFFF</color>
     <color name="arrow_grey">#A0A0A0</color>
+    <color name="default_textview_color">#212121</color>
 </resources>

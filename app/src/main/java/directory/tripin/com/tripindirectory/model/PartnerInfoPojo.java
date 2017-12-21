@@ -40,11 +40,11 @@ public class PartnerInfoPojo {
         this.mSourceCities = mSourceCities;
     }
 
-    public Map<String, Boolean> getDestinationCities() {
+    public Map<String, Boolean> getmDestinationCities() {
         return mDestinationCities;
     }
 
-    public void setDestinationCities(Map<String, Boolean> mDestinationCities) {
+    public void setmDestinationCities(Map<String, Boolean> mDestinationCities) {
         this.mDestinationCities = mDestinationCities;
     }
 

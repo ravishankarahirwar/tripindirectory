@@ -3,6 +3,7 @@ package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,13 +18,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -36,13 +45,16 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static directory.tripin.com.tripindirectory.factory.AppController.TAG;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class RouteFormFragment extends BaseFragment {
 
-    OnPickUpPlace onPickUpPlace;
     Query query;
     FirebaseAuth auth;
     DocumentReference mUserDocRef;
@@ -56,88 +68,85 @@ public class RouteFormFragment extends BaseFragment {
     private TextView addPickUpCity, addDropOffCity;
     private Context mContext;
     private RecyclerView mPickUpList, mDropList;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    int mPlaceCode = 0;
+
 
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
 
-        Logger.v("ONUPDATE");
-        if (partnerInfoPojo.getmSourceCities() != null) {
-             listpickup.clear();
-            pickupHM = partnerInfoPojo.getmSourceCities();
-            listpickup.addAll(pickupHM.keySet());
-            mPickUpList.setAdapter(adapterp);
-            adapterp.notifyDataSetChanged();
-            Log.e("onEvent 1",partnerInfoPojo.getmSourceCities().toString());
-
-        }else {
-            Logger.v("sourcenull");
-        }
-        if (partnerInfoPojo.getDestinationCities() != null) {
-            listdropoff.clear();
-            dropoffHM = partnerInfoPojo.getDestinationCities();
-            listdropoff.addAll(dropoffHM.keySet());
-            mDropList.setAdapter(adapterd);
-            adapterd.notifyDataSetChanged();
-            Log.e("onEvent",partnerInfoPojo.getDestinationCities().toString());
-        }else {
-            Logger.v("detination null");
-
-        }
     }
 
     public RouteFormFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            onPickUpPlace = (OnPickUpPlace) activity;
-            this.mContext = activity.getApplicationContext();
-            this.activity = activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         listpickup = new ArrayList<>();
         listdropoff = new ArrayList<>();
         pickupHM = new HashMap<>();
         dropoffHM = new HashMap<>();
+        adapterp = new MyRecyclerViewAdapter(listpickup, 1);
+        adapterd = new MyRecyclerViewAdapter(listdropoff, 2);
+    }
 
-        adapterp = new MyRecyclerViewAdapter(activity, listpickup, 1);
-        adapterd = new MyRecyclerViewAdapter(activity, listdropoff, 2);
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
 
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
 
+        mUserDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+
+                Logger.v("Event Triggered, PICK DROP modified");
+                if(partnerInfoPojo.getmSourceCities()!=null){
+                    pickupHM.clear();
+                    pickupHM.putAll(partnerInfoPojo.getmSourceCities());
+                    listpickup.clear();
+                    listpickup.addAll(pickupHM.keySet());
+                    adapterp.notifyDataSetChanged();
+                    Logger.v("list pick up modified");
+                }else {
+                    Logger.v("list pick up null");
+                }
+
+                if(partnerInfoPojo.getmDestinationCities()!=null){
+                    dropoffHM.clear();
+                    dropoffHM.putAll(partnerInfoPojo.getmDestinationCities());
+                    listdropoff.clear();
+                    listdropoff.addAll(dropoffHM.keySet());
+                    adapterd.notifyDataSetChanged();
+                    Logger.v("list drop modified");
+
+                }else {
+                    Logger.v("list drop up null");
+                }
+
+            }
+        });
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_route_form, container, false);
+
         addPickUpCity = v.findViewById(R.id.add_pickupcity);
         addDropOffCity = v.findViewById(R.id.add_dropcity);
         mPickUpList = v.findViewById(R.id.pickup_list);
         mDropList = v.findViewById(R.id.drop_list);
         mPickUpList.setLayoutManager(new LinearLayoutManager(activity));
         mDropList.setLayoutManager(new LinearLayoutManager(activity));
-
+        mPickUpList.setAdapter(adapterp);
+        mDropList.setAdapter(adapterd);
         setListners();
-        return v;
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+        return v;
     }
 
     private void setListners() {
@@ -145,51 +154,20 @@ public class RouteFormFragment extends BaseFragment {
         addPickUpCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPickUpPlace.OnPickUpClicked(1);
+                mPlaceCode = 1;
+                starttheplacesfragment();
             }
         });
 
         addDropOffCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPickUpPlace.OnPickUpClicked(2);
+                mPlaceCode = 2;
+                starttheplacesfragment();
             }
         });
     }
 
-    public void addnewplace(Place place, int mPlaceCode) {
-
-        if (place!= null) {
-            if (mPlaceCode == 1) {
-                pickupHM.put(place.getName().toString(), true);
-                //upload pickup city
-                mUserDocRef.update("mSourceCities", pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(mContext, "Source City Added!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-            if (mPlaceCode == 2) {
-                //upload destination city
-                dropoffHM.put(place.getName().toString(), true);
-                mUserDocRef.update("mDestinationCities", dropoffHM).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(mContext, "Destination City Added!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        } else {
-            Toast.makeText(mContext, "Try Again!", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
-
-    public interface OnPickUpPlace {
-        public void OnPickUpClicked(int id);
-    }
 
     public class MyRecyclerViewAdapter extends RecyclerView.Adapter<PlacesViewHolder> {
 
@@ -197,7 +175,7 @@ public class RouteFormFragment extends BaseFragment {
         private int type = 0;
 
         // data is passed into the constructor
-        public MyRecyclerViewAdapter(Context context, List<String> data, int type) {
+        public MyRecyclerViewAdapter(List<String> data, int type) {
             this.mData = data;
             this.type = type;
         }
@@ -205,7 +183,7 @@ public class RouteFormFragment extends BaseFragment {
         // inflates the row layout from xml when needed
         @Override
         public PlacesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item_city, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city, parent, false);
             PlacesViewHolder viewHolder = new PlacesViewHolder(view);
             return viewHolder;
         }
@@ -222,7 +200,9 @@ public class RouteFormFragment extends BaseFragment {
                     //remove city
                     if (type == 1) {
                         //remove pickup
-                        mUserDocRef.update("mSourceCities." + mData.get(position), FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        //listpickup.remove(position);
+                        mUserDocRef.update("mSourceCities." + mData.get(position),
+                                FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 notifyDataSetChanged();
@@ -232,8 +212,9 @@ public class RouteFormFragment extends BaseFragment {
                     }
                     if (type == 2) {
                         //remove drop off
-                        //remove pickup
-                        mUserDocRef.update("mDestinationCities." + mData.get(position), FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        //listdropoff.remove(position);
+                        mUserDocRef.update("mDestinationCities." + mData.get(position),
+                                FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 notifyDataSetChanged();
@@ -253,6 +234,58 @@ public class RouteFormFragment extends BaseFragment {
         }
 
 
+    }
+
+    private void starttheplacesfragment(){
+        try {
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .build();
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(typeFilter)
+                            .build(getActivity());
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                Logger.v("Place::: " + place.getName());
+                if(mPlaceCode==1){
+                    pickupHM.put(place.getName().toString(),true);
+                    mUserDocRef.update("mSourceCities",pickupHM);
+//                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+//                    partnerInfoPojo.setmSourceCities(pickupHM);
+//                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+
+                }
+                if(mPlaceCode==2){
+                    dropoffHM.put(place.getName().toString(),true);
+                    mUserDocRef.update("mDestinationCities",dropoffHM);
+//                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+//                    partnerInfoPojo.setDestinationCities(dropoffHM);
+//                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+                }
+                Toast.makeText(getActivity(),"City Added",Toast.LENGTH_SHORT).show();
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getActivity(), data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
 

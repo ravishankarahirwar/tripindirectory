@@ -2,7 +2,10 @@ package directory.tripin.com.tripindirectory.FormActivities;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +30,8 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,21 +51,19 @@ import directory.tripin.com.tripindirectory.FormActivities.FormFragments.ImagesF
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.RouteFormFragment;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.Main2Activity;
+import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 
-public class CompanyInfoActivity extends AppCompatActivity implements RouteFormFragment.OnPickUpPlace {
+public class CompanyInfoActivity extends AppCompatActivity implements EasyImagePickUP.ImagePickerListener {
 
     public static final String TAG = "Company Info Activity";
     private ViewPager mViewPager;
     TabLayout tabLayout;
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     ViewPagerAdapter adapter;
-    int mPlaceCode = 0;
-    Query query;
-    FirebaseAuth auth;
-    DocumentReference mUserDocRef;
     Fragment fragment;
-
+    private PartnerInfoPojo partnerInfoPojo;
+    EasyImagePickUP easyImagePickUP;
 
 
     @Override
@@ -69,81 +72,35 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         setContentView(R.layout.activity_main_form);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setSubtitle("Sub Title Test");
+        toolbar.setSubtitle("Updated 10sec ago");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        partnerInfoPojo = new PartnerInfoPojo();
+
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.container);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         createViewPager(viewPager);
-
-
-
         viewPager.setAdapter(adapter);
-        fragment = adapter.getItem(1);
-
-        auth = FirebaseAuth.getInstance();
-        mUserDocRef = FirebaseFirestore.getInstance()
-                .collection("partners").document(auth.getUid());
-
-        mUserDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
-                if(documentSnapshot.exists())
-                ((BaseFragment)fragment).onUpdate(documentSnapshot.toObject(PartnerInfoPojo.class));
-            }
-        });
-
-
         createTabIcons();
-
-
-
 
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place::: " + place.getName());
-                if(mPlaceCode==1){
-                   HashMap<String ,HashMap<String,Boolean>> hashMap = new HashMap<>();
-                   HashMap<String,Boolean> hm2 = new HashMap<>();
-                   hm2.put(place.getName().toString(),true);
-                    hashMap.put("mSourceCities",hm2);
-                    mUserDocRef.set(hashMap);
-                    //mUserDocRef.update("mSourceCities."+place.getName(),true);
+        super.onActivityResult(requestCode, resultCode, data);
 
-                }
-                if(mPlaceCode==2){
-                 HashMap<String ,HashMap<String,Boolean>> hashMap = new HashMap<>();
-                    HashMap<String,Boolean> hm2 = new HashMap<>();
-                    hm2.put(place.getName().toString(),true);
-                    hashMap.put("mDestinationCities",hm2);
-                    mUserDocRef.set(hashMap);
-                   // mUserDocRef.update("mSourceCities."+place.getName(),true);
-                }
-
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
     }
 
     private void createTabIcons() {
@@ -201,14 +158,18 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         adapter.addFrag(new RouteFormFragment(), "Tab Route");
         adapter.addFrag(new FleetFormFragment(), "Tab Fleet");
         adapter.addFrag(new ImagesFormFragment(), "Tab Images");
-
     }
 
     @Override
-    public void OnPickUpClicked(int id) {
-        starttheplacesfragment();
-        mPlaceCode = id;
+    public void onPicked(int from, String filename, Bitmap file, Uri uri) {
+        Logger.v("onpicked");
     }
+
+    @Override
+    public void onCropped(int from, String filename, Bitmap file, Uri uri) {
+
+    }
+
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -239,21 +200,10 @@ public class CompanyInfoActivity extends AppCompatActivity implements RouteFormF
         }
     }
 
-    private void starttheplacesfragment(){
-        try {
 
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-                    .build();
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                            .setFilter(typeFilter)
-                            .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
-        }
+
+
+    @Override
+    public void onBackPressed() {
     }
 }

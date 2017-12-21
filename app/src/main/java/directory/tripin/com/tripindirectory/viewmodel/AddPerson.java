@@ -2,6 +2,8 @@ package directory.tripin.com.tripindirectory.viewmodel;
 
 import android.content.Context;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 /**
  * @author Ravishankar
@@ -10,6 +12,8 @@ import android.widget.EditText;
  */
 
 public class AddPerson {
+    private ImageView remove;
+    private LinearLayout mainLayout;
     private EditText personName;
     private EditText pesonContact;
 
@@ -32,5 +36,21 @@ public class AddPerson {
 
     public void setPesonContact(EditText pesonContact) {
         this.pesonContact = pesonContact;
+    }
+
+    public ImageView getRemove() {
+        return remove;
+    }
+
+    public void setRemove(ImageView remove) {
+        this.remove = remove;
+    }
+
+    public LinearLayout getMainLayout() {
+        return mainLayout;
+    }
+
+    public void setMainLayout(LinearLayout mainLayout) {
+        this.mainLayout = mainLayout;
     }
 }
