@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -45,14 +44,14 @@ public class FleetFormFragment extends BaseFragment {
     private TextView mAddVechile;
 
 
+    public FleetFormFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
 
 
-    }
-
-    public FleetFormFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -101,7 +100,7 @@ public class FleetFormFragment extends BaseFragment {
             public void onClick(View view) {
                 Vehicle vehicle = new Vehicle();
                 mVehicles.add(vehicle);
-                adapterp.setDataValues(mVehicles);
+                adapterp.notifyDataSetChanged();
             }
         });
 
@@ -114,15 +113,15 @@ public class FleetFormFragment extends BaseFragment {
 
         private List<Vehicle> mDataValues;
 
-        private void setDataValues(List<Vehicle> dataValues) {
-            mDataValues = dataValues;
-            this.notifyDataSetChanged();
-        }
-
         // data is passed into the constructor
         public FleetAdapter(Context context, List<Vehicle> data, int type) {
             this.mDataValues = data;
 
+        }
+
+        private void setDataValues(List<Vehicle> dataValues) {
+            mDataValues = dataValues;
+            this.notifyDataSetChanged();
         }
 
         // inflates the row layout from xml when needed
