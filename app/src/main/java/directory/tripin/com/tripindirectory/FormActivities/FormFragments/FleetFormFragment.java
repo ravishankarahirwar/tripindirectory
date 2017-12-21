@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,51 +36,27 @@ import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.model.response.Vehicle;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FleetFormFragment extends BaseFragment {
 
-    RouteFormFragment.OnPickUpPlace onPickUpPlace;
     Query query;
     FirebaseAuth auth;
     DocumentReference mUserDocRef;
     FirestoreRecyclerOptions<PartnerInfoPojo> options;
     FleetAdapter adapterp;
-    List<String> listpickup, listdropoff;
-    Map<String, Boolean> pickupHM;
-    Map<String, Boolean> dropoffHM;
-    Activity activity;
-    View v;
-    private TextView addPickUpCity, addDropOffCity;
+    List<Vehicle> mVehicles;
+
     private Context mContext;
     private RecyclerView mVechileList;
+    private TextView mAddVechile;
 
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
 
-        Logger.v("ONUPDATE");
-        if (partnerInfoPojo.getmSourceCities() != null) {
-            listpickup.clear();
-            pickupHM = partnerInfoPojo.getmSourceCities();
-            listpickup.addAll(pickupHM.keySet());
-            mVechileList.setAdapter(adapterp);
-            adapterp.notifyDataSetChanged();
-            Log.e("onEvent 1",partnerInfoPojo.getmSourceCities().toString());
-
-        }else {
-            Logger.v("sourcenull");
-        }
-        if (partnerInfoPojo.getDestinationCities() != null) {
-            listdropoff.clear();
-            dropoffHM = partnerInfoPojo.getDestinationCities();
-            listdropoff.addAll(dropoffHM.keySet());
-
-        }else {
-            Logger.v("detination null");
-
-        }
     }
 
     public FleetFormFragment() {
@@ -87,12 +64,10 @@ public class FleetFormFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
         try {
-            onPickUpPlace = (RouteFormFragment.OnPickUpPlace) activity;
             this.mContext = activity.getApplicationContext();
-            this.activity = activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnItemClickedListener");
         }
@@ -101,12 +76,14 @@ public class FleetFormFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listpickup = new ArrayList<>();
-        listdropoff = new ArrayList<>();
-        pickupHM = new HashMap<>();
-        dropoffHM = new HashMap<>();
+        mVehicles = new ArrayList<>();
+        Vehicle vehicle = new Vehicle();
+        Vehicle vehicle1 = new Vehicle();
 
-        adapterp = new FleetAdapter(activity, listpickup, 1);
+        mVehicles.add(vehicle);
+        mVehicles.add(vehicle1);
+
+        adapterp = new FleetAdapter(mContext, mVehicles, 1);
 
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
@@ -118,23 +95,39 @@ public class FleetFormFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_fleet_form, container, false);
-        addPickUpCity = v.findViewById(R.id.add_vehicle);
-        mVechileList = v.findViewById(R.id.vehicle_list);
-        mVechileList.setLayoutManager(new LinearLayoutManager(activity));
+        View rootView = inflater.inflate(R.layout.fragment_fleet_form, container, false);
+        mAddVechile = rootView.findViewById(R.id.add_vehicle);
 
-        return v;
+        mVechileList = rootView.findViewById(R.id.vehicle_list);
+        mVechileList.setLayoutManager(new LinearLayoutManager(mContext));
+        mVechileList.setAdapter(adapterp);
+
+        mAddVechile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Vehicle vehicle = new Vehicle();
+                mVehicles.add(vehicle);
+                adapterp.setDataValues(mVehicles);
+            }
+        });
+
+        return rootView;
     }
 
 
     public class FleetAdapter extends RecyclerView.Adapter<PlacesViewHolder> {
 
-        private List<String> mData;
+        private List<Vehicle> mDataValues;
         private int type = 0;
 
+        private void setDataValues(List<Vehicle> dataValues) {
+            mDataValues = dataValues;
+            notifyDataSetChanged();
+        }
+
         // data is passed into the constructor
-        public FleetAdapter(Context context, List<String> data, int type) {
-            this.mData = data;
+        public FleetAdapter(Context context, List<Vehicle> data, int type) {
+            this.mDataValues = data;
             this.type = type;
         }
 
@@ -149,30 +142,13 @@ public class FleetFormFragment extends BaseFragment {
         // binds the data to the textview in each row
         @Override
         public void onBindViewHolder(final PlacesViewHolder holder, final int position) {
-            String city = mData.get(position);
-            holder.mCity.setText(city);
-            holder.mRemove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    holder.mCity.setText("Removing...");
-                    //remove city
-                    if (type == 1) {
-                        //remove pickup
-                        mUserDocRef.update("mSourceCities." + mData.get(position), FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                notifyDataSetChanged();
-                            }
-                        });
-                    }
-                }
-            });
+            holder.onBind(mContext, holder);
         }
 
         // total number of rows
         @Override
         public int getItemCount() {
-            return mData.size();
+            return mDataValues.size();
         }
 
 

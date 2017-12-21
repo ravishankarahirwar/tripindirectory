@@ -7,14 +7,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="6dp"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
 
@@ -31,9 +31,8 @@
                 android:id="@+id/vehicle_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignEnd="@+id/add_pickupcity"
+                tools:listitem="@layout/item_fleet"
                 android:layout_below="@+id/pickup_title"
-                android:layout_margin="15dp"
                 android:nestedScrollingEnabled="false"/>
 
             <TextView
@@ -41,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/pickup_list"
+                android:layout_below="@+id/vehicle_list"
                 android:layout_centerVertical="false"
                 android:layout_margin="8dp"
                 android:layout_marginStart="8dp"
