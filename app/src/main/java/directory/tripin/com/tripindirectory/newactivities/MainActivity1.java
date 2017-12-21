@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +23,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -29,6 +33,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -54,8 +59,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.AddCompanyActivity;
+import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -72,7 +79,7 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
-public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener {
+public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener ,NavigationView.OnNavigationItemSelectedListener {
 
     private static final int RC_SIGN_IN = 123;
     private static int SPLASH_SHOW_TIME = 1000;
@@ -98,14 +105,17 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private LinearLayoutManager mVerticalLayoutManager;
     private int mLastPosition;
     private boolean shouldElastiSearchCall = true;
+    private FloatingSearchView mSearchView;
+    private DrawerLayout mDrawerLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
+        setContentView(R.layout.activity_home);
 
         init();
-        setListeners();
+//        setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
 //            mPreferenceManager.setFirstTime(false);
@@ -116,7 +126,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             Logger.v("Multiple times app opened");
         }
 
-        mPartnerList.setLayoutManager(new LinearLayoutManager(this));
 
         //get all doucuments
 
@@ -127,7 +136,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
             public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
-                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
+//                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
                 holder.mCompany.setText(model.getmCompanyName());
             }
             @Override
@@ -148,170 +157,104 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     }
 
+    private void searchViewSetup() {
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                Toast.makeText(getApplicationContext(), query,
+                        Toast.LENGTH_SHORT).show();
+                setAdapter(query);
+            }
+        });
+
+
+    }
 
     private void init() {
         mContext = MainActivity1.this;
+        mSearchView = findViewById(R.id.floating_search_view);
+        mDrawerLayout =  findViewById(R.id.drawer_layout);
+        mPartnerList = findViewById(R.id.transporter_list);
+
+        mPartnerList.setLayoutManager(new LinearLayoutManager(this));
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         mPartnersManager = new PartnersManager(mContext);
         mPreferenceManager = PreferenceManager.getInstance(mContext);
         mTokenManager = new TokenManager(mContext);
         companynamesuggestions = new ArrayList<>();
 
+        mSearchView.setShowSearchKey(true);
+        mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        PermissionListener permissionlistener = new PermissionListener() {
-            @Override
-            public void onPermissionGranted() {
-                getDeviceId();
-                getToken();
-//                Toast.makeText(mContext, "Permission Granted", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-//                Toast.makeText(mContext, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
-            }
-
-        };
-
-        TedPermission.with(this)
-                .setPermissionListener(permissionlistener)
-                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.READ_PHONE_STATE)
-                .check();
-
-        mSearchField = this.findViewById(R.id.search_field);
-        mSearchField.setTokenizer(new SpaceTokenizer());
-
-        mSearchField.setThreshold(1);
-
-
-        mSearchField.setCursorVisible(false);
-
-        /**
-         * By default Mumbai would be search destination
-         */
-
-        if (!mPreferenceManager.isFirstTime()) {
-            mSearchField.setHint("Type company name to search");
-            //performElasticSearch(mSearchField.getText().toString());
-        }
-
-        mPartnerList = findViewById(R.id.partner_list);
-
-        mFloatingActionButton = findViewById(R.id.create_company);
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth = FirebaseAuth.getInstance();
-                if (auth.getCurrentUser() != null) {
-                    // already signed in
-                    startActivity(new Intent(MainActivity1.this, AddCompanyActivity.class));
-
-                } else {
-                    // not signed in
-                    startActivityForResult(
-                            // Get an instance of AuthUI based on the default app
-                            AuthUI.getInstance().createSignInIntentBuilder()
-                                    .setAvailableProviders(
-                                            Collections.singletonList(
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
-                                    .build(),
-                            RC_SIGN_IN);
-
-                }
-            }
-        });
-
-
+        searchViewSetup();
     }
 
-    private void setListeners() {
-
-        mSearchField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence charSequence, int i, int i1, int i2) {
-                //fetch autosuggestions
-                fetchAutoSuggestions(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        mSearchField.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSearchField.setCursorVisible(true);
-                Logger.v("on searchfield tapped!!");
-            }
-        });
-
-        mSearchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    setAdapter(mSearchField.getText().toString().trim());
-                    return true;
-                }
-                return false;
-            }
-        });
-
-
-    }
 
     private void fetchAutoSuggestions(String s) {
 
-        FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Logger.v("on queried fetch Complete!!");
-                        if (task.isSuccessful()) {
-                            companynamesuggestions.clear();
-                            for (DocumentSnapshot document : task.getResult()) {
-                                Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
-                                companynamesuggestions.add(document.get("mCompanyName").toString());
-                            }
-                            Set<String> hs = new LinkedHashSet<>();
-                            hs.addAll(companynamesuggestions);
-                            companynamesuggestions.clear();
-                            companynamesuggestions.addAll(hs);
-                            monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
-                            mSearchField.setAdapter(monthAdapter);
-                            Logger.v("adapter set!!");
+            FirebaseFirestore.getInstance()
+                    .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            Logger.v("on queried fetch Complete!!");
+                            if (task.isSuccessful()) {
+                                companynamesuggestions.clear();
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
+                                    companynamesuggestions.add(document.get("mCompanyName").toString());
+                                }
+                                Set<String> hs = new LinkedHashSet<>();
+                                hs.addAll(companynamesuggestions);
+                                companynamesuggestions.clear();
+                                companynamesuggestions.addAll(hs);
+                                monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
+                                mSearchField.setAdapter(monthAdapter);
+                                Logger.v("adapter set!!");
 
-                        } else {
-                            Log.d("onComplete", "Error getting documents: ", task.getException());
+                            } else {
+                                Log.d("onComplete", "Error getting documents: ", task.getException());
+                            }
                         }
-                    }
-                });
+                    });
+
     }
 
 
     private void setAdapter(String s) {
         adapter.stopListening();
         adapter.notifyDataSetChanged();
-
         //update your query here
-
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
         if (!s.equals("")) {
-            query = FirebaseFirestore.getInstance()
-                    .collection("partners").whereEqualTo("mCompanyName", s);
+            if (s.contains("To")) {
+                Toast.makeText(this, "Contain To", Toast.LENGTH_LONG).show();
+                String sourceDestination[] = s.split("To");
+                String source = sourceDestination[0].trim();
+                String destination = sourceDestination[1].trim();
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").whereEqualTo("mSourceCities."+ source, true).whereEqualTo("destinationCities."+ destination, true);;
+
+            } else {
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").whereEqualTo("mCompanyName", s);
+            }
         }
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
@@ -320,7 +263,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
             public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
-                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
+                holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 holder.mCompany.setText(model.getmCompanyName());
             }
 
@@ -436,46 +379,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         });
     }
 
-    private String getDeviceId() {
-        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        mPreferenceManager.setDeviceId(telephonyManager.getDeviceId());
-        return telephonyManager.getDeviceId();
-    }
-
-    private void getToken() {
-        mTokenManager.getCurrentToken(new TokenManager.TokenListener() {
-            @Override
-            public void onSuccess(TokenResponse tokenResponse) {
-                if (tokenResponse != null) {
-                    Logger.v("Token: " + tokenResponse.getData().getToken());
-                    String token = tokenResponse.getData().getToken();
-                    String userId = tokenResponse.getData().getUserId();
-
-                    mPreferenceManager.setToken(token);
-                    mPreferenceManager.setUserId(userId);
-//                    performElasticSearch(mSearchField.getText().toString());
-                }
-            }
-
-            @Override
-            public void onFailed(String message) {
-                Logger.v(message);
-            }
-        }, generateRawData(mPreferenceManager.getDeviceId()));
-    }
-
-    private String generateRawData(String deviceId) {
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put(GetAuthToken.DEVICE_ID, deviceId);
-
-        } catch (JSONException eJsonException) {
-            eJsonException.printStackTrace();
-        }
-        final String requestBody = jsonBody.toString();
-        Logger.v("rawData string generated from data in activity:  " + requestBody);
-        return requestBody;
-    }
 
     private void searchBarTutorial() {
         new MaterialTapTargetPrompt.Builder((Activity) mContext)
@@ -539,5 +442,43 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         pd = new ProgressDialog(MainActivity1.this);
         pd.setMessage("Loading");
         pd.show();
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+         if (id == R.id.nav_add_business) {
+            auth = FirebaseAuth.getInstance();
+            if (auth.getCurrentUser() != null) {
+                // already signed in
+                startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
+            } else {
+                // not signed in
+                startActivityForResult(
+                        // Get an instance of AuthUI based on the default app
+                        AuthUI.getInstance().createSignInIntentBuilder()
+                                .setAvailableProviders(
+                                        Collections.singletonList(
+                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+                                .build(),
+                        RC_SIGN_IN);
+            }
+        } else if (id == R.id.nav_notification) {
+
+        } else if (id == R.id.nav_logout) {
+             auth = FirebaseAuth.getInstance();
+             auth.signOut();
+             Toast.makeText(getApplicationContext(),"Signed Out",Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

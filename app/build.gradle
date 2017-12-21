@@ -103,9 +103,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    compile 'com.github.arimorty:floatingsearchview:2.1.1'
+
 }
 apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
 }
 
+
+apply plugin: 'kotlin-android-extensions'

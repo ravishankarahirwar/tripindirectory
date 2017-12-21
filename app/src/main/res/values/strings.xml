@@ -83,10 +83,39 @@
     <string name="unknown_error">Unknown Error</string>
     <string name="unknown_sign_in_response">Unknown Responce</string>
     <string name="sign_in_done">Signed In</string>
+
     <string name="title_activity_main2">Main2Activity</string>
 
-    <string name="action_settings">Settings</string>
+
     <string name="hello_blank_fragment">its a blank fragment</string>
     <string name="form_name">Your Company Data</string>
+
+    <string name="action_voice_rec">action voice rec</string>
+    <string name="title_activity_main_home">MainHome</string>
+    <string name="title_activity_temp">TempActivity</string>
+    <string name="action_settings">Setting</string>
+
+
+    <string-array name="payload">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
+    <string-array name="body_type">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
 
 </resources>

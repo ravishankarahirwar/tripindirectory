@@ -46,12 +46,15 @@ import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
+import directory.tripin.com.tripindirectory.getcity.managers.ContentManager;
 import directory.tripin.com.tripindirectory.model.AddImage;
 
 import directory.tripin.com.tripindirectory.getcity.general.CityAutoCompleteTextView;
@@ -151,11 +154,15 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                 if (documentSnapshot.exists()) {
                     PartnerInfoPojo company = documentSnapshot.toObject(PartnerInfoPojo.class);
                     mCompanyNmae.setText(company.getmCompanyName());
-                    mCompanyAddress.setText(company.getmCompanyAdderss().getmAddress().toString());
-                    mCompanyCity.setText(company.getmCompanyAdderss().getmCity().toString());
-                    mCompanyState.setText(company.getmCompanyAdderss().getmState().toString());
+                    mCompanyAddress.setText(company.getmCompanyAdderss().getAddress().toString());
+                    mCompanyCity.setText(company.getmCompanyAdderss().getCity().toString());
+                    mCompanyState.setText(company.getmCompanyAdderss().getState().toString());
 
-
+                    Iterator pickupCityIterator = company.getmSourceCities().keySet().iterator();
+                    while(pickupCityIterator.hasNext()) {
+                        String key=(String)pickupCityIterator.next();
+                        mPickUpCities.append(key);
+                    }
                     if(company.getmContactPersonsList().size() > 1) {
                         String name = company.getmContactPersonsList().get(0).getmContactPresonName();
                         String number = company.getmContactPersonsList().get(0).getGetmContactPersonMobile();
@@ -188,10 +195,6 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
                     }
                     }
             }
-
-
-
-
         }});
 
     }
@@ -464,6 +467,9 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         String companyAddress = mCompanyAddress.getText().toString();
         String companyCity = mCompanyCity.getText().toString();
         String companyState = mCompanyState.getText().toString();
+        String pickupCities = mPickUpCities.getText().toString();
+        String dropCities = mDropCities.getText().toString();
+
 
         List<ContactPersonPojo> contactPersonPojos = new ArrayList<>();
 
@@ -491,10 +497,21 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         Map<String, Boolean> source = new HashMap<>();
         Map<String, Boolean> destination = new HashMap<>();
 
-        source.put("mumbai", true);
-        source.put("nagpur", true);
-        destination.put("rajkot", true);
-        destination.put("gandhinagar", true);
+        String [] pickupArr = pickupCities.split(",");
+        String [] dropArr = dropCities.split(",");
+
+        for(String pickupcityString : pickupArr) {
+            source.put(pickupcityString.trim(), true);
+        }
+
+        for(String dropcityString : dropArr) {
+            destination.put(dropcityString.trim(), true);
+        }
+
+//        source.put("mumbai", true);
+//        source.put("nagpur", true);
+//        destination.put("rajkot", true);
+//        destination.put("gandhinagar", true);
 
         List<String> urls = new ArrayList<>();
         for(ImageData imageData: images){
@@ -572,6 +589,10 @@ public class AddCompanyActivity extends AppCompatActivity implements AddImage, E
         mDropCities.setCursorVisible(true);
 
         mCityAdapter = new MyAutoCompleteAdapter(this);
+
+//        If you want city come from google
+//        ArrayList<String> predictionList = new ArrayList<>();
+//        predictionList = ContentManager.getInstance(mContext).getPredictionDescriptionList();
 
         ArrayAdapter citiesAdapter= new ArrayAdapter<String>(AddCompanyActivity.this,  android.R.layout.simple_dropdown_item_1line, CITIES);
         mPickUpCities.setAdapter(citiesAdapter);

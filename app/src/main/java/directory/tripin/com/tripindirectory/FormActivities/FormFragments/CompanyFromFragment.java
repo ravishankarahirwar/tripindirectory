@@ -115,9 +115,9 @@ public class CompanyFromFragment extends BaseFragment {
 
                     mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
                     if(partnerInfoPojo.getmCompanyAdderss()!=null){
-                        mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getmAddress());
-                        mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getmCity());
-                        mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getmState());
+                        mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getAddress());
+                        mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getCity());
+                        mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getState());
                     }
 
 
@@ -172,6 +172,7 @@ public class CompanyFromFragment extends BaseFragment {
             }
             partnerInfoPojo.setContactPersonsList(contacts);
             partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
+
 
             //setname
             partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
@@ -256,7 +257,6 @@ public class CompanyFromFragment extends BaseFragment {
 
             }
         });
-
         return v;
     }
 
@@ -294,11 +294,11 @@ public class CompanyFromFragment extends BaseFragment {
                             + result.toString());
                     break;
             }
-
         } else {
             // gracefully handle failure
             Logger.v("CONTACTS :"+ "Warning: activity result not ok");
         }
+
     }
 
 
