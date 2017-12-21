@@ -190,13 +190,13 @@ public class CompanyFromFragment extends BaseFragment {
         mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
+//        linearLayoutManager.setReverseLayout(true);
+//        linearLayoutManager.setStackFromEnd(true);
         mPersonsRecyclarView.setLayoutManager(linearLayoutManager);
 
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
-        linearLayoutManager2.setReverseLayout(true);
-        linearLayoutManager2.setStackFromEnd(true);
+//        linearLayoutManager2.setReverseLayout(true);
+//        linearLayoutManager2.setStackFromEnd(true);
         mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
         mPersonsRecyclarView.setNestedScrollingEnabled(false);
         mLandlineRecyclarView.setNestedScrollingEnabled(false);
@@ -207,6 +207,12 @@ public class CompanyFromFragment extends BaseFragment {
             public void onClick(View view) {
                 //add a blank Person Object in contact Persons list
                 Logger.v(" add contact person");
+                for(int i=0;i<mContactPersonsList.size();i++){
+                    View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
+                    EditText name = v.findViewById(R.id.contact_person_name);
+                    EditText number = v.findViewById(R.id.contact_person_number);
+                    mContactPersonsList.set(i,new ContactPersonPojo(name.getText().toString().trim(),number.getText().toString().trim()));
+                }
                 mContactPersonsList.add(new ContactPersonPojo("", ""));
                 contactPersonsAdapter.notifyDataSetChanged();
             }
@@ -217,8 +223,14 @@ public class CompanyFromFragment extends BaseFragment {
             public void onClick(View view) {
                 //add a blank landline in landline numbers list
                 Logger.v(" add landline person");
+                for(int i=0;i<mCompanyLandLineNumbers.size();i++){
+                    View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
+                    EditText number = v.findViewById(R.id.landline_number);
+                    mCompanyLandLineNumbers.set(i,number.getText().toString().trim());
+                }
                 mCompanyLandLineNumbers.add("");
                 companyLandLineNumbersAdapter.notifyDataSetChanged();
+
             }
         });
 
