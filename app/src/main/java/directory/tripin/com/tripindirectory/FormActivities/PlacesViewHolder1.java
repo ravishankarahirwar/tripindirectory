@@ -42,9 +42,6 @@ public class PlacesViewHolder1 extends RecyclerView.ViewHolder {
         length = (TextInputEditText) itemView.findViewById(R.id.input_length);
         driverName = (TextInputEditText) itemView.findViewById(R.id.input_driver_name);
         driverNumber = (TextInputEditText) itemView.findViewById(R.id.input_driver_number);
-
-
-
     }
 
     public void onBind(Context context, PlacesViewHolder1 placesViewHolder) {
