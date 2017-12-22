@@ -132,7 +132,7 @@
             android:id="@+id/input_driver_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:hint="Driver Name"
             android:text="Driver Name" />
     </android.support.design.widget.TextInputLayout>
 

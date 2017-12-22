@@ -141,7 +141,6 @@ public class FleetFormFragment extends BaseFragment {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful() && task.getResult().exists()) {
                     partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
-
                     if(partnerInfoPojo.getVehicles()!=null){
                         mVehicles.clear();
                         mVehicles.addAll(partnerInfoPojo.getVehicles());
