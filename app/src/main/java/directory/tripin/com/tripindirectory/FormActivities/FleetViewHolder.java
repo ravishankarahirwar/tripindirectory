@@ -103,11 +103,11 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
 
         Driver driver = placesViewHolder.getDataValue().getDriver();
         if(driver != null && driver.getName() != null) {
-            vehicleNumber = driver.getName();
+            vehicleDriverName = driver.getName();
         }
 
         if(driver != null && driver.getNumber() != null) {
-            vehicleNumber = driver.getNumber();
+            vehicleDriverNumber = driver.getNumber();
         }
 
         vechcleNumber.setText(vehicleNumber != null ? vehicleNumber : "");

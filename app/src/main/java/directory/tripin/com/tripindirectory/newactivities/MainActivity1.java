@@ -6,9 +6,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,7 +24,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -32,11 +37,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -86,6 +94,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     private static final int RC_SIGN_IN = 123;
     private static int SPLASH_SHOW_TIME = 1000;
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+
     ArrayAdapter<String> monthAdapter = null;
     List<String> companynamesuggestions = null;
     Task<QuerySnapshot> mSuggestionsTask;
@@ -110,7 +120,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private boolean shouldElastiSearchCall = true;
     private FloatingSearchView mSearchView;
     private DrawerLayout mDrawerLayout;
-
+    private RadioGroup mSearchTagRadioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,9 +156,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                     holder.mCompany.setText(model.getmCompanyName());
                 }
 
-                if(model.getmCompanyName() != null) {
-                    holder.mCall.setText(model.getmContactPersonsList().get(0).getGetmContactPersonMobile());
-                }
 
                 holder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -186,10 +193,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
                             builder.create();
                             builder.show();
-                        }
+                        } else {
 
-                        String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                        callNumber(number);
+                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                            callNumber(number);
+                        }
                     }
                 });
 
@@ -242,7 +250,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout =  findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
-
+        mSearchTagRadioGroup = findViewById(R.id.search_tag_group);
         mPartnerList.setLayoutManager(new LinearLayoutManager(this));
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -261,7 +269,20 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
+        mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
+                if (radioButtonID == R.id.search_by_route) {
+                    mSearchView.setSearchHint("Source To Destination");
+                } else if (radioButtonID == R.id.search_by_transporter) {
+                    mSearchView.setSearchHint("Search by transporter name");
+                } else if (radioButtonID == R.id.search_by_people) {
+                    mSearchView.setSearchHint("Search by people name");
+                }
+            }
+        });
         searchViewSetup();
+        setupSearchBar();
     }
 
 
@@ -293,7 +314,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             }
                         }
                     });
-
     }
 
 
@@ -301,13 +321,14 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter.stopListening();
         adapter.notifyDataSetChanged();
         //update your query here
+
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
         if (!s.equals("")) {
-            if (s.contains("To")) {
+            if (s.contains("To") || s.contains("to")) {
                 Toast.makeText(this, "Contain To", Toast.LENGTH_LONG).show();
-                String sourceDestination[] = s.split("To");
+                String sourceDestination[] = s.split("to");
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
                 query = FirebaseFirestore.getInstance()
@@ -393,6 +414,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             }
 
             showSnackbar(R.string.unknown_sign_in_response);
+        } else  if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Fill the list view with the strings the recognizer thought it
+            // could have heard
+            ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            Toast.makeText(mContext, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
+            String enquiry = matches.get(0).toString();
+            onVoiceSearch(enquiry);
         }
     }
 
@@ -544,4 +572,185 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void setupSearchBar() {
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+
+                    //this shows the top left circular progress
+                    //you can call it where ever you want, but
+                    //it makes sense to do it when loading something in
+                    //the background.
+                    mSearchView.showProgress();
+
+                    //simulates a query call to a data source
+                    //with a new query.
+//                    mSearchData.findSuggestions(mContext, newQuery, 5,
+//                            FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
+//
+//                                @Override
+//                                public void onResults(List<Station> results) {
+//
+//                                    //this will swap the data and
+//                                    //render the collapse/expand animations as necessary
+//                                    mSearchView.swapSuggestions(results);
+////                                    Log.d(TAG, "360" + results.get(0).getStationCode());
+//
+//                                    //let the users know that the background
+//                                    //process has completed
+//                                    mSearchView.hideProgress();
+//                                }
+//                            });
+                }
+
+//                Log.d(TAG, "onSearchTextChanged()");
+            }
+        });
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+//                startUpDownActivity( (Station) searchSuggestion);
+//
+//                SearchSuggestion colorSuggestion = (SearchSuggestion) searchSuggestion;
+//                DataHelper.findColors(getActivity(), colorSuggestion.getBody(),
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSuggestionClicked()");
+//
+//                mLastQuery = searchSuggestion.getBody();
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                Toast.makeText(mContext, "Hello Search",
+                        Toast.LENGTH_SHORT).show();
+//                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
+
+//                mLastQuery = query;
+//
+//                DataHelper.findColors(getActivity(), query,
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSearchAction()");
+            }
+        });
+
+//        mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+//            @Override
+//            public void onFocus() {
+//
+//                //show suggestions when search bar gains focus (typically history suggestions)
+//                mSearchView.swapSuggestions(DataHelper.getHistory(getActivity(), 3));
+//
+//                Log.d(TAG, "onFocus()");
+//            }
+//
+//            @Override
+//            public void onFocusCleared() {
+//
+//                //set the title of the bar so that when focus is returned a new query begins
+//                mSearchView.setSearchBarTitle(mLastQuery);
+//
+//                //you can also set setSearchText(...) to make keep the query there when not focused and when focus returns
+//                //mSearchView.setSearchText(searchSuggestion.getBody());
+//
+//                Log.d(TAG, "onFocusCleared()");
+//            }
+//        });
+//
+//
+        //handle menu clicks the same way as you would
+        //in a regular activity
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+
+                if (item.getItemId() == R.id.action_voice) {
+                    startVoiceRecognitionActivity();
+                } else {
+                    //just print action
+                    Toast.makeText(mContext, item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+//
+//        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHome"
+//        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+//            @Override
+//            public void onHomeClicked() {
+//
+//                Log.d(TAG, "onHomeClicked()");
+//            }
+//        });
+//
+        /*
+         * Here you have access to the left icon and the text of a given suggestion
+         * item after as it is bound to the suggestion list. You can utilize this
+         * callback to change some properties of the left icon and the text. For example, you
+         * can load the left icon images using your favorite image loading library, or change text color.
+         *
+         *
+         * Important:
+         * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
+         * items in the list.
+         */
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+                                         TextView textView, com.arlib.floatingsearchview.suggestions.model.SearchSuggestion item, int itemPosition) {
+
+
+            }
+
+        });
+    }
+
+    //-------------------- Voice -----------
+    public void startVoiceRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Are you at ?");
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
+
+
+    private void onVoiceSearch(final String query) {
+        if(query != null) {
+            mSearchView.setSearchText(query);
+            setAdapter(query);
+        }
+//        mSearchData.findSuggestions(mContext, query, 5,
+//                FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
+//
+//                    @Override
+//                    public void onResults(final List<Station> results) {
+//
+//
+//                    }
+//                });
+    }
+
 }
