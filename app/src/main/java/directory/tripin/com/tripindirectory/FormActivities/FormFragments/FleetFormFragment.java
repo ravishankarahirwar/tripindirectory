@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -34,11 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder1;
+import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
-import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
-import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.Driver;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
@@ -110,7 +107,6 @@ public class FleetFormFragment extends BaseFragment {
 
         mVechileList = rootView.findViewById(R.id.vehicle_list);
         mVechileList.setLayoutManager(new LinearLayoutManager(mContext));
-        mVechileList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mVechileList.setAdapter(adapterp);
 
         mAddVechile.setOnClickListener(new View.OnClickListener() {
@@ -218,15 +214,10 @@ public class FleetFormFragment extends BaseFragment {
 
     }
 
-    public class FleetAdapter extends RecyclerView.Adapter<PlacesViewHolder1> {
+    public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolder> {
 
         private List<Vehicle> mDataValues;
 
-
-        private void setDataValues(List<Vehicle> dataValues) {
-            mDataValues = dataValues;
-            this.notifyDataSetChanged();
-        }
 
         private int getDataValuesSize() {
            return mDataValues.size();
@@ -245,15 +236,27 @@ public class FleetFormFragment extends BaseFragment {
 
         // inflates the row layout from xml when needed
         @Override
-        public PlacesViewHolder1 onCreateViewHolder(ViewGroup parent, int viewType) {
+        public FleetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fleet, parent, false);
-            PlacesViewHolder1 viewHolder = new PlacesViewHolder1(view);
+            FleetViewHolder viewHolder = new FleetViewHolder(view);
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(final PlacesViewHolder1 holder, final int position) {
+        public void onBindViewHolder(final FleetViewHolder holder, final int position) {
+            holder.setDataValue(mDataValues.get(position));
             holder.onBind(mContext, holder);
+
+
+            holder.vehicleRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(mVehicles.size() > 0) {
+                        mVehicles.remove(position);
+                        setDataValues(mVehicles);
+                    }
+                }
+            });
         }
 
         // total number of rows
@@ -262,8 +265,6 @@ public class FleetFormFragment extends BaseFragment {
             return mDataValues.size();
 
         }
-
-
     }
 
 
