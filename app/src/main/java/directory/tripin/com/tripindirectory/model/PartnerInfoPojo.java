@@ -13,6 +13,10 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
 public class PartnerInfoPojo {
 
     private String mCompanyName;
+    private String mEmailId;
+    private int mLikes;
+    private int mDislikes;
+    private String mRMN;
 
 
     private boolean isVerified = false;
@@ -46,24 +50,38 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
 
-        //nature of business
-        mNatureOfBusiness = new HashMap<>();
+    public String getmRMN() {
+        return mRMN;
+    }
 
+    public void setmRMN(String mRMN) {
+        this.mRMN = mRMN;
+    }
 
-        mTypesOfServices = new HashMap<>();
-        mTypesOfServices.put("FTL",false);
-        mTypesOfServices.put("Part Loads",false);
-        mTypesOfServices.put("Parcel",false);
-        mTypesOfServices.put("ODC",false);
-        mTypesOfServices.put("Import Containers",false);
-        mTypesOfServices.put("Export Containers",false);
-        mTypesOfServices.put("Chemical",false);
-        mTypesOfServices.put("Petrol",false);
-        mTypesOfServices.put("Diesel",false);
-        mTypesOfServices.put("Oil",false);
+    public int getmLikes() {
+        return mLikes;
+    }
 
+    public void setmLikes(int mLikes) {
+        this.mLikes = mLikes;
+    }
 
+    public int getmDislikes() {
+        return mDislikes;
+    }
+
+    public void setmDislikes(int mDislikes) {
+        this.mDislikes = mDislikes;
+    }
+
+    public String getmEmailId() {
+        return mEmailId;
+    }
+
+    public void setmEmailId(String mEmailId) {
+        this.mEmailId = mEmailId;
     }
 
     public Map<String, Boolean> getmNatureOfBusiness() {
