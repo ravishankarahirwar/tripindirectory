@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
-    android:focusable="true" android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".FormActivities.CompanyInfoActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,11 +15,11 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:layout_margin="6dp"
+                  android:animateLayoutChanges="true"
+                  android:focusable="true"
+                  android:focusableInTouchMode="true"
                   android:orientation="vertical"
                   android:paddingBottom="10dp"
-                  android:focusable="true"
-                  android:animateLayoutChanges="true"
-                  android:focusableInTouchMode="true"
                   tools:context=".FormActivities.CompanyInfoActivity">
 
         <LinearLayout
@@ -52,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:hint="@string/company_name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -61,7 +63,6 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:gravity="center_vertical"
-                    android:hint="@string/company_name"
                     android:textColor="@color/default_textview_color"
                     android:textStyle="bold"/>
 
@@ -73,6 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
 
@@ -91,7 +93,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/contact_person"
-                android:layout_margin="10dp"/>
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"/>
 
             <TextView
                 android:id="@+id/add_person"
@@ -110,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
 
@@ -128,7 +134,10 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/pickup_title"
-                android:layout_margin="10dp"/>
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"/>
 
             <TextView
                 android:id="@+id/add_landline"
@@ -168,16 +177,15 @@
                 android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/address_title"
-
                 android:layout_margin="8dp"
                 android:layout_marginTop="15dp"
+                android:hint="@string/company_address"
                 app:layout_constraintHorizontal_bias="1.0">
 
                 <EditText
                     android:id="@+id/input_company_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/company_address"
                     android:textSize="14sp"
                     />
 
@@ -188,8 +196,8 @@
                 android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/input_layout_company_address"
-
                 android:layout_margin="8dp"
+                android:hint="@string/city_town_village"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/input_layout_company_address"
                 app:layout_constraintTop_toBottomOf="@+id/input_layout_company_address">
@@ -198,7 +206,6 @@
                     android:id="@+id/input_city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/city_town_village"
                     android:textSize="14sp"
                     />
 
@@ -210,6 +217,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/input_layout_city"
                 android:layout_margin="8dp"
+                android:hint="@string/state"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/input_layout_city"
                 app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
@@ -218,10 +226,83 @@
                     android:id="@+id/input_state"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/state"
                     android:textSize="14sp"
                     />
             </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/natureofbusiness_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Nature of Business :"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/nobup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/natureofbusiness_title"
+                android:layout_margin="10dp"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_natureofbusiness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/natureofbusiness_title"
+                android:layout_margin="10dp"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/roundedcornerbg"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/nobup2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/typesofbusiness_title"
+                android:layout_margin="10dp"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+
+            <TextView
+                android:id="@+id/typesofbusiness_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignStart="@+id/rv_typesofservices"
+                android:layout_marginTop="11dp"
+                android:text="Types of services :"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_typesofservices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/typesofbusiness_title"
+                android:layout_margin="10dp"/>
+
+
         </RelativeLayout>
 
 

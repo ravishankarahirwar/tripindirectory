@@ -97,7 +97,7 @@ public class RouteFormFragment extends BaseFragment {
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
 
-        mUserDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        mUserDocRef.addSnapshotListener(getActivity(),new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if(documentSnapshot.exists()) {
@@ -206,6 +206,8 @@ public class RouteFormFragment extends BaseFragment {
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getActivity(),"Pickup City Removed",Toast.LENGTH_SHORT).show();
+
                                 notifyDataSetChanged();
                             }
                         });
@@ -219,6 +221,8 @@ public class RouteFormFragment extends BaseFragment {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 notifyDataSetChanged();
+                                Toast.makeText(getActivity(),"Drop City Removed",Toast.LENGTH_SHORT).show();
+
                             }
                         });
 
@@ -263,7 +267,13 @@ public class RouteFormFragment extends BaseFragment {
                 Logger.v("Place::: " + place.getName());
                 if(mPlaceCode==1){
                     pickupHM.put(place.getName().toString(),true);
-                    mUserDocRef.update("mSourceCities",pickupHM);
+                    mUserDocRef.update("mSourceCities",pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
 //                    partnerInfoPojo.setmSourceCities(pickupHM);
 //                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
@@ -271,12 +281,17 @@ public class RouteFormFragment extends BaseFragment {
                 }
                 if(mPlaceCode==2){
                     dropoffHM.put(place.getName().toString(),true);
-                    mUserDocRef.update("mDestinationCities",dropoffHM);
+                    mUserDocRef.update("mDestinationCities",dropoffHM).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(getActivity(),"Drop City Added",Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
 //                    partnerInfoPojo.setDestinationCities(dropoffHM);
 //                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
                 }
-                Toast.makeText(getActivity(),"City Added",Toast.LENGTH_SHORT).show();
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);

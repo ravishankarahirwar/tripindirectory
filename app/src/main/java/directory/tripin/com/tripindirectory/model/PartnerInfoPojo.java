@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,7 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
 public class PartnerInfoPojo {
 
     private String mCompanyName;
-    private String natureOfBusiness;
-    private String natureEmail;
-    private String natureWebsite;
+
 
     private boolean isVerified = false;
 
@@ -29,6 +28,11 @@ public class PartnerInfoPojo {
 
     private Map<String,Boolean> mSourceCities;
     private Map<String,Boolean> mDestinationCities;
+    private Map<String,Boolean> mNatureOfBusiness;
+    private Map<String,Boolean> mTypesOfServices;
+
+
+
 
     public PartnerInfoPojo() {
     }
@@ -42,30 +46,40 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+
+        //nature of business
+        mNatureOfBusiness = new HashMap<>();
+
+
+        mTypesOfServices = new HashMap<>();
+        mTypesOfServices.put("FTL",false);
+        mTypesOfServices.put("Part Loads",false);
+        mTypesOfServices.put("Parcel",false);
+        mTypesOfServices.put("ODC",false);
+        mTypesOfServices.put("Import Containers",false);
+        mTypesOfServices.put("Export Containers",false);
+        mTypesOfServices.put("Chemical",false);
+        mTypesOfServices.put("Petrol",false);
+        mTypesOfServices.put("Diesel",false);
+        mTypesOfServices.put("Oil",false);
+
+
     }
 
-    public String getNatureOfBusiness() {
-        return natureOfBusiness;
+    public Map<String, Boolean> getmNatureOfBusiness() {
+        return mNatureOfBusiness;
     }
 
-    public void setNatureOfBusiness(String natureOfBusiness) {
-        this.natureOfBusiness = natureOfBusiness;
+    public void setmNatureOfBusiness(Map<String, Boolean> mNatureOfBusiness) {
+        this.mNatureOfBusiness = mNatureOfBusiness;
     }
 
-    public String getNatureEmail() {
-        return natureEmail;
+    public Map<String, Boolean> getmTypesOfServices() {
+        return mTypesOfServices;
     }
 
-    public void setNatureEmail(String natureEmail) {
-        this.natureEmail = natureEmail;
-    }
-
-    public String getNatureWebsite() {
-        return natureWebsite;
-    }
-
-    public void setNatureWebsite(String natureWebsite) {
-        this.natureWebsite = natureWebsite;
+    public void setmTypesOfServices(Map<String, Boolean> mTypesOfServices) {
+        this.mTypesOfServices = mTypesOfServices;
     }
 
     public List<Vehicle> getVehicles() {

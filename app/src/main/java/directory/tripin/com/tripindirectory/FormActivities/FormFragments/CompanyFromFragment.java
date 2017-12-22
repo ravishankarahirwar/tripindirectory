@@ -11,14 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,10 +28,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumbersAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.ContactPersonsAdapter;
 import directory.tripin.com.tripindirectory.R;
@@ -50,6 +51,7 @@ import static android.app.Activity.RESULT_OK;
 public class CompanyFromFragment extends BaseFragment {
 
 
+    private static final int CONTACT_PICKER_RESULT = 1001;
     DocumentReference mUserDocRef;
     FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -62,20 +64,44 @@ public class CompanyFromFragment extends BaseFragment {
     private TextView mAddCompanyTxt;
     private RecyclerView mPersonsRecyclarView;
     private RecyclerView mLandlineRecyclarView;
+    private RecyclerView mNatureOfBusinessRecyclarView;
+    private RecyclerView mTypesOfServicesRecyclarView;
+    private HashMap<String,Boolean> mNatureofBusinessHashMap;
+    private HashMap<String,Boolean> mTypesofServicesHashMap;
+    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
+    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
+
+
     private List<ContactPersonPojo> mContactPersonsList;
     private List<String> mCompanyLandLineNumbers;
     private ContactPersonsAdapter contactPersonsAdapter;
     private CompanyLandLineNumbersAdapter companyLandLineNumbersAdapter;
-    PartnerInfoPojo partnerInfoPojo;
     private LinearLayout mLoadingDataLin;
 
-    private static final int CONTACT_PICKER_RESULT = 1001;
-
+    private ImageView togglenoblist,toggletoslist;
 
 
     public CompanyFromFragment() {
+
+        //initialize hashmaps
         mContactPersonsList = new ArrayList<>();
         mCompanyLandLineNumbers = new ArrayList<>();
+
+        mNatureofBusinessHashMap = new HashMap<>();
+        mNatureofBusinessHashMap.put("Fleet Owner",false);
+        mNatureofBusinessHashMap.put("Transport Contractor",false);
+        mNatureofBusinessHashMap.put("Commission Agent",false);
+        mTypesofServicesHashMap = new HashMap<>();
+        mTypesofServicesHashMap.put("FTL",false);
+        mTypesofServicesHashMap.put("Part Loads",false);
+        mTypesofServicesHashMap.put("Parcel",false);
+        mTypesofServicesHashMap.put("ODC",false);
+        mTypesofServicesHashMap.put("Import Containers",false);
+        mTypesofServicesHashMap.put("Export Containers",false);
+        mTypesofServicesHashMap.put("Chemical",false);
+        mTypesofServicesHashMap.put("Petrol",false);
+        mTypesofServicesHashMap.put("Diesel",false);
+        mTypesofServicesHashMap.put("Oil",false);
 
         //creat adapters and set adapters
         mContactPersonsList.add(new ContactPersonPojo("", ""));
@@ -83,6 +109,9 @@ public class CompanyFromFragment extends BaseFragment {
 
         mCompanyLandLineNumbers.add("");
         companyLandLineNumbersAdapter = new CompanyLandLineNumbersAdapter(mCompanyLandLineNumbers);
+
+        checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
+        checkBoxRecyclarAdapter2 = new CheckBoxRecyclarAdapter(mTypesofServicesHashMap);
     }
 
 
@@ -98,26 +127,39 @@ public class CompanyFromFragment extends BaseFragment {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful() && task.getResult().exists()) {
                     mLoadingDataLin.setVisibility(View.GONE);
-                    partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+                    PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
 
-                    if(partnerInfoPojo.getmContactPersonsList()!=null){
+                    if (partnerInfoPojo.getmContactPersonsList() != null) {
                         mContactPersonsList.clear();
                         mContactPersonsList.addAll(partnerInfoPojo.getmContactPersonsList());
+                        contactPersonsAdapter.notifyDataSetChanged();
                     }
 
-                    if(partnerInfoPojo.getmContactPersonsList()!=null){
+                    if (partnerInfoPojo.getmCompanyLandLineNumbers() != null) {
                         mCompanyLandLineNumbers.clear();
                         mCompanyLandLineNumbers.addAll(partnerInfoPojo.getmCompanyLandLineNumbers());
+                        companyLandLineNumbersAdapter.notifyDataSetChanged();
                     }
 
-                    companyLandLineNumbersAdapter.notifyDataSetChanged();
-                    contactPersonsAdapter.notifyDataSetChanged();
 
                     mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
-                    if(partnerInfoPojo.getmCompanyAdderss()!=null){
+
+                    if (partnerInfoPojo.getmCompanyAdderss() != null) {
                         mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getAddress());
                         mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getCity());
                         mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getState());
+                    }
+
+                    if(partnerInfoPojo.getmNatureOfBusiness() != null){
+                        mNatureofBusinessHashMap.clear();
+                        mNatureofBusinessHashMap.putAll(partnerInfoPojo.getmNatureOfBusiness());
+                        checkBoxRecyclarAdapter1.notifyDataSetChanged();
+                    }
+
+                    if(partnerInfoPojo.getmTypesOfServices() != null){
+                        mTypesofServicesHashMap.clear();
+                        mTypesofServicesHashMap.putAll(partnerInfoPojo.getmTypesOfServices());
+                        checkBoxRecyclarAdapter2.notifyDataSetChanged();
                     }
 
 
@@ -153,40 +195,56 @@ public class CompanyFromFragment extends BaseFragment {
         super.onPause();
         Logger.v("OnPauseCompanyFormFragment");
 
-        if(partnerInfoPojo!=null){
-            //send the modified data to parent activity
-
-            //set contacts
-            List<ContactPersonPojo> contacts = new ArrayList<>();
-            for(int i=0;i<mContactPersonsList.size();i++){
-                View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
-                EditText name = v.findViewById(R.id.contact_person_name);
-                EditText number = v.findViewById(R.id.contact_person_number);
-                contacts.add(new ContactPersonPojo(name.getText().toString().trim(),number.getText().toString().trim()));
-            }
-            List<String> landlines = new ArrayList<>();
-            for(int i=0;i<mCompanyLandLineNumbers.size();i++){
-                View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
-                EditText number = v.findViewById(R.id.landline_number);
-                landlines.add(number.getText().toString().trim());
-            }
-            partnerInfoPojo.setContactPersonsList(contacts);
-            partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
-
-
-            //setname
-            partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
-
-            //setaddress
-            partnerInfoPojo
-                    .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
-                            mCompanyCity.getText().toString().trim(),
-                            mCompanyState.getText().toString().trim()));
-
-            mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
-
+        //set contacts
+        List<ContactPersonPojo> contacts = new ArrayList<>();
+        for (int i = 0; i < mContactPersonsList.size(); i++) {
+            View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
+            EditText name = v.findViewById(R.id.contact_person_name);
+            EditText number = v.findViewById(R.id.contact_person_number);
+            contacts.add(new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
         }
+        List<String> landlines = new ArrayList<>();
+        for (int i = 0; i < mCompanyLandLineNumbers.size(); i++) {
+            View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
+            EditText number = v.findViewById(R.id.landline_number);
+            landlines.add(number.getText().toString().trim());
+        }
+        PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+        partnerInfoPojo.setContactPersonsList(contacts);
+        partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
 
+
+        //setname
+        partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
+
+        //setaddress
+        partnerInfoPojo
+                .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
+                        mCompanyCity.getText().toString().trim(),
+                        mCompanyState.getText().toString().trim()));
+
+        //mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+        mUserDocRef.update("mCompanyName",partnerInfoPojo.getmCompanyName());
+
+        HashMap<String,List<ContactPersonPojo>> hashMap = new HashMap<>();
+        hashMap.put("mContactPersonsList",partnerInfoPojo.getmContactPersonsList());
+        mUserDocRef.set(hashMap,SetOptions.merge());
+
+        HashMap<String,List<String>> hashMap2 = new HashMap<>();
+        hashMap2.put("mCompanyLandLineNumbers",partnerInfoPojo.getmCompanyLandLineNumbers());
+        mUserDocRef.set(hashMap2,SetOptions.merge());
+
+        HashMap<String,CompanyAddressPojo> hashMap3 = new HashMap<>();
+        hashMap3.put("mCompanyAdderss",partnerInfoPojo.getmCompanyAdderss());
+        mUserDocRef.set(hashMap3,SetOptions.merge());
+
+        HashMap<String,HashMap<String,Boolean>> hashMap4 = new HashMap<>();
+        hashMap4.put("mNatureOfBusiness",checkBoxRecyclarAdapter1.getmDataMap());
+        mUserDocRef.set(hashMap4,SetOptions.merge());
+
+        HashMap<String,HashMap<String,Boolean>> hashMap5 = new HashMap<>();
+        hashMap5.put("mTypesOfServices",checkBoxRecyclarAdapter2.getmDataMap());
+        mUserDocRef.set(hashMap5,SetOptions.merge());
 
 
     }
@@ -206,24 +264,37 @@ public class CompanyFromFragment extends BaseFragment {
         mAddContactPersonTxt = v.findViewById(R.id.add_person);
         mAddCompanyTxt = v.findViewById(R.id.add_landline);
         mLoadingDataLin = v.findViewById(R.id.ll_loading);
+        togglenoblist =v.findViewById(R.id.nobup);
+        toggletoslist = v.findViewById(R.id.nobup2);
 
 
         mPersonsRecyclarView = v.findViewById(R.id.contactpersons_recyclar);
-        mLandlineRecyclarView = v.findViewById(R.id.landlinerecycler);
         mPersonsRecyclarView.setAdapter(contactPersonsAdapter);
-        mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-//        linearLayoutManager.setReverseLayout(true);
-//        linearLayoutManager.setStackFromEnd(true);
         mPersonsRecyclarView.setLayoutManager(linearLayoutManager);
-
-        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
-//        linearLayoutManager2.setReverseLayout(true);
-//        linearLayoutManager2.setStackFromEnd(true);
-        mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
         mPersonsRecyclarView.setNestedScrollingEnabled(false);
+
+
+        mLandlineRecyclarView = v.findViewById(R.id.landlinerecycler);
+        mLandlineRecyclarView.setAdapter(companyLandLineNumbersAdapter);
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(getActivity());
+        mLandlineRecyclarView.setLayoutManager(linearLayoutManager2);
         mLandlineRecyclarView.setNestedScrollingEnabled(false);
+
+        mNatureOfBusinessRecyclarView = v.findViewById(R.id.rv_natureofbusiness);
+        mNatureOfBusinessRecyclarView.setAdapter(checkBoxRecyclarAdapter1);
+        mNatureOfBusinessRecyclarView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mNatureOfBusinessRecyclarView.setNestedScrollingEnabled(false);
+
+        mTypesOfServicesRecyclarView = v.findViewById(R.id.rv_typesofservices);
+        mTypesOfServicesRecyclarView.setAdapter(checkBoxRecyclarAdapter2);
+        mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
+
+
+
+
+
 
 
         mAddContactPersonTxt.setOnClickListener(new View.OnClickListener() {
@@ -231,11 +302,11 @@ public class CompanyFromFragment extends BaseFragment {
             public void onClick(View view) {
                 //add a blank Person Object in contact Persons list
                 Logger.v(" add contact person");
-                for(int i=0;i<mContactPersonsList.size();i++){
+                for (int i = 0; i < mContactPersonsList.size(); i++) {
                     View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
                     EditText name = v.findViewById(R.id.contact_person_name);
                     EditText number = v.findViewById(R.id.contact_person_number);
-                    mContactPersonsList.set(i,new ContactPersonPojo(name.getText().toString().trim(),number.getText().toString().trim()));
+                    mContactPersonsList.set(i, new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
                 }
                 mContactPersonsList.add(new ContactPersonPojo("", ""));
                 contactPersonsAdapter.notifyDataSetChanged();
@@ -247,14 +318,41 @@ public class CompanyFromFragment extends BaseFragment {
             public void onClick(View view) {
                 //add a blank landline in landline numbers list
                 Logger.v(" add landline person");
-                for(int i=0;i<mCompanyLandLineNumbers.size();i++){
+                for (int i = 0; i < mCompanyLandLineNumbers.size(); i++) {
                     View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
                     EditText number = v.findViewById(R.id.landline_number);
-                    mCompanyLandLineNumbers.set(i,number.getText().toString().trim());
+                    mCompanyLandLineNumbers.set(i, number.getText().toString().trim());
                 }
                 mCompanyLandLineNumbers.add("");
                 companyLandLineNumbersAdapter.notifyDataSetChanged();
 
+            }
+        });
+
+        toggletoslist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mTypesOfServicesRecyclarView.getVisibility()==View.VISIBLE){
+                    mTypesOfServicesRecyclarView.setVisibility(View.GONE);
+                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                }else {
+                    mTypesOfServicesRecyclarView.setVisibility(View.VISIBLE);
+                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+
+                }
+            }
+        });
+        togglenoblist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mNatureOfBusinessRecyclarView.getVisibility()==View.VISIBLE){
+                    mNatureOfBusinessRecyclarView.setVisibility(View.GONE);
+                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                }else {
+                    mNatureOfBusinessRecyclarView.setVisibility(View.VISIBLE);
+                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+
+                }
             }
         });
         return v;
@@ -287,16 +385,16 @@ public class CompanyFromFragment extends BaseFragment {
                     Iterator iterate = keys.iterator();
                     while (iterate.hasNext()) {
                         String key = iterate.next().toString();
-                        Logger.v("CONTACTS :"+ key + "[" + extras.get(key) + "]");
+                        Logger.v("CONTACTS :" + key + "[" + extras.get(key) + "]");
                     }
                     Uri result = data.getData();
-                    Logger.v("CONTACTS :"+ "Got a result: "
+                    Logger.v("CONTACTS :" + "Got a result: "
                             + result.toString());
                     break;
             }
         } else {
             // gracefully handle failure
-            Logger.v("CONTACTS :"+ "Warning: activity result not ok");
+            Logger.v("CONTACTS :" + "Warning: activity result not ok");
         }
 
     }

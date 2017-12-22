@@ -248,7 +248,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
                 query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mSourceCities."+ source, true).whereEqualTo("destinationCities."+ destination, true);;
+                        .collection("partners").whereEqualTo("mSourceCities."+ source, true).whereEqualTo("mDestinationCities."+ destination, true);
 
             } else {
                 query = FirebaseFirestore.getInstance()
@@ -306,6 +306,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 //signed in
+                startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
                 showSnackbar(R.string.sign_in_done);
                 return;
             } else {
