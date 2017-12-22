@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -69,6 +71,7 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
+import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
@@ -150,6 +153,41 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 holder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        final ArrayList<String> phoneNumbers = new ArrayList<>();
+                        List<ContactPersonPojo> contactPersonPojos =  model.getmContactPersonsList();
+                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
+
+                            for (int i = 0; i < contactPersonPojos.size(); i++) {
+                                if(model.getmContactPersonsList().get(0) != null) {
+                                    String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                                    phoneNumbers.add(number);
+                                }
+                            }
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int item) {
+
+                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                    callNumber(phoneNumbers.get(item));
+                                                }
+                                            });
+
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User cancelled the dialog
+                                }
+                            });
+
+                            builder.create();
+                            builder.show();
+                        }
+
                         String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
                         callNumber(number);
                     }
