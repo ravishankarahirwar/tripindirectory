@@ -135,8 +135,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
             public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
-//                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
-                holder.mCompany.setText(model.getmCompanyName());
+                if(model.getmCompanyAdderss().getAddress() != null) {
+                    holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
+                }
+                if(model.getmCompanyName() != null) {
+                    holder.mCompany.setText(model.getmCompanyName());
+                }
+
             }
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {

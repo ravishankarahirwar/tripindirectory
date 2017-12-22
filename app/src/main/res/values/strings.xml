@@ -96,26 +96,35 @@
     <string name="action_settings">Setting</string>
 
 
-    <string-array name="payload">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
+    <string-array name="truck_type">
+        <item>LCV</item>
+        <item>Truck</item>
+        <item>Tusker</item>
+        <item>Taurus</item>
+        <item>Trailers</item>
+        <item>Container Body</item>
+        <item>Refrigerated Vans</item>
+        <item>Tankers</item>
+        <item>Tippers</item>
+        <item>Bulkers</item>
+        <item>Car Carriers</item>
+        <item>Scooter Body</item>
+        <item>Hydraulic Axles</item>
     </string-array>
 
     <string-array name="body_type">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
+        <item>Normal</item>
+        <item>Full Body</item>
+        <item>Half Body</item>
+        <item>Open Body</item>
+        <item>Platform</item>
+        <item>Skeleton</item>
+        <item>Semi-low</item>
+        <item>Low</item>
+        <item>Trolla/Body Trailer</item>
+        <item>Refer</item>
+        <item>High Cube (HC)</item>
+        <item>Normal</item>
     </string-array>
 
 </resources>
