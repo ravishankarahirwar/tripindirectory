@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -138,13 +139,25 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 .setQuery(query, PartnerInfoPojo.class).build();
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
+            public void onBindViewHolder(PartnersViewHolder holder, int position,final PartnerInfoPojo model) {
                 if(model.getmCompanyAdderss().getAddress() != null) {
                     holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 }
                 if(model.getmCompanyName() != null) {
                     holder.mCompany.setText(model.getmCompanyName());
                 }
+
+                if(model.getmCompanyName() != null) {
+                    holder.mCall.setText(model.getmContactPersonsList().get(0).getGetmContactPersonMobile());
+                }
+
+                holder.mCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                        callNumber(number);
+                    }
+                });
 
             }
             @Override
@@ -163,6 +176,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mPartnerList.setAdapter(adapter);
 
 
+    }
+
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callIntent);
     }
 
     private void searchViewSetup() {
