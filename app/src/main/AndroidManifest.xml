@@ -50,14 +50,7 @@
         <activity
             android:name=".newactivities.TutorialScreensActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.AddCompanyActivity" />
-        <activity android:name=".newactivities.EmailPassLoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".activity.Main2Activity"
             android:label="Indian Logistics Network"
