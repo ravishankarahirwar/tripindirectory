@@ -126,6 +126,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private RadioGroup mSearchTagRadioGroup;
     private int searchTag = 0;
     private SearchData mSearchData;
+    private Boolean mSuggestionTapped = false;
 
 
     @Override
@@ -326,15 +327,21 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
         if (!s.equals("")) {
             if (s.contains("To") || s.contains("to")) {
-                String sourceDestination[] = s.split("to");
+                String sourceDestination[] = s.split("(?i:to)");
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
                 query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mSourceCities."+ source, true).whereEqualTo("mDestinationCities."+ destination, true);
+                        .collection("partners").whereEqualTo("mSourceCities."+ source.toUpperCase(), true).whereEqualTo("mDestinationCities."+ destination.toUpperCase(), true);
 
             } else {
-                query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mCompanyName", s);
+                if(mSuggestionTapped){
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").whereEqualTo("mCompanyName", s);
+                }else {
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").orderBy("mCompanyName").whereGreaterThan("mCompanyName", s);
+                }
+
             }
         }
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
@@ -404,7 +411,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             mUserDocRef.set(partnerInfoPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Logger.v("data set :"+auth.getCurrentUser().getPhoneNumber());
+                                    Logger.v("data set to :"+auth.getUid());
 
                                     mUserDocRef = FirebaseFirestore.getInstance()
                                             .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
@@ -610,6 +617,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
                 mSearchView.setSearchText(searchSuggestion.getBody());
+                mSuggestionTapped = true;
+                setAdapter(searchSuggestion.getBody());
                 mSearchView.clearSuggestions();
 
 //                startUpDownActivity( (Station) searchSuggestion);
@@ -633,6 +642,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             public void onSearchAction(String query) {
                 Toast.makeText(mContext, "Query : " + query,
                         Toast.LENGTH_SHORT).show();
+                mSuggestionTapped = false;
 
                 setAdapter(query);
 
