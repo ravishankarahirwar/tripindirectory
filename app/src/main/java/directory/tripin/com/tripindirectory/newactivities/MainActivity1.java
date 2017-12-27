@@ -4,9 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,12 +18,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,11 +37,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -48,14 +59,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,28 +68,36 @@ import java.util.Set;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
+import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
-import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
-import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
-import directory.tripin.com.tripindirectory.model.response.TokenResponse;
+import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
+
 import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
-import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
+import directory.tripin.com.tripindirectory.utils.SearchData;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener ,NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int SEARCHTAG_ROUTE = 0;
+    private static final int SEARCHTAG_TRANSPORTER = 1;
+    private static final int SEARCHTAG_PEOPLE = 2;
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
+
+
     private static final int RC_SIGN_IN = 123;
     private static int SPLASH_SHOW_TIME = 1000;
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+
     ArrayAdapter<String> monthAdapter = null;
+    List<SuggestionCompanyName> companySuggestions = null;
     List<String> companynamesuggestions = null;
     Task<QuerySnapshot> mSuggestionsTask;
     FloatingActionButton mFloatingActionButton;
@@ -110,6 +123,9 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private boolean shouldElastiSearchCall = true;
     private FloatingSearchView mSearchView;
     private DrawerLayout mDrawerLayout;
+    private RadioGroup mSearchTagRadioGroup;
+    private int searchTag = 0;
+    private SearchData mSearchData;
 
 
     @Override
@@ -133,14 +149,65 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         //get all doucuments
 
         query = FirebaseFirestore.getInstance()
-                .collection("partners");
+                .collection("partners").orderBy("mCompanyName");
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class).build();
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
-//                holder.mAddress.setText(model.getmCompanyAdderss().getmAddress());
-                holder.mCompany.setText(model.getmCompanyName());
+            public void onBindViewHolder(PartnersViewHolder holder, int position,final PartnerInfoPojo model) {
+                if(model.getmCompanyAdderss().getAddress() != null) {
+                    holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
+                }
+                if(model.getmCompanyName() != null) {
+                    holder.mCompany.setText(model.getmCompanyName());
+                }
+
+
+                holder.mCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final ArrayList<String> phoneNumbers = new ArrayList<>();
+                        List<ContactPersonPojo> contactPersonPojos =  model.getmContactPersonsList();
+                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
+
+                            for (int i = 0; i < contactPersonPojos.size(); i++) {
+                                if(model.getmContactPersonsList().get(i) != null) {
+                                    String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+
+                                    phoneNumbers.add(number);
+                                }
+                            }
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int item) {
+
+                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                    callNumber(phoneNumbers.get(item));
+                                                }
+                                            });
+
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User cancelled the dialog
+                                }
+                            });
+
+                            builder.create();
+                            builder.show();
+                        } else {
+
+                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                            callNumber(number);
+                        }
+                    }
+                });
+
             }
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
@@ -160,30 +227,21 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
     }
 
-    private void searchViewSetup() {
-
-        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-            @Override
-            public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
-            }
-
-            @Override
-            public void onSearchAction(String query) {
-                Toast.makeText(getApplicationContext(), query,
-                        Toast.LENGTH_SHORT).show();
-                setAdapter(query);
-            }
-        });
-
-
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callIntent);
     }
 
     private void init() {
         mContext = MainActivity1.this;
+        mSearchData = new SearchData();
+
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout =  findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
-
+        mSearchTagRadioGroup = findViewById(R.id.search_tag_group);
         mPartnerList.setLayoutManager(new LinearLayoutManager(this));
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -193,7 +251,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mPreferenceManager = PreferenceManager.getInstance(mContext);
         mTokenManager = new TokenManager(mContext);
         companynamesuggestions = new ArrayList<>();
-
+        companySuggestions = new ArrayList<>();
+        searchTag = SEARCHTAG_ROUTE;
         mSearchView.setShowSearchKey(true);
         mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
 
@@ -202,12 +261,28 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        searchViewSetup();
+        mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
+                if (radioButtonID == R.id.search_by_route) {
+                    searchTag = SEARCHTAG_ROUTE;
+                    mSearchView.setSearchHint("Source To Destination");
+                } else if (radioButtonID == R.id.search_by_transporter) {
+                    searchTag = SEARCHTAG_TRANSPORTER;
+                    mSearchView.setSearchHint("Search by transporter name");
+                } else if (radioButtonID == R.id.search_by_people) {
+                    searchTag = SEARCHTAG_PEOPLE;
+                    mSearchView.setSearchHint("Search by people name");
+                }
+            }
+        });
+
+        setupSearchBar();
+
     }
 
 
-    private void fetchAutoSuggestions(String s) {
-
+    private List<SuggestionCompanyName> fetchAutoSuggestions(String s) {
             FirebaseFirestore.getInstance()
                     .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
                     .get()
@@ -215,18 +290,20 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             Logger.v("on queried fetch Complete!!");
+                            companySuggestions.clear();
                             if (task.isSuccessful()) {
-                                companynamesuggestions.clear();
                                 for (DocumentSnapshot document : task.getResult()) {
-                                    Log.d("onComplete", document.getId() + " => " + document.get("mCompanyName"));
-                                    companynamesuggestions.add(document.get("mCompanyName").toString());
+                                    SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
+                                    Log.d("suggestion", document.getId() + " => " + document.get("mCompanyName"));
+                                    suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
+                                    companySuggestions.add(suggestionCompanyName);
                                 }
-                                Set<String> hs = new LinkedHashSet<>();
-                                hs.addAll(companynamesuggestions);
-                                companynamesuggestions.clear();
-                                companynamesuggestions.addAll(hs);
-                                monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
-                                mSearchField.setAdapter(monthAdapter);
+                                Set<SuggestionCompanyName> hs = new LinkedHashSet<>();
+                                hs.addAll(companySuggestions);
+                                companySuggestions.clear();
+                                companySuggestions.addAll(hs);
+//                                monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
+//                                mSearchField.setAdapter(monthAdapter);
                                 Logger.v("adapter set!!");
 
                             } else {
@@ -234,6 +311,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             }
                         }
                     });
+            return companySuggestions;
 
     }
 
@@ -242,13 +320,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         adapter.stopListening();
         adapter.notifyDataSetChanged();
         //update your query here
+
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
         if (!s.equals("")) {
-            if (s.contains("To")) {
-                Toast.makeText(this, "Contain To", Toast.LENGTH_LONG).show();
-                String sourceDestination[] = s.split("To");
+            if (s.contains("To") || s.contains("to")) {
+                String sourceDestination[] = s.split("to");
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
                 query = FirebaseFirestore.getInstance()
@@ -348,7 +426,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                     }
                 });
 
-
                 return;
             } else {
                 // Sign in failed
@@ -370,53 +447,18 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             }
 
             showSnackbar(R.string.unknown_sign_in_response);
+        } else  if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Fill the list view with the strings the recognizer thought it
+            // could have heard
+            ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            Toast.makeText(mContext, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
+            String enquiry = matches.get(0).toString();
+            onVoiceSearch(enquiry);
         }
     }
 
     void showSnackbar(int m) {
         Toast.makeText(this, getString(m), Toast.LENGTH_LONG).show();
-    }
-
-
-    private void performElasticSearch(String query) {
-        mPartnersManager.getElasticSearchRequest(mSearchField.getText().toString(), String.valueOf(mFromWhichEntry), String.valueOf(mPageSize), new PartnersManager.ElasticSearchListener() {
-            @Override
-            public void onSuccess(final ElasticSearchResponse elasticSearchResponse) {
-                Logger.v("Elastic Search success");
-                if (pd != null) {
-                    pd.dismiss();
-                }
-
-                if (mFromWhichEntry == 1) {
-                    mPartnerAdapter1 = new PartnersAdapter1(mContext, elasticSearchResponse);
-                    mVerticalLayoutManager =
-                            new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-                    mPartnerList.setLayoutManager(mVerticalLayoutManager);
-                    mPartnerList.setAdapter(mPartnerAdapter1);
-
-                    hideSoftKeyboard();
-                } else if (elasticSearchResponse.getData().size() != 0) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPartnerAdapter1.addNewList(elasticSearchResponse);
-                        }
-                    }, 2000);
-                } else if (elasticSearchResponse.getData().size() == 0) {
-                    mPartnerAdapter1.stopLoad();
-                    shouldElastiSearchCall = false;
-                }
-                isListenerExecuted = false;
-            }
-
-            @Override
-            public void onFailed() {
-                Logger.v("Elastic Search failed");
-                if (pd != null) {
-                    pd.dismiss();
-                }
-            }
-        });
     }
 
 
@@ -521,4 +563,193 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void setupSearchBar() {
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+
+                    switch (searchTag) {
+                        case SEARCHTAG_ROUTE :
+                            mSearchData.findSuggestions(mContext, newQuery, 5,
+                                    FIND_SUGGESTION_SIMULATED_DELAY, new SearchData.OnFindSuggestionsListener() {
+
+                                        @Override
+                                        public void onResults(List<SuggestionCompanyName> results) {
+
+                                            //this will swap the data and
+                                            //render the collapse/expand animations as necessary
+                                            mSearchView.swapSuggestions(results);
+//                                    Log.d(TAG, "360" + results.get(0).getStationCode());
+
+                                            //let the users know that the background
+                                            //process has completed
+//                                            mSearchView.hideProgress();
+                                        }
+                                    });
+                            break;
+                        case SEARCHTAG_TRANSPORTER :
+                            List<SuggestionCompanyName> companySuggestionsForDropDown = fetchAutoSuggestions(newQuery);
+                            mSearchView.swapSuggestions(companySuggestionsForDropDown);
+                            break;
+                    }
+
+
+                }
+
+//                Log.d(TAG, "onSearchTextChanged()");
+            }
+        });
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+                mSearchView.setSearchText(searchSuggestion.getBody());
+                mSearchView.clearSuggestions();
+
+//                startUpDownActivity( (Station) searchSuggestion);
+//
+//                SearchSuggestion colorSuggestion = (SearchSuggestion) searchSuggestion;
+//                DataHelper.findColors(getActivity(), colorSuggestion.getBody(),
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSuggestionClicked()");
+//
+//                mLastQuery = searchSuggestion.getBody();
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                Toast.makeText(mContext, "Query : " + query,
+                        Toast.LENGTH_SHORT).show();
+
+                setAdapter(query);
+
+//                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
+
+//                mLastQuery = query;
+//
+//                DataHelper.findColors(getActivity(), query,
+//                        new DataHelper.OnFindColorsListener() {
+//
+//                            @Override
+//                            public void onResults(List<ColorWrapper> results) {
+//                                //show search results
+//                            }
+//
+//                        });
+//                Log.d(TAG, "onSearchAction()");
+            }
+        });
+
+//        mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+//            @Override
+//            public void onFocus() {
+//
+//                //show suggestions when search bar gains focus (typically history suggestions)
+//                mSearchView.swapSuggestions(DataHelper.getHistory(getActivity(), 3));
+//
+//                Log.d(TAG, "onFocus()");
+//            }
+//
+//            @Override
+//            public void onFocusCleared() {
+//
+//                //set the title of the bar so that when focus is returned a new query begins
+//                mSearchView.setSearchBarTitle(mLastQuery);
+//
+//                //you can also set setSearchText(...) to make keep the query there when not focused and when focus returns
+//                //mSearchView.setSearchText(searchSuggestion.getBody());
+//
+//                Log.d(TAG, "onFocusCleared()");
+//            }
+//        });
+//
+//
+        //handle menu clicks the same way as you would
+        //in a regular activity
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+
+                if (item.getItemId() == R.id.action_voice) {
+                    startVoiceRecognitionActivity();
+                } else {
+                    //just print action
+                    Toast.makeText(mContext, item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+//
+//        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHome"
+//        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+//            @Override
+//            public void onHomeClicked() {
+//
+//                Log.d(TAG, "onHomeClicked()");
+//            }
+//        });
+//
+        /*
+         * Here you have access to the left icon and the text of a given suggestion
+         * item after as it is bound to the suggestion list. You can utilize this
+         * callback to change some properties of the left icon and the text. For example, you
+         * can load the left icon images using your favorite image loading library, or change text color.
+         *
+         *
+         * Important:
+         * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
+         * items in the list.
+         */
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+                                         TextView textView, com.arlib.floatingsearchview.suggestions.model.SearchSuggestion item, int itemPosition) {
+
+
+            }
+
+        });
+    }
+
+    //-------------------- Voice -----------
+    public void startVoiceRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Are you at ?");
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
+
+
+    private void onVoiceSearch(final String query) {
+        if(query != null) {
+            mSearchView.setSearchText(query);
+            setAdapter(query);
+        }
+//        mSearchData.findSuggestions(mContext, query, 5,
+//                FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
+//
+//                    @Override
+//                    public void onResults(final List<Station> results) {
+//
+//
+//                    }
+//                });
+    }
+
 }

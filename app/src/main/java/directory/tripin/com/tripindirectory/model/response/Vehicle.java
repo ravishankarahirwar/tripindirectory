@@ -1,5 +1,7 @@
 package directory.tripin.com.tripindirectory.model.response;
 
+import directory.tripin.com.tripindirectory.model.Driver;
+
 /**
  * @author Ravishankar
  * @version 1.0
@@ -80,24 +82,5 @@ public class Vehicle {
         this.width = width;
     }
 
-    public class Driver {
-        private String name;
-        private String number;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getNumber() {
-            return number;
-        }
-
-        public void setNumber(String number) {
-            this.number = number;
-        }
-    }
 }

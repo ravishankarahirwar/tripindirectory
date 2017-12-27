@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="wrap_content"
-                                             android:background="@drawable/roundedcornerbg"
-                                             android:padding="5dp"
-                                             tools:layout_editor_absoluteX="10dp"
-                                             tools:layout_editor_absoluteY="91dp">
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    card_view:cardCornerRadius="4dp">
+
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
+
+    <ImageView
+        android:id="@+id/vehicle_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_remove_circle_black_24dp"/>
 
     <Switch
         android:id="@+id/is_available"
@@ -15,7 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:text="Switch"
+        android:textOn="Available"
+        android:textOff="Not Available"
+        android:textColor="@android:color/holo_orange_dark"
+        android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_marginTop="8dp"/>
@@ -24,8 +46,8 @@
         android:id="@+id/vehicle_type"
         android:layout_width="139dp"
         android:layout_height="38dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
         android:prompt="@string/city_town_village"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vehicle_number"/>
@@ -36,16 +58,17 @@
         android:layout_height="39dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="#FF0"
         android:prompt="@string/city_town_village"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vehicle_number"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/vehicle_number"
-        android:layout_width="338dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,66 +77,85 @@
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_vechicle_number"
             android:layout_width="match_parent"
-            android:layout_height="33dp"
-            android:hint="Vehicle Number"/>
+            android:layout_height="wrap_content"
+            android:hint="Vehicle Number" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_payload"
         android:layout_width="161dp"
-        android:layout_height="39dp"
-        tools:layout_editor_absoluteX="21dp"
-        tools:layout_editor_absoluteY="144dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vehicle_type">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_payload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Payload"/>
+            android:hint="Payload" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_length"
         android:layout_width="161dp"
-        android:layout_height="39dp"
-        tools:layout_editor_absoluteX="190dp"
-        tools:layout_editor_absoluteY="148dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/input_layout_payload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/input_layout_payload"
+        app:layout_constraintTop_toTopOf="@+id/input_layout_payload">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_length"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Length"/>
+            android:hint="Length" />
     </android.support.design.widget.TextInputLayout>
 
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_driver_name"
-        android:layout_width="341dp"
-        android:layout_height="45dp"
-        tools:layout_editor_absoluteX="12dp"
-        tools:layout_editor_absoluteY="191dp">
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+
+
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/vehicle_number"
+        app:layout_constraintStart_toStartOf="@+id/vehicle_number"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_payload">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_driver_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Driver Name"/>
+            android:hint="Driver Name"
+            android:text="Driver Name" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/input_layout_driver_number"
-        android:layout_width="341dp"
-        android:layout_height="49dp"
-        tools:layout_editor_absoluteX="12dp"
-        tools:layout_editor_absoluteY="244dp">
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/vehicle_number"
+        app:layout_constraintStart_toStartOf="@+id/vehicle_number"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_driver_name">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/input_driver_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Driver Number"/>
+            android:inputType="phone"
+            android:hint="Driver Number" />
     </android.support.design.widget.TextInputLayout>
 
 
 </android.support.constraint.ConstraintLayout>
+
+
+</android.support.v7.widget.CardView>
