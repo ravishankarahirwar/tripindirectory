@@ -246,6 +246,7 @@ public class RouteFormFragment extends BaseFragment {
 
             AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                     .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setCountry("IN")
                     .build();
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
@@ -266,7 +267,7 @@ public class RouteFormFragment extends BaseFragment {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 Logger.v("Place::: " + place.getName());
                 if(mPlaceCode==1){
-                    pickupHM.put(place.getName().toString(),true);
+                    pickupHM.put(place.getName().toString().toUpperCase(),true);
                     mUserDocRef.update("mSourceCities",pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -280,7 +281,7 @@ public class RouteFormFragment extends BaseFragment {
 
                 }
                 if(mPlaceCode==2){
-                    dropoffHM.put(place.getName().toString(),true);
+                    dropoffHM.put(place.getName().toString().toUpperCase(),true);
                     mUserDocRef.update("mDestinationCities",dropoffHM).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
