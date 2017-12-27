@@ -40,7 +40,7 @@ public class DataTransferActivity extends AppCompatActivity {
         String dump = loadJSONFromAsset();
         try {
             JSONArray jsonArray = new JSONArray(dump);
-            for(int i=0;i<jsonArray.length();i++){
+            for(int i=0;i<1;i++){
                 SinglePartnerDumpMain d = gson.fromJson(jsonArray.getJSONObject(i).toString(),SinglePartnerDumpMain.class);
                 PartnerInfoPojo p = new PartnerInfoPojo();
                 RMN = "null"+i;
@@ -68,7 +68,9 @@ public class DataTransferActivity extends AppCompatActivity {
                     ContactPersonPojo contactPersonPojo =new ContactPersonPojo(d.getMobile()[j].getName(),d.getMobile()[j].getCellNo());
                     mobile.add(contactPersonPojo);
                     if(j==0){
-                        RMN = d.getMobile()[0].getCellNo();
+                        RMN = "+918394876737";
+                       // RMN = d.getMobile()[0].getCellNo();
+
                     }
                 }
                 p.setContactPersonsList(mobile);
@@ -105,6 +107,10 @@ public class DataTransferActivity extends AppCompatActivity {
                     hashMap4.put(d.getServiceType()[j].getName(),true);
                 }
                 p.setmTypesOfServices(hashMap4);
+
+                p.setmLikes(Integer.parseInt(d.getLike()));
+                p.setmDislikes(Integer.parseInt(d.getDislike()));
+                p.setmRMN(RMN);
 
 
                 mUserDocRef = FirebaseFirestore.getInstance()

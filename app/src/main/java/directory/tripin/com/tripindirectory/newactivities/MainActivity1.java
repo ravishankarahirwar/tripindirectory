@@ -40,8 +40,10 @@ import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -88,6 +90,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     FloatingActionButton mFloatingActionButton;
     boolean isListenerExecuted = false;
     FirebaseAuth auth;
+    DocumentReference mUserDocRef;
+
     Query query;
     FirestoreRecyclerOptions<PartnerInfoPojo> options;
     FirestoreRecyclerAdapter adapter;
@@ -306,8 +310,45 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 //signed in
-                startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
-                showSnackbar(R.string.sign_in_done);
+                mUserDocRef = FirebaseFirestore.getInstance()
+                        .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
+
+                mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+
+                            Logger.v("document exist :"+auth.getCurrentUser().getPhoneNumber());
+
+                            mUserDocRef = FirebaseFirestore.getInstance()
+                                    .collection("partners").document(auth.getUid());
+                            PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                            mUserDocRef.set(partnerInfoPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Logger.v("data set :"+auth.getCurrentUser().getPhoneNumber());
+
+                                    mUserDocRef = FirebaseFirestore.getInstance()
+                                            .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
+                                    mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
+                                            showSnackbar(R.string.sign_in_done);
+                                        }
+                                    });
+
+                                }
+                            });
+                        }else {
+                            Logger.v("document dosent exist :"+auth.getCurrentUser().getPhoneNumber());
+                            startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
+                            showSnackbar(R.string.sign_in_done);
+                        }
+                    }
+                });
+
+
                 return;
             } else {
                 // Sign in failed

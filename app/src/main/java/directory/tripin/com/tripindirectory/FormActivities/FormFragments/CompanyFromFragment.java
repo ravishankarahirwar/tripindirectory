@@ -268,6 +268,10 @@ public class CompanyFromFragment extends BaseFragment {
         hashMap5.put("mTypesOfServices",checkBoxRecyclarAdapter2.getmDataMap());
         mUserDocRef.set(hashMap5,SetOptions.merge());
 
+        HashMap<String,String> hashMap6 = new HashMap<>();
+        hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber()+"");
+        mUserDocRef.set(hashMap6,SetOptions.merge());
+
 
     }
 
