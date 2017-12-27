@@ -24,12 +24,11 @@ public class SearchData {
 
     private List<SuggestionCompanyName> getSearchableData() {
         List<SuggestionCompanyName> searchableData = new ArrayList<>();
-        searchableData.add(new SuggestionCompanyName("Mumbai"));
+        searchableData.add(new SuggestionCompanyName("Mumbai To "));
         searchableData.add(new SuggestionCompanyName("Rajkot"));
         searchableData.add(new SuggestionCompanyName("Bhopal"));
         searchableData.add(new SuggestionCompanyName("Nagpur"));
         searchableData.add(new SuggestionCompanyName("Pune"));
-        searchableData.add(new SuggestionCompanyName(""));
 
         return searchableData;
     }

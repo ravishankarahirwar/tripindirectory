@@ -22,6 +22,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,7 +71,7 @@ public class RouteFormFragment extends BaseFragment {
     private RecyclerView mPickUpList, mDropList;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     int mPlaceCode = 0;
-
+    GeoDataClient mGeoDataClient;
 
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
