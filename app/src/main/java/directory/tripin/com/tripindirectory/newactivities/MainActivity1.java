@@ -326,7 +326,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             mUserDocRef.set(partnerInfoPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Logger.v("data set :"+auth.getCurrentUser().getPhoneNumber());
+                                    Logger.v("data set to :"+auth.getUid());
 
                                     mUserDocRef = FirebaseFirestore.getInstance()
                                             .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
