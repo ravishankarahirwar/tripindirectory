@@ -2,6 +2,8 @@ package directory.tripin.com.tripindirectory.manager;
 
 import android.content.Context;
 
+import java.util.List;
+
 import directory.tripin.com.tripindirectory.Communication.RquestHandler;
 import directory.tripin.com.tripindirectory.dataprovider.ApiTag;
 import directory.tripin.com.tripindirectory.dataprovider.RequestProvider;
@@ -10,6 +12,7 @@ import directory.tripin.com.tripindirectory.factory.Response;
 import directory.tripin.com.tripindirectory.getcity.managers.ContentManager;
 import directory.tripin.com.tripindirectory.getcity.rest.responses.PredictionResponse;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
 import directory.tripin.com.tripindirectory.role.IGetCityOptions;
 
@@ -24,12 +27,28 @@ public class CityManager implements RequestListener, IGetCityOptions {
 
     private RequestProvider mRequestProvider;
 
-    private GetCityListener mGetCityListener;
+    private CitySuggestionListener mCitySuggestionListener;
+
+
+
+
+    public interface CitySuggestionListener {
+        void onSuccess(List<SuggestionCompanyName> suggestions);
+        void onFaailed();
+    }
 
     public CityManager(Context context) {
         this.mContext = context;
         this.mRequestProvider = new RequestProvider(mContext);
     }
+
+    public CityManager(Context context, String source, CitySuggestionListener  citySuggestionListener) {
+        this.mContext = context;
+        this.mRequestProvider = new RequestProvider(mContext);
+        mCitySuggestionListener = citySuggestionListener;
+        getCitys(source);
+    }
+
 
     public void getCitySuggestionList(String source) {
         getCitys(source);

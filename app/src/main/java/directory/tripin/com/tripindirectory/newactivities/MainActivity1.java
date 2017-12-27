@@ -1,15 +1,14 @@
 package directory.tripin.com.tripindirectory.newactivities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -22,19 +21,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.telephony.TelephonyManager;
-import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
+import android.text.style.CharacterStyle;
+import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -50,9 +43,19 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.common.data.DataBufferUtils;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -65,60 +68,56 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.manager.CityManager;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
-
 import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
-public class MainActivity1 extends AppCompatActivity implements OnBottomReachedListener ,NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity1 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
+    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_TRANSPORTER = 1;
     private static final int SEARCHTAG_PEOPLE = 2;
-    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
-
-
     private static final int RC_SIGN_IN = 123;
-    private static int SPLASH_SHOW_TIME = 1000;
-    public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
-    ArrayAdapter<String> monthAdapter = null;
     List<SuggestionCompanyName> companySuggestions = null;
     List<String> companynamesuggestions = null;
-    Task<QuerySnapshot> mSuggestionsTask;
-    FloatingActionButton mFloatingActionButton;
-    boolean isListenerExecuted = false;
-    FirebaseAuth auth;
+
+
     DocumentReference mUserDocRef;
 
-    Query query;
+
+    FirebaseAuth auth;
     FirestoreRecyclerOptions<PartnerInfoPojo> options;
     FirestoreRecyclerAdapter adapter;
+
     private Context mContext;
-    private MultiAutoCompleteTextView mSearchField;
     private RecyclerView mPartnerList;
-    private PartnersAdapter1 mPartnerAdapter1;
     private PreferenceManager mPreferenceManager;
     private TokenManager mTokenManager;
     private PartnersManager mPartnersManager;
     private ProgressDialog pd;
     private int mFromWhichEntry = 1;
     private int mPageSize = 5;
-    private LinearLayoutManager mVerticalLayoutManager;
     private int mLastPosition;
     private boolean shouldElastiSearchCall = true;
     private FloatingSearchView mSearchView;
@@ -128,6 +127,18 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private SearchData mSearchData;
     private Boolean mSuggestionTapped = false;
 
+    private Query query;
+    private GeoDataClient mGeoDataClient;
+    private boolean isSourceSelected = false;
+    private String mSourceCity;
+    private String mDestinationCity;
+
+    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
+            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+
+    public interface OnFindSuggestionsListener {
+        void onResults(List<SuggestionCompanyName> results);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,19 +146,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         setContentView(R.layout.activity_home);
 
         init();
-//        setListeners();
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
-//            mPreferenceManager.setFirstTime(false);
             mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
-            searchBarTutorial();
         } else {
             Logger.v("Multiple times app opened");
         }
-
-
-        //get all doucuments
 
         query = FirebaseFirestore.getInstance()
                 .collection("partners").orderBy("mCompanyName");
@@ -155,11 +160,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 .setQuery(query, PartnerInfoPojo.class).build();
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position,final PartnerInfoPojo model) {
-                if(model.getmCompanyAdderss().getAddress() != null) {
+            public void onBindViewHolder(PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
+                if (model.getmCompanyAdderss().getAddress() != null) {
                     holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 }
-                if(model.getmCompanyName() != null) {
+                if (model.getmCompanyName() != null) {
                     holder.mCompany.setText(model.getmCompanyName());
                 }
 
@@ -168,11 +173,11 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                     @Override
                     public void onClick(View view) {
                         final ArrayList<String> phoneNumbers = new ArrayList<>();
-                        List<ContactPersonPojo> contactPersonPojos =  model.getmContactPersonsList();
+                        List<ContactPersonPojo> contactPersonPojos = model.getmContactPersonsList();
                         if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
 
                             for (int i = 0; i < contactPersonPojos.size(); i++) {
-                                if(model.getmContactPersonsList().get(i) != null) {
+                                if (model.getmContactPersonsList().get(i) != null) {
                                     String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
 
                                     phoneNumbers.add(number);
@@ -210,12 +215,14 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 });
 
             }
+
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext())
                         .inflate(R.layout.single_partner_row1, group, false);
                 return new PartnersViewHolder(view);
             }
+
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
@@ -238,9 +245,10 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private void init() {
         mContext = MainActivity1.this;
         mSearchData = new SearchData();
+        mGeoDataClient = Places.getGeoDataClient(this, null);
 
         mSearchView = findViewById(R.id.floating_search_view);
-        mDrawerLayout =  findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
         mSearchTagRadioGroup = findViewById(R.id.search_tag_group);
         mPartnerList.setLayoutManager(new LinearLayoutManager(this));
@@ -277,51 +285,43 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 }
             }
         });
-
         setupSearchBar();
-
     }
 
-
     private List<SuggestionCompanyName> fetchAutoSuggestions(String s) {
-            FirebaseFirestore.getInstance()
-                    .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            Logger.v("on queried fetch Complete!!");
-                            companySuggestions.clear();
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
-                                    Log.d("suggestion", document.getId() + " => " + document.get("mCompanyName"));
-                                    suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
-                                    companySuggestions.add(suggestionCompanyName);
-                                }
-                                Set<SuggestionCompanyName> hs = new LinkedHashSet<>();
-                                hs.addAll(companySuggestions);
-                                companySuggestions.clear();
-                                companySuggestions.addAll(hs);
-//                                monthAdapter = new ArrayAdapter<String>(MainActivity1.this, R.layout.hint_completion_layout, R.id.tvHintCompletion, companynamesuggestions);
-//                                mSearchField.setAdapter(monthAdapter);
-                                Logger.v("adapter set!!");
-
-                            } else {
-                                Log.d("onComplete", "Error getting documents: ", task.getException());
+        FirebaseFirestore.getInstance()
+                .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Logger.v("on queried fetch Complete!!");
+                        companySuggestions.clear();
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
+                                Log.d("suggestion", document.getId() + " => " + document.get("mCompanyName"));
+                                suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
+                                companySuggestions.add(suggestionCompanyName);
                             }
-                        }
-                    });
-            return companySuggestions;
+                            Set<SuggestionCompanyName> hs = new LinkedHashSet<>();
+                            hs.addAll(companySuggestions);
+                            companySuggestions.clear();
+                            companySuggestions.addAll(hs);
+                            Logger.v("adapter set!!");
 
+                        } else {
+                            Log.d("onComplete", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        return companySuggestions;
     }
 
 
     private void setAdapter(String s) {
         adapter.stopListening();
         adapter.notifyDataSetChanged();
-        //update your query here
-
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
@@ -331,7 +331,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
                 query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mSourceCities."+ source.toUpperCase(), true).whereEqualTo("mDestinationCities."+ destination.toUpperCase(), true);
+               .collection("partners").whereEqualTo("mSourceCities."+ source.toUpperCase(), true).whereEqualTo("mDestinationCities."+ destination.toUpperCase(), true);
+
 
             } else {
                 if(mSuggestionTapped){
@@ -401,9 +402,9 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
+                        if (documentSnapshot.exists()) {
 
-                            Logger.v("document exist :"+auth.getCurrentUser().getPhoneNumber());
+                            Logger.v("document exist :" + auth.getCurrentUser().getPhoneNumber());
 
                             mUserDocRef = FirebaseFirestore.getInstance()
                                     .collection("partners").document(auth.getUid());
@@ -412,7 +413,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Logger.v("data set to :"+auth.getUid());
-
                                     mUserDocRef = FirebaseFirestore.getInstance()
                                             .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
                                     mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -425,8 +425,8 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
                                 }
                             });
-                        }else {
-                            Logger.v("document dosent exist :"+auth.getCurrentUser().getPhoneNumber());
+                        } else {
+                            Logger.v("document dosent exist :" + auth.getCurrentUser().getPhoneNumber());
                             startActivity(new Intent(MainActivity1.this, CompanyInfoActivity.class));
                             showSnackbar(R.string.sign_in_done);
                         }
@@ -454,7 +454,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             }
 
             showSnackbar(R.string.unknown_sign_in_response);
-        } else  if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+        } else if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it
             // could have heard
             ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -469,77 +469,13 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     }
 
 
-    private void searchBarTutorial() {
-        new MaterialTapTargetPrompt.Builder((Activity) mContext)
-                .setPrimaryText("Search Box")
-                .setSecondaryText("Enter your search text here and click the search icon on the keyboard")
-                .setBackgroundColour(ContextCompat.getColor(mContext, R.color.primaryColor))
-                .setPromptBackground(new RectanglePromptBackground())
-                .setFocalColour(ContextCompat.getColor(mContext, R.color.primaryDarkColor))
-                .setPromptFocal(new RectanglePromptFocal())
-                .setAutoDismiss(false)
-                .setAutoFinish(false)
-                .setCaptureTouchEventOutsidePrompt(true)
-                .setTarget(R.id.search_field)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                            //Do something such as storing a value so that this prompt is never shown again
-                            prompt.finish();
-                            mSearchField.setText("Bima Complex, Kalamboli, Navi Mumbai");
-                            //performElasticSearch(mSearchField.getText().toString());
-//                            mPreferenceManager.setFirstTime(false);
-                        }
-                    }
-                }).show();
-    }
-
-    /**
-     * Hides the soft keyboard
-     */
-    public void hideSoftKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (inputMethodManager != null) {
-                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-            }
-
-        }
-    }
-
-    /**
-     * Call back listener for Pagination
-     *
-     * @param lastPosition
-     */
-    @Override
-    public void onBottomReached(int lastPosition) {
-        if (!isListenerExecuted) {
-            Logger.v("Reached the end of the list with position: " + lastPosition);
-            mLastPosition = lastPosition;
-            mFromWhichEntry = mFromWhichEntry + mPageSize;
-            if (shouldElastiSearchCall) {
-                //performElasticSearch(mSearchField.getText().toString());
-            }
-//            showProgressDialog();
-            isListenerExecuted = true;
-        }
-    }
-
-    private void showProgressDialog() {
-        pd = new ProgressDialog(MainActivity1.this);
-        pd.setMessage("Loading");
-        pd.show();
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-         if (id == R.id.nav_add_business) {
+        if (id == R.id.nav_add_business) {
             auth = FirebaseAuth.getInstance();
             if (auth.getCurrentUser() != null) {
                 // already signed in
@@ -558,9 +494,9 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         } else if (id == R.id.nav_notification) {
 
         } else if (id == R.id.nav_logout) {
-             auth = FirebaseAuth.getInstance();
-             auth.signOut();
-             Toast.makeText(getApplicationContext(),"Signed Out",Toast.LENGTH_SHORT).show();
+            auth = FirebaseAuth.getInstance();
+            auth.signOut();
+            Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -579,28 +515,60 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
+                    isSourceSelected = false;
+                    mSourceCity = "";
                 } else {
 
                     switch (searchTag) {
-                        case SEARCHTAG_ROUTE :
-                            mSearchData.findSuggestions(mContext, newQuery, 5,
-                                    FIND_SUGGESTION_SIMULATED_DELAY, new SearchData.OnFindSuggestionsListener() {
+                        case SEARCHTAG_ROUTE:
+                            if(isSourceSelected) {
+                                String queary = newQuery.replace(mSourceCity, "").toString().trim();
+                                new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                    @Override
+                                    public void onResults(List<SuggestionCompanyName> results) {
+                                        mSearchView.swapSuggestions(results);
+                                    }
+                                }).execute(queary, null, null);
+                            } else {
+                                new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                    @Override
+                                    public void onResults(List<SuggestionCompanyName> results) {
+                                        mSearchView.swapSuggestions(results);
+                                    }
+                                }).execute(newQuery, null, null);
+                            }
 
-                                        @Override
-                                        public void onResults(List<SuggestionCompanyName> results) {
 
-                                            //this will swap the data and
-                                            //render the collapse/expand animations as necessary
-                                            mSearchView.swapSuggestions(results);
-//                                    Log.d(TAG, "360" + results.get(0).getStationCode());
+//                            CityManager cityManager = new CityManager(mContext, newQuery, new CityManager.CitySuggestionListener() {
+//                                @Override
+//                                public void onSuccess(List<SuggestionCompanyName> suggestions) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onFaailed() {
+//
+//                                }
+//                            });
 
-                                            //let the users know that the background
-                                            //process has completed
-//                                            mSearchView.hideProgress();
-                                        }
-                                    });
+//                            mSearchData.findSuggestions(mContext, "Mu", 5,
+//                                    FIND_SUGGESTION_SIMULATED_DELAY, new SearchData.OnFindSuggestionsListener() {
+//
+//                                        @Override
+//                                        public void onResults(List<SuggestionCompanyName> results) {
+//
+//                                            //this will swap the data and
+//                                            //render the collapse/expand animations as necessary
+//                                            mSearchView.swapSuggestions(results);
+////                                    Log.d(TAG, "360" + results.get(0).getStationCode());
+//
+//                                            //let the users know that the background
+//                                            //process has completed
+////                                            mSearchView.hideProgress();
+//                                        }
+//                                    });
                             break;
-                        case SEARCHTAG_TRANSPORTER :
+                        case SEARCHTAG_TRANSPORTER:
                             List<SuggestionCompanyName> companySuggestionsForDropDown = fetchAutoSuggestions(newQuery);
                             mSearchView.swapSuggestions(companySuggestionsForDropDown);
                             break;
@@ -616,10 +584,16 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
-                mSearchView.setSearchText(searchSuggestion.getBody());
-                mSuggestionTapped = true;
-                setAdapter(searchSuggestion.getBody());
+
+                String selectedCity = searchSuggestion.getBody();
+                if(isSourceSelected) {
+                    mSearchView.setSearchText(mSourceCity + " " + selectedCity);
+                } else {
+                    mSearchView.setSearchText(selectedCity);
+                }
                 mSearchView.clearSuggestions();
+                mSourceCity = selectedCity;
+                isSourceSelected = !isSourceSelected;
 
 //                startUpDownActivity( (Station) searchSuggestion);
 //
@@ -728,8 +702,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             @Override
             public void onBindSuggestion(View suggestionView, ImageView leftIcon,
                                          TextView textView, com.arlib.floatingsearchview.suggestions.model.SearchSuggestion item, int itemPosition) {
-
-
             }
 
         });
@@ -747,19 +719,71 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
 
     private void onVoiceSearch(final String query) {
-        if(query != null) {
+        if (query != null) {
             mSearchView.setSearchText(query);
             setAdapter(query);
         }
-//        mSearchData.findSuggestions(mContext, query, 5,
-//                FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
-//
-//                    @Override
-//                    public void onResults(final List<Station> results) {
-//
-//
-//                    }
-//                });
+    }
+
+    private class GetCityFromGoogleTask extends AsyncTask<String,Void, List<SuggestionCompanyName>> {
+        OnFindSuggestionsListener mOnFindSuggestionsListener;
+        GetCityFromGoogleTask(OnFindSuggestionsListener onFindSuggestionsListener) {
+            mOnFindSuggestionsListener = onFindSuggestionsListener;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<SuggestionCompanyName> suggestionCityName) {
+            super.onPostExecute(suggestionCityName);
+            mOnFindSuggestionsListener.onResults(suggestionCityName);
+        }
+
+        @Override
+        protected List<SuggestionCompanyName> doInBackground(String... place) {
+            List<SuggestionCompanyName> suggestionCompanyNames = new ArrayList<>();
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setCountry("IN")
+                    .build();
+
+
+
+            Task<AutocompletePredictionBufferResponse> results =
+                    mGeoDataClient.getAutocompletePredictions(place[0], BOUNDS_GREATER_SYDNEY, typeFilter);
+
+            // This method should have been called off the main UI thread. Block and wait for at most
+            // 60s for a result from the API.
+            try {
+                Tasks.await(results, 60, TimeUnit.SECONDS);
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                AutocompletePredictionBufferResponse autocompletePredictions = results.getResult();
+                ArrayList<AutocompletePrediction>  autocompletePredictions1 =  DataBufferUtils.freezeAndClose(autocompletePredictions);
+                CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
+
+                for(AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
+                    SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
+                    String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
+                    if(isSourceSelected) {
+                        suggestionCompanyName.setCompanyName(cityName);
+                    } else {
+                        suggestionCompanyName.setCompanyName(cityName + " to ");
+                    }
+                    suggestionCompanyNames.add(suggestionCompanyName);
+                    Log.i("Directory", "City Prediction : " + cityName);
+                }
+
+            } catch (RuntimeExecutionException e) {
+
+            }
+            return suggestionCompanyNames;
+        }
     }
 
 }
