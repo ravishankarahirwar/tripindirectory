@@ -59,14 +59,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -74,7 +68,6 @@ import java.util.Set;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.Main2Activity;
 import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -84,12 +77,9 @@ import directory.tripin.com.tripindirectory.manager.TokenManager;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
-import directory.tripin.com.tripindirectory.model.request.GetAuthToken;
-import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
-import directory.tripin.com.tripindirectory.model.response.TokenResponse;
+
 import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import directory.tripin.com.tripindirectory.utils.SearchData;
-import directory.tripin.com.tripindirectory.utils.SpaceTokenizer;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
@@ -137,7 +127,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
     private int searchTag = 0;
     private SearchData mSearchData;
 
-//    private SearchData mSearchData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +173,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             for (int i = 0; i < contactPersonPojos.size(); i++) {
                                 if(model.getmContactPersonsList().get(i) != null) {
                                     String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+
                                     phoneNumbers.add(number);
                                 }
                             }
@@ -286,8 +276,9 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                 }
             }
         });
-//        searchViewSetup();
+
         setupSearchBar();
+
     }
 
 
@@ -321,6 +312,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         }
                     });
             return companySuggestions;
+
     }
 
 
@@ -334,7 +326,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
 
         if (!s.equals("")) {
             if (s.contains("To") || s.contains("to")) {
-//                Toast.makeText(this, "Contain To", Toast.LENGTH_LONG).show();
                 String sourceDestination[] = s.split("to");
                 String source = sourceDestination[0].trim();
                 String destination = sourceDestination[1].trim();
@@ -434,6 +425,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         }
                     }
                 });
+
                 return;
             } else {
                 // Sign in failed
@@ -607,14 +599,6 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                             break;
                     }
 
-                    //this shows the top left circular progress
-                    //you can call it where ever you want, but
-                    //it makes sense to do it when loading something in
-                    //the background.
-//                    mSearchView.showProgress();
-
-                    //simulates a query call to a data source
-                    //with a new query.
 
                 }
 
@@ -627,6 +611,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
                 mSearchView.setSearchText(searchSuggestion.getBody());
                 mSearchView.clearSuggestions();
+
 //                startUpDownActivity( (Station) searchSuggestion);
 //
 //                SearchSuggestion colorSuggestion = (SearchSuggestion) searchSuggestion;
@@ -650,6 +635,7 @@ public class MainActivity1 extends AppCompatActivity implements OnBottomReachedL
                         Toast.LENGTH_SHORT).show();
 
                 setAdapter(query);
+
 //                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
 
 //                mLastQuery = query;
