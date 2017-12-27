@@ -29,6 +29,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -151,12 +152,33 @@ public class CompanyFromFragment extends BaseFragment {
                     }
 
                     if(partnerInfoPojo.getmNatureOfBusiness() != null){
-                        mNatureofBusinessHashMap.clear();
-                        mNatureofBusinessHashMap.putAll(partnerInfoPojo.getmNatureOfBusiness());
-                        checkBoxRecyclarAdapter1.notifyDataSetChanged();
+                        if(partnerInfoPojo.getmNatureOfBusiness().size()<3){
+                            Set<String> set = partnerInfoPojo.getmNatureOfBusiness().keySet() ;
+                            List<String> list = new ArrayList<>();
+                            list.addAll(set);
+                            for(int i=0;i<list.size();i++){
+                                mNatureofBusinessHashMap.put(list.get(i),true);
+                            }
+                            checkBoxRecyclarAdapter1.notifyDataSetChanged();
+
+                        }else {
+                            mNatureofBusinessHashMap.clear();
+                            mNatureofBusinessHashMap.putAll(partnerInfoPojo.getmNatureOfBusiness());
+                            checkBoxRecyclarAdapter1.notifyDataSetChanged();
+                        }
+
                     }
 
                     if(partnerInfoPojo.getmTypesOfServices() != null){
+                        if(partnerInfoPojo.getmTypesOfServices().size()<10){
+                            Set<String> set = partnerInfoPojo.getmTypesOfServices().keySet() ;
+                            List<String> list = new ArrayList<>();
+                            list.addAll(set);
+                            for(int i=0;i<list.size();i++){
+                                mTypesofServicesHashMap.put(list.get(i),true);
+                            }
+                            checkBoxRecyclarAdapter2.notifyDataSetChanged();
+                        }
                         mTypesofServicesHashMap.clear();
                         mTypesofServicesHashMap.putAll(partnerInfoPojo.getmTypesOfServices());
                         checkBoxRecyclarAdapter2.notifyDataSetChanged();
@@ -245,6 +267,10 @@ public class CompanyFromFragment extends BaseFragment {
         HashMap<String,HashMap<String,Boolean>> hashMap5 = new HashMap<>();
         hashMap5.put("mTypesOfServices",checkBoxRecyclarAdapter2.getmDataMap());
         mUserDocRef.set(hashMap5,SetOptions.merge());
+
+        HashMap<String,String> hashMap6 = new HashMap<>();
+        hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber()+"");
+        mUserDocRef.set(hashMap6,SetOptions.merge());
 
 
     }
