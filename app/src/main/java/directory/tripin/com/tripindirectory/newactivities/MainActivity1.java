@@ -132,6 +132,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private Query query;
     private GeoDataClient mGeoDataClient;
     private boolean isSourceSelected = false;
+    private boolean isDestinationSelected = false;
+
     private String mSourceCity;
     private String mDestinationCity;
 
@@ -232,7 +234,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     @Override
                     public void onClick(View view) {
                         //startPartnerDetailActivity();
-
                     }
                 });
 
@@ -314,6 +315,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 if (radioButtonID == R.id.search_by_route) {
                     searchTag = SEARCHTAG_ROUTE;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
@@ -324,6 +326,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     searchTag = SEARCHTAG_TRANSPORTER;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
 
@@ -334,6 +337,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
 
                     mSearchView.setSearchHint("Search by transporter name");
@@ -343,6 +347,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
                     mSearchView.setSearchHint("Search in city");
                 }
             }
@@ -350,19 +355,22 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         setupSearchBar();
     }
 
-    private List<SuggestionCompanyName> fetchAutoSuggestions(String s) {
+    private void fetchAutoSuggestions(String s) {
+        companySuggestions.clear();
+        companySuggestions.add(new SuggestionCompanyName("Fetching Suggestions..."));
+        mSearchView.swapSuggestions(companySuggestions);
         FirebaseFirestore.getInstance()
                 .collection("partners").orderBy("mCompanyName").startAt(s).endAt(s + "\uf8ff")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Logger.v("on queried fetch Complete!!");
                         companySuggestions.clear();
+                        Logger.v("on queried fetch Complete!!");
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
-                                Log.d("suggestion", document.getId() + " => " + document.get("mCompanyName"));
+                                Logger.v("suggestion: "+ document.getId() + " => " + document.get("mCompanyName"));
                                 suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
                                 companySuggestions.add(suggestionCompanyName);
                             }
@@ -370,6 +378,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                             hs.addAll(companySuggestions);
                             companySuggestions.clear();
                             companySuggestions.addAll(hs);
+                            mSearchView.swapSuggestions(companySuggestions);
+
                             Logger.v("adapter set!!");
 
                         } else {
@@ -377,7 +387,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         }
                     }
                 });
-        return companySuggestions;
     }
 
 
@@ -402,7 +411,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                             .collection("partners").whereEqualTo("mCompanyName", s);
                 }else {
                     query = FirebaseFirestore.getInstance()
-                            .collection("partners").orderBy("mCompanyName").whereGreaterThan("mCompanyName", s);
+                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s);
                 }
 
             }
@@ -578,12 +587,13 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
                     isSourceSelected = false;
+                    isDestinationSelected  = false;
                     mSourceCity = "";
                 } else {
 
                     switch (searchTag) {
                         case SEARCHTAG_ROUTE:
-                            if(isSourceSelected) {
+                            if(isSourceSelected && !isDestinationSelected) {
                                 String queary = newQuery.replace(mSourceCity, "").toString().trim();
                                 new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
                                     @Override
@@ -631,8 +641,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 //                                    });
                             break;
                         case SEARCHTAG_TRANSPORTER:
-                            List<SuggestionCompanyName> companySuggestionsForDropDown = fetchAutoSuggestions(newQuery);
-                            mSearchView.swapSuggestions(companySuggestionsForDropDown);
+                            fetchAutoSuggestions(newQuery);
                             break;
                     }
 
@@ -647,15 +656,34 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
 
-                String selectedCity = searchSuggestion.getBody();
-                if(isSourceSelected) {
-                    mSearchView.setSearchText(mSourceCity + " " + selectedCity);
-                } else {
-                    mSearchView.setSearchText(selectedCity);
+                switch (searchTag){
+                    case SEARCHTAG_ROUTE:{
+                        String selectedCity = searchSuggestion.getBody();
+
+                        if(!isDestinationSelected) {
+                            if(isSourceSelected) {
+
+                                mSearchView.setSearchText(mSourceCity + selectedCity);
+                                mSearchView.clearFocus();
+                                mSearchView.clearSearchFocus();
+                                mSearchView.clearSuggestions();
+
+                                setAdapter(mSourceCity + selectedCity);
+                                isDestinationSelected = true;
+                            } else {
+                                mSearchView.setSearchText(selectedCity);
+                                isSourceSelected = true;
+                            }
+                        }
+
+
+                        mSearchView.clearSuggestions();
+                        mSourceCity = selectedCity;
+                        break;
+                    }
                 }
-                mSearchView.clearSuggestions();
-                mSourceCity = selectedCity;
-                isSourceSelected = !isSourceSelected;
+
+
 
 //                startUpDownActivity( (Station) searchSuggestion);
 //
@@ -835,7 +863,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     if(isSourceSelected) {
                         suggestionCompanyName.setCompanyName(cityName);
                     } else {
-                        suggestionCompanyName.setCompanyName(cityName + " to ");
+                        suggestionCompanyName.setCompanyName(cityName + " To ");
                     }
                     suggestionCompanyNames.add(suggestionCompanyName);
                     Log.i("Directory", "City Prediction : " + cityName);
