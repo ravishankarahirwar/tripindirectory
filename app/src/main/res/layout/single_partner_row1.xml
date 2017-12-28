@@ -21,8 +21,13 @@
         android:id="@+id/partner_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
         android:background="@android:color/white"
-        app:cardCornerRadius="0dp">
+        app:cardCornerRadius="5dp"
+        app:cardElevation="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,16 +36,17 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 android:id="@+id/company_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:transitionName="compname"
                 android:lineSpacingExtra="5sp"
                 android:text="Trip In Transport"
-                android:textColor="#de000000"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textStyle="bold"/>
 
             <com.ms.square.android.expandabletextview.ExpandableTextView
@@ -70,8 +76,9 @@
                         android:id="@id/expand_collapse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
+                        android:layout_gravity="top"
                         android:layout_weight="0.10"
+                        android:layout_margin="5dp"
                         android:background="@android:color/transparent"/>
                 </LinearLayout>
             </com.ms.square.android.expandabletextview.ExpandableTextView>
@@ -79,7 +86,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -90,7 +97,7 @@
                     android:src="@drawable/ic_arrow_upward"/>
 
 
-     <!--           <ProgressBar
+                <!--           <ProgressBar
                     android:id="@+id/upvote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -104,7 +111,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_toRightOf="@id/upvote"
-                    android:text="0"/>
+                    android:text="0"
+                    android:textStyle="bold"/>
 
                 <ImageView
                     android:id="@+id/downvote"
@@ -124,14 +132,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="false"
                     android:layout_gravity="end"
-                    android:drawableLeft="@drawable/ic_call"
-                    android:drawableTint="#ef463d"
+                    android:drawableLeft="@drawable/ic_phone_android_black_24dp"
                     android:letterSpacing="0.04"
                     android:maxLines="1"
                     android:text="CALL"
-                    android:textColor="#ef463d"
-                    android:textSize="15sp"/>
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
             </RelativeLayout>
 
             <View
@@ -139,7 +149,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
-                android:background="#1e000000"/>
+                android:background="#1e000000"
+                android:visibility="gone"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

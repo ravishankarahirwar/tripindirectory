@@ -13,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -32,6 +33,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -133,6 +135,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private String mSourceCity;
     private String mDestinationCity;
 
+    private RadioButton radioButton3;
+    private RadioButton radioButton2;
+    private RadioButton radioButton1;
+    private RadioButton radioButton4;
+
+
+
+
+
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
 
@@ -143,9 +154,11 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
         init();
+
         if (mPreferenceManager.isFirstTime()) {
             Logger.v("First Time app opened");
             mPreferenceManager.setFirstTime(false);
@@ -156,11 +169,13 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
         query = FirebaseFirestore.getInstance()
                 .collection("partners").orderBy("mCompanyName");
+
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class).build();
+
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
+            public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 if (model.getmCompanyAdderss().getAddress() != null) {
                     holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 }
@@ -168,18 +183,17 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     holder.mCompany.setText(model.getmCompanyName());
                 }
 
-
                 holder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
                         final ArrayList<String> phoneNumbers = new ArrayList<>();
                         List<ContactPersonPojo> contactPersonPojos = model.getmContactPersonsList();
-                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
 
+                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
                             for (int i = 0; i < contactPersonPojos.size(); i++) {
                                 if (model.getmContactPersonsList().get(i) != null) {
                                     String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-
                                     phoneNumbers.add(number);
                                 }
                             }
@@ -214,6 +228,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     }
                 });
 
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //startPartnerDetailActivity();
+
+                    }
+                });
+
             }
 
             @Override
@@ -233,6 +255,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         mPartnerList.setAdapter(adapter);
 
 
+    }
+
+    private void startPartnerDetailActivity() {
+        startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
+
+        Intent intent = new Intent(MainActivity1.this, PartnerDetailActivity.class);
+//        ActivityOptionsCompat options = ActivityOptionsCompat.
+//                makeSceneTransitionAnimation(this, holder.mCompany, "compname");
+//        startActivity(intent, options.toBundle());
     }
 
     private void callNumber(String number) {
@@ -270,18 +301,49 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
+        radioButton3 = findViewById(R.id.search_by_transporter);
+        radioButton2 = findViewById(R.id.search_by_company);
+        radioButton1 = findViewById(R.id.search_by_route);
+        radioButton4 = findViewById(R.id.search_by_city);
+
+
+
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
                 if (radioButtonID == R.id.search_by_route) {
                     searchTag = SEARCHTAG_ROUTE;
+                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+
+
                     mSearchView.setSearchHint("Source To Destination");
-                } else if (radioButtonID == R.id.search_by_transporter) {
+                } else if (radioButtonID == R.id.search_by_company) {
                     searchTag = SEARCHTAG_TRANSPORTER;
-                    mSearchView.setSearchHint("Search by transporter name");
-                } else if (radioButtonID == R.id.search_by_people) {
+                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+
+
+                    mSearchView.setSearchHint("Search by company name");
+                } else if (radioButtonID == R.id.search_by_transporter) {
                     searchTag = SEARCHTAG_PEOPLE;
-                    mSearchView.setSearchHint("Search by people name");
+                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+
+                    mSearchView.setSearchHint("Search by transporter name");
+                }else if (radioButtonID == R.id.search_by_city) {
+                    searchTag = SEARCHTAG_PEOPLE;
+                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    mSearchView.setSearchHint("Search in city");
                 }
             }
         });
