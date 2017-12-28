@@ -124,9 +124,6 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
-    public List<String> getImagesUrl() {
-        return mImagesUrl;
-    }
 
     public boolean isVerified() {
         return isVerified;
@@ -136,9 +133,6 @@ public class PartnerInfoPojo {
         isVerified = verified;
     }
 
-    public void setImagesUrl(List<String> mImagesUrl) {
-        this.mImagesUrl = mImagesUrl;
-    }
 
     public String getmCompanyName() {
         return mCompanyName;
@@ -170,5 +164,13 @@ public class PartnerInfoPojo {
 
     public void setCompanyAdderss(CompanyAddressPojo mCompanyAdderss) {
         this.mCompanyAdderss = mCompanyAdderss;
+    }
+
+    public List<String> getmImagesUrl() {
+        return mImagesUrl;
+    }
+
+    public void setmImagesUrl(List<String> mImagesUrl) {
+        this.mImagesUrl = mImagesUrl;
     }
 }

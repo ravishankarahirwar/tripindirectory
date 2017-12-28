@@ -55,7 +55,7 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 
-public class CompanyInfoActivity extends AppCompatActivity implements EasyImagePickUP.ImagePickerListener {
+public class CompanyInfoActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPagerAdapter adapter;
     private PartnerInfoPojo partnerInfoPojo;
@@ -92,11 +92,6 @@ public class CompanyInfoActivity extends AppCompatActivity implements EasyImageP
         super.onPause();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-    }
 
     private void createTabIcons() {
 
@@ -122,24 +117,12 @@ public class CompanyInfoActivity extends AppCompatActivity implements EasyImageP
         tabLayout.getTabAt(3).setCustomView(tabFour);
     }
 
-
-
     private void createViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new CompanyFromFragment(), "Tab Comp");
         adapter.addFrag(new RouteFormFragment(), "Tab Route");
         adapter.addFrag(new FleetFormFragment(), "Tab Fleet");
         adapter.addFrag(new ImagesFormFragment(), "Tab Images");
-    }
-
-    @Override
-    public void onPicked(int from, String filename, Bitmap file, Uri uri) {
-        Logger.v("onpicked");
-    }
-
-    @Override
-    public void onCropped(int from, String filename, Bitmap file, Uri uri) {
-
     }
 
 

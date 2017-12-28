@@ -45,7 +45,6 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
  */
 public class FleetFormFragment extends BaseFragment {
 
-
     private Query query;
     private FirebaseAuth auth;
     private DocumentReference mUserDocRef;
@@ -59,13 +58,10 @@ public class FleetFormFragment extends BaseFragment {
     private PartnerInfoPojo partnerInfoPojo;
 
     public FleetFormFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
-
-
     }
 
     @Override
@@ -83,11 +79,6 @@ public class FleetFormFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVehicles = new ArrayList<>();
-//        Vehicle vehicle = new Vehicle();
-//        Vehicle vehicle1 = new Vehicle();
-//
-//        mVehicles.add(vehicle);
-//        mVehicles.add(vehicle1);
 
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
 
@@ -101,6 +92,7 @@ public class FleetFormFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        isDataFatched = false;
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_fleet_form, container, false);
         mAddVechile = rootView.findViewById(R.id.add_vehicle);
@@ -118,12 +110,6 @@ public class FleetFormFragment extends BaseFragment {
             }
         });
 
-//        Vehicle vehicle = new Vehicle();
-//        mVehicles.add(vehicle);
-//        Vehicle vehicle1 = new Vehicle();
-//        mVehicles.add(vehicle1);
-//        adapterp.setDataValues(mVehicles);
-
         fetchUserData();
         return rootView;
 
@@ -139,6 +125,7 @@ public class FleetFormFragment extends BaseFragment {
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                isDataFatched = true;
                 if (task.isSuccessful() && task.getResult().exists()) {
                     partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
                     if(partnerInfoPojo.getVehicles()!=null){
@@ -158,7 +145,7 @@ public class FleetFormFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(partnerInfoPojo!=null){
+        if(partnerInfoPojo != null && isDataFatched) {
 //            mVehicles.clear();
             //send the modified data to parent activity
              List<Vehicle> mVehiclesSend = new ArrayList<>();
