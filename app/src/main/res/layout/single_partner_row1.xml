@@ -111,7 +111,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_toRightOf="@id/upvote"
-                    android:text="0"/>
+                    android:text="0"
+                    android:textStyle="bold"/>
 
                 <ImageView
                     android:id="@+id/downvote"

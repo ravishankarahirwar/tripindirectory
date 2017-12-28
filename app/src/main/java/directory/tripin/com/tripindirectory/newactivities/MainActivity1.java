@@ -138,6 +138,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private RadioButton radioButton3;
     private RadioButton radioButton2;
     private RadioButton radioButton1;
+    private RadioButton radioButton4;
+
 
 
 
@@ -229,12 +231,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
+                        //startPartnerDetailActivity();
 
-                        Intent intent = new Intent(MainActivity1.this, PartnerDetailActivity.class);
-                        ActivityOptionsCompat options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(getParent(), holder.mCompany, "compname");
-                        startActivity(intent, options.toBundle());
                     }
                 });
 
@@ -257,6 +255,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         mPartnerList.setAdapter(adapter);
 
 
+    }
+
+    private void startPartnerDetailActivity() {
+        startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
+
+        Intent intent = new Intent(MainActivity1.this, PartnerDetailActivity.class);
+//        ActivityOptionsCompat options = ActivityOptionsCompat.
+//                makeSceneTransitionAnimation(this, holder.mCompany, "compname");
+//        startActivity(intent, options.toBundle());
     }
 
     private void callNumber(String number) {
@@ -294,9 +301,11 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        radioButton3 = findViewById(R.id.search_by_people);
-        radioButton2 = findViewById(R.id.search_by_transporter);
+        radioButton3 = findViewById(R.id.search_by_transporter);
+        radioButton2 = findViewById(R.id.search_by_company);
         radioButton1 = findViewById(R.id.search_by_route);
+        radioButton4 = findViewById(R.id.search_by_city);
+
 
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -307,21 +316,34 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+
 
                     mSearchView.setSearchHint("Source To Destination");
-                } else if (radioButtonID == R.id.search_by_transporter) {
+                } else if (radioButtonID == R.id.search_by_company) {
                     searchTag = SEARCHTAG_TRANSPORTER;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
 
-                    mSearchView.setSearchHint("Search by transporter name");
-                } else if (radioButtonID == R.id.search_by_people) {
+
+                    mSearchView.setSearchHint("Search by company name");
+                } else if (radioButtonID == R.id.search_by_transporter) {
                     searchTag = SEARCHTAG_PEOPLE;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    mSearchView.setSearchHint("Search by people name");
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+
+                    mSearchView.setSearchHint("Search by transporter name");
+                }else if (radioButtonID == R.id.search_by_city) {
+                    searchTag = SEARCHTAG_PEOPLE;
+                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    mSearchView.setSearchHint("Search in city");
                 }
             }
         });
