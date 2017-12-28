@@ -229,14 +229,12 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         }
                     }
                 });
-
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //startPartnerDetailActivity();
                     }
                 });
-
             }
 
             @Override
@@ -252,11 +250,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 Logger.v("on Data changed");
             }
         };
-
         mPartnerList.setAdapter(adapter);
-
-
     }
+
+
 
     private void startPartnerDetailActivity() {
         startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
@@ -443,7 +440,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
         mPartnerList.setAdapter(adapter);
         adapter.startListening();
-
     }
 
     @Override

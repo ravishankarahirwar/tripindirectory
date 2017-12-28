@@ -56,14 +56,9 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 
 public class CompanyInfoActivity extends AppCompatActivity implements EasyImagePickUP.ImagePickerListener {
-
-    public static final String TAG = "Company Info Activity";
-    private ViewPager mViewPager;
-    TabLayout tabLayout;
-    ViewPagerAdapter adapter;
-    Fragment fragment;
+    private TabLayout tabLayout;
+    private ViewPagerAdapter adapter;
     private PartnerInfoPojo partnerInfoPojo;
-    EasyImagePickUP easyImagePickUP;
 
 
     @Override
@@ -177,10 +172,4 @@ public class CompanyInfoActivity extends AppCompatActivity implements EasyImageP
         }
     }
 
-
-
-
-    @Override
-    public void onBackPressed() {
-    }
 }

@@ -225,7 +225,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
 
     @Override
     public void onPickClicked(int position) {
-        easyImagePickUP.imagepicker(1);
+        easyImagePickUP.imagepicker(position);
         Log.e("tagg", "onPickClicked");
         this.position = position;
 
