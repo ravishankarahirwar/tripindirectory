@@ -54,13 +54,15 @@
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp"
+                android:background="@color/categoriesbg"
+                android:elevation="3dp"
                 android:scrollbars="none">
 
                 <RadioGroup
                     android:id="@+id/search_tag_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
@@ -79,7 +81,7 @@
                         android:padding="8dp"
                         android:text="ROUTE"
                         android:textColor="@color/arrow_white"
-                        android:textStyle="bold"/>
+                        />
 
                     <RadioButton
                         android:id="@+id/search_by_company"
@@ -94,7 +96,7 @@
                         android:padding="8dp"
                         android:text="COMPANY NAME"
                         android:textColor="@color/arrow_grey"
-                        android:textStyle="bold"/>
+                        />
 
                     <RadioButton
                         android:id="@+id/search_by_city"
@@ -109,7 +111,7 @@
                         android:padding="8dp"
                         android:text="CITY"
                         android:textColor="@color/arrow_grey"
-                        android:textStyle="bold"/>
+                        />
 
                     <RadioButton
                         android:id="@+id/search_by_transporter"
@@ -123,19 +125,20 @@
                         android:elevation="2dp"
                         android:padding="8dp"
                         android:text="TRANSPORTER"
-                        android:visibility="invisible"
                         android:textColor="@color/arrow_grey"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:visibility="invisible"/>
                 </RadioGroup>
             </HorizontalScrollView>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/transporter_list"
                 android:layout_width="match_parent"
-                android:overScrollMode="ifContentScrolls"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
+                android:overScrollMode="ifContentScrolls"
                 app:layoutManager="LinearLayoutManager"
                 tools:context="directory.tripin.com.tripindirectory.activity.HomeActivity"/>
 

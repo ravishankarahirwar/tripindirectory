@@ -21,12 +21,11 @@
         android:id="@+id/partner_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/white"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="4dp"
         app:cardElevation="1dp">
 
         <LinearLayout
@@ -43,11 +42,11 @@
                 android:id="@+id/company_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:transitionName="compname"
                 android:lineSpacingExtra="5sp"
                 android:text="Trip In Transport"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:transitionName="compname"/>
 
             <com.ms.square.android.expandabletextview.ExpandableTextView
                 xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
@@ -77,8 +76,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
-                        android:layout_weight="0.10"
                         android:layout_margin="5dp"
+                        android:layout_weight="0.10"
                         android:background="@android:color/transparent"/>
                 </LinearLayout>
             </com.ms.square.android.expandabletextview.ExpandableTextView>
@@ -135,13 +134,13 @@
                     android:layout_centerInParent="true"
                     android:layout_centerVertical="false"
                     android:layout_gravity="end"
-                    android:drawableLeft="@drawable/ic_phone_android_black_24dp"
+                    android:drawableLeft="@drawable/ic_call_black_24dp"
                     android:letterSpacing="0.04"
                     android:maxLines="1"
                     android:text="CALL"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15sp"
-                    android:textStyle="bold"/>
+                    />
             </RelativeLayout>
 
             <View
