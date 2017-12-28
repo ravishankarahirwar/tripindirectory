@@ -58,6 +58,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -141,6 +142,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private RadioButton radioButton2;
     private RadioButton radioButton1;
     private RadioButton radioButton4;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
 
@@ -170,7 +172,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         }
 
         query = FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName");
+                .collection("partners").orderBy("mCompanyName").limit(10);
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class).build();
@@ -229,14 +231,12 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         }
                     }
                 });
-
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //startPartnerDetailActivity();
                     }
                 });
-
             }
 
             @Override
@@ -252,11 +252,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 Logger.v("on Data changed");
             }
         };
-
         mPartnerList.setAdapter(adapter);
-
-
     }
+
+
 
     private void startPartnerDetailActivity() {
         startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
@@ -278,6 +277,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         mContext = MainActivity1.this;
         mSearchData = new SearchData();
         mGeoDataClient = Places.getGeoDataClient(this, null);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -320,7 +320,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
 
-
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
                     searchTag = SEARCHTAG_TRANSPORTER;
@@ -329,7 +328,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
 
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_transporter) {
@@ -422,9 +420,58 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position, PartnerInfoPojo model) {
+            public void onBindViewHolder(PartnersViewHolder holder, int position,final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 holder.mCompany.setText(model.getmCompanyName());
+
+                holder.mCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Bundle params = new Bundle();
+                        params.putString("call", "Click");
+                        mFirebaseAnalytics.logEvent("ClickOnCall", params);
+
+                        final ArrayList<String> phoneNumbers = new ArrayList<>();
+                        List<ContactPersonPojo> contactPersonPojos = model.getmContactPersonsList();
+
+                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
+                            for (int i = 0; i < contactPersonPojos.size(); i++) {
+                                if (model.getmContactPersonsList().get(i) != null) {
+                                    String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+                                    phoneNumbers.add(number);
+                                }
+                            }
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int item) {
+
+                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                    callNumber(phoneNumbers.get(item));
+                                                }
+                                            });
+
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User cancelled the dialog
+                                }
+                            });
+
+                            builder.create();
+                            builder.show();
+                        } else {
+
+                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                            callNumber(number);
+                        }
+                    }
+                });
             }
 
             @Override
@@ -443,7 +490,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
         mPartnerList.setAdapter(adapter);
         adapter.startListening();
-
     }
 
     @Override
@@ -707,7 +753,9 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 Toast.makeText(mContext, "Query : " + query,
                         Toast.LENGTH_SHORT).show();
                 mSuggestionTapped = false;
-
+                Bundle params = new Bundle();
+                params.putString("key_search", "Click");
+                mFirebaseAnalytics.logEvent("SearchByKeyBoard", params);
                 setAdapter(query);
 
 //                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
@@ -758,6 +806,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onActionMenuItemSelected(MenuItem item) {
 
                 if (item.getItemId() == R.id.action_voice) {
+                    Bundle params = new Bundle();
+                    params.putString("menu_voice_recognition", "Click");
+                    mFirebaseAnalytics.logEvent("VoiceRecognition", params);
+
                     startVoiceRecognitionActivity();
                 } else {
                     //just print action

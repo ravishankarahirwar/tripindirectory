@@ -49,6 +49,13 @@ public class EasyImagePickUP
         imageAttachment_callBack=(ImagePickerListener)context;
     }
 
+    public EasyImagePickUP(Activity act, ImagePickerListener imagePickerListener ) {
+
+        this.context = act;
+        this.current_activity = act;
+        imageAttachment_callBack = imagePickerListener;
+    }
+
     /**
      * Get file name from path
      *
@@ -161,8 +168,6 @@ public class EasyImagePickUP
      * @param width
      * @return
      */
-
-
     public Bitmap compressImage(String imageUri, float height, float width) {
 
         String filePath = getRealPathFromURI(imageUri);
@@ -478,9 +483,11 @@ public class EasyImagePickUP
         ContentValues values = new ContentValues();
         imageUri = current_activity.getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        current_activity.startActivityForResult(intent1, 0);
+        imageAttachment_callBack.onCamera();
+
+//        Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//        current_activity.startActivityForResult(intent1, 0);
     }
 
     /**
@@ -490,10 +497,10 @@ public class EasyImagePickUP
 
     public void galley_call()
     {
-
-        Intent intent2 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent2.setType("image/*");
-        current_activity.startActivityForResult(intent2, 1);
+        imageAttachment_callBack.onGallery();
+//        Intent intent2 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        intent2.setType("image/*");
+//        current_activity.startActivityForResult(intent2, 1);
 
     }
 
@@ -530,6 +537,8 @@ public class EasyImagePickUP
     }
 
 
+
+
     /**
      * Intent ActivityResult
      *
@@ -537,8 +546,7 @@ public class EasyImagePickUP
      * @param resultCode
      * @param data
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
         String file_name;
         Bitmap bitmap;
 
@@ -568,7 +576,7 @@ public class EasyImagePickUP
                 }
                 break;
             case 1:
-                if(resultCode==current_activity.RESULT_OK)
+                if(resultCode == current_activity.RESULT_OK)
                 {
                     Log.i("Gallery","Photo");
                     Uri selectedImage=data.getData();
@@ -786,7 +794,8 @@ public class EasyImagePickUP
     public interface ImagePickerListener {
         void onPicked(int from, String filename, Bitmap file, Uri uri);
         void onCropped(int from, String filename, Bitmap file, Uri uri);
-
+        void onCamera();
+        void onGallery();
     }
 
     public void performCrop(Uri picUri) {

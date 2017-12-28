@@ -81,7 +81,6 @@ public class CompanyFromFragment extends BaseFragment {
 
     private ImageView togglenoblist,toggletoslist;
 
-
     public CompanyFromFragment() {
 
         //initialize hashmaps
@@ -126,6 +125,7 @@ public class CompanyFromFragment extends BaseFragment {
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                isDataFatched = true;
                 if (task.isSuccessful() && task.getResult().exists()) {
                     mLoadingDataLin.setVisibility(View.GONE);
                     PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
@@ -197,6 +197,7 @@ public class CompanyFromFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isDataFatched = false;
         FetchUserData();
     }
 
@@ -216,62 +217,62 @@ public class CompanyFromFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         Logger.v("OnPauseCompanyFormFragment");
+        if(isDataFatched) {
+            //set contacts
+            List<ContactPersonPojo> contacts = new ArrayList<>();
+            for (int i = 0; i < mContactPersonsList.size(); i++) {
+                View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
+                EditText name = v.findViewById(R.id.contact_person_name);
+                EditText number = v.findViewById(R.id.contact_person_number);
+                contacts.add(new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
+            }
+            List<String> landlines = new ArrayList<>();
+            for (int i = 0; i < mCompanyLandLineNumbers.size(); i++) {
+                View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
+                EditText number = v.findViewById(R.id.landline_number);
+                landlines.add(number.getText().toString().trim());
+            }
+            PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
+            partnerInfoPojo.setContactPersonsList(contacts);
+            partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
 
-        //set contacts
-        List<ContactPersonPojo> contacts = new ArrayList<>();
-        for (int i = 0; i < mContactPersonsList.size(); i++) {
-            View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
-            EditText name = v.findViewById(R.id.contact_person_name);
-            EditText number = v.findViewById(R.id.contact_person_number);
-            contacts.add(new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
+
+            //setname
+            partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
+
+            //setaddress
+            partnerInfoPojo
+                    .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
+                            mCompanyCity.getText().toString().trim(),
+                            mCompanyState.getText().toString().trim()));
+
+            //mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+            mUserDocRef.update("mCompanyName", partnerInfoPojo.getmCompanyName());
+
+            HashMap<String, List<ContactPersonPojo>> hashMap = new HashMap<>();
+            hashMap.put("mContactPersonsList", partnerInfoPojo.getmContactPersonsList());
+            mUserDocRef.set(hashMap, SetOptions.merge());
+
+            HashMap<String, List<String>> hashMap2 = new HashMap<>();
+            hashMap2.put("mCompanyLandLineNumbers", partnerInfoPojo.getmCompanyLandLineNumbers());
+            mUserDocRef.set(hashMap2, SetOptions.merge());
+
+            HashMap<String, CompanyAddressPojo> hashMap3 = new HashMap<>();
+            hashMap3.put("mCompanyAdderss", partnerInfoPojo.getmCompanyAdderss());
+            mUserDocRef.set(hashMap3, SetOptions.merge());
+
+            HashMap<String, HashMap<String, Boolean>> hashMap4 = new HashMap<>();
+            hashMap4.put("mNatureOfBusiness", checkBoxRecyclarAdapter1.getmDataMap());
+            mUserDocRef.set(hashMap4, SetOptions.merge());
+
+            HashMap<String, HashMap<String, Boolean>> hashMap5 = new HashMap<>();
+            hashMap5.put("mTypesOfServices", checkBoxRecyclarAdapter2.getmDataMap());
+            mUserDocRef.set(hashMap5, SetOptions.merge());
+
+            HashMap<String, String> hashMap6 = new HashMap<>();
+            hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber() + "");
+            mUserDocRef.set(hashMap6, SetOptions.merge());
         }
-        List<String> landlines = new ArrayList<>();
-        for (int i = 0; i < mCompanyLandLineNumbers.size(); i++) {
-            View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
-            EditText number = v.findViewById(R.id.landline_number);
-            landlines.add(number.getText().toString().trim());
-        }
-        PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
-        partnerInfoPojo.setContactPersonsList(contacts);
-        partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
-
-
-        //setname
-        partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim());
-
-        //setaddress
-        partnerInfoPojo
-                .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
-                        mCompanyCity.getText().toString().trim(),
-                        mCompanyState.getText().toString().trim()));
-
-        //mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
-        mUserDocRef.update("mCompanyName",partnerInfoPojo.getmCompanyName());
-
-        HashMap<String,List<ContactPersonPojo>> hashMap = new HashMap<>();
-        hashMap.put("mContactPersonsList",partnerInfoPojo.getmContactPersonsList());
-        mUserDocRef.set(hashMap,SetOptions.merge());
-
-        HashMap<String,List<String>> hashMap2 = new HashMap<>();
-        hashMap2.put("mCompanyLandLineNumbers",partnerInfoPojo.getmCompanyLandLineNumbers());
-        mUserDocRef.set(hashMap2,SetOptions.merge());
-
-        HashMap<String,CompanyAddressPojo> hashMap3 = new HashMap<>();
-        hashMap3.put("mCompanyAdderss",partnerInfoPojo.getmCompanyAdderss());
-        mUserDocRef.set(hashMap3,SetOptions.merge());
-
-        HashMap<String,HashMap<String,Boolean>> hashMap4 = new HashMap<>();
-        hashMap4.put("mNatureOfBusiness",checkBoxRecyclarAdapter1.getmDataMap());
-        mUserDocRef.set(hashMap4,SetOptions.merge());
-
-        HashMap<String,HashMap<String,Boolean>> hashMap5 = new HashMap<>();
-        hashMap5.put("mTypesOfServices",checkBoxRecyclarAdapter2.getmDataMap());
-        mUserDocRef.set(hashMap5,SetOptions.merge());
-
-        HashMap<String,String> hashMap6 = new HashMap<>();
-        hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber()+"");
-        mUserDocRef.set(hashMap6,SetOptions.merge());
-
 
     }
 

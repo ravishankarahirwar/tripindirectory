@@ -4,11 +4,13 @@ package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,8 +28,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -51,7 +56,7 @@ import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ImagesFormFragment extends BaseFragment implements AddImage,EasyImagePickUP.ImagePickerListener {
+public class ImagesFormFragment extends BaseFragment implements AddImage, EasyImagePickUP.ImagePickerListener {
 
 
     boolean canSubmit = true;
@@ -69,12 +74,12 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
     List<String> mUrlList;
     private FirebaseFirestore db;
     Context mContext;
-
-
-
+    private Button mImageUpload;
     public ImagesFormFragment() {
         // Required empty public constructor
     }
+    private DocumentReference mUserDocRef;
+    private FirebaseAuth auth;
 
     @Override
     public void onAttach(Context context) {
@@ -95,6 +100,10 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
         images.add(new ImageData());
 
         imagesRecyclarAdapter = new ImagesRecyclarAdapter(images,this,getActivity());
+
+        auth = FirebaseAuth.getInstance();
+        mUserDocRef = FirebaseFirestore.getInstance()
+                .collection("partners").document(auth.getUid());
     }
 
     @Override
@@ -106,20 +115,27 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
+        mImageUpload = (Button)view.findViewById(R.id.image_upload);
         recyclerView = view.findViewById(R.id.imageslist);
         recyclerView.hasFixedSize();
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
-        easyImagePickUP = new EasyImagePickUP(getActivity());
+        easyImagePickUP = new EasyImagePickUP(getActivity(), this);
         imagesUriList = new ArrayList<>();
         progressDialog = new ProgressDialog(getActivity());
         fetchImagesURL();
+
+        mImageUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                submit();
+            }
+        });
         return view;
     }
 
-    public void submit(View view) {
-
+    public void submit() {
         uploadImagesandGetURL(0);
     }
 
@@ -173,41 +189,30 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
 
     private void uploadData() {
 
-
-
-        List<String> urllist = new ArrayList<>();
-        urllist.add("url1");
-        urllist.add("url2");
-        urllist.add("url3");
-
-        Map<String, Boolean> source = new HashMap<>();
-        Map<String, Boolean> destination = new HashMap<>();
-
-        source.put("mumbai", true);
-        source.put("nagpur", true);
-        destination.put("rajkot", true);
-        destination.put("gandhinagar", true);
-
         List<String> urls = new ArrayList<>();
         for(ImageData imageData: images){
             urls.add(imageData.getmImageUrl());
         }
 
-        //db.collection("partners").document(mAuth.getUid()).set(partnerInfoPojo);
+        Map<String, List<String>> data = new HashMap<>();
+        data.put("mImagesUrl", urls);
+        mUserDocRef.set(data, SetOptions.merge());
+
+//        db.collection("partners").document(mAuth.getUid()).set(partnerInfoPojo);
         Toast.makeText(getActivity(), "Data uploaded!", Toast.LENGTH_LONG).show();
     }
 
 
     private void fetchImagesURL() {
 
-        db.collection("partners").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                 if(task.isSuccessful()){
                     if(task.getResult().exists()){
                         PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
-                        mUrlList = partnerInfoPojo.getImagesUrl();
+                        mUrlList = partnerInfoPojo.getmImagesUrl();
                         if(mUrlList!=null){
                             for(int i=0;i<mUrlList.size();i++){
                                 images.get(i).setmImageUrl(mUrlList.get(i));
@@ -225,7 +230,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
 
     @Override
     public void onPickClicked(int position) {
-        easyImagePickUP.imagepicker(1);
+        easyImagePickUP.imagepicker(position);
         Log.e("tagg", "onPickClicked");
         this.position = position;
 
@@ -237,7 +242,24 @@ public class ImagesFormFragment extends BaseFragment implements AddImage,EasyIma
 
         images.set(position, new ImageData());
         imagesRecyclarAdapter.notifyDataSetChanged();
+    }
 
+    @Override
+    public void onCamera() {
+        Uri imageUri;
+        ContentValues values = new ContentValues();
+        imageUri = getActivity().getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent1, 0);
+    }
+
+    @Override
+    public void onGallery() {
+        Intent intent2 = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent2.setType("image/*");
+        startActivityForResult(intent2, 1);
     }
 
     @Override
