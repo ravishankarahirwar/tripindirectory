@@ -101,6 +101,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private static final int SEARCHTAG_TRANSPORTER = 1;
     private static final int SEARCHTAG_PEOPLE = 2;
     private static final int RC_SIGN_IN = 123;
+    long limitValue = 10;
+
 
     List<SuggestionCompanyName> companySuggestions = null;
     List<String> companynamesuggestions = null;
@@ -172,7 +174,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         }
 
         query = FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName").limit(10);
+
+                .collection("partners").orderBy("mCompanyName").limit(limitValue);
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class).build();
@@ -180,6 +183,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
             public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
+                Logger.v("onBindViewHolder ....."+position);
+                if(position==limitValue){
+                    limitValue = limitValue + 10;
+                    setAdapter("");
+                    Logger.v("now limit value is....."+limitValue);
+
+                }
+
                 if (model.getmCompanyAdderss().getAddress() != null) {
                     holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 }
@@ -413,6 +424,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 }
 
             }
+        }else {
+
         }
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
@@ -727,6 +740,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         mSourceCity = selectedCity;
                         break;
                     }
+
                 }
 
 
