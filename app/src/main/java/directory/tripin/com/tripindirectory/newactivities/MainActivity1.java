@@ -87,8 +87,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private static final int SEARCHTAG_ROUTE = 0;
-    private static final int SEARCHTAG_TRANSPORTER = 1;
-    private static final int SEARCHTAG_PEOPLE = 2;
+    private static final int SEARCHTAG_COMPANY = 1;
+    private static final int SEARCHTAG_CITY = 2;
+    private static final int SEARCHTAG_TRANSPORTER = 3;
+
     private static final int RC_SIGN_IN = 123;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
@@ -99,6 +101,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     FirebaseAuth auth;
     FirestoreRecyclerOptions<PartnerInfoPojo> options;
     FirestoreRecyclerAdapter adapter;
+    boolean isCompanySuggestionClicked = false;
     private Context mContext;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
@@ -115,8 +118,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private int searchTag = 0;
     private SearchData mSearchData;
     private Boolean mSuggestionTapped = false;
-    boolean isCompanySuggestionClicked = false;
-
     private Query query;
     private GeoDataClient mGeoDataClient;
     private boolean isSourceSelected = false;
@@ -299,33 +300,34 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
-                    searchTag = SEARCHTAG_TRANSPORTER;
+                    searchTag = SEARCHTAG_COMPANY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_transporter) {
-                    searchTag = SEARCHTAG_PEOPLE;
+                    searchTag = SEARCHTAG_TRANSPORTER;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by transporter name");
                 } else if (radioButtonID == R.id.search_by_city) {
-                    searchTag = SEARCHTAG_PEOPLE;
+                    searchTag = SEARCHTAG_CITY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search in city");
                 }
             }
@@ -373,28 +375,36 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
-        if (!s.equals("")) {
-            if (s.contains("To") || s.contains("to")) {
-                String sourceDestination[] = s.split("(?i:to)");
-                String source = sourceDestination[0].trim();
-                String destination = sourceDestination[1].trim();
-                query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
-
-
-            } else {
-                if (mSuggestionTapped) {
+        switch (searchTag) {
+            case SEARCHTAG_ROUTE: {
+                if (s.contains("To") || s.contains("to")) {
+                    String sourceDestination[] = s.split("(?i:to)");
+                    String source = sourceDestination[0].trim();
+                    String destination = sourceDestination[1].trim();
                     query = FirebaseFirestore.getInstance()
-                            .collection("partners").whereEqualTo("mCompanyName", s);
+                            .collection("partners").whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
                 } else {
-                    query = FirebaseFirestore.getInstance()
-                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s);
+                    Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
                 }
-
+                break;
             }
-        } else {
+            case SEARCHTAG_COMPANY: {
 
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
+                Logger.v("company search query: "+s);
+
+                break;
+            }
+            case SEARCHTAG_CITY: {
+                query = FirebaseFirestore.getInstance()
+                        .collection("partners").whereEqualTo("mCompanyAdderss.city", s.toUpperCase());
+
+                break;
+            }
         }
+
+
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
                 .build();
@@ -466,6 +476,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onDataChanged() {
                 super.onDataChanged();
                 Logger.v("on Data changed");
+                mSearchView.clearSuggestions();
             }
         };
 
@@ -619,21 +630,31 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
                     switch (searchTag) {
                         case SEARCHTAG_ROUTE:
-                            if (isSourceSelected && !isDestinationSelected) {
-                                String queary = newQuery.replace(mSourceCity, "").toString().trim();
-                                new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
-                                    @Override
-                                    public void onResults(List<SuggestionCompanyName> results) {
-                                        mSearchView.swapSuggestions(results);
-                                    }
-                                }).execute(queary, null, null);
-                            } else {
+                            if (!isSourceSelected) {
+
+                                //set source suggestions
+                                Logger.v("source fetching......");
                                 new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
                                     @Override
                                     public void onResults(List<SuggestionCompanyName> results) {
                                         mSearchView.swapSuggestions(results);
                                     }
                                 }).execute(newQuery, null, null);
+
+                            } else {
+                                if (!isDestinationSelected) {
+                                    //set destination suggestions
+                                    Logger.v("destination fetching......");
+
+                                    String queary = newQuery.replace(mSourceCity, "").toString().trim();
+                                    new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                        @Override
+                                        public void onResults(List<SuggestionCompanyName> results) {
+                                            mSearchView.swapSuggestions(results);
+                                        }
+                                    }).execute(queary, null, null);
+                                }
+
                             }
 
 
@@ -666,9 +687,17 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 //                                        }
 //                                    });
                             break;
-                        case SEARCHTAG_TRANSPORTER:
-                            if(!isCompanySuggestionClicked)
-                            fetchAutoSuggestions(newQuery);
+                        case SEARCHTAG_COMPANY:
+                                fetchAutoSuggestions(newQuery);
+                            break;
+
+                        case SEARCHTAG_CITY:
+                            new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                @Override
+                                public void onResults(List<SuggestionCompanyName> results) {
+                                    mSearchView.swapSuggestions(results);
+                                }
+                            }).execute(newQuery, null, null);
                             break;
                     }
 
@@ -684,23 +713,22 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
 
                 switch (searchTag) {
-                    case SEARCHTAG_ROUTE: {
+                    case SEARCHTAG_ROUTE : {
                         String selectedCity = searchSuggestion.getBody();
 
-                        if (!isDestinationSelected) {
-                            if (isSourceSelected) {
 
-                                mSearchView.setSearchText(mSourceCity + selectedCity);
-                                mSearchView.clearFocus();
-                                mSearchView.clearSearchFocus();
-                                mSearchView.clearSuggestions();
+                        if (isSourceSelected) {
 
-                                setAdapter(mSourceCity + selectedCity);
-                                isDestinationSelected = true;
-                            } else {
-                                mSearchView.setSearchText(selectedCity);
-                                isSourceSelected = true;
-                            }
+                            mSearchView.setSearchText(mSourceCity + selectedCity);
+                            mSearchView.clearFocus();
+                            mSearchView.clearSearchFocus();
+                            mSearchView.clearSuggestions();
+
+                            setAdapter(mSourceCity + selectedCity);
+                            isDestinationSelected = true;
+                        } else {
+                            mSearchView.setSearchText(selectedCity);
+                            isSourceSelected = true;
                         }
 
 
@@ -709,19 +737,29 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         break;
                     }
 
-                    case SEARCHTAG_TRANSPORTER: {
-                        String companyname = searchSuggestion.getBody();
+                    case SEARCHTAG_COMPANY : {
+                        String companyname = searchSuggestion.getBody().trim();
 
                         Logger.v("suggestion clicked");
+                        Log.d("COMPANY","suggestion.....");
 
                         mSearchView.setSearchText(companyname);
                         mSearchView.clearFocus();
                         mSearchView.clearSearchFocus();
                         mSearchView.clearSuggestions();
                         setAdapter(companyname);
+                        break;
+                    }
+                    case SEARCHTAG_CITY: {
+                        Logger.v("suggestion clicked");
+
+                        String cityname = searchSuggestion.getBody();
+                        mSearchView.setSearchText(cityname);
+                        mSearchView.clearFocus();
+                        mSearchView.clearSearchFocus();
+                        mSearchView.clearSuggestions();
+                        setAdapter(cityname);
                         isCompanySuggestionClicked = true;
-
-
                         break;
                     }
 
@@ -914,11 +952,22 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 for (AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
                     SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
                     String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
-                    if (isSourceSelected) {
-                        suggestionCompanyName.setCompanyName(cityName);
-                    } else {
-                        suggestionCompanyName.setCompanyName(cityName + " To ");
+                    switch (searchTag){
+                        case SEARCHTAG_ROUTE:{
+                            if (isSourceSelected) {
+                                suggestionCompanyName.setCompanyName(cityName);
+                            } else {
+                                suggestionCompanyName.setCompanyName(cityName + " To ");
+                            }
+                            break;
+                        }
+                        case SEARCHTAG_CITY:{
+                            suggestionCompanyName.setCompanyName(cityName);
+
+                            break;
+                        }
                     }
+
                     suggestionCompanyNames.add(suggestionCompanyName);
                     Log.i("Directory", "City Prediction : " + cityName);
                 }
