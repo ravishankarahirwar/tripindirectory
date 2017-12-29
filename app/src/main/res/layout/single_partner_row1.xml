@@ -25,8 +25,8 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="1dp">
+        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,6 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
+                    android:visibility="gone"
                     android:src="@drawable/ic_arrow_upward"/>
 
 
@@ -111,6 +112,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_toRightOf="@id/upvote"
+                    android:visibility="gone"
                     android:text="0"
                     android:textStyle="bold"/>
 
@@ -119,6 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/ranking"
+                    android:visibility="gone"
                     android:src="@drawable/ic_arrow_downward"/>
                 <!--<ProgressBar
                     android:id="@+id/downvote"

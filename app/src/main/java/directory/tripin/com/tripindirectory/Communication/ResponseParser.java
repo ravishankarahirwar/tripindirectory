@@ -13,7 +13,6 @@ import directory.tripin.com.tripindirectory.dataprovider.ApiTag;
 import directory.tripin.com.tripindirectory.factory.Request;
 import directory.tripin.com.tripindirectory.factory.RequestListener;
 import directory.tripin.com.tripindirectory.factory.Response;
-import directory.tripin.com.tripindirectory.getcity.rest.responses.PredictionResponse;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.response.ElasticSearchResponse;
 import directory.tripin.com.tripindirectory.model.response.GetPartnersResponse;
@@ -87,10 +86,6 @@ public class ResponseParser {
                     response = likeDislikeResponse;
                     break;
 
-                case ApiTag.GOOGLE_API_FOR_CITY:
-                    PredictionResponse predictionResponse = gson.fromJson(jsonObject.toString(), PredictionResponse.class);
-                    response = predictionResponse;
-                    break;
             }
         } catch (JsonSyntaxException eJsonSyntaxException) {
             eJsonSyntaxException.printStackTrace();
