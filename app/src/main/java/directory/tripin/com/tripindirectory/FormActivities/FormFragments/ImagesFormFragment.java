@@ -77,6 +77,13 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     private Button mImageUpload;
     public ImagesFormFragment() {
         // Required empty public constructor
+        //initially add 3 blank ImageData Objects
+        images = new ArrayList<>();
+        images.add(new ImageData());
+        images.add(new ImageData());
+        images.add(new ImageData());
+        mUrlList = new ArrayList<>();
+
     }
     private DocumentReference mUserDocRef;
     private FirebaseAuth auth;
@@ -90,14 +97,6 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mUrlList = new ArrayList<>();
-
-        //initially add 3 blank ImageData Objects
-        images = new ArrayList<>();
-        images.add(new ImageData());
-        images.add(new ImageData());
-        images.add(new ImageData());
 
         imagesRecyclarAdapter = new ImagesRecyclarAdapter(images,this,getActivity());
 
@@ -124,7 +123,6 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         easyImagePickUP = new EasyImagePickUP(getActivity(), this);
         imagesUriList = new ArrayList<>();
         progressDialog = new ProgressDialog(getActivity());
-        fetchImagesURL();
 
         mImageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,11 +133,18 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchImagesURL();
+    }
+
     public void submit() {
         uploadImagesandGetURL(0);
     }
 
     void uploadImagesandGetURL(final int index) {
+
         if(images.get(index).getSet()){
             Uri file = images.get(index).getmImageUri();
             if (file != null) {
