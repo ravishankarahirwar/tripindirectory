@@ -243,8 +243,8 @@ public class CompanyFromFragment extends BaseFragment {
             //setaddress
             partnerInfoPojo
                     .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
-                            mCompanyCity.getText().toString().trim(),
-                            mCompanyState.getText().toString().trim()));
+                            mCompanyCity.getText().toString().trim().toUpperCase(),
+                            mCompanyState.getText().toString().trim().toUpperCase()));
 
             //mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
             mUserDocRef.update("mCompanyName", partnerInfoPojo.getmCompanyName());
