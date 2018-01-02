@@ -94,7 +94,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private static final int RC_SIGN_IN = 123;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-    long limitValue = 10;
     List<SuggestionCompanyName> companySuggestions = null;
     List<String> companynamesuggestions = null;
     DocumentReference mUserDocRef;
@@ -146,103 +145,13 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             Logger.v("Multiple times app opened");
         }
 
-        query = FirebaseFirestore.getInstance()
-
-                .collection("partners").orderBy("mCompanyName").limit(limitValue);
-
-        options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
-                .setQuery(query, PartnerInfoPojo.class).build();
-
-        adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
-            @Override
-            public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
-                Logger.v("onBindViewHolder ....." + position);
-                if (position == limitValue) {
-                    limitValue = limitValue + 10;
-                    setAdapter("");
-                    Logger.v("now limit value is....." + limitValue);
-
-                }
-
-                if (model.getmCompanyAdderss().getAddress() != null) {
-                    holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
-                }
-                if (model.getmCompanyName() != null) {
-                    holder.mCompany.setText(model.getmCompanyName());
-                }
-
-                holder.mCall.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        final ArrayList<String> phoneNumbers = new ArrayList<>();
-                        List<ContactPersonPojo> contactPersonPojos = model.getmContactPersonsList();
-
-                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
-                            for (int i = 0; i < contactPersonPojos.size(); i++) {
-                                if (model.getmContactPersonsList().get(i) != null) {
-                                    String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                                    phoneNumbers.add(number);
-                                }
-                            }
-
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                            builder.setTitle("Looks like there are multiple phone numbers.")
-                                    .setCancelable(false)
-                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
-                                            new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int item) {
-
-                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
-
-                                                    callNumber(phoneNumbers.get(item));
-                                                }
-                                            });
-
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User cancelled the dialog
-                                }
-                            });
-
-                            builder.create();
-                            builder.show();
-                        } else {
-
-                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                            callNumber(number);
-                        }
-                    }
-                });
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //startPartnerDetailActivity();
-                    }
-                });
-            }
-
-            @Override
-            public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.single_partner_row1, group, false);
-                return new PartnersViewHolder(view);
-            }
-
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                Logger.v("on Data changed");
-            }
-        };
-        mPartnerList.setAdapter(adapter);
+      setAdapter("");
     }
 
     private void startPartnerDetailActivity() {
-        startActivity(new Intent(MainActivity1.this, PartnerDetailActivity.class));
+        startActivity(new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class));
 
-        Intent intent = new Intent(MainActivity1.this, PartnerDetailActivity.class);
+        Intent intent = new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class);
 //        ActivityOptionsCompat options = ActivityOptionsCompat.
 //                makeSceneTransitionAnimation(this, holder.mCompany, "compname");
 //        startActivity(intent, options.toBundle());
@@ -370,39 +279,42 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     }
 
     private void setAdapter(String s) {
-        adapter.stopListening();
-        adapter.notifyDataSetChanged();
+
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
-        switch (searchTag) {
-            case SEARCHTAG_ROUTE: {
-                if (s.contains("To") || s.contains("to")) {
-                    String sourceDestination[] = s.split("(?i:to)");
-                    String source = sourceDestination[0].trim();
-                    String destination = sourceDestination[1].trim();
-                    query = FirebaseFirestore.getInstance()
-                            .collection("partners").whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
-                } else {
-                    Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
+        if(!s.isEmpty()){
+            switch (searchTag) {
+                case SEARCHTAG_ROUTE: {
+                    if (s.contains("To") || s.contains("to")) {
+                        String sourceDestination[] = s.split("(?i:to)");
+                        String source = sourceDestination[0].trim();
+                        String destination = sourceDestination[1].trim();
+                        query = FirebaseFirestore.getInstance()
+                                .collection("partners").whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
+                    } else {
+                        Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
+                    }
+                    break;
                 }
-                break;
-            }
-            case SEARCHTAG_COMPANY: {
+                case SEARCHTAG_COMPANY: {
 
-                query = FirebaseFirestore.getInstance()
-                        .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
-                Logger.v("company search query: "+s);
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
+                    Logger.v("company search query: "+s);
 
-                break;
-            }
-            case SEARCHTAG_CITY: {
-                query = FirebaseFirestore.getInstance()
-                        .collection("partners").whereEqualTo("mCompanyAdderss.city", s.toUpperCase());
+                    break;
+                }
+                case SEARCHTAG_CITY: {
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").whereEqualTo("mCompanyAdderss.city", s.toUpperCase());
 
-                break;
+                    break;
+                }
             }
         }
+
+
 
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
@@ -414,6 +326,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onBindViewHolder(PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 holder.mCompany.setText(model.getmCompanyName());
+
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //startPartnerDetailActivity();
+                    }
+                });
+
 
                 holder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
