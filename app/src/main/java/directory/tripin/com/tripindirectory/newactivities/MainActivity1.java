@@ -74,6 +74,7 @@ import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
@@ -128,6 +129,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private RadioButton radioButton1;
     private RadioButton radioButton4;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private RecyclerViewAnimator mAnimator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,14 +148,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             Logger.v("Multiple times app opened");
         }
 
-      setAdapter("");
+        setAdapter("");
     }
 
     private void startPartnerDetailActivity(String name, String uid) {
 
         Intent intent = new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class);
-        intent.putExtra("uid",uid);
-        intent.putExtra("cname",name);
+        intent.putExtra("uid", uid);
+        intent.putExtra("cname", name);
 
         startActivity(intent);
     }
@@ -283,7 +286,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
-        if(!s.isEmpty()){
+        if (!s.isEmpty()) {
             switch (searchTag) {
                 case SEARCHTAG_ROUTE: {
                     if (s.contains("To") || s.contains("to")) {
@@ -301,7 +304,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
                     query = FirebaseFirestore.getInstance()
                             .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
-                    Logger.v("company search query: "+s);
+                    Logger.v("company search query: " + s);
 
                     break;
                 }
@@ -315,13 +318,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         }
 
 
-
-
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
                 .build();
 
+        mAnimator = new RecyclerViewAnimator(mPartnerList);
+
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+
+
             @Override
             public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
@@ -332,7 +337,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     @Override
                     public void onClick(View view) {
                         DocumentSnapshot snapshot = getSnapshots().getSnapshot(holder.getAdapterPosition());
-                        startPartnerDetailActivity( model.getmCompanyName(),snapshot.getId());
+                        startPartnerDetailActivity(model.getmCompanyName(), snapshot.getId());
                     }
                 });
 
@@ -385,12 +390,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         }
                     }
                 });
+                mAnimator.onBindViewHolder(holder.itemView, position);
             }
 
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext())
                         .inflate(R.layout.single_partner_row1, group, false);
+                mAnimator.onCreateViewHolder(view);
                 return new PartnersViewHolder(view);
             }
 
@@ -610,7 +617,15 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 //                                    });
                             break;
                         case SEARCHTAG_COMPANY:
+                            if(newQuery.length()-oldQuery.length()>0){
+                                //foreward
+
+                            }else {
+                                //backword
                                 fetchAutoSuggestions(newQuery);
+
+                            }
+
                             break;
 
                         case SEARCHTAG_CITY:
@@ -635,7 +650,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
 
                 switch (searchTag) {
-                    case SEARCHTAG_ROUTE : {
+                    case SEARCHTAG_ROUTE: {
                         String selectedCity = searchSuggestion.getBody();
 
 
@@ -659,11 +674,11 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         break;
                     }
 
-                    case SEARCHTAG_COMPANY : {
+                    case SEARCHTAG_COMPANY: {
                         String companyname = searchSuggestion.getBody().trim();
 
                         Logger.v("suggestion clicked");
-                        Log.d("COMPANY","suggestion.....");
+                        Log.d("COMPANY", "suggestion.....");
 
                         mSearchView.setSearchText(companyname);
                         mSearchView.clearFocus();
@@ -874,8 +889,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 for (AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
                     SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
                     String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
-                    switch (searchTag){
-                        case SEARCHTAG_ROUTE:{
+                    switch (searchTag) {
+                        case SEARCHTAG_ROUTE: {
                             if (isSourceSelected) {
                                 suggestionCompanyName.setCompanyName(cityName);
                             } else {
@@ -883,7 +898,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                             }
                             break;
                         }
-                        case SEARCHTAG_CITY:{
+                        case SEARCHTAG_CITY: {
                             suggestionCompanyName.setCompanyName(cityName);
 
                             break;
