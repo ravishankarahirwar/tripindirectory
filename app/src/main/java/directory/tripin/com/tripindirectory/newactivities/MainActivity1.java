@@ -148,13 +148,13 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
       setAdapter("");
     }
 
-    private void startPartnerDetailActivity() {
-        startActivity(new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class));
+    private void startPartnerDetailActivity(String name, String uid) {
 
         Intent intent = new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class);
-//        ActivityOptionsCompat options = ActivityOptionsCompat.
-//                makeSceneTransitionAnimation(this, holder.mCompany, "compname");
-//        startActivity(intent, options.toBundle());
+        intent.putExtra("uid",uid);
+        intent.putExtra("cname",name);
+
+        startActivity(intent);
     }
 
     private void callNumber(String number) {
@@ -323,7 +323,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
+            public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 holder.mCompany.setText(model.getmCompanyName());
 
@@ -331,7 +331,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //startPartnerDetailActivity();
+                        DocumentSnapshot snapshot = getSnapshots().getSnapshot(holder.getAdapterPosition());
+                        startPartnerDetailActivity( model.getmCompanyName(),snapshot.getId());
                     }
                 });
 
