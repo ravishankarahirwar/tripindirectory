@@ -55,20 +55,12 @@
             android:name=".newactivities.TutorialScreensActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.Main2Activity"
-            android:label="Indian Logistics Network"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".FormActivities.CompanyInfoActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".activity.Main2Activity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.Main2Activity" />
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -86,12 +78,8 @@
         <activity
             android:name=".newactivities.PartnerDetailScrollingActivity"
             android:label="@string/title_activity_partner_detail_scrolling"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.Main2Activity" />
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"> </activity>
+
     </application>
 
 </manifest>

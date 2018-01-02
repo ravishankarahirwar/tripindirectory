@@ -152,12 +152,11 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                                                             return;
                                                         }
                                                         Logger.v("swatch" + textSwatch.toString());
-                                                        //toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
-                                                        //fab.setBackgroundColor(textSwatch.getBodyTextColor());
-                                                        //fab.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
-//                                                        backgroundGroup.setBackgroundColor(textSwatch.getRgb());
-//                                                        titleColorText.setTextColor(textSwatch.getTitleTextColor());
-//                                                        bodyColorText.setTextColor(textSwatch.getBodyTextColor());
+                                                        toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
+                                                        fabCall.setBackgroundColor(textSwatch.getBodyTextColor());
+                                                        fabCall.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
+
+
                                                     }
                                                 });
                                     }
