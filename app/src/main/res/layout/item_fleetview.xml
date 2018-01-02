@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/fui_buttonShadow"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/plateno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:drawableStart="@drawable/ic_fiber_manual_record_black_24dp"
+        android:layout_marginTop="8dp"
+        android:text="MH 34 5454"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/vehicletype"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Truck"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/plateno"
+        app:layout_constraintTop_toBottomOf="@+id/plateno"/>
+
+    <TextView
+        android:id="@+id/bodytype"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="OpenBody"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/vehicletype"
+        app:layout_constraintStart_toEndOf="@+id/vehicletype"
+        app:layout_constraintTop_toTopOf="@+id/vehicletype"/>
+
+    <TextView
+        android:id="@+id/payload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Payload:"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/vehicletype"
+        app:layout_constraintTop_toBottomOf="@+id/vehicletype"/>
+
+    <TextView
+        android:id="@+id/length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Length"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/payload"
+        app:layout_constraintStart_toEndOf="@+id/payload"
+        app:layout_constraintTop_toTopOf="@+id/payload"/>
+
+    <TextView
+        android:id="@+id/driverdetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Pranav Anand / 7845854758"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/payload"
+        app:layout_constraintTop_toBottomOf="@+id/payload"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -22,7 +22,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public boolean isUpVoted;
     public boolean isDownVoted;
     public int mRank;
-    public ExpandableTextView mAddress;
+    public TextView mAddress;
     public TextView mCall;
     public TextView mCompany;
 
@@ -36,7 +36,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
         mRanking = (TextView) itemView.findViewById(R.id.ranking);
         mRank = 0;
         mCall = (TextView) itemView.findViewById(R.id.call);
-        mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
+        mAddress =  itemView.findViewById(R.id.expandable_text);
         mCompany = (TextView) itemView.findViewById(R.id.company_name);
     }
 }

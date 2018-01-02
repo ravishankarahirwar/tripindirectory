@@ -216,5 +216,6 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="api_map_key">AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM</string>
 
 </resources>
