@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:visibility="gone"
-                    android:src="@drawable/ic_arrow_upward"/>
+                    app:srcCompat="@drawable/ic_arrow_upward"/>
 
 
                 <!--           <ProgressBar
@@ -111,15 +111,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/ranking"
-<<<<<<< HEAD
-                    android:src="@drawable/ic_arrow_downward"
-                    android:visibility="invisible"/>
-
-
-=======
                     android:visibility="gone"
-                    android:src="@drawable/ic_arrow_downward"/>
->>>>>>> First Production version release
+                    app:srcCompat="@drawable/ic_arrow_downward"/>
                 <!--<ProgressBar
                     android:id="@+id/downvote"
                     android:layout_width="wrap_content"
