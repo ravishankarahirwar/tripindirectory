@@ -78,7 +78,8 @@
         <activity
             android:name=".newactivities.PartnerDetailScrollingActivity"
             android:label="@string/title_activity_partner_detail_scrolling"
-            android:theme="@style/AppTheme.NoActionBar"> </activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
     </application>
 

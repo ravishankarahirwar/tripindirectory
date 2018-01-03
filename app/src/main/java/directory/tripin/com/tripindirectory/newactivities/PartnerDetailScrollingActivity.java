@@ -278,19 +278,14 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     builder.create();
                     builder.show();
                 } else {
-
                     String number = partnerInfoPojo.getmContactPersonsList().get(0).getGetmContactPersonMobile();
                     callNumber(number);
                 }
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }
 
     private void init() {
-
-
         mContext = getApplicationContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -314,11 +309,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
         fabCall = findViewById(R.id.fabCall);
-
-
-
-
-
     }
 
     @Override
