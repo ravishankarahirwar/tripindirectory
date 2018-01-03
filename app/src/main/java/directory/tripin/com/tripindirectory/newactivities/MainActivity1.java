@@ -1,6 +1,7 @@
 package directory.tripin.com.tripindirectory.newactivities;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,7 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -85,8 +87,10 @@ import directory.tripin.com.tripindirectory.utils.SearchData;
 
 public class MainActivity1 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
+    public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_COMPANY = 1;
     private static final int SEARCHTAG_CITY = 2;
@@ -535,13 +539,51 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             auth.signOut();
             Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            shareApp();
+        } else if (id == R.id.nav_feedback) {
+            sendFeedback ();
+        }else if (id == R.id.nav_invite) {
+            onInviteClicked();
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void shareApp() {
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Indian Logistic Network");
+            String sAux = "\nLet me recommend you this application\n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=directory.tripin.com.tripindirectory \n\n";
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "Share INL"));
+        } catch(Exception e) {
+            //e.toString();
+        }
+    }
+
+    private void sendFeedback () {
+        try {
+            Intent Email = new Intent(Intent.ACTION_SENDTO,  Uri.fromParts(
+                    "mailto","ravishankar.ahirwar@tripin.co.in", null));
+            Email.putExtra(Intent.EXTRA_SUBJECT, "Send Feedback/Feature Request/Bug Report for INL");
+            Email.putExtra(Intent.EXTRA_TEXT, "Dear ..., \n Please let us know how to improve ?" + "");
+            startActivity(Intent.createChooser(Email, "Send Feedback:"));
+        } catch (ActivityNotFoundException e) {
+            Logger.e("There is no app to send feedback for the app");
+        }
+    }
+
+    private void onInviteClicked() {
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
+                .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                .setCallToActionText(getString(R.string.invitation_cta))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
     }
 
     private void setupSearchBar() {

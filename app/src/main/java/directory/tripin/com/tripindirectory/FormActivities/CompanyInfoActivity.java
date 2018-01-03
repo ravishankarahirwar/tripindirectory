@@ -1,59 +1,25 @@
 package directory.tripin.com.tripindirectory.FormActivities;
 
-import android.app.ActionBar;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.BaseFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.CompanyFromFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.FleetFormFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.ImagesFormFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.RouteFormFragment;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.Main2Activity;
-import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
-import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
 
 public class CompanyInfoActivity extends AppCompatActivity {
     private TabLayout tabLayout;

@@ -152,12 +152,11 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                                                             return;
                                                         }
                                                         Logger.v("swatch" + textSwatch.toString());
-                                                        //toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
-                                                        //fab.setBackgroundColor(textSwatch.getBodyTextColor());
-                                                        //fab.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
-//                                                        backgroundGroup.setBackgroundColor(textSwatch.getRgb());
-//                                                        titleColorText.setTextColor(textSwatch.getTitleTextColor());
-//                                                        bodyColorText.setTextColor(textSwatch.getBodyTextColor());
+                                                        toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
+                                                        fabCall.setBackgroundColor(textSwatch.getBodyTextColor());
+                                                        fabCall.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
+
+
                                                     }
                                                 });
                                     }
@@ -279,19 +278,14 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     builder.create();
                     builder.show();
                 } else {
-
                     String number = partnerInfoPojo.getmContactPersonsList().get(0).getGetmContactPersonMobile();
                     callNumber(number);
                 }
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }
 
     private void init() {
-
-
         mContext = getApplicationContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
@@ -315,11 +309,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
         fabCall = findViewById(R.id.fabCall);
-
-
-
-
-
     }
 
     @Override
