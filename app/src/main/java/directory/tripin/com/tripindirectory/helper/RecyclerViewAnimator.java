@@ -14,13 +14,13 @@ public class RecyclerViewAnimator {
     /**
      * Initial delay before to show items - in ms
      */
-    private static final int INIT_DELAY = 1000;
+    private static final int INIT_DELAY = 100;
 
     /**
      * Initial entrance tension parameter.
      * See https://facebook.github.io/rebound/
      */
-    private static final int INIT_TENSION = 250;
+    private static final int INIT_TENSION = 100;
     /**
      * Initial entrance friction parameter.
      */

@@ -64,7 +64,7 @@ public class DataTransferActivity extends AppCompatActivity {
                 PartnerInfoPojo p = new PartnerInfoPojo();
                 RMN = "null" + i;
 
-                p.setCompanyName(d.getName());
+                p.setCompanyName(d.getName().toUpperCase());
 
                 CompanyAddressPojo companyAddressPojo = new CompanyAddressPojo(d.getAddress(), "MUMBAI", "MAHARASHTRA");
                 p.setCompanyAdderss(companyAddressPojo);

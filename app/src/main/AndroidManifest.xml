@@ -41,7 +41,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name=".activity.FavoritesActivity" />
+
         <activity
             android:name=".newactivities.MainActivity1"
             android:theme="@style/AppTheme.NoActionBar">
@@ -51,23 +53,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".newactivities.TutorialScreensActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".FormActivities.CompanyInfoActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden">
-
-
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".newactivities.MainActivity1" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name=".newactivities.DataTransferActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,10 +80,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".newactivities.PartnerDetailScrollingActivity"
             android:label="@string/title_activity_partner_detail_scrolling"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".newactivities.MainActivity1" />
         </activity>
 
     </application>

@@ -34,6 +34,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.firebase.ui.auth.AuthUI;
@@ -84,6 +85,7 @@ import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.utils.SearchData;
+import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class MainActivity1 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -134,6 +136,8 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private RadioButton radioButton4;
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
+    LottieAnimationView lottieAnimationView;
+
 
 
     @Override
@@ -205,6 +209,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         radioButton1 = findViewById(R.id.search_by_route);
         radioButton4 = findViewById(R.id.search_by_city);
 
+        lottieAnimationView = findViewById(R.id.animation_view);
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -212,7 +217,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 if (radioButtonID == R.id.search_by_route) {
                     searchTag = SEARCHTAG_ROUTE;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
+                    //radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
@@ -222,7 +227,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     searchTag = SEARCHTAG_COMPANY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
+                    //radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
@@ -232,7 +237,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
+                    //radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by transporter name");
@@ -242,7 +247,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
+                    //radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search in city");
                 }
@@ -287,8 +292,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
     private void setAdapter(String s) {
 
+        lottieAnimationView.setVisibility(View.VISIBLE);
+
         query = FirebaseFirestore.getInstance()
-                .collection("partners");
+                .collection("partners").orderBy("mCompanyName");
 
         if (!s.isEmpty()) {
             switch (searchTag) {
@@ -334,9 +341,9 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             @Override
             public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
-                holder.mCompany.setText(model.getmCompanyName());
-
-
+                TextUtils textUtils = new TextUtils();
+                holder.mCompany.setText(textUtils.toTitleCase(model.getmCompanyName()));
+                Logger.v("onBind : "+textUtils.toTitleCase(model.getmCompanyName()));
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -409,6 +416,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onDataChanged() {
                 super.onDataChanged();
                 Logger.v("on Data changed");
+                lottieAnimationView.setVisibility(View.GONE);
                 mSearchView.clearSuggestions();
             }
         };
@@ -659,14 +667,36 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 //                                    });
                             break;
                         case SEARCHTAG_COMPANY:
-                            if(newQuery.length()-oldQuery.length()>0){
-                                //foreward
 
-                            }else {
-                                //backword
-                                fetchAutoSuggestions(newQuery);
+                            fetchAutoSuggestions(newQuery.toUpperCase());
 
-                            }
+//                            if(newQuery.length()-oldQuery.length()>0){
+//                                //foreward
+//
+//                                List<SuggestionCompanyName>list = new ArrayList<>();
+//
+//                                for(SuggestionCompanyName s: companySuggestions){
+//                                    if(s.getCompanyName().contains(newQuery)){
+//                                        list.add(s);
+//                                    }
+//                                }
+//
+//                                mSearchView.swapSuggestions(list);
+//
+//                            }else {
+//                                //backword
+//                                List<SuggestionCompanyName>list = new ArrayList<>();
+//
+//                                for(SuggestionCompanyName s: companySuggestions){
+//                                    if(s.getCompanyName().contains(newQuery)){
+//                                        list.add(s);
+//                                    }
+//                                }
+//
+//                                mSearchView.swapSuggestions(list);
+//                                fetchAutoSuggestions(newQuery);
+//
+//                            }
 
                             break;
 
