@@ -32,8 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:orientation="vertical"
             >
@@ -42,58 +42,50 @@
                 android:id="@+id/company_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_fiber_manual_record_black_24dp"
                 android:lineSpacingExtra="5sp"
                 android:text="Trip In Transport"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:transitionName="compname"/>
 
-            <com.ms.square.android.expandabletextview.ExpandableTextView
-                xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/address"
+
+            <TextView
+                android:id="@id/expandable_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                expandableTextView:animDuration="200"
-                expandableTextView:maxCollapsedLines="2">
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="0.90"
+                android:ellipsize="end"
+                android:lineSpacingExtra="3sp"
+                android:maxLines="2"
+                android:textColor="#b34a4a4a"
+                android:textSize="13sp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@id/expandable_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.90"
-                        android:lineSpacingExtra="3sp"
-                        android:textColor="#b34a4a4a"
-                        android:textSize="13sp"/>
-
-                    <ImageButton
-                        android:id="@id/expand_collapse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_margin="5dp"
-                        android:layout_weight="0.10"
-                        android:background="@android:color/transparent"/>
-                </LinearLayout>
-            </com.ms.square.android.expandabletextview.ExpandableTextView>
 
             <RelativeLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
+
+                <RatingBar
+                    android:id="@+id/ratingBar2"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"/>
 
                 <ImageView
                     android:id="@+id/upvote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:src="@drawable/ic_arrow_upward"/>
+                    android:src="@drawable/ic_arrow_upward"
+                    android:visibility="invisible"/>
 
 
                 <!--           <ProgressBar
@@ -111,14 +103,18 @@
                     android:layout_marginRight="8dp"
                     android:layout_toRightOf="@id/upvote"
                     android:text="0"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:visibility="invisible"/>
 
                 <ImageView
                     android:id="@+id/downvote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/ranking"
-                    android:src="@drawable/ic_arrow_downward"/>
+                    android:src="@drawable/ic_arrow_downward"
+                    android:visibility="invisible"/>
+
+
                 <!--<ProgressBar
                     android:id="@+id/downvote"
                     android:layout_width="wrap_content"
@@ -140,7 +136,7 @@
                     android:text="CALL"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15sp"
-                    />
+                    android:textStyle="bold"/>
             </RelativeLayout>
 
             <View

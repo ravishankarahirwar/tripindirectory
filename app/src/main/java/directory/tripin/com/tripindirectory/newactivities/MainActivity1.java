@@ -1,6 +1,5 @@
 package directory.tripin.com.tripindirectory.newactivities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,9 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,10 +26,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -77,42 +72,36 @@ import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.adapters.PartnersAdapter1;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
-import directory.tripin.com.tripindirectory.manager.CityManager;
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PartnersManager;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.TokenManager;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
-import directory.tripin.com.tripindirectory.role.OnBottomReachedListener;
 import directory.tripin.com.tripindirectory.utils.SearchData;
-import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
-import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground;
-import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class MainActivity1 extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private static final int SEARCHTAG_ROUTE = 0;
-    private static final int SEARCHTAG_TRANSPORTER = 1;
-    private static final int SEARCHTAG_PEOPLE = 2;
-    private static final int RC_SIGN_IN = 123;
+    private static final int SEARCHTAG_COMPANY = 1;
+    private static final int SEARCHTAG_CITY = 2;
+    private static final int SEARCHTAG_TRANSPORTER = 3;
 
+    private static final int RC_SIGN_IN = 123;
+    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
+            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     List<SuggestionCompanyName> companySuggestions = null;
     List<String> companynamesuggestions = null;
-
-
     DocumentReference mUserDocRef;
-
-
     FirebaseAuth auth;
     FirestoreRecyclerOptions<PartnerInfoPojo> options;
     FirestoreRecyclerAdapter adapter;
-
+    boolean isCompanySuggestionClicked = false;
     private Context mContext;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
@@ -129,31 +118,19 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     private int searchTag = 0;
     private SearchData mSearchData;
     private Boolean mSuggestionTapped = false;
-
     private Query query;
     private GeoDataClient mGeoDataClient;
     private boolean isSourceSelected = false;
     private boolean isDestinationSelected = false;
-
     private String mSourceCity;
     private String mDestinationCity;
-
     private RadioButton radioButton3;
     private RadioButton radioButton2;
     private RadioButton radioButton1;
     private RadioButton radioButton4;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private RecyclerViewAnimator mAnimator;
 
-
-
-
-
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-
-    public interface OnFindSuggestionsListener {
-        void onResults(List<SuggestionCompanyName> results);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,99 +148,16 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             Logger.v("Multiple times app opened");
         }
 
-        query = FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName").limit(10);
-
-        options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
-                .setQuery(query, PartnerInfoPojo.class).build();
-
-        adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
-            @Override
-            public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
-                if (model.getmCompanyAdderss().getAddress() != null) {
-                    holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
-                }
-                if (model.getmCompanyName() != null) {
-                    holder.mCompany.setText(model.getmCompanyName());
-                }
-
-                holder.mCall.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        final ArrayList<String> phoneNumbers = new ArrayList<>();
-                        List<ContactPersonPojo> contactPersonPojos = model.getmContactPersonsList();
-
-                        if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
-                            for (int i = 0; i < contactPersonPojos.size(); i++) {
-                                if (model.getmContactPersonsList().get(i) != null) {
-                                    String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                                    phoneNumbers.add(number);
-                                }
-                            }
-
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                            builder.setTitle("Looks like there are multiple phone numbers.")
-                                    .setCancelable(false)
-                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
-                                            new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int item) {
-
-                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
-
-                                                    callNumber(phoneNumbers.get(item));
-                                                }
-                                            });
-
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User cancelled the dialog
-                                }
-                            });
-
-                            builder.create();
-                            builder.show();
-                        } else {
-
-                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                            callNumber(number);
-                        }
-                    }
-                });
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //startPartnerDetailActivity();
-                    }
-                });
-            }
-
-            @Override
-            public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.single_partner_row1, group, false);
-                return new PartnersViewHolder(view);
-            }
-
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                Logger.v("on Data changed");
-            }
-        };
-        mPartnerList.setAdapter(adapter);
+        setAdapter("");
     }
 
+    private void startPartnerDetailActivity(String name, String uid) {
 
+        Intent intent = new Intent(MainActivity1.this, PartnerDetailScrollingActivity.class);
+        intent.putExtra("uid", uid);
+        intent.putExtra("cname", name);
 
-    private void startPartnerDetailActivity() {
-        startActivity(new Intent(MainActivity1.this,PartnerDetailActivity.class));
-
-        Intent intent = new Intent(MainActivity1.this, PartnerDetailActivity.class);
-//        ActivityOptionsCompat options = ActivityOptionsCompat.
-//                makeSceneTransitionAnimation(this, holder.mCompany, "compname");
-//        startActivity(intent, options.toBundle());
+        startActivity(intent);
     }
 
     private void callNumber(String number) {
@@ -308,7 +202,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         radioButton4 = findViewById(R.id.search_by_city);
 
 
-
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
@@ -319,33 +212,34 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
-                    searchTag = SEARCHTAG_TRANSPORTER;
+                    searchTag = SEARCHTAG_COMPANY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_transporter) {
-                    searchTag = SEARCHTAG_PEOPLE;
+                    searchTag = SEARCHTAG_TRANSPORTER;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by transporter name");
-                }else if (radioButtonID == R.id.search_by_city) {
-                    searchTag = SEARCHTAG_PEOPLE;
+                } else if (radioButtonID == R.id.search_by_city) {
+                    searchTag = SEARCHTAG_CITY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search in city");
                 }
             }
@@ -368,7 +262,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
-                                Logger.v("suggestion: "+ document.getId() + " => " + document.get("mCompanyName"));
+                                Logger.v("suggestion: " + document.getId() + " => " + document.get("mCompanyName"));
                                 suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
                                 companySuggestions.add(suggestionCompanyName);
                             }
@@ -387,42 +281,66 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 });
     }
 
-
     private void setAdapter(String s) {
-        adapter.stopListening();
-        adapter.notifyDataSetChanged();
+
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
-        if (!s.equals("")) {
-            if (s.contains("To") || s.contains("to")) {
-                String sourceDestination[] = s.split("(?i:to)");
-                String source = sourceDestination[0].trim();
-                String destination = sourceDestination[1].trim();
-                query = FirebaseFirestore.getInstance()
-               .collection("partners").whereEqualTo("mSourceCities."+ source.toUpperCase(), true).whereEqualTo("mDestinationCities."+ destination.toUpperCase(), true);
-
-
-            } else {
-                if(mSuggestionTapped){
-                    query = FirebaseFirestore.getInstance()
-                            .collection("partners").whereEqualTo("mCompanyName", s);
-                }else {
-                    query = FirebaseFirestore.getInstance()
-                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s);
+        if (!s.isEmpty()) {
+            switch (searchTag) {
+                case SEARCHTAG_ROUTE: {
+                    if (s.contains("To") || s.contains("to")) {
+                        String sourceDestination[] = s.split("(?i:to)");
+                        String source = sourceDestination[0].trim();
+                        String destination = sourceDestination[1].trim();
+                        query = FirebaseFirestore.getInstance()
+                                .collection("partners").whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
+                    } else {
+                        Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
+                    }
+                    break;
                 }
+                case SEARCHTAG_COMPANY: {
 
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
+                    Logger.v("company search query: " + s);
+
+                    break;
+                }
+                case SEARCHTAG_CITY: {
+                    query = FirebaseFirestore.getInstance()
+                            .collection("partners").whereEqualTo("mCompanyAdderss.city", s.toUpperCase());
+
+                    break;
+                }
             }
         }
+
+
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
                 .build();
 
+        mAnimator = new RecyclerViewAnimator(mPartnerList);
+
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+
+
             @Override
-            public void onBindViewHolder(PartnersViewHolder holder, int position,final PartnerInfoPojo model) {
+            public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
                 holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
                 holder.mCompany.setText(model.getmCompanyName());
+
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DocumentSnapshot snapshot = getSnapshots().getSnapshot(holder.getAdapterPosition());
+                        startPartnerDetailActivity(model.getmCompanyName(), snapshot.getId());
+                    }
+                });
+
 
                 holder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -472,12 +390,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         }
                     }
                 });
+                mAnimator.onBindViewHolder(holder.itemView, position);
             }
 
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext())
                         .inflate(R.layout.single_partner_row1, group, false);
+                mAnimator.onCreateViewHolder(view);
                 return new PartnersViewHolder(view);
             }
 
@@ -485,6 +405,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             public void onDataChanged() {
                 super.onDataChanged();
                 Logger.v("on Data changed");
+                mSearchView.clearSuggestions();
             }
         };
 
@@ -529,7 +450,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                             mUserDocRef.set(partnerInfoPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Logger.v("data set to :"+auth.getUid());
+                                    Logger.v("data set to :" + auth.getUid());
                                     mUserDocRef = FirebaseFirestore.getInstance()
                                             .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
                                     mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -585,7 +506,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         Toast.makeText(this, getString(m), Toast.LENGTH_LONG).show();
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -633,27 +553,37 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
                     isSourceSelected = false;
-                    isDestinationSelected  = false;
+                    isDestinationSelected = false;
                     mSourceCity = "";
                 } else {
 
                     switch (searchTag) {
                         case SEARCHTAG_ROUTE:
-                            if(isSourceSelected && !isDestinationSelected) {
-                                String queary = newQuery.replace(mSourceCity, "").toString().trim();
-                                new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
-                                    @Override
-                                    public void onResults(List<SuggestionCompanyName> results) {
-                                        mSearchView.swapSuggestions(results);
-                                    }
-                                }).execute(queary, null, null);
-                            } else {
+                            if (!isSourceSelected) {
+
+                                //set source suggestions
+                                Logger.v("source fetching......");
                                 new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
                                     @Override
                                     public void onResults(List<SuggestionCompanyName> results) {
                                         mSearchView.swapSuggestions(results);
                                     }
                                 }).execute(newQuery, null, null);
+
+                            } else {
+                                if (!isDestinationSelected) {
+                                    //set destination suggestions
+                                    Logger.v("destination fetching......");
+
+                                    String queary = newQuery.replace(mSourceCity, "").toString().trim();
+                                    new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                        @Override
+                                        public void onResults(List<SuggestionCompanyName> results) {
+                                            mSearchView.swapSuggestions(results);
+                                        }
+                                    }).execute(queary, null, null);
+                                }
+
                             }
 
 
@@ -686,8 +616,25 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 //                                        }
 //                                    });
                             break;
-                        case SEARCHTAG_TRANSPORTER:
-                            fetchAutoSuggestions(newQuery);
+                        case SEARCHTAG_COMPANY:
+                            if(newQuery.length()-oldQuery.length()>0){
+                                //foreward
+
+                            }else {
+                                //backword
+                                fetchAutoSuggestions(newQuery);
+
+                            }
+
+                            break;
+
+                        case SEARCHTAG_CITY:
+                            new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                @Override
+                                public void onResults(List<SuggestionCompanyName> results) {
+                                    mSearchView.swapSuggestions(results);
+                                }
+                            }).execute(newQuery, null, null);
                             break;
                     }
 
@@ -702,24 +649,23 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
 
-                switch (searchTag){
-                    case SEARCHTAG_ROUTE:{
+                switch (searchTag) {
+                    case SEARCHTAG_ROUTE: {
                         String selectedCity = searchSuggestion.getBody();
 
-                        if(!isDestinationSelected) {
-                            if(isSourceSelected) {
 
-                                mSearchView.setSearchText(mSourceCity + selectedCity);
-                                mSearchView.clearFocus();
-                                mSearchView.clearSearchFocus();
-                                mSearchView.clearSuggestions();
+                        if (isSourceSelected) {
 
-                                setAdapter(mSourceCity + selectedCity);
-                                isDestinationSelected = true;
-                            } else {
-                                mSearchView.setSearchText(selectedCity);
-                                isSourceSelected = true;
-                            }
+                            mSearchView.setSearchText(mSourceCity + selectedCity);
+                            mSearchView.clearFocus();
+                            mSearchView.clearSearchFocus();
+                            mSearchView.clearSuggestions();
+
+                            setAdapter(mSourceCity + selectedCity);
+                            isDestinationSelected = true;
+                        } else {
+                            mSearchView.setSearchText(selectedCity);
+                            isSourceSelected = true;
                         }
 
 
@@ -727,8 +673,34 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         mSourceCity = selectedCity;
                         break;
                     }
-                }
 
+                    case SEARCHTAG_COMPANY: {
+                        String companyname = searchSuggestion.getBody().trim();
+
+                        Logger.v("suggestion clicked");
+                        Log.d("COMPANY", "suggestion.....");
+
+                        mSearchView.setSearchText(companyname);
+                        mSearchView.clearFocus();
+                        mSearchView.clearSearchFocus();
+                        mSearchView.clearSuggestions();
+                        setAdapter(companyname);
+                        break;
+                    }
+                    case SEARCHTAG_CITY: {
+                        Logger.v("suggestion clicked");
+
+                        String cityname = searchSuggestion.getBody();
+                        mSearchView.setSearchText(cityname);
+                        mSearchView.clearFocus();
+                        mSearchView.clearSearchFocus();
+                        mSearchView.clearSuggestions();
+                        setAdapter(cityname);
+                        isCompanySuggestionClicked = true;
+                        break;
+                    }
+
+                }
 
 
 //                startUpDownActivity( (Station) searchSuggestion);
@@ -859,7 +831,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 
-
     private void onVoiceSearch(final String query) {
         if (query != null) {
             mSearchView.setSearchText(query);
@@ -867,11 +838,18 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         }
     }
 
-    private class GetCityFromGoogleTask extends AsyncTask<String,Void, List<SuggestionCompanyName>> {
+
+    public interface OnFindSuggestionsListener {
+        void onResults(List<SuggestionCompanyName> results);
+    }
+
+    private class GetCityFromGoogleTask extends AsyncTask<String, Void, List<SuggestionCompanyName>> {
         OnFindSuggestionsListener mOnFindSuggestionsListener;
+
         GetCityFromGoogleTask(OnFindSuggestionsListener onFindSuggestionsListener) {
             mOnFindSuggestionsListener = onFindSuggestionsListener;
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -892,7 +870,6 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                     .build();
 
 
-
             Task<AutocompletePredictionBufferResponse> results =
                     mGeoDataClient.getAutocompletePredictions(place[0], BOUNDS_GREATER_SYDNEY, typeFilter);
 
@@ -906,17 +883,28 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
             try {
                 AutocompletePredictionBufferResponse autocompletePredictions = results.getResult();
-                ArrayList<AutocompletePrediction>  autocompletePredictions1 =  DataBufferUtils.freezeAndClose(autocompletePredictions);
+                ArrayList<AutocompletePrediction> autocompletePredictions1 = DataBufferUtils.freezeAndClose(autocompletePredictions);
                 CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
 
-                for(AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
+                for (AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
                     SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
                     String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
-                    if(isSourceSelected) {
-                        suggestionCompanyName.setCompanyName(cityName);
-                    } else {
-                        suggestionCompanyName.setCompanyName(cityName + " To ");
+                    switch (searchTag) {
+                        case SEARCHTAG_ROUTE: {
+                            if (isSourceSelected) {
+                                suggestionCompanyName.setCompanyName(cityName);
+                            } else {
+                                suggestionCompanyName.setCompanyName(cityName + " To ");
+                            }
+                            break;
+                        }
+                        case SEARCHTAG_CITY: {
+                            suggestionCompanyName.setCompanyName(cityName);
+
+                            break;
+                        }
                     }
+
                     suggestionCompanyNames.add(suggestionCompanyName);
                     Log.i("Directory", "City Prediction : " + cityName);
                 }
