@@ -131,14 +131,28 @@
                 </RadioGroup>
             </HorizontalScrollView>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/transporter_list"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:overScrollMode="ifContentScrolls"
-                app:layoutManager="LinearLayoutManager"
-                tools:context="directory.tripin.com.tripindirectory.activity.HomeActivity"/>
+                android:layout_height="match_parent">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animation_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="loading.json"
+                    app:lottie_loop="true"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/transporter_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:overScrollMode="ifContentScrolls"
+                    app:layoutManager="LinearLayoutManager"
+                    tools:context="directory.tripin.com.tripindirectory.activity.HomeActivity"/>
+            </FrameLayout>
 
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>

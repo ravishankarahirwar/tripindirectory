@@ -10,7 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -23,22 +23,49 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
-
-            <com.daimajia.slider.library.SliderLayout
-                android:id="@+id/slider"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_collapseMode="parallax"
                 android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                />
+                android:layout_height="match_parent">
+
+                <com.daimajia.slider.library.SliderLayout
+                    android:id="@+id/slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax">
+
+                </com.daimajia.slider.library.SliderLayout>
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    android:alpha="0.5"
+                    app:srcCompat="@drawable/gradient_bg"/>
+
+                <TextView
+                    android:id="@+id/imagesinstruction"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="No Images Uploaded Yet!"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:visibility="invisible"/>
+            </FrameLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+
+
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -49,18 +76,13 @@
         android:id="@+id/fabCall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_call_black_24dp"/>
-
-    <android.support.design.widget.FloatingActionButton
-
-        android:id="@+id/fabRate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/background"
+        app:elevation="10dp"
+        app:fabSize="normal"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_star_black_24dp"/>
+        app:srcCompat="@drawable/ic_call_black_24dp"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

@@ -8,8 +8,12 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,16 +40,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.stepstone.apprating.AppRatingDialog;
+import com.stepstone.apprating.listener.RatingDialogListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
@@ -53,8 +65,9 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
+import directory.tripin.com.tripindirectory.utils.TextUtils;
 
-public class PartnerDetailScrollingActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class PartnerDetailScrollingActivity extends AppCompatActivity implements OnMapReadyCallback,RatingDialogListener {
 
 
     SliderLayout sliderLayout;
@@ -67,6 +80,9 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     GoogleMap map;
     PartnerInfoPojo partnerInfoPojo;
     Context mContext;
+    RatingBar ratingBar;
+    TextUtils textUtils;
+
 
 
 
@@ -76,6 +92,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     TextView mServiceTypes;
     TextView mNatureOfBusiness;
     TextView mTitleRating;
+    TextView mImagesUploadedInst;
     List<Vehicle> fleetlist;
     RecyclerView mFleetRecycler;
     FleetForViewerAdapter fleetForViewerAdapter;
@@ -87,6 +104,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +114,8 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        toolbarLayout.setTitle(getIntent().getExtras().getString("cname") + "");
+        textUtils = new TextUtils();
+        toolbarLayout.setTitle(textUtils.toTitleCase(getIntent().getExtras().getString("cname") + ""));
         uid = getIntent().getExtras().getString("uid");
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(uid);
@@ -120,122 +139,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
     private void setListners() {
 
-        mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                //get all partner data
-                if (documentSnapshot.exists()) {
-                    partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                    toolbarLayout.setTitle(partnerInfoPojo.getmCompanyName());
-
-
-                    //set images stuff
-
-                    if (partnerInfoPojo.getmImagesUrl() != null) {
-
-                        Logger.v("got images url");
-
-                        Picasso.with(PartnerDetailScrollingActivity.this)
-                                .load(partnerInfoPojo.getmImagesUrl().get(1))
-                                .into(new Target() {
-                                    @Override
-                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-
-                                        Palette.from(bitmap)
-                                                .generate(new Palette.PaletteAsyncListener() {
-                                                    @Override
-                                                    public void onGenerated(Palette palette) {
-                                                        Palette.Swatch textSwatch = palette.getDominantSwatch();
-                                                        if (textSwatch == null) {
-                                                            Toast.makeText(PartnerDetailScrollingActivity.this, "Null swatch :(", Toast.LENGTH_SHORT).show();
-                                                            return;
-                                                        }
-                                                        Logger.v("swatch" + textSwatch.toString());
-                                                        toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
-                                                        fabCall.setBackgroundColor(textSwatch.getBodyTextColor());
-                                                        fabCall.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
-
-
-                                                    }
-                                                });
-                                    }
-
-                                    @Override
-                                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                                    }
-
-                                    @Override
-                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                    }
-                                });
-                        for (String url : partnerInfoPojo.getmImagesUrl()) {
-                            DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
-                            defaultSliderView.image(url).setScaleType(BaseSliderView.ScaleType.CenterCrop);
-                            sliderLayout.addSlider(defaultSliderView);
-                        }
-                    } else {
-                        DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
-                        defaultSliderView.image(R.drawable.company_logo).setScaleType(BaseSliderView.ScaleType.Fit);
-                        sliderLayout.addSlider(defaultSliderView);
-                    }
-
-                    //set rating
-                    mTitleRating.setText(partnerInfoPojo.getmCompanyName()+", Rated 3.7/5.0");
-
-                    //set address
-                    String addresstoset = partnerInfoPojo.getmCompanyAdderss().getAddress();
-                    mAddress.setText(addresstoset);
-
-                    //set source cities
-
-                    String source = "SOURCE CITIES:\n\n";
-                    for(String s : partnerInfoPojo.getmSourceCities().keySet()){
-                        source = source+s+"\n";
-                    }
-                    mSourceCities.setText(source);
-
-                    //set destination cities
-
-                    String destination = "DESTINATION CITIES:\n\n";
-                    for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
-                        destination = destination+s+"\n";
-                    }
-                    mDestinationCities.setText(destination);
-
-                    //set types of service
-                    String servicetype = "";
-                    for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
-                        servicetype = servicetype + s +", ";
-                    }
-                    mServiceTypes.setText(servicetype);
-
-                    //set types of service
-                    String natureofbusiness = "";
-                    for(String s : partnerInfoPojo.getmNatureOfBusiness().keySet()){
-                        natureofbusiness = natureofbusiness + s +", ";
-                    }
-                    mNatureOfBusiness.setText(natureofbusiness);
-
-                    //set fleet
-                    if(partnerInfoPojo.getVehicles()!=null){
-                        fleetlist.clear();
-                        fleetlist.addAll(partnerInfoPojo.getVehicles());
-                        fleetForViewerAdapter.notifyDataSetChanged();
-                    }
-
-
-
-                } else {
-
-                }
-
-            }
-        });
-
-
         fabCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -255,10 +158,10 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         }
                     }
 
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
                     builder.setTitle("Looks like there are multiple phone numbers.")
                             .setCancelable(false)
-                            .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                            .setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int item) {
@@ -283,8 +186,16 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        ratingBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               //showDialog();
+            }
+        });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void init() {
         mContext = getApplicationContext();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -294,12 +205,14 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         sliderLayout.setCustomAnimation(new DescriptionAnimation());
         sliderLayout.setDuration(5000);
+        ratingBar = findViewById(R.id.ratingBar);
 
         mAddress = findViewById(R.id.textAddress);
         mSourceCities = findViewById(R.id.sourcecities);
         mDestinationCities = findViewById(R.id.destinationcities);
         mServiceTypes = findViewById(R.id.typesofservicetv);
         mTitleRating = findViewById(R.id.titleratingtext);
+        mImagesUploadedInst = findViewById(R.id.imagesinstruction);
         mNatureOfBusiness = findViewById(R.id.natureofbustv);
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
         fleetlist = new ArrayList<>();
@@ -309,6 +222,8 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
         fabCall = findViewById(R.id.fabCall);
+        toolbarLayout.setSoundEffectsEnabled(true);
+        toolbarLayout.setElevation(0.8f);
     }
 
     @Override
@@ -359,9 +274,169 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         }
        */
 
-        // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(43.1, -87.9), 10);
-        map.animateCamera(cameraUpdate);
+
+        mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                //get all partner data
+                if (documentSnapshot.exists()) {
+                    partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                    toolbarLayout.setTitle(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()));
+
+
+                    //set images stuff
+
+                    if (partnerInfoPojo.getmImagesUrl() != null) {
+
+                        Logger.v("got images url");
+
+//                        Picasso.with(PartnerDetailScrollingActivity.this)
+//                                .load(partnerInfoPojo.getmImagesUrl().get(1))
+//                                .into(new Target() {
+//                                    @Override
+//                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//
+//                                        Palette.from(bitmap)
+//                                                .generate(new Palette.PaletteAsyncListener() {
+//                                                    @Override
+//                                                    public void onGenerated(Palette palette) {
+//                                                        Palette.Swatch textSwatch = palette.getDominantSwatch();
+//                                                        if (textSwatch == null) {
+//                                                            Toast.makeText(PartnerDetailScrollingActivity.this, "Null swatch :(", Toast.LENGTH_SHORT).show();
+//                                                            return;
+//                                                        }
+//                                                        Logger.v("swatch" + textSwatch.toString());
+//                                                        toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
+//                                                        fabCall.setBackgroundColor(textSwatch.getBodyTextColor());
+//                                                        fabCall.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
+//
+//
+//                                                    }
+//                                                });
+//                                    }
+//
+//                                    @Override
+//                                    public void onBitmapFailed(Drawable errorDrawable) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//                                    }
+//                                });
+//
+
+                        for (String url : partnerInfoPojo.getmImagesUrl()) {
+                            if(!url.isEmpty()){
+                                DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
+                                defaultSliderView.image(url).setScaleType(BaseSliderView.ScaleType.CenterCrop);
+                                sliderLayout.addSlider(defaultSliderView);
+
+                            }else {
+//                                DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
+//                                defaultSliderView.image(R.drawable.splash).setScaleType(BaseSliderView.ScaleType.CenterCrop);
+//                                sliderLayout.addSlider(defaultSliderView);
+//                                sliderLayout.stopAutoCycle();
+                            }
+
+                        }
+                    } else {
+//                        DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
+//                        defaultSliderView.image(R.drawable.company_logo).setScaleType(BaseSliderView.ScaleType.Fit);
+//                        sliderLayout.addSlider(defaultSliderView);
+//                        sliderLayout.stopAutoCycle();
+                        mImagesUploadedInst.setVisibility(View.VISIBLE);
+
+                    }
+
+                    //set rating
+                    mTitleRating.setText(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())+", Rated 3.7/5.0");
+
+                    //set address
+                    String addresstoset = partnerInfoPojo.getmCompanyAdderss().getAddress();
+                    mAddress.setText(addresstoset);
+
+                    //set address marker
+                    if(partnerInfoPojo.getmLatLng()!=null){
+                        map.addMarker(new MarkerOptions()
+                                .position(partnerInfoPojo.getmLatLng()).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                .draggable(false).visible(true));
+                        // Updates the location and zoom of the MapView
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(partnerInfoPojo.getmLatLng(), 10);
+                        map.animateCamera(cameraUpdate);
+                        Logger.v("camera should be updated");
+                    }else {
+
+                        LatLng latLng = getLocationFromAddress(getApplicationContext(),partnerInfoPojo.getmCompanyAdderss().getAddress());
+                        if(latLng!=null){
+                            map.addMarker(new MarkerOptions()
+                                    .position(latLng).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                                    .draggable(false).visible(true));
+                            // Updates the location and zoom of the MapView
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+                            map.animateCamera(cameraUpdate);
+                        }
+
+
+
+
+                    }
+
+                    //set source cities
+
+                    String source = "SOURCE CITIES:\n\n";
+                    for(String s : partnerInfoPojo.getmSourceCities().keySet()){
+                        source = source+s+"\n";
+                    }
+                    mSourceCities.setText(source);
+
+                    //set destination cities
+
+                    String destination = "DESTINATION CITIES:\n\n";
+                    for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
+                        destination = destination+s+"\n";
+                    }
+                    mDestinationCities.setText(destination);
+
+                    //set types of service
+                    String servicetype = "";
+                    for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
+                        if(partnerInfoPojo.getmTypesOfServices().get(s))
+                            servicetype = servicetype + s +", ";
+                    }
+                    mServiceTypes.setText(servicetype);
+
+                    //set types of service
+                    String natureofbusiness = "";
+                    for(String s : partnerInfoPojo.getmNatureOfBusiness().keySet()){
+                        if( partnerInfoPojo.getmNatureOfBusiness().get(s))
+                            natureofbusiness = natureofbusiness + s +", ";
+                    }
+                    mNatureOfBusiness.setText(natureofbusiness);
+
+                    //set fleet
+                    if(partnerInfoPojo.getVehicles()!=null){
+                        fleetlist.clear();
+                        fleetlist.addAll(partnerInfoPojo.getVehicles());
+                        fleetForViewerAdapter.notifyDataSetChanged();
+                    }
+
+
+
+                } else {
+
+                }
+
+            }
+        });
+
+
+
+
     }
 
     private void callNumber(String number) {
@@ -369,5 +444,68 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(callIntent);
+    }
+
+    @Override
+    public void onPositiveButtonClicked(int i, String s) {
+
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+
+    }
+
+    @Override
+    public void onNeutralButtonClicked() {
+
+    }
+
+//    private void showDialog() {
+//        new AppRatingDialog.Builder()
+//                .setPositiveButtonText("Submit")
+//                .setNegativeButtonText("Cancel")
+//                .setNeutralButtonText("Later")
+//                .setNoteDescriptions(Arrays.asList("Very Bad", "Not good", "Quite ok", "Very Good", "Excellent !!!"))
+//                .setDefaultRating(2)
+//                .setTitle("Rate this application")
+//                .setDescription("Please select some stars and give your feedback")
+//                .setDefaultComment("This app is pretty cool !")
+//                .setStarColor(R.color.colorAccent)
+//                .setNoteDescriptionTextColor(R.color.colorAccent)
+//                .setTitleTextColor(R.color.colorAccent)
+//                .setDescriptionTextColor(R.color.colorAccent)
+//                .setHint("Please write your comment here ...")
+//                .setHintTextColor(R.color.clear_btn_color)
+//                .setCommentTextColor(R.color.colorPrimary)
+//                .setCommentBackgroundColor(R.color.colorPrimaryDark)
+//                .setWindowAnimation(R.style.MyDialogFadeAnimation)
+//                .create(PartnerDetailScrollingActivity.this)
+//                .show();
+//    }
+
+
+    public LatLng getLocationFromAddress(Context context,String strAddress) {
+
+        Geocoder coder = new Geocoder(context);
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            // May throw an IOException
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address != null && address.size() > 0) {
+                Address location = address.get(0);
+                location.getLatitude();
+                location.getLongitude();
+
+                p1 = new LatLng(location.getLatitude(), location.getLongitude() );
+                return p1;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return p1;
+        }
+        return p1;
     }
 }

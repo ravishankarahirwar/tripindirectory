@@ -1,5 +1,7 @@
 package directory.tripin.com.tripindirectory.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ public class PartnerInfoPojo {
     private int mLikes;
     private int mDislikes;
     private String mRMN;
+    private LatLng mLatLng;
 
 
     private boolean isVerified = false;
@@ -50,6 +53,14 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public LatLng getmLatLng() {
+        return mLatLng;
+    }
+
+    public void setmLatLng(LatLng mLatLng) {
+        this.mLatLng = mLatLng;
     }
 
     public String getmRMN() {

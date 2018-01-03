@@ -108,6 +108,17 @@
                 android:gravity="center_vertical"
                 android:text="Add"
                 android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/importcontacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/add_person"
+                android:layout_alignStart="@+id/contactpersons_recyclar"
+                android:drawableLeft="@drawable/ic_person_black_24dp"
+                android:gravity="center_vertical"
+                android:text="Import from your Contacts"
+                android:textStyle="bold"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -161,6 +172,17 @@
             android:layout_margin="10dp"
             android:background="@drawable/roundedcornerbg"
             android:padding="5dp">
+
+            <TextView
+                android:id="@+id/locate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout_state"
+                android:layout_margin="10dp"
+                android:drawableStart="@drawable/ic_location_on_black_24dp"
+                android:gravity="center_vertical"
+                android:text="Locate Your Business On Map"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/address_title"

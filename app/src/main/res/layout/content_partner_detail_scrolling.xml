@@ -24,7 +24,8 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/roundedcornerbg"
             android:elevation="0dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="8dp"
+            android:visibility="gone">
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -111,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_location_on_black_24dp"
-                android:text=" Area of operation :"
+                android:text=" Area of operation"
                 android:textStyle="bold"/>
 
             <LinearLayout
@@ -119,7 +120,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/routetitle"
                 android:layout_margin="4dp"
-                android:background="@color/fui_buttonShadow"
+                android:background="@color/light_gray"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -142,7 +143,6 @@
                     android:textStyle="bold"/>
             </LinearLayout>
         </RelativeLayout>
-
 
 
         <RelativeLayout
@@ -168,7 +168,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/servicetitle1"
                 android:layout_margin="4dp"
-                android:background="@color/fui_buttonShadow"
+                android:background="@color/light_gray"
                 android:orientation="vertical"
                 android:padding="10dp">
 
@@ -206,7 +206,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/natureofbusinesstitle"
                 android:layout_margin="4dp"
-                android:background="@color/fui_buttonShadow"
+                android:background="@color/light_gray"
                 android:orientation="vertical"
                 android:padding="10dp">
 
@@ -221,6 +221,7 @@
             </LinearLayout>
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -244,7 +245,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/fleettitle"
-                android:padding="10dp">
+                android:layout_margin="4dp"
+                >
 
             </android.support.v7.widget.RecyclerView>
 
