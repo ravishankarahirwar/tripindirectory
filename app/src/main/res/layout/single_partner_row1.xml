@@ -88,6 +88,7 @@
                     app:srcCompat="@drawable/ic_arrow_upward"/>
 
 
+
                 <!--           <ProgressBar
                     android:id="@+id/upvote"
                     android:layout_width="wrap_content"
@@ -113,6 +114,7 @@
                     android:layout_toRightOf="@id/ranking"
                     android:visibility="gone"
                     app:srcCompat="@drawable/ic_arrow_downward"/>
+
                 <!--<ProgressBar
                     android:id="@+id/downvote"
                     android:layout_width="wrap_content"
