@@ -498,7 +498,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                 Address location = address.get(0);
                 location.getLatitude();
                 location.getLongitude();
-
                 p1 = new LatLng(location.getLatitude(), location.getLongitude() );
                 return p1;
             }
