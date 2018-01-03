@@ -295,7 +295,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         lottieAnimationView.setVisibility(View.VISIBLE);
 
         query = FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName");
+                .collection("partners").orderBy("mCompanyName").whereGreaterThan("mCompanyName", "");
 
         if (!s.isEmpty()) {
             switch (searchTag) {
