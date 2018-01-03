@@ -15,7 +15,6 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.request.ElasticSearchRequest;
 import directory.tripin.com.tripindirectory.model.request.GetPartnersRequest;
 import directory.tripin.com.tripindirectory.model.request.LikeDislikeRequest;
-import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
 
 
 /**
