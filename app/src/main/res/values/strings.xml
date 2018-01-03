@@ -1,59 +1,15 @@
 <resources>
     <string name="app_name">Indian Logistic Network</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_location">Location</string>
-    <string name="action_mice">Location</string>
+    <string name="invitation_title">Grow your Logistic Network by INL</string>
+    <!--<string name="invitation_message">Be the part of India level logistic network and  grow your transport/logistic business as well as network just download INL Now</string>-->
+    <string name="invitation_message">Be the part of India\'s largest logistic network grow your business</string>
 
+    <string name="invitation_deep_link">https://vn98y.app.goo.gl/bjYi</string>
+    <string name="invitation_custom_image">https://ibb.co/cYAajw</string>
+    <string name="invitation_cta">Download Now</string>
 
-    <string name="hint">Mumbai to Ahmedabad Trailer 22MT 40FT Platform for Container</string>
-
-    <string-array name="planets_array">
-        <item>Mundra</item>
-        <item>Junagadh</item>
-        <item>Gwalior</item>
-        <item>Banglore</item>
-        <item>Hyderabad</item>
-        <item>Vishakhaptanam</item>
-        <item>Mumbai</item>
-        <item>Ahmedabad</item>
-
-        <item>18 FT</item>
-        <item>19 FT</item>
-        <item>20 FT</item>
-        <item>22 FT</item>
-        <item>24 FT</item>
-        <item>40 FT</item>
-
-        <item>7 MT</item>
-        <item>7.5 MT</item>
-        <item>9 MT</item>
-        <item>15 MT</item>
-        <item>20 MT</item>
-        <item>22 MT</item>
-        <item>24 MT</item>
-        <item>26 MT</item>
-        <item>32 MT</item>
-
-        <item>Full Body</item>
-        <item>Half Body</item>
-        <item>Platform</item>
-        <item>Semi Low</item>
-        <item>Low Bed</item>
-
-        <item>Truck</item>
-        <item>Trailer</item>
-        <item>ODC</item>
-
-        <item>Container</item>
-        <item>Import</item>
-        <item>Export</item>
-
-        <item>To</item>
-        <item>For</item>
-    </string-array>
 
     <string name="contact_saved_snackbar_text">This contact has been added to your contacts</string>
     <string name="menu_location_text">Location</string>
@@ -61,39 +17,25 @@
     <string name="contact_added_favorites_text">This contact has been added to Favorites</string>
 
     <string name="company_name">Company Name</string>
-    <string name="contact_person">Contact Person</string>
     <string name="contact_person_name">Person name</string>
     <string name="contact_person_number">Person number</string>
 
-    <string name="add_person">Add Person</string>
     <string name="company_landline_number">Company Landline Number</string>
-    <string name="add_landline_number">Add Landline Number</string>
     <string name="company_address">Company Address</string>
-    <string name="full_address">Full Address</string>
     <string name="city_town_village">City/Town/Village</string>
-    <string name="pickup_cities">Pickup Cities</string>
-    <string name="drop_cities">Drop Cities</string>
 
     <string name="state">State</string>
 
-    <string name="pincode">Pincode</string>
-    <string name="email_iD">Email ID</string>
     <string name="sign_in_cancelled">Sign In is cancelled</string>
     <string name="no_internet_connection">No connection!</string>
     <string name="unknown_error">Unknown Error</string>
     <string name="unknown_sign_in_response">Unknown Responce</string>
     <string name="sign_in_done">Signed In</string>
 
-    <string name="title_activity_main2">Main2Activity</string>
 
-
-    <string name="hello_blank_fragment">its a blank fragment</string>
     <string name="form_name">Your Company Data</string>
 
     <string name="action_voice_rec">action voice rec</string>
-    <string name="title_activity_main_home">MainHome</string>
-    <string name="title_activity_temp">TempActivity</string>
-    <string name="action_settings">Setting</string>
 
 
     <string-array name="truck_type">
