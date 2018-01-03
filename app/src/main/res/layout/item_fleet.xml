@@ -30,13 +30,13 @@
 
     <Switch
         android:id="@+id/is_available"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:textOn="Available"
         android:textOff="Not Available"
-        android:textColor="@android:color/holo_orange_dark"
+        android:textColor="@android:color/black"
         android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

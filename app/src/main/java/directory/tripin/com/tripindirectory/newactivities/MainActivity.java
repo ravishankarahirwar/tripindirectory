@@ -361,40 +361,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 if (model.getmContactPersonsList().get(i) != null) {
                                     String number = model.getmContactPersonsList().get(i).getGetmContactPersonMobile();
                                     phoneNumbers.add(number);
+
                                 }
                             }
 
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                            builder.setTitle("Looks like there are multiple phone numbers.")
-                                    .setCancelable(false)
-                                    .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
-                                            new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int item) {
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                                builder.setTitle("Looks like there are multiple phone numbers.")
+                                        .setCancelable(false)
+                                        .setAdapter(new ArrayAdapter<String>(mContext, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int item) {
 
-                                                    Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+                                                        Logger.v("Dialog number selected :" + phoneNumbers.get(item));
 
-                                                    callNumber(phoneNumbers.get(item));
-                                                }
-                                            });
+                                                        callNumber(phoneNumbers.get(item));
+                                                    }
+                                                });
 
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User cancelled the dialog
-                                }
-                            });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // User cancelled the dialog
+                                    }
+                                });
 
-                            builder.create();
-                            builder.show();
-                        } else {
+                                builder.create();
+                                builder.show();
 
-                            String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                            callNumber(number);
+                            } else {
+
+                                String number = model.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                                callNumber(number);
+                            }
                         }
-                    }
-                });
-                mAnimator.onBindViewHolder(holder.itemView, position);
-            }
+                    });
+                    mAnimator.onBindViewHolder(holder.itemView, position);
+
+                }
 
             @Override
             public PartnersViewHolder onCreateViewHolder(ViewGroup group, int i) {
