@@ -250,13 +250,13 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     }
 
     @Override
-    public void onCamera() {
-        Uri imageUri;
+    public void onCamera(Uri imageUri) {
+//        Uri imageUri;
         ContentValues values = new ContentValues();
-        imageUri = getActivity().getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//        imageUri = getActivity().getContentResolver().insert(
+//                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent1, 0);
     }
 
@@ -278,7 +278,6 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     @Override
     public void onCropped(int i, String s, Bitmap bitmap, Uri uri) {
         Log.e("tagg", "onPicked" + s);
-
     }
 
     @Override

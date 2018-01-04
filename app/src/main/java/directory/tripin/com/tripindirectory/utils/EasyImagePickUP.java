@@ -481,9 +481,9 @@ public class EasyImagePickUP
     public void camera_call()
     {
         ContentValues values = new ContentValues();
-        imageUri = current_activity.getContentResolver().insert(
+        imageUri = current_activity.getApplicationContext().getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        imageAttachment_callBack.onCamera();
+        imageAttachment_callBack.onCamera(imageUri);
 
 //        Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -794,7 +794,7 @@ public class EasyImagePickUP
     public interface ImagePickerListener {
         void onPicked(int from, String filename, Bitmap file, Uri uri);
         void onCropped(int from, String filename, Bitmap file, Uri uri);
-        void onCamera();
+        void onCamera(Uri imageUri);
         void onGallery();
     }
 
