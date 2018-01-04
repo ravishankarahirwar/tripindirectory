@@ -83,6 +83,10 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     Context mContext;
     RatingBar ratingBar;
     TextUtils textUtils;
+    List<String> mSourceList;
+    List<String> mDestList;
+
+
 
 
 
@@ -96,7 +100,11 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     List<Vehicle> fleetlist;
     RecyclerView mFleetRecycler;
     RecyclerView mSourceCitiesRecycler;
+    RecyclerView mDestCitiesRecycler;
+
     CapsulsRecyclarAdapter capsulsRecyclarAdapter;
+    CapsulsRecyclarAdapter capsulsRecyclarAdapter2;
+
     FleetForViewerAdapter fleetForViewerAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -217,13 +225,22 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mNatureOfBusiness = findViewById(R.id.natureofbustv);
 
         mSourceCitiesRecycler = findViewById(R.id.rv_source);
-        List<String> mSourceList = new ArrayList<>();
+        mSourceList = new ArrayList<>();
         capsulsRecyclarAdapter = new CapsulsRecyclarAdapter(mSourceList);
         mSourceCitiesRecycler.setAdapter(capsulsRecyclarAdapter);
         LinearLayoutManager layoutManagerhor1
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mSourceCitiesRecycler.setLayoutManager(layoutManagerhor1);
         mSourceCitiesRecycler.setNestedScrollingEnabled(false);
+
+        mDestCitiesRecycler = findViewById(R.id.rv_destination);
+        mDestList = new ArrayList<>();
+        capsulsRecyclarAdapter2 = new CapsulsRecyclarAdapter(mDestList);
+        mDestCitiesRecycler.setAdapter(capsulsRecyclarAdapter2);
+        LinearLayoutManager layoutManagerhor2
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mDestCitiesRecycler.setLayoutManager(layoutManagerhor2);
+        mDestCitiesRecycler.setNestedScrollingEnabled(false);
 
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
         fleetlist = new ArrayList<>();
@@ -400,18 +417,19 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     }
 
                     //set source cities
-
-                    String source = "SOURCE CITIES:\n\n";
+                    mSourceList.clear();
                     for(String s : partnerInfoPojo.getmSourceCities().keySet()){
-                        source = source+s+"\n";
+                        mSourceList.add(s);
                     }
+                    capsulsRecyclarAdapter.notifyDataSetChanged();
 
                     //set destination cities
 
-                    String destination = "DESTINATION CITIES:\n\n";
+                    mDestList.clear();
                     for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
-                        destination = destination+s+"\n";
+                        mDestList.add(s);
                     }
+                    capsulsRecyclarAdapter2.notifyDataSetChanged();
 
                     //set types of service
                     String servicetype = "";

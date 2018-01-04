@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +35,20 @@ public class CapsulsRecyclarAdapter extends RecyclerView.Adapter<CapsulsRecyclar
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
+        holder.mCity.setText(datalist.get(position));
+
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return datalist.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView mCity;
         public ViewHolder(View itemView) {
             super(itemView);
+            mCity = itemView.findViewById(R.id.citytxt);
         }
     }
 }
