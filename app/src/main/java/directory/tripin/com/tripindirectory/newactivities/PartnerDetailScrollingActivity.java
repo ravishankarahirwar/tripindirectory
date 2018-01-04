@@ -71,8 +71,6 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class PartnerDetailScrollingActivity extends AppCompatActivity implements OnMapReadyCallback,RatingDialogListener {
-
-
     SliderLayout sliderLayout;
     DocumentReference mUserDocRef;
     String uid;
@@ -87,12 +85,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     TextUtils textUtils;
     List<String> mSourceList;
     List<String> mDestList;
-
-
-
-
-
-
     TextView mAddress;
 
     TextView mServiceTypes;
@@ -173,10 +165,10 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         }
                     }
 
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                     builder.setTitle("Looks like there are multiple phone numbers.")
                             .setCancelable(false)
-                            .setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                            .setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int item) {
@@ -212,7 +204,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void init() {
-        mContext = getApplicationContext();
+        mContext = PartnerDetailScrollingActivity.this;
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         sliderLayout = findViewById(R.id.slider);
@@ -415,12 +407,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
                             map.animateCamera(cameraUpdate);
                         }
-
-
-
-
                     }
-
                     //set source cities
                     mSourceList.clear();
                     for(String s : partnerInfoPojo.getmSourceCities().keySet()){
@@ -475,10 +462,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
             }
         });
-
-
-
-
     }
 
     private void callNumber(String number) {

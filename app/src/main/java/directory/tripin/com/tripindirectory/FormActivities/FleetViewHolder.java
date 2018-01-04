@@ -12,6 +12,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.List;
+
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.model.Driver;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
@@ -41,7 +44,7 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
         isAvailable = (Switch) itemView.findViewById(R.id.is_available);
 
         vehicleType = (Spinner) itemView.findViewById(R.id.vehicle_type);
-         bodyType = (Spinner) itemView.findViewById(R.id.body_type);
+        bodyType = (Spinner) itemView.findViewById(R.id.body_type);
 
         vehicleRemove = (ImageView) itemView.findViewById(R.id.vehicle_remove);
         vechcleNumber = (TextInputEditText) itemView.findViewById(R.id.input_vechicle_number);
@@ -54,6 +57,9 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
     public void onBind(Context context, FleetViewHolder placesViewHolder) {
         ArrayAdapter<CharSequence> truckType = ArrayAdapter.createFromResource(context,
                 R.array.truck_type, R.layout.spinner_item);
+
+        List<String> truckTypeList = Arrays.asList(context.getResources().getStringArray(R.array.truck_type));
+        List<String> bodyTypeList = Arrays.asList(context.getResources().getStringArray(R.array.body_type));
 
         ArrayAdapter<CharSequence> bodyTypeAdapter = ArrayAdapter.createFromResource(context,
                 R.array.body_type, android.R.layout.simple_spinner_item);
@@ -110,6 +116,10 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             vehicleDriverNumber = driver.getNumber();
         }
 
+        vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
+        bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+
+        isAvailable.setChecked(placesViewHolder.getDataValue().isAvailable());
         vechcleNumber.setText(vehicleNumber != null ? vehicleNumber : "");
         payload.setText(vehiclePayload != null ? vehiclePayload : "");
         length.setText(vehicleLength != null ? vehicleLength : "");

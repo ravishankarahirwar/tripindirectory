@@ -4,17 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Arrays;
-
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.newactivities.MainActivity1;
+import directory.tripin.com.tripindirectory.newactivities.MainActivity;
 
 
 /**
@@ -50,7 +44,7 @@ public class SplashActivity extends AppCompatActivity {
      * If user not login/first time login this screen will appear
      */
     private void startMainActivity() {
-        Intent i = new Intent(SplashActivity.this, MainActivity1.class);
+        Intent i = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(i);
         finish();
     }

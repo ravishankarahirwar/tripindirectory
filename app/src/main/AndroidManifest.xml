@@ -45,7 +45,7 @@
         <activity android:name=".activity.FavoritesActivity" />
 
         <activity
-            android:name=".newactivities.MainActivity1"
+            android:name=".newactivities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,7 +65,7 @@
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".newactivities.MainActivity1" />
+                android:value=".newactivities.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -84,11 +84,28 @@
         <activity
             android:name=".newactivities.PartnerDetailScrollingActivity"
             android:label="@string/title_activity_partner_detail_scrolling"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBarStatusBarTransparent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".newactivities.MainActivity1" />
+                android:value=".newactivities.MainActivity" />
         </activity>
+
+        <!--Firebase Notification-->
+
+        <service android:name=".notification.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".notification.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary" />
 
     </application>
 
