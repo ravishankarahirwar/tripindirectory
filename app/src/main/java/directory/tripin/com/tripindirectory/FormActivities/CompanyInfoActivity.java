@@ -1,19 +1,28 @@
 package directory.tripin.com.tripindirectory.FormActivities;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.SetOptions;
 import com.keiferstone.nonet.NoNet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.CompanyFromFragment;
@@ -21,12 +30,19 @@ import directory.tripin.com.tripindirectory.FormActivities.FormFragments.FleetFo
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.ImagesFormFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.RouteFormFragment;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
 public class CompanyInfoActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPagerAdapter adapter;
     private PartnerInfoPojo partnerInfoPojo;
+    private DocumentReference mUserDocRef;
+    CoordinatorLayout coordinatorLayout;
+    private PreferenceManager mPreferenceManager;
+    private Context mContext;
+
+
 
 
     @Override
@@ -36,7 +52,9 @@ public class CompanyInfoActivity extends AppCompatActivity {
                 .poll()
                 .snackbar();
         setContentView(R.layout.activity_main_form);
+        mContext = CompanyInfoActivity.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        coordinatorLayout = findViewById(R.id.main_content);
         setSupportActionBar(toolbar);
         toolbar.setSubtitle("Updated 10sec ago");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,6 +68,25 @@ public class CompanyInfoActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         createTabIcons();
 
+        mPreferenceManager = PreferenceManager.getInstance(mContext);
+
+        if(!mPreferenceManager.isAutoSyncGot){
+            Snackbar snackbar = Snackbar
+                    .make(coordinatorLayout, "Your data is saved automatically", Snackbar.LENGTH_LONG)
+                    .setActionTextColor(ContextCompat.getColor(getApplicationContext(),R.color.primaryColor))
+                    .setAction("GOT IT!", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+//                        Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "Message is restored!", Snackbar.LENGTH_SHORT);
+//                        snackbar1.show();
+                            mPreferenceManager.setIsAutoSyncGot(true);
+                        }
+                    });
+
+            snackbar.show();
+        }
+
+
     }
 
     @Override
@@ -61,6 +98,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
     }
 
 
