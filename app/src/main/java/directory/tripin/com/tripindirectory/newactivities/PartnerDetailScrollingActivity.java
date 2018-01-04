@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -234,7 +235,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mSourceCitiesRecycler.setAdapter(capsulsRecyclarAdapter);
         LinearLayoutManager layoutManagerhor1
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mSourceCitiesRecycler.setLayoutManager(layoutManagerhor1);
+        mSourceCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
         mSourceCitiesRecycler.setNestedScrollingEnabled(false);
 
         mDestCitiesRecycler = findViewById(R.id.rv_destination);
@@ -243,7 +244,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         mDestCitiesRecycler.setAdapter(capsulsRecyclarAdapter2);
         LinearLayoutManager layoutManagerhor2
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mDestCitiesRecycler.setLayoutManager(layoutManagerhor2);
+        mDestCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
         mDestCitiesRecycler.setNestedScrollingEnabled(false);
 
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
@@ -441,6 +442,9 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         if(partnerInfoPojo.getmTypesOfServices().get(s))
                             servicetype = servicetype + s +", ";
                     }
+                    if(!servicetype.isEmpty()){
+                        servicetype = servicetype.substring(0, servicetype.length() - 2);
+                    }
                     mServiceTypes.setText(servicetype);
 
                     //set types of service
@@ -449,7 +453,12 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         if( partnerInfoPojo.getmNatureOfBusiness().get(s))
                             natureofbusiness = natureofbusiness + s +", ";
                     }
+                    if(!natureofbusiness.isEmpty()){
+                        natureofbusiness = natureofbusiness.substring(0, natureofbusiness.length() - 2);
+                    }
                     mNatureOfBusiness.setText(natureofbusiness);
+
+
 
                     //set fleet
                     if(partnerInfoPojo.getVehicles()!=null){

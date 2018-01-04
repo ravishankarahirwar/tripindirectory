@@ -135,6 +135,7 @@
                     android:drawableLeft="@drawable/ic_call_black_24dp"
                     android:letterSpacing="0.04"
                     android:maxLines="1"
+                    android:padding="5dp"
                     android:text="CALL"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15sp"
