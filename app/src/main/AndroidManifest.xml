@@ -65,7 +65,7 @@
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".newactivities.MainActivity1" />
+                android:value=".newactivities.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
