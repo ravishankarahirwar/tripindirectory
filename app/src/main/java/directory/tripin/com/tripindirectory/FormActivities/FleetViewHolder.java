@@ -116,8 +116,16 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             vehicleDriverNumber = driver.getNumber();
         }
 
-        vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
-        bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+        String vehicleTypeString = placesViewHolder.getDataValue().getType();
+        String bodyTypeString = placesViewHolder.getDataValue().getBodyType();
+
+        if(vehicleTypeString != null && vehicleTypeString.length() > 0) {
+            vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
+        }
+
+        if(bodyTypeString != null && bodyTypeString.length() > 0) {
+            bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+        }
 
         isAvailable.setChecked(placesViewHolder.getDataValue().isAvailable());
         vechcleNumber.setText(vehicleNumber != null ? vehicleNumber : "");

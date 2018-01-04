@@ -22,7 +22,7 @@ public class PartnerInfoPojo {
     private LatLng mLatLng;
 
 
-    private boolean isVerified = false;
+    private boolean isVerified = true;
 
     private List<String> mCompanyLandLineNumbers;
     private List<String> mImagesUrl;

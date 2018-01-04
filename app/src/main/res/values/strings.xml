@@ -4,7 +4,7 @@
 
     <string name="invitation_title">Grow your Logistic Network by INL</string>
     <!--<string name="invitation_message">Be the part of India level logistic network and  grow your transport/logistic business as well as network just download INL Now</string>-->
-    <string name="invitation_message">Be the part of India\'s largest logistic network grow your business</string>
+    <string name="invitation_message">Be the part of India\'s largest logistics network and grow your business</string>
 
     <string name="invitation_deep_link">https://vn98y.app.goo.gl/bjYi</string>
     <string name="invitation_custom_image">https://ibb.co/cYAajw</string>
@@ -35,7 +35,7 @@
 
     <string name="form_name">Your Company Data</string>
 
-    <string name="action_voice_rec">action voice rec</string>
+    <string name="action_voice_rec">Voice Search</string>
 
 
     <string-array name="truck_type">
