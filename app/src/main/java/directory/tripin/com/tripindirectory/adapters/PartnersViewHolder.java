@@ -31,10 +31,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public PartnersViewHolder(View itemView) {
         super(itemView);
         mCardView = (CardView) itemView.findViewById(R.id.partner_card_view);
-        mUpvote = (ImageView) itemView.findViewById(R.id.upvote);
-        mDownvote = (ImageView) itemView.findViewById(R.id.downvote);
-        mRanking = (TextView) itemView.findViewById(R.id.ranking);
-        mRank = 0;
+
         mCall = (TextView) itemView.findViewById(R.id.call);
         mAddress =  itemView.findViewById(R.id.expandable_text);
         mCompany = (TextView) itemView.findViewById(R.id.company_name);

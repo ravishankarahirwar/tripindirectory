@@ -60,6 +60,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter;
 import directory.tripin.com.tripindirectory.adapters.FleetForViewerAdapter;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
@@ -87,14 +88,15 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
 
     TextView mAddress;
-    TextView mSourceCities;
-    TextView mDestinationCities;
+
     TextView mServiceTypes;
     TextView mNatureOfBusiness;
     TextView mTitleRating;
     TextView mImagesUploadedInst;
     List<Vehicle> fleetlist;
     RecyclerView mFleetRecycler;
+    RecyclerView mSourceCitiesRecycler;
+    CapsulsRecyclarAdapter capsulsRecyclarAdapter;
     FleetForViewerAdapter fleetForViewerAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -208,12 +210,21 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         ratingBar = findViewById(R.id.ratingBar);
 
         mAddress = findViewById(R.id.textAddress);
-        mSourceCities = findViewById(R.id.sourcecities);
-        mDestinationCities = findViewById(R.id.destinationcities);
+
         mServiceTypes = findViewById(R.id.typesofservicetv);
         mTitleRating = findViewById(R.id.titleratingtext);
         mImagesUploadedInst = findViewById(R.id.imagesinstruction);
         mNatureOfBusiness = findViewById(R.id.natureofbustv);
+
+        mSourceCitiesRecycler = findViewById(R.id.rv_source);
+        List<String> mSourceList = new ArrayList<>();
+        capsulsRecyclarAdapter = new CapsulsRecyclarAdapter(mSourceList);
+        mSourceCitiesRecycler.setAdapter(capsulsRecyclarAdapter);
+        LinearLayoutManager layoutManagerhor1
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mSourceCitiesRecycler.setLayoutManager(layoutManagerhor1);
+        mSourceCitiesRecycler.setNestedScrollingEnabled(false);
+
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
         fleetlist = new ArrayList<>();
         fleetForViewerAdapter = new FleetForViewerAdapter(fleetlist);
@@ -221,9 +232,11 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
+
+
         fabCall = findViewById(R.id.fabCall);
         toolbarLayout.setSoundEffectsEnabled(true);
-        toolbarLayout.setElevation(0.8f);
+
     }
 
     @Override
@@ -392,7 +405,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     for(String s : partnerInfoPojo.getmSourceCities().keySet()){
                         source = source+s+"\n";
                     }
-                    mSourceCities.setText(source);
 
                     //set destination cities
 
@@ -400,7 +412,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
                         destination = destination+s+"\n";
                     }
-                    mDestinationCities.setText(destination);
 
                     //set types of service
                     String servicetype = "";

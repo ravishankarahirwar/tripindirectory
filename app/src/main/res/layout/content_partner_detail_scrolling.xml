@@ -25,7 +25,7 @@
             android:background="@drawable/roundedcornerbg"
             android:elevation="0dp"
             android:paddingBottom="8dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -35,7 +35,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/titleratingtext"
@@ -47,7 +47,7 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/ratingBar"
-                app:layout_constraintTop_toBottomOf="@+id/ratingBar"/>
+                app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
             <TextView
                 android:id="@+id/textnoofusers"
@@ -60,7 +60,7 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/titleratingtext"
-                app:layout_constraintTop_toBottomOf="@+id/titleratingtext"/>
+                app:layout_constraintTop_toBottomOf="@+id/titleratingtext" />
 
 
         </android.support.constraint.ConstraintLayout>
@@ -80,10 +80,10 @@
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="150dp"
                 android:layout_below="@id/textAddress"
                 android:layout_margin="4dp"
-                android:apiKey="@string/api_map_key"/>
+                android:apiKey="@string/api_map_key" />
 
             <TextView
                 android:id="@+id/textAddress"
@@ -104,7 +104,8 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/roundedcornerbg"
-            android:padding="8dp">
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
 
             <TextView
                 android:id="@+id/routetitle"
@@ -113,35 +114,23 @@
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_location_on_black_24dp"
                 android:text=" Area of operation"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/routetitle"
+                android:text="Source Cities:"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_source"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/routetitle"
-                android:layout_margin="4dp"
-                android:background="@color/light_gray"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_source" />
 
-                <TextView
-                    android:id="@+id/sourcecities"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textSize="10sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/destinationcities"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textSize="10sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
         </RelativeLayout>
 
 

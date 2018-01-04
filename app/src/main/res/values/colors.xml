@@ -10,5 +10,5 @@
     <color name="arrow_white">#ffffff</color>
     <color name="arrow_grey">#a0a0a0</color>
     <color name="default_textview_color">#212121</color>
-    <color name="categoriesbg">#dedada</color>
+    <color name="categoriesbg">#e2dad3</color>
 </resources>
