@@ -49,6 +49,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.keiferstone.nonet.NoNet;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.stepstone.apprating.AppRatingDialog;
@@ -118,9 +119,12 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
+
         setContentView(R.layout.activity_partner_detail_scrolling);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setSubtitle("subtitle");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);

@@ -64,6 +64,8 @@ dependencies {
     compile 'com.daimajia.slider:library:1.1.5@aar'
     compile 'com.facebook.rebound:rebound:0.3.8'
     compile 'com.stepstone.apprating:app-rating:2.2.0'
+    compile 'com.keiferstone:nonet:2.0.4'
+
 
 
 

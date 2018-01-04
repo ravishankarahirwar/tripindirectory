@@ -63,6 +63,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.keiferstone.nonet.NoNet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,6 +144,9 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
 
         setContentView(R.layout.activity_home);
 
