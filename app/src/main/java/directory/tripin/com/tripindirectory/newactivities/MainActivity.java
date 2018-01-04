@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 .collection("partners").orderBy("mCompanyName").whereEqualTo("mCompanyName", s.trim());
                     }else {
                         query = FirebaseFirestore.getInstance()
-                                .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
+                                .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim().toUpperCase());
                     }
                     isCompanySuggestionClicked = false;
                     break;

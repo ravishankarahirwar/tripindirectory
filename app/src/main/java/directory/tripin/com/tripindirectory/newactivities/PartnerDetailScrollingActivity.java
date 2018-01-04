@@ -114,7 +114,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         NoNet.monitor(this)
                 .poll()
-                .snackbar();
+                .snackbar().banner("Test Msg");
 
         setContentView(R.layout.activity_partner_detail_scrolling);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -228,6 +228,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         LinearLayoutManager layoutManagerhor1
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mSourceCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
+        //mSourceCitiesRecycler.setLayoutManager(layoutManagerhor1);
         mSourceCitiesRecycler.setNestedScrollingEnabled(false);
 
         mDestCitiesRecycler = findViewById(R.id.rv_destination);
@@ -237,6 +238,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         LinearLayoutManager layoutManagerhor2
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mDestCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
+        //mDestCitiesRecycler.setLayoutManager(layoutManagerhor2);
         mDestCitiesRecycler.setNestedScrollingEnabled(false);
 
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
@@ -281,25 +283,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        map.setMyLocationEnabled(true);
-       /*
-       //in old Api Needs to call MapsInitializer before doing any CameraUpdateFactory call
-        try {
-            MapsInitializer.initialize(this.getActivity());
-        } catch (GooglePlayServicesNotAvailableException e) {
-            e.printStackTrace();
-        }
-       */
+
 
 
         mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

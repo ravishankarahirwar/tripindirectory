@@ -16,9 +16,12 @@ public class PreferenceManager {
     public static final String PREF_GROUP_ID = "group_id";
     public static final String PREF_FIRST_TIME = "first_time";
     private static final String PREF_FILE_NAME = "tripin_directory";
+    private static final String PREF_GOT_AUTOSYNC = "got_autosync";
+
     private static SharedPreferences sInstance;
     private static SharedPreferences.Editor editor;
     private static PreferenceManager mSPreferenceManager;
+    public boolean isAutoSyncGot;
 
     private PreferenceManager() {
     }
@@ -106,5 +109,14 @@ public class PreferenceManager {
     public void clearAllDataFromSharedPrefernces() {
         editor.clear();
         editor.commit();
+    }
+
+    public void setIsAutoSyncGot(boolean isAutoSyncGot) {
+        editor.putBoolean(PREF_GOT_AUTOSYNC, isAutoSyncGot);
+        editor.commit();
+    }
+    public boolean IsAutoSyncGot() {
+        boolean firstTime = sInstance.getBoolean(PREF_GOT_AUTOSYNC, false);
+        return firstTime;
     }
 }

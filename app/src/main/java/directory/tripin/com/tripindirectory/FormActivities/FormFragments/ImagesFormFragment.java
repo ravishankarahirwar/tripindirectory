@@ -8,12 +8,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -150,7 +152,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
             if (file != null) {
                 if (mAuth.getCurrentUser() != null) {
                     imagesRef = mStorageRef.child(mAuth.getUid()).child(index + ".jpeg");
-                    progressDialog.setTitle("uploading image " + index);
+                    progressDialog.setTitle("Uploading " + getImageName(index)+" Image...");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
                     imagesRef.putFile(file)
@@ -172,7 +174,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
-                                    Log.e("onSuccessUpload..", exception.toString());
+                                    Log.e("onFailureUpload..", exception.toString());
 
                                     // Handle unsuccessful uploads
                                     // ...
@@ -184,12 +186,29 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
             if (index < 2) {
                 uploadImagesandGetURL(index + 1);
             }else {
-                Toast.makeText(getActivity(), "no images to upload", Toast.LENGTH_SHORT).show();
                 uploadData();
             }
 
         }
-        Toast.makeText(getActivity(), "uploaded", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "Uploaded!", Toast.LENGTH_LONG).show();
+        mImageUpload.setTextColor(Color.BLACK);
+    }
+
+    private String getImageName(int index) {
+        String imageTitle = "";
+
+        switch (index) {
+            case 0:
+                imageTitle = "Office";
+                break;
+            case 1:
+                imageTitle = "Card";
+                break;
+            case 2:
+                imageTitle = "Self";
+                break;
+        }
+        return imageTitle;
     }
 
     private void uploadData() {
@@ -273,6 +292,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         images.set(position, new ImageData(uri, bitmap));
         imagesUriList.add(uri);
         imagesRecyclarAdapter.notifyDataSetChanged();
+        mImageUpload.setTextColor(ContextCompat.getColor(getActivity(),R.color.primaryColor));
     }
 
     @Override

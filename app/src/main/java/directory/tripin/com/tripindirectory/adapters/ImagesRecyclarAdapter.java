@@ -11,6 +11,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -46,20 +48,10 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d("onBindViewHolder", position + "");
 
-        String imageUrl;
-        imageUrl = "";
-        if (!list.get(position).getmImageUrl().isEmpty()){
-            imageUrl = list.get(position).getmImageUrl();
-        }
-        if (!imageUrl.isEmpty())
-        {
-            Logger.v("setting pic method");
-            Picasso.with(context).load(imageUrl).placeholder(R.drawable.ic_menu_camera).fit().into(holder.imageButton);
-
-        }
+        holder.lottieAnimationView.setVisibility(View.VISIBLE);
 
 
         holder.imageButton.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +67,8 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
             public void onClick(View view) {
                 //
                 addImage.onCancelClicked(position);
+                holder.lottieAnimationView.setVisibility(View.INVISIBLE);
+
             }
         });
 
@@ -94,14 +88,40 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
 
         holder.imageTitle.setText(imageTitle);
 
+        String imageUrl;
+        imageUrl = "";
+        if (!list.get(position).getmImageUrl().isEmpty()){
+            imageUrl = list.get(position).getmImageUrl();
+        }
+
         if (list.get(position).getSet()||!imageUrl.isEmpty()) {
             holder.imageButton.setAlpha(1f);
-            holder.imageButton.setImageBitmap(list.get(position).getmImageBitmap());
+            if(list.get(position).getmImageBitmap()!=null){
+                holder.imageButton.setImageBitmap(list.get(position).getmImageBitmap());
+
+            }
             holder.cancel.setVisibility(View.VISIBLE);
         } else {
             holder.imageButton.setAlpha(0.5f);
             holder.imageButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_add_circle_black_24dp));
             holder.cancel.setVisibility(View.GONE);
+
+        }
+
+
+        if (!imageUrl.isEmpty()&&!list.get(position).getSet())
+        {
+            Picasso.with(context).load(imageUrl).fit().into(holder.imageButton, new Callback() {
+                @Override
+                public void onSuccess() {
+                    holder.lottieAnimationView.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
 
         }
 
@@ -117,12 +137,14 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
         public ImageView imageButton;
         public ImageButton cancel;
         public TextView imageTitle;
+        LottieAnimationView lottieAnimationView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageButton = itemView.findViewById(R.id.imageButton);
             cancel = itemView.findViewById(R.id.cancelbtn);
             imageTitle = itemView.findViewById(R.id.imageTitleTxt);
+            lottieAnimationView = itemView.findViewById(R.id.animation_view);
         }
     }
 }
