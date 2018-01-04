@@ -63,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:gravity="center_vertical"
+                    android:inputType="textCapCharacters"
                     android:textColor="@color/default_textview_color"
                     android:textStyle="bold"/>
 
@@ -227,8 +228,8 @@
                     android:id="@+id/input_city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    />
+                    android:inputType="textCapCharacters"
+                    android:textSize="14sp"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -247,8 +248,8 @@
                     android:id="@+id/input_state"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    />
+                    android:inputType="textCapCharacters"
+                    android:textSize="14sp"/>
             </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 

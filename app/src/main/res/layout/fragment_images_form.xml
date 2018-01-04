@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/avgrating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -25,7 +25,7 @@
             android:id="@+id/imageslist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/textView2"
+            android:layout_below="@+id/avgrating"
             android:layout_margin="4dp"/>
 
         <Button

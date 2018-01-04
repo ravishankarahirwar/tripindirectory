@@ -74,13 +74,13 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/roundedcornerbg"
-            android:elevation="0dp"
+            android:elevation="3dp"
             android:padding="8dp">
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="150dp"
                 android:layout_below="@id/textAddress"
                 android:layout_margin="4dp"
                 android:apiKey="@string/api_map_key"/>
@@ -104,7 +104,9 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/roundedcornerbg"
-            android:padding="8dp">
+            android:elevation="3dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
 
             <TextView
                 android:id="@+id/routetitle"
@@ -115,33 +117,57 @@
                 android:text=" Area of operation"
                 android:textStyle="bold"/>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/routetitle"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Source Cities:"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_source"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/routetitle"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_source"
+                android:elevation="3dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:id="@+id/tv_destination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_source"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="10dp"
+                android:text="Destination Cities:"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_destination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_destination"
+                android:elevation="3dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:scrollbars="none"/>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapViewAO"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/rv_destination"
                 android:layout_margin="4dp"
-                android:background="@color/light_gray"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:apiKey="@string/api_map_key"
+                android:visibility="gone"/>
 
-                <TextView
-                    android:id="@+id/sourcecities"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textSize="10sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/destinationcities"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textSize="10sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
         </RelativeLayout>
 
 

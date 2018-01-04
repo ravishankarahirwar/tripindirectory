@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -49,6 +50,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.keiferstone.nonet.NoNet;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.stepstone.apprating.AppRatingDialog;
@@ -60,6 +62,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter;
 import directory.tripin.com.tripindirectory.adapters.FleetForViewerAdapter;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
@@ -82,19 +85,28 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     Context mContext;
     RatingBar ratingBar;
     TextUtils textUtils;
+    List<String> mSourceList;
+    List<String> mDestList;
+
+
 
 
 
 
     TextView mAddress;
-    TextView mSourceCities;
-    TextView mDestinationCities;
+
     TextView mServiceTypes;
     TextView mNatureOfBusiness;
     TextView mTitleRating;
     TextView mImagesUploadedInst;
     List<Vehicle> fleetlist;
     RecyclerView mFleetRecycler;
+    RecyclerView mSourceCitiesRecycler;
+    RecyclerView mDestCitiesRecycler;
+
+    CapsulsRecyclarAdapter capsulsRecyclarAdapter;
+    CapsulsRecyclarAdapter capsulsRecyclarAdapter2;
+
     FleetForViewerAdapter fleetForViewerAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -108,9 +120,12 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
+
         setContentView(R.layout.activity_partner_detail_scrolling);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setSubtitle("subtitle");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
@@ -208,12 +223,30 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         ratingBar = findViewById(R.id.ratingBar);
 
         mAddress = findViewById(R.id.textAddress);
-        mSourceCities = findViewById(R.id.sourcecities);
-        mDestinationCities = findViewById(R.id.destinationcities);
+
         mServiceTypes = findViewById(R.id.typesofservicetv);
         mTitleRating = findViewById(R.id.titleratingtext);
         mImagesUploadedInst = findViewById(R.id.imagesinstruction);
         mNatureOfBusiness = findViewById(R.id.natureofbustv);
+
+        mSourceCitiesRecycler = findViewById(R.id.rv_source);
+        mSourceList = new ArrayList<>();
+        capsulsRecyclarAdapter = new CapsulsRecyclarAdapter(mSourceList);
+        mSourceCitiesRecycler.setAdapter(capsulsRecyclarAdapter);
+        LinearLayoutManager layoutManagerhor1
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mSourceCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
+        mSourceCitiesRecycler.setNestedScrollingEnabled(false);
+
+        mDestCitiesRecycler = findViewById(R.id.rv_destination);
+        mDestList = new ArrayList<>();
+        capsulsRecyclarAdapter2 = new CapsulsRecyclarAdapter(mDestList);
+        mDestCitiesRecycler.setAdapter(capsulsRecyclarAdapter2);
+        LinearLayoutManager layoutManagerhor2
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mDestCitiesRecycler.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL));
+        mDestCitiesRecycler.setNestedScrollingEnabled(false);
+
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
         fleetlist = new ArrayList<>();
         fleetForViewerAdapter = new FleetForViewerAdapter(fleetlist);
@@ -221,9 +254,11 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
+
+
         fabCall = findViewById(R.id.fabCall);
         toolbarLayout.setSoundEffectsEnabled(true);
-        toolbarLayout.setElevation(0.8f);
+
     }
 
     @Override
@@ -387,26 +422,28 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     }
 
                     //set source cities
-
-                    String source = "SOURCE CITIES:\n\n";
+                    mSourceList.clear();
                     for(String s : partnerInfoPojo.getmSourceCities().keySet()){
-                        source = source+s+"\n";
+                        mSourceList.add(s);
                     }
-                    mSourceCities.setText(source);
+                    capsulsRecyclarAdapter.notifyDataSetChanged();
 
                     //set destination cities
 
-                    String destination = "DESTINATION CITIES:\n\n";
+                    mDestList.clear();
                     for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
-                        destination = destination+s+"\n";
+                        mDestList.add(s);
                     }
-                    mDestinationCities.setText(destination);
+                    capsulsRecyclarAdapter2.notifyDataSetChanged();
 
                     //set types of service
                     String servicetype = "";
                     for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
                         if(partnerInfoPojo.getmTypesOfServices().get(s))
                             servicetype = servicetype + s +", ";
+                    }
+                    if(!servicetype.isEmpty()){
+                        servicetype = servicetype.substring(0, servicetype.length() - 2);
                     }
                     mServiceTypes.setText(servicetype);
 
@@ -416,7 +453,12 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         if( partnerInfoPojo.getmNatureOfBusiness().get(s))
                             natureofbusiness = natureofbusiness + s +", ";
                     }
+                    if(!natureofbusiness.isEmpty()){
+                        natureofbusiness = natureofbusiness.substring(0, natureofbusiness.length() - 2);
+                    }
                     mNatureOfBusiness.setText(natureofbusiness);
+
+
 
                     //set fleet
                     if(partnerInfoPojo.getVehicles()!=null){

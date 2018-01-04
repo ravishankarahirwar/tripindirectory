@@ -63,6 +63,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.keiferstone.nonet.NoNet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,6 +144,9 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
 
         setContentView(R.layout.activity_home);
 
@@ -256,7 +260,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
         setupSearchBar();
     }
 
-    private void fetchAutoSuggestions(String s) {
+    private void fetchCompanyAutoSuggestions(String s) {
         companySuggestions.clear();
         companySuggestions.add(new SuggestionCompanyName("Fetching Suggestions..."));
         mSearchView.swapSuggestions(companySuggestions);
@@ -275,16 +279,10 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                                 suggestionCompanyName.setCompanyName(document.get("mCompanyName").toString());
                                 companySuggestions.add(suggestionCompanyName);
                             }
-                            Set<SuggestionCompanyName> hs = new LinkedHashSet<>();
-                            hs.addAll(companySuggestions);
-                            companySuggestions.clear();
-                            companySuggestions.addAll(hs);
                             mSearchView.swapSuggestions(companySuggestions);
 
-                            Logger.v("adapter set!!");
-
                         } else {
-                            Log.d("onComplete", "Error getting documents: ", task.getException());
+                            Log.d("onComplete", "Error getting comp suggestion documents: ", task.getException());
                         }
                     }
                 });
@@ -313,10 +311,14 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                 }
                 case SEARCHTAG_COMPANY: {
 
-                    query = FirebaseFirestore.getInstance()
-                            .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
-                    Logger.v("company search query: " + s);
-
+                    if(isCompanySuggestionClicked){
+                        query = FirebaseFirestore.getInstance()
+                                .collection("partners").orderBy("mCompanyName").whereEqualTo("mCompanyName", s.trim());
+                    }else {
+                        query = FirebaseFirestore.getInstance()
+                                .collection("partners").orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim());
+                    }
+                    isCompanySuggestionClicked = false;
                     break;
                 }
                 case SEARCHTAG_CITY: {
@@ -609,104 +611,69 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
                     switch (searchTag) {
                         case SEARCHTAG_ROUTE:
-                            if (!isSourceSelected) {
+                            if(Math.abs(newQuery.length()-oldQuery.length())==1){
+                                if (!isSourceSelected) {
 
-                                //set source suggestions
-                                Logger.v("source fetching......");
+                                    //set source suggestions
+                                    Logger.v("source fetching......");
+                                    new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                        @Override
+                                        public void onResults(List<SuggestionCompanyName> results) {
+                                            mSearchView.swapSuggestions(results);
+                                        }
+                                    }).execute(newQuery, null, null);
+
+                                } else {
+                                    if (!isDestinationSelected) {
+                                        //set destination suggestions
+                                        Logger.v("destination fetching......");
+
+                                        String queary = newQuery.replace(mSourceCity, "").toString().trim();
+                                        new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
+                                            @Override
+                                            public void onResults(List<SuggestionCompanyName> results) {
+                                                mSearchView.swapSuggestions(results);
+                                            }
+                                        }).execute(queary, null, null);
+                                    }
+
+                                }
+                            }
+
+
+                            break;
+                        case SEARCHTAG_COMPANY:
+
+
+                            if(newQuery.length()==1){
+                                //fetch all comps starting with firsr letter
+                                fetchCompanyAutoSuggestions(newQuery.toUpperCase());
+
+                            }else {
+                                //filtermore
+                                List<SuggestionCompanyName>list = new ArrayList<>();
+
+                                for(SuggestionCompanyName s: companySuggestions){
+                                    if(s.getCompanyName().startsWith(newQuery.toUpperCase())){
+                                        list.add(s);
+                                    }
+                                }
+
+                                mSearchView.swapSuggestions(list);
+
+                            }
+
+                            break;
+
+                        case SEARCHTAG_CITY:
+                            if(Math.abs(newQuery.length()-oldQuery.length())==1){
                                 new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
                                     @Override
                                     public void onResults(List<SuggestionCompanyName> results) {
                                         mSearchView.swapSuggestions(results);
                                     }
                                 }).execute(newQuery, null, null);
-
-                            } else {
-                                if (!isDestinationSelected) {
-                                    //set destination suggestions
-                                    Logger.v("destination fetching......");
-
-                                    String queary = newQuery.replace(mSourceCity, "").toString().trim();
-                                    new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
-                                        @Override
-                                        public void onResults(List<SuggestionCompanyName> results) {
-                                            mSearchView.swapSuggestions(results);
-                                        }
-                                    }).execute(queary, null, null);
-                                }
-
                             }
-
-
-//                            CityManager cityManager = new CityManager(mContext, newQuery, new CityManager.CitySuggestionListener() {
-//                                @Override
-//                                public void onSuccess(List<SuggestionCompanyName> suggestions) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onFaailed() {
-//
-//                                }
-//                            });
-
-//                            mSearchData.findSuggestions(mContext, "Mu", 5,
-//                                    FIND_SUGGESTION_SIMULATED_DELAY, new SearchData.OnFindSuggestionsListener() {
-//
-//                                        @Override
-//                                        public void onResults(List<SuggestionCompanyName> results) {
-//
-//                                            //this will swap the data and
-//                                            //render the collapse/expand animations as necessary
-//                                            mSearchView.swapSuggestions(results);
-////                                    Log.d(TAG, "360" + results.get(0).getStationCode());
-//
-//                                            //let the users know that the background
-//                                            //process has completed
-////                                            mSearchView.hideProgress();
-//                                        }
-//                                    });
-                            break;
-                        case SEARCHTAG_COMPANY:
-
-                            fetchAutoSuggestions(newQuery.toUpperCase());
-
-//                            if(newQuery.length()-oldQuery.length()>0){
-//                                //foreward
-//
-//                                List<SuggestionCompanyName>list = new ArrayList<>();
-//
-//                                for(SuggestionCompanyName s: companySuggestions){
-//                                    if(s.getCompanyName().contains(newQuery)){
-//                                        list.add(s);
-//                                    }
-//                                }
-//
-//                                mSearchView.swapSuggestions(list);
-//
-//                            }else {
-//                                //backword
-//                                List<SuggestionCompanyName>list = new ArrayList<>();
-//
-//                                for(SuggestionCompanyName s: companySuggestions){
-//                                    if(s.getCompanyName().contains(newQuery)){
-//                                        list.add(s);
-//                                    }
-//                                }
-//
-//                                mSearchView.swapSuggestions(list);
-//                                fetchAutoSuggestions(newQuery);
-//
-//                            }
-
-                            break;
-
-                        case SEARCHTAG_CITY:
-                            new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
-                                @Override
-                                public void onResults(List<SuggestionCompanyName> results) {
-                                    mSearchView.swapSuggestions(results);
-                                }
-                            }).execute(newQuery, null, null);
                             break;
                     }
 
@@ -728,14 +695,16 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
 
                         if (isSourceSelected) {
 
+                            //destination suggestion tapped
                             mSearchView.setSearchText(mSourceCity + selectedCity);
                             mSearchView.clearFocus();
                             mSearchView.clearSearchFocus();
                             mSearchView.clearSuggestions();
-
                             setAdapter(mSourceCity + selectedCity);
                             isDestinationSelected = true;
                         } else {
+
+                            //source suggestion tapped
                             mSearchView.setSearchText(selectedCity);
                             isSourceSelected = true;
                         }
@@ -756,6 +725,7 @@ public class MainActivity1 extends AppCompatActivity implements NavigationView.O
                         mSearchView.clearFocus();
                         mSearchView.clearSearchFocus();
                         mSearchView.clearSuggestions();
+                        isCompanySuggestionClicked = true;
                         setAdapter(companyname);
                         break;
                     }

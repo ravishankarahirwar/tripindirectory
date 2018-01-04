@@ -8,15 +8,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true">
 
-    <ImageView
-        android:id="@+id/option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:src="@drawable/ic_search"
-        android:tint="@color/primaryDarkColor"
-        android:visibility="gone"/>
-
     <android.support.v7.widget.CardView
         android:id="@+id/partner_card_view"
         android:layout_width="match_parent"
@@ -46,6 +37,8 @@
                 android:lineSpacingExtra="5sp"
                 android:text="Trip In Transport"
                 android:textSize="18sp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textStyle="bold"
                 android:transitionName="compname"/>
 
@@ -67,61 +60,69 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <RatingBar
-                    android:id="@+id/ratingBar2"
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
-
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"/>
-
-                <ImageView
-                    android:id="@+id/upvote"
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/floatingActionButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="5dp"
+                    android:clickable="true"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_arrow_upward"/>
-
-
-
-                <!--           <ProgressBar
-                    android:id="@+id/upvote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:indeterminateDrawable="@drawable/ic_arrow_upward"/>-->
+                    app:backgroundTint="@color/cardview_dark_background"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/ic_call"/>
 
                 <TextView
-                    android:id="@+id/ranking"
+                    android:id="@+id/textnoofusers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_toRightOf="@id/upvote"
-                    android:visibility="gone"
-                    android:text="0"
-                    android:textStyle="bold" />
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/ratingll"
+                    android:drawableEnd="@drawable/ic_person_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="1,00,000"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
 
-                <ImageView
-                    android:id="@+id/downvote"
+                <LinearLayout
+                    android:id="@+id/ratingll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/ranking"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/ic_arrow_downward"/>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
-                <!--<ProgressBar
-                    android:id="@+id/downvote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/ranking"
-                    android:indeterminateDrawable="@drawable/ic_arrow_downward"/>-->
+                    <TextView
+                        android:id="@+id/avgrating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="false"
+                        android:layout_centerVertical="false"
+                        android:layout_weight="1"
+                        android:text="4.5"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+
+                    <RatingBar
+                        android:id="@+id/ratingBar2"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="false"
+                        android:layout_marginLeft="3dp"
+                        android:visibility="visible"/>
+                </LinearLayout>
+
 
                 <TextView
                     android:id="@+id/call"
@@ -134,19 +135,13 @@
                     android:drawableLeft="@drawable/ic_call_black_24dp"
                     android:letterSpacing="0.04"
                     android:maxLines="1"
+                    android:padding="5dp"
                     android:text="CALL"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15sp"
-                    android:textStyle="bold"/>
+                    android:visibility="visible"/>
             </RelativeLayout>
 
-            <View
-                android:id="@+id/separator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="#1e000000"
-                android:visibility="gone"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

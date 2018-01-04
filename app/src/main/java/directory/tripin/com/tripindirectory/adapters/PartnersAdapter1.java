@@ -480,9 +480,7 @@ public class PartnersAdapter1 extends RecyclerView.Adapter<RecyclerView.ViewHold
         public ItemViewHolder(View itemView) {
             super(itemView);
             mCardView = (CardView) itemView.findViewById(R.id.partner_card_view);
-            mUpvote = (ImageView) itemView.findViewById(R.id.upvote);
-            mDownvote = (ImageView) itemView.findViewById(R.id.downvote);
-            mRanking = (TextView) itemView.findViewById(R.id.ranking);
+
             mRank = 0;
             mCall = (TextView) itemView.findViewById(R.id.call);
             mAddress = (ExpandableTextView) itemView.findViewById(R.id.address);
