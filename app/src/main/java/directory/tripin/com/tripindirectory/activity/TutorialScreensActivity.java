@@ -21,7 +21,7 @@ public class TutorialScreensActivity extends AppIntro2 {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addSlide(AppIntroFragment.newInstance("Grow Your Business", "", "Add your business in INL so other can search you in the world", "", R.drawable.agreement,
+        addSlide(AppIntroFragment.newInstance("Grow Your Business", "", "Add your business in ILN so other can search you in the world", "", R.drawable.agreement,
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 Color.WHITE,
                 Color.WHITE));
