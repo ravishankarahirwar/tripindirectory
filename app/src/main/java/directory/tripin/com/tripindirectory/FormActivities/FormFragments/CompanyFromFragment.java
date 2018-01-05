@@ -67,6 +67,8 @@ public class CompanyFromFragment extends BaseFragment {
     private EditText mCompanyAddress;
     private EditText mCompanyCity;
     private EditText mCompanyState;
+    private EditText mPinCode;
+
     private TextView mAddContactPersonTxt;
     private LatLng latLng;
 
@@ -158,14 +160,16 @@ public class CompanyFromFragment extends BaseFragment {
                     }
 
 
-
-
                     mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
 
                     if (partnerInfoPojo.getmCompanyAdderss() != null) {
                         mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getAddress());
                         mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getCity());
                         mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getState());
+                        mPinCode.setText(partnerInfoPojo.getmCompanyAdderss().getPincode());
+                        if(partnerInfoPojo.getmCompanyAdderss().isLatLongSet()){
+                            mLocateBusiness.setText("Locate Your Business On Map(set)");
+                        }
                     }
 
                     if (partnerInfoPojo.getmNatureOfBusiness() != null) {
@@ -201,8 +205,7 @@ public class CompanyFromFragment extends BaseFragment {
                         checkBoxRecyclarAdapter2.notifyDataSetChanged();
                     }
 
-                    if(partnerInfoPojo.getmLatLng()!=null){
-                        mLocateBusiness.setText("Locate Your Business On Map(set)");
+                    if (partnerInfoPojo.getmCompanyAdderss().getmLatitude()!=null) {
                     }
 
 
@@ -266,10 +269,18 @@ public class CompanyFromFragment extends BaseFragment {
             partnerInfoPojo
                     .setCompanyAdderss(new CompanyAddressPojo(mCompanyAddress.getText().toString().trim(),
                             mCompanyCity.getText().toString().trim().toUpperCase(),
-                            mCompanyState.getText().toString().trim().toUpperCase()));
+                            mCompanyState.getText().toString().trim().toUpperCase(), mPinCode.getText().toString().trim()));
+
+            if(latLng!=null){
+                partnerInfoPojo.getmCompanyAdderss().setmLatitude(""+latLng.latitude);
+                partnerInfoPojo.getmCompanyAdderss().setmLongitude(""+latLng.longitude);
+                partnerInfoPojo.getmCompanyAdderss().setLatLongSet(true);
+            }
 
             //mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
-            mUserDocRef.update("mCompanyName", partnerInfoPojo.getmCompanyName());
+            HashMap<String, String> hashMap1 = new HashMap<>();
+            hashMap1.put("mCompanyName", partnerInfoPojo.getmCompanyName());
+            mUserDocRef.set(hashMap1, SetOptions.merge());
 
             HashMap<String, List<ContactPersonPojo>> hashMap = new HashMap<>();
             hashMap.put("mContactPersonsList", partnerInfoPojo.getmContactPersonsList());
@@ -295,11 +306,7 @@ public class CompanyFromFragment extends BaseFragment {
             hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber() + "");
             mUserDocRef.set(hashMap6, SetOptions.merge());
 
-            HashMap<String, LatLng> hashMap7 = new HashMap<>();
-            if(latLng!=null){
-                hashMap7.put("mLatlng",latLng );
-                mUserDocRef.set(hashMap7, SetOptions.merge());
-            }
+
 
         }
 
@@ -317,6 +324,7 @@ public class CompanyFromFragment extends BaseFragment {
         mCompanyAddress = v.findViewById(R.id.input_company_address);
         mCompanyCity = v.findViewById(R.id.input_city);
         mCompanyState = v.findViewById(R.id.input_state);
+        mPinCode = v.findViewById(R.id.input_pincode);
         mAddContactPersonTxt = v.findViewById(R.id.add_person);
         mAddCompanyTxt = v.findViewById(R.id.add_landline);
         mLocateBusiness = v.findViewById(R.id.locate);
@@ -411,6 +419,7 @@ public class CompanyFromFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
 
+                mLocateBusiness.setText("Loding Map...");
                 try {
                     startPlacePicker();
                 } catch (GooglePlayServicesNotAvailableException e) {
@@ -467,8 +476,8 @@ public class CompanyFromFragment extends BaseFragment {
                     break;
 
                 case PLACE_PICKER_REQUEST: {
-                    Place place = PlacePicker.getPlace(getContext(),data);
-                    if(place.getLatLng()!=null){
+                    Place place = PlacePicker.getPlace(getContext(), data);
+                    if (place.getLatLng() != null) {
                         latLng = place.getLatLng();
                         mLocateBusiness.setText("Locate Your Business On Map(set)");
                     }

@@ -101,6 +101,7 @@ public class RouteFormFragment extends BaseFragment {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if(documentSnapshot.exists()) {
+
                     PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
 
                     Logger.v("Event Triggered, PICK DROP modified");

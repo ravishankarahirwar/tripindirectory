@@ -73,6 +73,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
+            android:animateLayoutChanges="true"
             android:background="@drawable/roundedcornerbg"
             android:elevation="3dp"
             android:padding="8dp">
@@ -91,8 +92,39 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableStart="@drawable/ic_location_on_black_24dp"
-                android:text="301, Summit Business Bay, Andheri East, Mumbai, Bole to aamchi mumbai!"
+                android:text="Fetching Company Address..."
                 android:textStyle="bold"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_contacts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/roundedcornerbg"
+            android:elevation="3dp"
+            android:padding="8dp">
+
+
+            <TextView
+                android:id="@+id/title_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:drawableStart="@drawable/ic_contacts_black_24dp"
+                android:text="Company Contacts"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_below="@id/title_contacts"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
 
 
         </RelativeLayout>

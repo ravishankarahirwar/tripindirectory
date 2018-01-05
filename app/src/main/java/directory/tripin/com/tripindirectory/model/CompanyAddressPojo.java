@@ -10,6 +10,9 @@ public class CompanyAddressPojo {
     private String city;
     private String state;
     private String pincode;
+    private String mLatitude;
+    private String mLongitude;
+    private boolean isLatLongSet = false;
 
     public CompanyAddressPojo() {
     }
@@ -26,6 +29,30 @@ public class CompanyAddressPojo {
         this.city = city;
         this.state = state;
         this.pincode = pincode;
+    }
+
+    public boolean isLatLongSet() {
+        return isLatLongSet;
+    }
+
+    public void setLatLongSet(boolean latLongSet) {
+        isLatLongSet = latLongSet;
+    }
+
+    public String getmLatitude() {
+        return mLatitude;
+    }
+
+    public void setmLatitude(String mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+
+    public String getmLongitude() {
+        return mLongitude;
+    }
+
+    public void setmLongitude(String mLongitude) {
+        this.mLongitude = mLongitude;
     }
 
     public String getAddress() {
