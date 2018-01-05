@@ -98,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int RC_SIGN_IN = 123;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-    List<SuggestionCompanyName> companySuggestions = null;
-    List<String> companynamesuggestions = null;
-    DocumentReference mUserDocRef;
-    FirebaseAuth auth;
-    FirestoreRecyclerOptions<PartnerInfoPojo> options;
-    FirestoreRecyclerAdapter adapter;
+    private List<SuggestionCompanyName> companySuggestions = null;
+    private List<String> companynamesuggestions = null;
+    private DocumentReference mUserDocRef;
+    private FirebaseAuth auth;
+    private FirestoreRecyclerOptions<PartnerInfoPojo> options;
+    private FirestoreRecyclerAdapter adapter;
     boolean isCompanySuggestionClicked = false;
     private Context mContext;
     private RecyclerView mPartnerList;

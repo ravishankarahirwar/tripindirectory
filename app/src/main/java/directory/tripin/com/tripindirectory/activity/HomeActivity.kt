@@ -11,7 +11,7 @@ class HomeActivity : AppCompatActivity() {
 //    var mSearchView: FloatingSearchView? = null
 //    var mSearchTagRadioGroup: RadioGroup? = null
 //    var mRouteSearchTag: RadioButton? = null
-//    var mTransportSearchTag: RadioButton? = null
+//    var mTransportSearchTag: RadioButton? = nullgit
 //    var query: Query? = null
 //    private var adapter: FirestoreRecyclerAdapter<*, *>? = null
 //    private var mPartnerList: RecyclerView? = null
