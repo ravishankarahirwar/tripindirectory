@@ -41,17 +41,17 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
 
     public FleetViewHolder(View itemView) {
         super(itemView);
-        isAvailable = (Switch) itemView.findViewById(R.id.is_available);
+        isAvailable = itemView.findViewById(R.id.is_available);
 
-        vehicleType = (Spinner) itemView.findViewById(R.id.vehicle_type);
-        bodyType = (Spinner) itemView.findViewById(R.id.body_type);
+        vehicleType = itemView.findViewById(R.id.vehicle_type);
+        bodyType = itemView.findViewById(R.id.body_type);
 
-        vehicleRemove = (ImageView) itemView.findViewById(R.id.vehicle_remove);
-        vechcleNumber = (TextInputEditText) itemView.findViewById(R.id.input_vechicle_number);
-        payload = (TextInputEditText) itemView.findViewById(R.id.input_payload);
-        length = (TextInputEditText) itemView.findViewById(R.id.input_length);
-        driverName = (TextInputEditText) itemView.findViewById(R.id.input_driver_name);
-        driverNumber = (TextInputEditText) itemView.findViewById(R.id.input_driver_number);
+        vehicleRemove = itemView.findViewById(R.id.vehicle_remove);
+        vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+        payload = itemView.findViewById(R.id.input_payload);
+        length = itemView.findViewById(R.id.input_length);
+        driverName = itemView.findViewById(R.id.input_driver_name);
+        driverNumber = itemView.findViewById(R.id.input_driver_number);
     }
 
     public void onBind(Context context, FleetViewHolder placesViewHolder) {

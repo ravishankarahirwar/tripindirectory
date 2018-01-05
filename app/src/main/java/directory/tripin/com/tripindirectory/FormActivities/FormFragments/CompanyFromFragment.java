@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -32,7 +31,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.google.zxing.common.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,12 +50,10 @@ import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 import static android.app.Activity.RESULT_OK;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CompanyFromFragment extends BaseFragment {
-
 
     private static final int CONTACT_PICKER_RESULT = 1001;
     private static final int PLACE_PICKER_REQUEST = 1;
@@ -106,9 +102,12 @@ public class CompanyFromFragment extends BaseFragment {
         mNatureofBusinessHashMap.put("Fleet Owner".toUpperCase(), false);
         mNatureofBusinessHashMap.put("Transport Contractor".toUpperCase(), false);
         mNatureofBusinessHashMap.put("Commission Agent".toUpperCase(), false);
+
         mTypesofServicesHashMap = new HashMap<>();
         mTypesofServicesHashMap.put("FTL".toUpperCase(), false);
         mTypesofServicesHashMap.put("Part Loads".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Open Body Truck Load".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Trailer Load".toUpperCase(), false);
         mTypesofServicesHashMap.put("Parcel".toUpperCase(), false);
         mTypesofServicesHashMap.put("ODC".toUpperCase(), false);
         mTypesofServicesHashMap.put("Import Containers".toUpperCase(), false);
@@ -117,6 +116,7 @@ public class CompanyFromFragment extends BaseFragment {
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
+
 
         //creat adapters and set adapters
         mContactPersonsList.add(new ContactPersonPojo("", ""));

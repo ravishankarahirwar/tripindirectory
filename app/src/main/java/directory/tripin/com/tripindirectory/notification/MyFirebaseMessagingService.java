@@ -13,7 +13,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.newactivities.MainActivity;
+import directory.tripin.com.tripindirectory.activity.MainActivity;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {

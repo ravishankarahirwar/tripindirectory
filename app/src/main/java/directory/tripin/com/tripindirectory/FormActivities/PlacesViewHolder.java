@@ -21,7 +21,7 @@ public class PlacesViewHolder extends RecyclerView.ViewHolder{
 
     public PlacesViewHolder(View itemView) {
         super(itemView);
-        mRemove = (ImageView) itemView.findViewById(R.id.place_remove);
-        mCity = (TextView) itemView.findViewById(R.id.textViewcity);
+        mRemove = itemView.findViewById(R.id.place_remove);
+        mCity = itemView.findViewById(R.id.textViewcity);
     }
 }
