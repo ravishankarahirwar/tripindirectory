@@ -15,3 +15,6 @@
 app/app-prod-release.apk
 local.properties
 app/prod/
+.firebaserc
+firebase.json
+functions/
