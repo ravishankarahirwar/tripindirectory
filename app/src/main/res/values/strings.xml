@@ -68,5 +68,6 @@
     </string-array>
     <string name="title_activity_partner_detail_scrolling">PartnerDetailScrollingActivity</string>
     <string name="api_map_key">AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM</string>
+    <string name="pincode">Pincode</string>
 
 </resources>

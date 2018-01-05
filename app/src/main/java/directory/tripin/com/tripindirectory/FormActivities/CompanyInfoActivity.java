@@ -70,7 +70,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
 
         mPreferenceManager = PreferenceManager.getInstance(mContext);
 
-        if(!mPreferenceManager.isAutoSyncGot){
+        if(mPreferenceManager.isAutoSyncGot){
             Snackbar snackbar = Snackbar
                     .make(coordinatorLayout, "Your data is saved automatically", Snackbar.LENGTH_LONG)
                     .setActionTextColor(ContextCompat.getColor(getApplicationContext(),R.color.primaryColor))

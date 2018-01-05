@@ -103,6 +103,7 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
             holder.cancel.setVisibility(View.VISIBLE);
         } else {
             holder.imageButton.setAlpha(0.5f);
+            holder.lottieAnimationView.setVisibility(View.INVISIBLE);
             holder.imageButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_add_circle_black_24dp));
             holder.cancel.setVisibility(View.GONE);
 

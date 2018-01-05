@@ -67,10 +67,10 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     PartnerInfoPojo partnerInfoPojo;
     Context mContext;
     RatingBar ratingBar;
-    TextUtils textUtils;
     List<String> mSourceList;
     List<String> mDestList;
     TextView mAddress;
+    TextUtils textUtils;
 
     TextView mServiceTypes;
     TextView mNatureOfBusiness;
@@ -203,6 +203,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
         mSourceCitiesRecycler = findViewById(R.id.rv_source);
         mSourceList = new ArrayList<>();
+        mSourceList.add("Loading");
         capsulsRecyclarAdapter = new CapsulsRecyclarAdapter(mSourceList);
         mSourceCitiesRecycler.setAdapter(capsulsRecyclarAdapter);
         LinearLayoutManager layoutManagerhor1
@@ -213,6 +214,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
         mDestCitiesRecycler = findViewById(R.id.rv_destination);
         mDestList = new ArrayList<>();
+        mDestList.add("Loading");
         capsulsRecyclarAdapter2 = new CapsulsRecyclarAdapter(mDestList);
         mDestCitiesRecycler.setAdapter(capsulsRecyclarAdapter2);
         LinearLayoutManager layoutManagerhor2
@@ -232,6 +234,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
         fabCall = findViewById(R.id.fabCall);
         toolbarLayout.setSoundEffectsEnabled(true);
+        textUtils = new TextUtils();
 
     }
 
@@ -346,17 +349,27 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     mTitleRating.setText(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())+", Rated 3.7/5.0");
 
                     //set address
-                    String addresstoset = partnerInfoPojo.getmCompanyAdderss().getAddress();
+                    String addresstoset
+                            = partnerInfoPojo.getmCompanyAdderss().getAddress()
+                            +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getCity())
+                            +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getState());
+                    if(partnerInfoPojo.getmCompanyAdderss().getPincode()!=null){
+                        addresstoset = addresstoset + ", "+partnerInfoPojo.getmCompanyAdderss().getPincode();
+                    }
+
                     mAddress.setText(addresstoset);
 
                     //set address marker
-                    if(partnerInfoPojo.getmLatLng()!=null){
+
+                    if(partnerInfoPojo.getmCompanyAdderss().isLatLongSet()){
+                        LatLng latLng = new LatLng(Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLatitude())
+                                ,Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLongitude()));
                         map.addMarker(new MarkerOptions()
-                                .position(partnerInfoPojo.getmLatLng()).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                .position(latLng).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                                 .draggable(false).visible(true));
                         // Updates the location and zoom of the MapView
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(partnerInfoPojo.getmLatLng(), 10);
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
                         map.animateCamera(cameraUpdate);
                         Logger.v("camera should be updated");
                     }else {
@@ -370,28 +383,42 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                             // Updates the location and zoom of the MapView
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
                             map.animateCamera(cameraUpdate);
+                        }else {
+                            // Updates the location and zoom of the MapView
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(20,78), 20);
+                            map.animateCamera(cameraUpdate);
                         }
                     }
                     //set source cities
                     mSourceList.clear();
-                    for(String s : partnerInfoPojo.getmSourceCities().keySet()){
-                        mSourceList.add(s);
+                    if(partnerInfoPojo.getmSourceCities()!=null){
+                        for(String s : partnerInfoPojo.getmSourceCities().keySet()){
+                            mSourceList.add(s);
+                        }
                     }
                     capsulsRecyclarAdapter.notifyDataSetChanged();
+
+
 
                     //set destination cities
 
                     mDestList.clear();
-                    for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
-                        mDestList.add(s);
+                    if(partnerInfoPojo.getmDestinationCities()!=null){
+                        for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
+                            mDestList.add(s);
+                        }
                     }
                     capsulsRecyclarAdapter2.notifyDataSetChanged();
 
+
+
                     //set types of service
                     String servicetype = "";
-                    for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
-                        if(partnerInfoPojo.getmTypesOfServices().get(s))
-                            servicetype = servicetype + s +", ";
+                    if(partnerInfoPojo.getmTypesOfServices()!=null){
+                        for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
+                            if(partnerInfoPojo.getmTypesOfServices().get(s))
+                                servicetype = servicetype + s +", ";
+                        }
                     }
                     if(!servicetype.isEmpty()){
                         servicetype = servicetype.substring(0, servicetype.length() - 2);
@@ -400,10 +427,13 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
                     //set types of service
                     String natureofbusiness = "";
-                    for(String s : partnerInfoPojo.getmNatureOfBusiness().keySet()){
-                        if( partnerInfoPojo.getmNatureOfBusiness().get(s))
-                            natureofbusiness = natureofbusiness + s +", ";
+                    if(partnerInfoPojo.getmNatureOfBusiness()!=null){
+                        for(String s : partnerInfoPojo.getmNatureOfBusiness().keySet()){
+                            if( partnerInfoPojo.getmNatureOfBusiness().get(s))
+                                natureofbusiness = natureofbusiness + s +", ";
+                        }
                     }
+
                     if(!natureofbusiness.isEmpty()){
                         natureofbusiness = natureofbusiness.substring(0, natureofbusiness.length() - 2);
                     }

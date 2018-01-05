@@ -62,6 +62,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.keiferstone.nonet.NoNet;
 
 import java.util.ArrayList;
@@ -133,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NoNet.monitor(this)
                 .poll()
                 .snackbar();
+        //Add to Activity
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
 
         setContentView(R.layout.activity_home);
 
