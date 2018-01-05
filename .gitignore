@@ -15,6 +15,10 @@
 app/app-prod-release.apk
 local.properties
 app/prod/
+<<<<<<< HEAD
 .firebaserc
 firebase.json
 functions/
+=======
+functions/node_modules
+>>>>>>> d64231d9b09751b7af77a00b4abc07e30c11a889

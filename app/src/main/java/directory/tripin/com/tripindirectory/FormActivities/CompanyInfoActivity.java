@@ -53,7 +53,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
                 .snackbar();
         setContentView(R.layout.activity_main_form);
         mContext = CompanyInfoActivity.this;
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         coordinatorLayout = findViewById(R.id.main_content);
         setSupportActionBar(toolbar);
         toolbar.setSubtitle("Updated 10sec ago");
@@ -61,8 +61,8 @@ public class CompanyInfoActivity extends AppCompatActivity {
         partnerInfoPojo = new PartnerInfoPojo();
 
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        ViewPager viewPager = findViewById(R.id.container);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         createViewPager(viewPager);
         viewPager.setAdapter(adapter);
@@ -70,7 +70,7 @@ public class CompanyInfoActivity extends AppCompatActivity {
 
         mPreferenceManager = PreferenceManager.getInstance(mContext);
 
-        if(!mPreferenceManager.isAutoSyncGot){
+        if(mPreferenceManager.isAutoSyncGot){
             Snackbar snackbar = Snackbar
                     .make(coordinatorLayout, "Your data is saved automatically", Snackbar.LENGTH_LONG)
                     .setActionTextColor(ContextCompat.getColor(getApplicationContext(),R.color.primaryColor))

@@ -149,14 +149,10 @@ public class EasyImagePickUP
      */
 
     public boolean isDeviceSupportCamera() {
-        if (this.context.getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+        // this device has a camera
+// no camera on this device
+        return this.context.getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA);
     }
 
 
@@ -554,7 +550,7 @@ public class EasyImagePickUP
         {
             case 0:
 
-                if(resultCode==current_activity.RESULT_OK)
+                if(resultCode== Activity.RESULT_OK)
                 {
 
                     Log.i("Camera Selected","Photo");
@@ -576,7 +572,7 @@ public class EasyImagePickUP
                 }
                 break;
             case 1:
-                if(resultCode == current_activity.RESULT_OK)
+                if(resultCode == Activity.RESULT_OK)
                 {
                     Log.i("Gallery","Photo");
                     Uri selectedImage=data.getData();
@@ -598,7 +594,7 @@ public class EasyImagePickUP
                 }
                 break;
             case 2 :
-                if(resultCode==current_activity.RESULT_OK)
+                if(resultCode== Activity.RESULT_OK)
                 {
                     Log.i("Crop","Photo");
                     Uri selectedImage=data.getData();

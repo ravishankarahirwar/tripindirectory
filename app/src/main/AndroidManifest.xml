@@ -45,7 +45,7 @@
         <activity android:name=".activity.FavoritesActivity" />
 
         <activity
-            android:name=".newactivities.MainActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,7 +55,7 @@
         </activity>
 
         <activity
-            android:name=".newactivities.TutorialScreensActivity"
+            android:name=".activity.TutorialScreensActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
@@ -65,7 +65,7 @@
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".newactivities.MainActivity" />
+                android:value=".activity.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -73,7 +73,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".newactivities.DataTransferActivity">
+        <activity android:name=".activity.DataTransferActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -82,12 +82,12 @@
         </activity>
 
         <activity
-            android:name=".newactivities.PartnerDetailScrollingActivity"
+            android:name=".activity.PartnerDetailScrollingActivity"
             android:label="@string/title_activity_partner_detail_scrolling"
             android:theme="@style/AppTheme.NoActionBarStatusBarTransparent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".newactivities.MainActivity" />
+                android:value=".activity.MainActivity" />
         </activity>
 
         <!--Firebase Notification-->

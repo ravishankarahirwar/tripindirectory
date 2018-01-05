@@ -6,8 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ms.square.android.expandabletextview.ExpandableTextView;
-
 import directory.tripin.com.tripindirectory.R;
 
 /**
@@ -30,10 +28,10 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
 
     public PartnersViewHolder(View itemView) {
         super(itemView);
-        mCardView = (CardView) itemView.findViewById(R.id.partner_card_view);
+        mCardView = itemView.findViewById(R.id.partner_card_view);
 
-        mCall = (TextView) itemView.findViewById(R.id.call);
+        mCall = itemView.findViewById(R.id.call);
         mAddress =  itemView.findViewById(R.id.expandable_text);
-        mCompany = (TextView) itemView.findViewById(R.id.company_name);
+        mCompany = itemView.findViewById(R.id.company_name);
     }
 }

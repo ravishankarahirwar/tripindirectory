@@ -116,7 +116,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
-        mImageUpload = (Button)view.findViewById(R.id.image_upload);
+        mImageUpload = view.findViewById(R.id.image_upload);
         recyclerView = view.findViewById(R.id.imageslist);
         recyclerView.hasFixedSize();
         recyclerView.setNestedScrollingEnabled(false);

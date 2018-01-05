@@ -19,10 +19,11 @@ public class PartnerInfoPojo {
     private int mLikes;
     private int mDislikes;
     private String mRMN;
-    private LatLng mLatLng;
 
 
-    private boolean isVerified = false;
+
+
+    private boolean isVerified = true;
 
     private List<String> mCompanyLandLineNumbers;
     private List<String> mImagesUrl;
@@ -55,13 +56,7 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
-    public LatLng getmLatLng() {
-        return mLatLng;
-    }
 
-    public void setmLatLng(LatLng mLatLng) {
-        this.mLatLng = mLatLng;
-    }
 
     public String getmRMN() {
         return mRMN;
