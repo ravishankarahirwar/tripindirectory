@@ -154,16 +154,16 @@ public class FleetFormFragment extends BaseFragment {
 
                 View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
                 if(itemView != null) {
-                    Switch turckAva = (Switch) itemView.findViewById(R.id.is_available);
+                    Switch turckAva = itemView.findViewById(R.id.is_available);
 
-                    Spinner vehicleType = (Spinner) itemView.findViewById(R.id.vehicle_type);
-                    Spinner bodyType = (Spinner) itemView.findViewById(R.id.body_type);
+                    Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
+                    Spinner bodyType = itemView.findViewById(R.id.body_type);
 
-                    TextInputEditText vechcleNumber = (TextInputEditText) itemView.findViewById(R.id.input_vechicle_number);
-                    TextInputEditText payload = (TextInputEditText) itemView.findViewById(R.id.input_payload);
-                    TextInputEditText length = (TextInputEditText) itemView.findViewById(R.id.input_length);
-                    TextInputEditText driverName = (TextInputEditText) itemView.findViewById(R.id.input_driver_name);
-                    TextInputEditText driverNumber = (TextInputEditText) itemView.findViewById(R.id.input_driver_number);
+                    TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+                    TextInputEditText payload = itemView.findViewById(R.id.input_payload);
+                    TextInputEditText length = itemView.findViewById(R.id.input_length);
+                    TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
+                    TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
 
                     boolean isAvailable = turckAva.isChecked();
                     String vehicleTypeString = vehicleType.getSelectedItem().toString();

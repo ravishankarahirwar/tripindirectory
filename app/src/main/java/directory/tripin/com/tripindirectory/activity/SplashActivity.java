@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.newactivities.MainActivity;
 
 
 /**

@@ -41,17 +41,17 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
 
     public FleetViewHolder(View itemView) {
         super(itemView);
-        isAvailable = (Switch) itemView.findViewById(R.id.is_available);
+        isAvailable = itemView.findViewById(R.id.is_available);
 
-        vehicleType = (Spinner) itemView.findViewById(R.id.vehicle_type);
-        bodyType = (Spinner) itemView.findViewById(R.id.body_type);
+        vehicleType = itemView.findViewById(R.id.vehicle_type);
+        bodyType = itemView.findViewById(R.id.body_type);
 
-        vehicleRemove = (ImageView) itemView.findViewById(R.id.vehicle_remove);
-        vechcleNumber = (TextInputEditText) itemView.findViewById(R.id.input_vechicle_number);
-        payload = (TextInputEditText) itemView.findViewById(R.id.input_payload);
-        length = (TextInputEditText) itemView.findViewById(R.id.input_length);
-        driverName = (TextInputEditText) itemView.findViewById(R.id.input_driver_name);
-        driverNumber = (TextInputEditText) itemView.findViewById(R.id.input_driver_number);
+        vehicleRemove = itemView.findViewById(R.id.vehicle_remove);
+        vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+        payload = itemView.findViewById(R.id.input_payload);
+        length = itemView.findViewById(R.id.input_length);
+        driverName = itemView.findViewById(R.id.input_driver_name);
+        driverNumber = itemView.findViewById(R.id.input_driver_number);
     }
 
     public void onBind(Context context, FleetViewHolder placesViewHolder) {
@@ -116,8 +116,16 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             vehicleDriverNumber = driver.getNumber();
         }
 
-        vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
-        bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+        String vehicleTypeString = placesViewHolder.getDataValue().getType();
+        String bodyTypeString = placesViewHolder.getDataValue().getBodyType();
+
+        if(vehicleTypeString != null && vehicleTypeString.length() > 0) {
+            vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
+        }
+
+        if(bodyTypeString != null && bodyTypeString.length() > 0) {
+            bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+        }
 
         isAvailable.setChecked(placesViewHolder.getDataValue().isAvailable());
         vechcleNumber.setText(vehicleNumber != null ? vehicleNumber : "");

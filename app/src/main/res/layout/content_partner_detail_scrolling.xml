@@ -6,7 +6,7 @@
                                             android:layout_height="match_parent"
                                             android:background="@color/light_gray"
                                             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                                            tools:context="directory.tripin.com.tripindirectory.newactivities.PartnerDetailScrollingActivity"
+                                            tools:context="directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity"
                                             tools:showIn="@layout/activity_partner_detail_scrolling">
 
 

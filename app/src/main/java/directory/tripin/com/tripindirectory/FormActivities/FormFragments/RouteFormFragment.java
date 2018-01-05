@@ -48,7 +48,6 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static directory.tripin.com.tripindirectory.factory.AppController.TAG;
 
 
 /**
@@ -298,7 +297,6 @@ public class RouteFormFragment extends BaseFragment {
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
                 // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
