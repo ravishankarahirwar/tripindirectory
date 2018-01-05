@@ -5,23 +5,23 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 
-// Listens for new messages added to messages/:pushId
-exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite( event => {
+exports.createUpdate = functions.firestore
+  .document('updates/{documentId}')
+  .onCreate(event => {
+    // Get an object representing the document
+    // e.g. {'name': 'Marie', 'age': 66}
+    var newValue = event.data.data();
 
-    console.log('Push notification event triggered');
+    // access a particular field as you would any JS property
+    //var name = newValue.name;
 
-    //  Grab the current value of what was written to the Realtime Database.
-    var valueObject = event.data.val();
-
-    if(valueObject.photoUrl != null) {
-      valueObject.photoUrl= "Sent you a photo!";
-    }
-
-  // Create a notification
+    // perform desired operations ...
+	
+	// Create a notification
     const payload = {
         notification: {
-            title:valueObject.name,
-            body: valueObject.text || valueObject.photoUrl,
+            title:newValue.name,
+            body: newValue.text,
             sound: "default"
         },
     };
@@ -33,5 +33,5 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
     };
 
 
-    return admin.messaging().sendToTopic("pushNotifications", payload, options);
+    return admin.messaging().sendToTopic("generalUpdates", payload, options);
 });
