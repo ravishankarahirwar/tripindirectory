@@ -152,20 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setAdapter("");
     }
 
-    private void startPartnerDetailActivity(String name, String uid) {
-        Intent intent = new Intent(MainActivity.this, PartnerDetailScrollingActivity.class);
-        intent.putExtra("uid", uid);
-        intent.putExtra("cname", name);
-        startActivity(intent);
-    }
-
-    private void callNumber(String number) {
-        Intent callIntent = new Intent(Intent.ACTION_DIAL);
-        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
-        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(callIntent);
-    }
-
     private void init() {
         mContext = MainActivity.this;
         mSearchData = new SearchData();
@@ -707,7 +693,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         String companyname = searchSuggestion.getBody().trim();
 
                         Logger.v("suggestion clicked");
-                        Log.d("COMPANY", "suggestion.....");
 
                         mSearchView.setSearchText(companyname);
                         mSearchView.clearFocus();
@@ -959,6 +944,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             return suggestionCompanyNames;
         }
+    }
+
+    private void startPartnerDetailActivity(String name, String uid) {
+        Intent intent = new Intent(MainActivity.this, PartnerDetailScrollingActivity.class);
+        intent.putExtra("uid", uid);
+        intent.putExtra("cname", name);
+        startActivity(intent);
+    }
+
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callIntent);
     }
 
 }

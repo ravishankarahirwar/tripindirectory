@@ -31,7 +31,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
         mCardView = itemView.findViewById(R.id.partner_card_view);
 
         mCall = itemView.findViewById(R.id.call);
-        mAddress =  itemView.findViewById(R.id.expandable_text);
+        mAddress =  itemView.findViewById(R.id.company_address);
         mCompany = itemView.findViewById(R.id.company_name);
     }
 }

@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Your Pick Up Cities :"
+                android:text="@string/your_pick_up_cities"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
@@ -48,7 +48,7 @@
                 android:layout_marginTop="8dp"
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Add"
+                android:text="@string/add"
                 android:textStyle="bold"/>
 
         </RelativeLayout>
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Your Drop Off Cities :"
+                android:text="@string/your_drop_off_cities"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
@@ -90,7 +90,7 @@
                 android:layout_marginTop="8dp"
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Add"
+                android:text="@string/add"
                 android:textStyle="bold"/>
 
         </RelativeLayout>

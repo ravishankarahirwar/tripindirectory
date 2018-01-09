@@ -2,6 +2,7 @@ package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -195,15 +197,12 @@ public class FleetFormFragment extends BaseFragment {
             Map<String, List<Vehicle>> data = new HashMap<>();
             data.put("vehicles", mVehiclesSend);
             mUserDocRef.set(data, SetOptions.merge());
-
         }
 
     }
 
     public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolder> {
-
         private List<Vehicle> mDataValues;
-
 
         private int getDataValuesSize() {
            return mDataValues.size();
@@ -243,6 +242,19 @@ public class FleetFormFragment extends BaseFragment {
                     }
                 }
             });
+
+            holder.vehicleShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(position >= 0) {
+                        Vehicle dataValue = mDataValues.get(position);
+                        shareTruck(dataValue);
+                    } else {
+
+                    }
+
+                }
+            });
         }
 
         // total number of rows
@@ -253,6 +265,40 @@ public class FleetFormFragment extends BaseFragment {
         }
     }
 
+
+    private void shareTruck(Vehicle dataValue) {
+        try {
+            if(dataValue != null) {
+                String vehicleNumber = dataValue.getNumber();
+                String vehiclePayload = dataValue.getPayload();
+                String vehicleLength = dataValue.getLength();
+                String vehicleDriverName = dataValue.getDriver().getName();
+                String vehicleDriverNumber = dataValue.getDriver().getNumber();
+                String vehicleTypeString  = dataValue.getType();
+                String bodyTypeString = dataValue.getBodyType();
+
+                String truckSharingInfo = "*Vehicle Information:* \n"
+                        + "Vehicle Number: " + vehicleNumber +"\n"
+                        + "Vehicle Type: " + vehicleTypeString +"\n"
+                        + "Vehicle Body: " + bodyTypeString +"\n"
+                        + "Vehicle PayLoad: " + vehiclePayload +"\n"
+                        + "Vehicle Length: " + vehicleLength +"\n"
+                        + "*Driver Information:*\n"
+                        + "Driver Name: " + vehicleDriverName +"\n"
+                        + "Driver Number: " + vehicleDriverNumber +"\n";
+
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Indian Logistic Network");
+                i.putExtra(Intent.EXTRA_TEXT, truckSharingInfo);
+                startActivity(Intent.createChooser(i, "Share by INL"));
+            } else {
+                Toast.makeText(mContext, "There is no data available for this vehicle", Toast.LENGTH_SHORT);
+            }
+        } catch(Exception e) {
+            //e.toString();
+        }
+    }
 
 }
 

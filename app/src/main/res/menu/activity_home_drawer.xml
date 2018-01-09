@@ -7,16 +7,16 @@
         <item
             android:id="@+id/nav_add_business"
             android:icon="@drawable/agreement"
-            android:title="Add Your Business" />
+            android:title="@string/nev_add_your_business" />
         <item
             android:id="@+id/nav_notification"
             android:visible="false"
             android:icon="@drawable/ic_notifications_black_24dp"
-            android:title="Notification" />
+            android:title="@string/nev_notification" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"
-            android:title="Log Out" />
+            android:title="@string/nev_log_out" />
     </group>
 
     <item android:title="Communicate">
@@ -24,15 +24,15 @@
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share App" />
+                android:title="@string/nev_share_app" />
             <item
                 android:id="@+id/nav_invite"
                 android:icon="@drawable/ic_invite_black_24dp"
-                android:title="Invite friends" />
+                android:title="@string/nev_invite_friends" />
             <item
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_feedback_black_24dp"
-                android:title="Feature Request/Feedback" />
+                android:title="@string/nev_feature_request_feedback" />
 
         </menu>
     </item>

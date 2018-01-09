@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Add and Upload required Images: "
+            android:text="@string/upload_required_images"
             android:textStyle="bold"/>
 
         <android.support.v7.widget.RecyclerView
@@ -35,7 +35,7 @@
             android:layout_below="@+id/imageslist"
             android:layout_centerHorizontal="true"
             android:layout_margin="5dp"
-            android:text="Image Upload"
+            android:text="@string/image_upload"
             android:textStyle="bold"/>
 
     </RelativeLayout>

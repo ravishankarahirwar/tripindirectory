@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Indian Logistics Network"
+        android:text="@string/indian_logistics_network"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/black"
         android:textStyle="bold"/>
@@ -33,6 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:autoLink="email"
-        android:text="support@tripin.co.in" />
+        android:text="@string/support_email" />
 
 </LinearLayout>

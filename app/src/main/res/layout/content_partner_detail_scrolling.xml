@@ -43,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="XYZ Logistics, Rated 3.5/5"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/ratingBar"
@@ -56,7 +55,6 @@
 
                 android:drawableRight="@drawable/ic_person_black_24dp"
                 android:gravity="center_vertical"
-                android:text="1,00,000"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/titleratingtext"
@@ -117,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableStart="@drawable/ic_contacts_black_24dp"
-                android:text="Company Contacts"
+                android:text="@string/company_contacts"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
@@ -146,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_location_on_black_24dp"
-                android:text=" Area of operation"
+                android:text="@string/area_of_operation"
                 android:textStyle="bold"/>
 
             <TextView
@@ -156,7 +154,7 @@
                 android:layout_below="@+id/routetitle"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="10dp"
-                android:text="Source Cities:"
+                android:text="@string/source_cities"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
@@ -177,7 +175,7 @@
                 android:layout_below="@+id/rv_source"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="10dp"
-                android:text="Destination Cities:"
+                android:text="@string/destination_cities"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
@@ -218,7 +216,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_settings_black_24dp"
-                android:text=" Types of services :"
+                android:text="@string/types_of_services"
                 android:textStyle="bold"/>
 
             <LinearLayout
@@ -256,7 +254,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_business_center_black_24dp"
-                android:text=" Nature of Business :"
+                android:text="@string/nature_of_business"
                 android:textStyle="bold"/>
 
             <LinearLayout
@@ -295,7 +293,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:drawableLeft="@drawable/ic_route"
-                android:text=" Fleet Owned :"
+                android:text="@string/fleet_owned"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView

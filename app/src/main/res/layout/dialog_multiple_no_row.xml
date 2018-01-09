@@ -24,7 +24,7 @@
         android:layout_gravity="end"
         android:drawableLeft="@drawable/ic_call"
         android:drawableTint="#ef463d"
-        android:text="CALL"
+        android:text="@string/call"
         android:textSize="15sp"
         android:textColor="#ef463d"
         android:letterSpacing="0.04"

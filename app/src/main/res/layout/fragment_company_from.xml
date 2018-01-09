@@ -34,7 +34,7 @@
                 android:id="@+id/loadingtxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fetching Your Data ..."
+                android:text="@string/fetching_your_data"
                 android:textColor="@color/colorPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Contact Persons :"
+                android:text="@string/contact_persons"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
@@ -107,7 +107,7 @@
                 android:layout_margin="8dp"
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Add"
+                android:text="@string/add"
                 android:textStyle="bold"/>
 
             <TextView
@@ -118,7 +118,7 @@
                 android:layout_alignStart="@+id/contactpersons_recyclar"
                 android:drawableLeft="@drawable/ic_person_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Import from your Contacts"
+                android:text="@string/import_from_your_contacts"
                 android:textStyle="bold"/>
         </RelativeLayout>
 
@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Company Landline Numbers :"
+                android:text="@string/company_landline_numbers"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
@@ -162,7 +162,7 @@
                 android:layout_marginTop="8dp"
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Add"
+                android:text="@string/add"
                 android:textStyle="bold"/>
 
         </RelativeLayout>
@@ -182,7 +182,7 @@
                 android:layout_margin="10dp"
                 android:drawableStart="@drawable/ic_location_on_black_24dp"
                 android:gravity="center_vertical"
-                android:text="Locate Your Business On Map"
+                android:text="@string/locate_your_business_on_map"
                 android:textStyle="bold"/>
 
             <TextView
@@ -191,7 +191,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Company Address :"
+                android:text="@string/company_address"
                 android:textStyle="bold"/>
 
             <android.support.design.widget.TextInputLayout
@@ -286,7 +286,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Nature of Business :"
+                android:text="@string/nature_of_business"
                 android:textStyle="bold"/>
 
             <ImageView
@@ -333,7 +333,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignStart="@+id/rv_typesofservices"
                 android:layout_marginTop="11dp"
-                android:text="Types of services :"
+                android:text="@string/types_of_services"
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView

@@ -36,9 +36,9 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/edit_text_round_corner"
                 android:fontFamily="sans-serif"
-                android:hint="Destination"
+                android:hint="@string/destination"
                 android:paddingLeft="8dp"
-                android:text="Destination"
+                android:text="@string/destination"
                 android:textColor="@android:color/black"
                 android:visibility="gone"/>
 
@@ -79,7 +79,7 @@
                         android:checked="true"
                         android:elevation="2dp"
                         android:padding="8dp"
-                        android:text="ROUTE"
+                        android:text="@string/route"
                         android:textColor="@color/arrow_white"
                         />
 
@@ -94,7 +94,7 @@
                         android:button="@null"
                         android:elevation="2dp"
                         android:padding="8dp"
-                        android:text="COMPANY NAME"
+                        android:text="@string/company_name_caps"
                         android:textColor="@color/arrow_grey"
                         />
 
@@ -109,7 +109,7 @@
                         android:button="@null"
                         android:elevation="2dp"
                         android:padding="8dp"
-                        android:text="CITY"
+                        android:text="@string/search_tag_city"
                         android:textColor="@color/arrow_grey"
                         />
 
@@ -124,7 +124,7 @@
                         android:button="@null"
                         android:elevation="2dp"
                         android:padding="8dp"
-                        android:text="TRANSPORTER"
+                        android:text="@string/transporter"
                         android:textColor="@color/arrow_grey"
                         android:textStyle="bold"
                         android:visibility="invisible"/>

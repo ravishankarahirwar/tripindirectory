@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -20,28 +21,32 @@ import directory.tripin.com.tripindirectory.model.Driver;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
 
 /**
- * Created by Yogesh N. Tikam on 12/19/2017.
+ * @author Ravishankar Ahirwar
+ * @version 3.8
+ * @since 01/12/2017
  */
 
 public class FleetViewHolder extends RecyclerView.ViewHolder {
     public ImageView vehicleRemove;
-    public Switch isAvailable;
-    public ImageView mRemove;
-    public TextView mCity;
-    public Spinner vehicleType;
-    public Spinner bodyType;
-    public TextInputEditText vechcleNumber;
-    public TextInputEditText payload;
-    public TextInputEditText length;
-    public TextInputEditText driverName;
-    public TextInputEditText driverNumber;
-    public Vehicle dataValue;
+    public ImageButton vehicleShare;
 
-    public boolean isUpvoteClicked;
+    private Switch isAvailable;
+
+    private Spinner vehicleType;
+    private Spinner bodyType;
+
+    private TextInputEditText vechcleNumber;
+    private TextInputEditText payload;
+    private TextInputEditText length;
+    private TextInputEditText driverName;
+    private TextInputEditText driverNumber;
+
+    private Vehicle dataValue;
 
     public FleetViewHolder(View itemView) {
         super(itemView);
         isAvailable = itemView.findViewById(R.id.is_available);
+        vehicleShare = itemView.findViewById(R.id.vehicle_share);
 
         vehicleType = itemView.findViewById(R.id.vehicle_type);
         bodyType = itemView.findViewById(R.id.body_type);
@@ -58,11 +63,11 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
         ArrayAdapter<CharSequence> truckType = ArrayAdapter.createFromResource(context,
                 R.array.truck_type, R.layout.spinner_item);
 
-        List<String> truckTypeList = Arrays.asList(context.getResources().getStringArray(R.array.truck_type));
-        List<String> bodyTypeList = Arrays.asList(context.getResources().getStringArray(R.array.body_type));
-
         ArrayAdapter<CharSequence> bodyTypeAdapter = ArrayAdapter.createFromResource(context,
                 R.array.body_type, android.R.layout.simple_spinner_item);
+
+        List<String> truckTypeList = Arrays.asList(context.getResources().getStringArray(R.array.truck_type));
+        List<String> bodyTypeList = Arrays.asList(context.getResources().getStringArray(R.array.body_type));
 
         vehicleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -71,7 +76,8 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         bodyType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -81,7 +87,8 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         truckType.setDropDownViewResource(R.layout.spinner_item);
@@ -95,35 +102,42 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
         String vehicleLength = null;
         String vehicleDriverName = null;
         String vehicleDriverNumber = null;
+        String vehicleTypeString = null;
+        String bodyTypeString = null;
 
-        if(placesViewHolder.getDataValue().getNumber() != null) {
+        if (placesViewHolder.getDataValue().getNumber() != null) {
             vehicleNumber = placesViewHolder.getDataValue().getNumber();
         }
-        if(placesViewHolder.getDataValue().getPayload() != null) {
+        if (placesViewHolder.getDataValue().getPayload() != null) {
             vehiclePayload = placesViewHolder.getDataValue().getPayload();
         }
 
-        if(placesViewHolder.getDataValue().getLength() != null) {
+        if (placesViewHolder.getDataValue().getLength() != null) {
             vehicleLength = placesViewHolder.getDataValue().getLength();
         }
 
         Driver driver = placesViewHolder.getDataValue().getDriver();
-        if(driver != null && driver.getName() != null) {
+        if (driver != null && driver.getName() != null) {
             vehicleDriverName = driver.getName();
         }
 
-        if(driver != null && driver.getNumber() != null) {
+        if (driver != null && driver.getNumber() != null) {
             vehicleDriverNumber = driver.getNumber();
         }
 
-        String vehicleTypeString = placesViewHolder.getDataValue().getType();
-        String bodyTypeString = placesViewHolder.getDataValue().getBodyType();
+        if (placesViewHolder.getDataValue().getType() != null) {
+            vehicleTypeString = placesViewHolder.getDataValue().getType();
+        }
 
-        if(vehicleTypeString != null && vehicleTypeString.length() > 0) {
+        if (placesViewHolder.getDataValue().getBodyType() != null) {
+            bodyTypeString = placesViewHolder.getDataValue().getBodyType();
+        }
+
+        if (vehicleTypeString != null && vehicleTypeString.length() > 0) {
             vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
         }
 
-        if(bodyTypeString != null && bodyTypeString.length() > 0) {
+        if (bodyTypeString != null && bodyTypeString.length() > 0) {
             bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
         }
 
