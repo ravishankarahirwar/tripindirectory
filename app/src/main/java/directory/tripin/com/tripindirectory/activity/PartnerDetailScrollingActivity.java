@@ -397,11 +397,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         }
                     }
                     capsulsRecyclarAdapter.notifyDataSetChanged();
-
-
-
                     //set destination cities
-
                     mDestList.clear();
                     if(partnerInfoPojo.getmDestinationCities()!=null){
                         for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
