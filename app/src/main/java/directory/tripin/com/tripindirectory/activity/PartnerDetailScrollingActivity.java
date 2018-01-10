@@ -48,6 +48,7 @@ import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter;
+import directory.tripin.com.tripindirectory.adapters.ContactPersonsAdapterViewOnly;
 import directory.tripin.com.tripindirectory.adapters.FleetForViewerAdapter;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
@@ -76,11 +77,16 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     TextView mNatureOfBusiness;
     TextView mTitleRating;
     TextView mImagesUploadedInst;
-    List<Vehicle> fleetlist;
+    private List<ContactPersonPojo> mContactPersonsList;
+    private List<Vehicle> fleetlist;
+
+
+    private RecyclerView mCompanyContacts;
     RecyclerView mFleetRecycler;
     RecyclerView mSourceCitiesRecycler;
     RecyclerView mDestCitiesRecycler;
 
+    private ContactPersonsAdapterViewOnly mContactPersonsAdapter;
     CapsulsRecyclarAdapter capsulsRecyclarAdapter;
     CapsulsRecyclarAdapter capsulsRecyclarAdapter2;
 
@@ -225,12 +231,19 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
         mFleetRecycler = findViewById(R.id.fleetrecyclar);
         fleetlist = new ArrayList<>();
-        fleetForViewerAdapter = new FleetForViewerAdapter(fleetlist);
-        mFleetRecycler.setAdapter(fleetForViewerAdapter);
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
         mFleetRecycler.setLayoutManager(linearLayoutManager2);
         mFleetRecycler.setNestedScrollingEnabled(false);
+        fleetForViewerAdapter = new FleetForViewerAdapter(fleetlist);
+        mFleetRecycler.setAdapter(fleetForViewerAdapter);
 
+        mCompanyContacts = findViewById(R.id.list_company_contact);
+        mContactPersonsList = new ArrayList<>();
+        mContactPersonsAdapter = new ContactPersonsAdapterViewOnly(mContactPersonsList);
+        LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
+        mCompanyContacts.setLayoutManager(linearLayoutManager3);
+        mCompanyContacts.setNestedScrollingEnabled(false);
+        mCompanyContacts.setAdapter(mContactPersonsAdapter);
 
         fabCall = findViewById(R.id.fabCall);
         toolbarLayout.setSoundEffectsEnabled(true);
@@ -438,13 +451,17 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
 
                     //set fleet
-                    if(partnerInfoPojo.getVehicles()!=null){
+                    if(partnerInfoPojo.getVehicles()!= null){
                         fleetlist.clear();
                         fleetlist.addAll(partnerInfoPojo.getVehicles());
                         fleetForViewerAdapter.notifyDataSetChanged();
                     }
 
-
+                    if(partnerInfoPojo.getmContactPersonsList() != null){
+                        mContactPersonsList.clear();
+                        mContactPersonsList.addAll(partnerInfoPojo.getmContactPersonsList());
+                        mContactPersonsAdapter.notifyDataSetChanged();
+                    }
 
                 } else {
 

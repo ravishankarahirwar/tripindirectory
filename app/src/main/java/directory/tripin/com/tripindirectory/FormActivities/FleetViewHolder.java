@@ -73,6 +73,7 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 ((TextView) parentView.getChildAt(0)).setTextColor(Color.BLACK);
+                vehicleType.requestFocus();
             }
 
             @Override
@@ -84,6 +85,7 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 ((TextView) parentView.getChildAt(0)).setTextColor(Color.BLACK);
+                bodyType.requestFocus();
             }
 
             @Override

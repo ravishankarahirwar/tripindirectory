@@ -97,6 +97,7 @@
             android:id="@+id/input_payload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="number"
             android:hint="@string/payload" />
     </android.support.design.widget.TextInputLayout>
 
@@ -115,6 +116,7 @@
             android:id="@+id/input_length"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="number"
             android:hint="@string/length" />
     </android.support.design.widget.TextInputLayout>
 

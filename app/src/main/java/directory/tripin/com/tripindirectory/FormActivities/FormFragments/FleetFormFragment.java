@@ -106,6 +106,9 @@ public class FleetFormFragment extends BaseFragment {
         mAddVechile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                List<Vehicle> vehicleInAdaptor = getAllItemFromAdapter();
+                mVehicles.clear();
+                mVehicles.addAll(vehicleInAdaptor);
                 Vehicle vehicle = new Vehicle();
                 mVehicles.add(vehicle);
                 adapterp.notifyDataSetChanged();
@@ -142,6 +145,53 @@ public class FleetFormFragment extends BaseFragment {
             }
         });
 
+    }
+
+    private  List<Vehicle> getAllItemFromAdapter() {
+        int totalItemInAdaptor = mVechileList.getLayoutManager().getItemCount();
+        List<Vehicle> mVehiclesSend = new ArrayList<>();
+        for(int i=0; i < totalItemInAdaptor; i++){
+
+            View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
+            if(itemView != null) {
+                Switch turckAva = itemView.findViewById(R.id.is_available);
+
+                Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
+                Spinner bodyType = itemView.findViewById(R.id.body_type);
+
+                TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+                TextInputEditText payload = itemView.findViewById(R.id.input_payload);
+                TextInputEditText length = itemView.findViewById(R.id.input_length);
+                TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
+                TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
+
+                boolean isAvailable = turckAva.isChecked();
+                String vehicleTypeString = vehicleType.getSelectedItem().toString();
+                String bodyTypeString = bodyType.getSelectedItem().toString();
+
+                String vechileNo = vechcleNumber.getText().toString();
+                String truckPayload = payload.getText().toString();
+                String truckLength = length.getText().toString();
+                String driverNameString = driverName.getText().toString();
+                String driverNo = driverNumber.getText().toString();
+
+                Vehicle vehicle = new Vehicle();
+                vehicle.setAvailable(isAvailable);
+                vehicle.setType(vehicleTypeString);
+                vehicle.setBodyType(bodyTypeString);
+                vehicle.setNumber(vechileNo);
+                vehicle.setPayload(truckPayload);
+                vehicle.setLength(truckLength);
+                Driver driver = new Driver();
+                driver.setName(driverNameString);
+                driver.setNumber(driverNo);
+                vehicle.setDriver(driver);
+                vehicle.setNumber(vechileNo);
+                mVehiclesSend.add(vehicle);
+                Logger.v("Fetch Set Fleet");
+            }
+        }
+        return mVehiclesSend;
     }
 
     @Override

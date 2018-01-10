@@ -119,6 +119,7 @@
                 android:textStyle="bold"/>
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_company_contact"
                 android:layout_width="match_parent"
                 android:layout_below="@id/title_contacts"
                 android:layout_height="wrap_content">
