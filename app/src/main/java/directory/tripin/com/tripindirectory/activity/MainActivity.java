@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
-    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_COMPANY = 1;
     private static final int SEARCHTAG_CITY = 2;
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
-    private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
     private FirebaseAuth auth;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
@@ -125,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
     LottieAnimationView lottieAnimationView;
-    private Boolean mSuggestionTapped = false;
 
 
     @Override
@@ -168,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         mPreferenceManager = PreferenceManager.getInstance(mContext);
-        companynamesuggestions = new ArrayList<>();
         companySuggestions = new ArrayList<>();
         searchTag = SEARCHTAG_ROUTE;
         mSearchView.setShowSearchKey(true);
@@ -190,6 +186,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
                 if (radioButtonID == R.id.search_by_route) {
+                    Bundle params = new Bundle();
+                    params.putString("search_by", "ByRoute");
+                    mFirebaseAnalytics.logEvent("SearchBy", params);
+
                     searchTag = SEARCHTAG_ROUTE;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     //radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
@@ -199,6 +199,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
+                    Bundle params = new Bundle();
+                    params.putString("search_by", "ByCompanyName");
+                    mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_COMPANY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
@@ -208,6 +211,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_transporter) {
+                    Bundle params = new Bundle();
+                    params.putString("search_by", "ByTransporter");
+                    mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_TRANSPORTER;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
@@ -217,6 +223,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by transporter name");
                 } else if (radioButtonID == R.id.search_by_city) {
+                    Bundle params = new Bundle();
+                    params.putString("search_by", "ByCity");
+                    mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_CITY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
@@ -497,6 +506,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Bundle params = new Bundle();
+        params.putString("left_navigation", "Click");
+        mFirebaseAnalytics.logEvent("NavigationItemSelected", params);
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -519,14 +531,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_notification) {
 
         } else if (id == R.id.nav_logout) {
+            params = new Bundle();
+            params.putString("logout", "Click");
+            mFirebaseAnalytics.logEvent("ClickOnLogout", params);
+
             auth = FirebaseAuth.getInstance();
             auth.signOut();
             Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
+             params = new Bundle();
+            params.putString("share", "Click");
+            mFirebaseAnalytics.logEvent("ClickOnShareApp", params);
             shareApp();
         } else if (id == R.id.nav_feedback) {
+             params = new Bundle();
+            params.putString("feedback", "Click");
+            mFirebaseAnalytics.logEvent("ClickOnFeedback", params);
             sendFeedback ();
         }else if (id == R.id.nav_invite) {
+             params = new Bundle();
+            params.putString("invite", "Click");
+            mFirebaseAnalytics.logEvent("ClickOnInvite", params);
             onInviteClicked();
         }
 
@@ -739,53 +764,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onSearchAction(String query) {
                 Toast.makeText(mContext, "Query : " + query,
                         Toast.LENGTH_SHORT).show();
-                mSuggestionTapped = false;
                 Bundle params = new Bundle();
                 params.putString("key_search", "Click");
                 mFirebaseAnalytics.logEvent("SearchByKeyBoard", params);
                 setAdapter(query);
-
-//                startUpDownActivity(new Station("39", "Mumbai CST", "CSTM", LineIndicator.CENTER));
-
-//                mLastQuery = query;
-//
-//                DataHelper.findColors(getActivity(), query,
-//                        new DataHelper.OnFindColorsListener() {
-//
-//                            @Override
-//                            public void onResults(List<ColorWrapper> results) {
-//                                //show search results
-//                            }
-//
-//                        });
-//                Log.d(TAG, "onSearchAction()");
             }
         });
 
-//        mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
-//            @Override
-//            public void onFocus() {
-//
-//                //show suggestions when search bar gains focus (typically history suggestions)
-//                mSearchView.swapSuggestions(DataHelper.getHistory(getActivity(), 3));
-//
-//                Log.d(TAG, "onFocus()");
-//            }
-//
-//            @Override
-//            public void onFocusCleared() {
-//
-//                //set the title of the bar so that when focus is returned a new query begins
-//                mSearchView.setSearchBarTitle(mLastQuery);
-//
-//                //you can also set setSearchText(...) to make keep the query there when not focused and when focus returns
-//                //mSearchView.setSearchText(searchSuggestion.getBody());
-//
-//                Log.d(TAG, "onFocusCleared()");
-//            }
-//        });
-//
-//
         //handle menu clicks the same way as you would
         //in a regular activity
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
@@ -806,17 +791,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
-//
-//        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHome"
-//        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
-//            @Override
-//            public void onHomeClicked() {
-//
-//                Log.d(TAG, "onHomeClicked()");
-//            }
-//        });
-//
-        /*
+
+        /**
          * Here you have access to the left icon and the text of a given suggestion
          * item after as it is bound to the suggestion list. You can utilize this
          * callback to change some properties of the left icon and the text. For example, you

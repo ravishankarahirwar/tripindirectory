@@ -14,24 +14,17 @@ import directory.tripin.com.tripindirectory.R;
 
 public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public CardView mCardView;
-    public ImageView mUpvote;
-    public ImageView mDownvote;
-    public TextView mRanking;
-    public boolean isUpVoted;
-    public boolean isDownVoted;
-    public int mRank;
     public TextView mAddress;
     public TextView mCall;
     public TextView mCompany;
 
-    public boolean isUpvoteClicked;
+
 
     public PartnersViewHolder(View itemView) {
         super(itemView);
         mCardView = itemView.findViewById(R.id.partner_card_view);
-
         mCall = itemView.findViewById(R.id.call);
         mAddress =  itemView.findViewById(R.id.company_address);
-        mCompany = itemView.findViewById(R.id.company_name);
+        mCompany = itemView.findViewById(R.id.company_name1);
     }
 }

@@ -9,8 +9,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 17
-        versionName "4.0"
+        versionCode 18
+        versionName "4.1"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -79,7 +79,6 @@ dependencies {
     //compile 'com.lapism:searchview:5.0.0-alpha6'
     compile 'com.google.android:flexbox:0.3.0'
     compile 'com.github.arimorty:floatingsearchview:2.1.1'
-    compile 'gun0912.ted:tedpermission:2.0.3'
     compile 'uk.co.samuelwall:material-tap-target-prompt:2.4.1'
     compile 'com.github.apl-devs:appintro:v4.2.2'
 
