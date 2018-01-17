@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Indian Logistic Network</string>
 
-    <string name="facebook_app_id">227091151168633</string>
-    <string name="fb_login_protocol_scheme">fb227091151168633</string>
 
     <string name="invitation_title">Grow your Logistic Network by INL</string>
     <!--<string name="invitation_message">Be the part of India level logistic network and  grow your transport/logistic business as well as network just download INL Now</string>-->
@@ -16,8 +14,8 @@
     <string name="menu_location_text">Location</string>
     <string name="menu_Message_text">Message</string>
 
-    <string name="company_name">Company Name</string>
-    <string name="company_name_caps">COMPANY NAME</string>
+    <string name="company_name">कंपनी का नाम</string>
+    <string name="company_name_caps">कंपनी का नाम</string>
     <string name="contact_person_name">Person name</string>
     <string name="contact_person_number">Person number</string>
 
@@ -25,7 +23,7 @@
     <string name="company_address">Company Address</string>
     <string name="city_town_village">City/Town/Village</string>
 
-    <string name="state">State</string>
+    <string name="state">प्रदेश</string>
 
     <string name="sign_in_cancelled">Sign In is cancelled</string>
     <string name="no_internet_connection">No connection!</string>

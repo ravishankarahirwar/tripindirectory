@@ -95,6 +95,9 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-auth:3.1.0'
     compile 'com.google.firebase:firebase-invites:11.4.2'
 
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
@@ -102,6 +105,5 @@ apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
 }
-
 
 apply plugin: 'kotlin-android-extensions'

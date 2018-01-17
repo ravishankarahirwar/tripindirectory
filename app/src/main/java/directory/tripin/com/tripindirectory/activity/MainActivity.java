@@ -84,6 +84,7 @@ import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final int REQUEST_INVITE = 1001;
