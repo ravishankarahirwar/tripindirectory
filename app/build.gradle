@@ -52,6 +52,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support:support-v4:27.0.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -65,6 +66,7 @@ dependencies {
     compile 'com.stepstone.apprating:app-rating:2.2.0'
     compile 'com.keiferstone:nonet:2.0.4'
     compile 'com.nex3z:notification-badge:0.3.0'
+    compile 'com.github.clans:fab:1.6.4'
 
 
     compile 'com.android.support:recyclerview-v7:27.0.2'
