@@ -57,7 +57,8 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/payload"
         app:layout_constraintStart_toEndOf="@+id/payload"
-        app:layout_constraintTop_toTopOf="@+id/payload"/>
+        app:layout_constraintTop_toTopOf="@+id/payload"
+        android:layout_marginLeft="16dp" />
 
     <TextView
         android:id="@+id/driverdetail"

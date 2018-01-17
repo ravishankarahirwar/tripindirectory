@@ -108,7 +108,6 @@ public class RecyclerViewAnimator {
                 spring.setEndValue(mHeight);
             }
         };
-
         mRecyclerView.postDelayed(startAnimation, delay);
     }
 }

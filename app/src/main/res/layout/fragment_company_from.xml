@@ -55,7 +55,8 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/company_name"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginLeft="8dp">
 
                 <EditText
                     android:id="@+id/company_name"
@@ -86,7 +87,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/contact_persons"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/contactpersons_recyclar"
@@ -108,7 +110,8 @@
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/add"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
 
             <TextView
                 android:id="@+id/importcontacts"
@@ -119,7 +122,8 @@
                 android:drawableLeft="@drawable/ic_person_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/import_from_your_contacts"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_alignLeft="@+id/contactpersons_recyclar" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -137,7 +141,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/company_landline_numbers"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/landlinerecycler"
@@ -148,7 +153,8 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="15dp"
+                android:layout_alignParentLeft="true" />
 
             <TextView
                 android:id="@+id/add_landline"
@@ -163,7 +169,9 @@
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/add"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp"
+                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
 
         </RelativeLayout>
 
@@ -183,7 +191,8 @@
                 android:drawableStart="@drawable/ic_location_on_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/locate_your_business_on_map"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:drawableLeft="@drawable/ic_location_on_black_24dp" />
 
             <TextView
                 android:id="@+id/address_title"
@@ -192,7 +201,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/company_address"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_company_address"
@@ -287,7 +297,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/nature_of_business"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <ImageView
                 android:id="@+id/nobup"
@@ -334,7 +345,8 @@
                 android:layout_alignStart="@+id/rv_typesofservices"
                 android:layout_marginTop="11dp"
                 android:text="@string/types_of_services"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_alignLeft="@+id/rv_typesofservices" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_typesofservices"

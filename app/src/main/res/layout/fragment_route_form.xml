@@ -25,7 +25,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/your_pick_up_cities"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/pickup_list"
@@ -34,7 +35,8 @@
                 android:layout_alignEnd="@+id/add_pickupcity"
                 android:layout_below="@+id/pickup_title"
                 android:layout_margin="15dp"
-                android:nestedScrollingEnabled="false"/>
+                android:nestedScrollingEnabled="false"
+                android:layout_alignRight="@+id/add_pickupcity" />
 
             <TextView
                 android:id="@+id/add_pickupcity"
@@ -49,7 +51,9 @@
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/add"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp"
+                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
 
         </RelativeLayout>
 
@@ -67,7 +71,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/your_drop_off_cities"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/drop_list"
@@ -76,7 +81,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/dropoff_title"
                 android:nestedScrollingEnabled="false"
-                android:layout_margin="15dp"/>
+                android:layout_margin="15dp"
+                android:layout_alignParentLeft="true" />
 
             <TextView
                 android:id="@+id/add_dropcity"
@@ -91,7 +97,9 @@
                 android:drawableStart="@drawable/ic_add_circle_black_24dp"
                 android:gravity="center_vertical"
                 android:text="@string/add"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp"
+                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
 
         </RelativeLayout>
     </LinearLayout>
