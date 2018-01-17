@@ -10,4 +10,6 @@
     <color name="arrow_grey">#a0a0a0</color>
     <color name="default_textview_color">#212121</color>
     <color name="categoriesbg">#dedada</color>
+    <color name="shadow">#66000000</color>
+
 </resources>

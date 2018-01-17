@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .poll()
                 .snackbar();
         //Add to Activity
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
 
         setContentView(R.layout.activity_home);
 
@@ -530,6 +530,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         RC_SIGN_IN);
             }
         } else if (id == R.id.nav_notification) {
+
+            startActivity(new Intent(MainActivity.this,NotificationsActivity.class));
 
         } else if (id == R.id.nav_logout) {
             params = new Bundle();

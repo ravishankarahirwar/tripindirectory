@@ -100,7 +100,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         NoNet.monitor(this)
                 .poll()
-                .snackbar().banner("Test Msg");
+                .snackbar();
 
         setContentView(R.layout.activity_partner_detail_scrolling);
         toolbar = findViewById(R.id.toolbar);

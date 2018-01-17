@@ -151,7 +151,7 @@
                     android:layout_gravity="center_horizontal"
                     android:overScrollMode="ifContentScrolls"
                     app:layoutManager="LinearLayoutManager"
-                    tools:context="directory.tripin.com.tripindirectory.activity.MainActivity"/>
+                    tools:context="directory.tripin.com.tripindirectory.activity.HomeActivity"/>
             </FrameLayout>
 
         </LinearLayout>
@@ -175,6 +175,7 @@
         app:floatingSearch_searchHint="Source To Destination"
         app:floatingSearch_showSearchKey="true"
         app:floatingSearch_suggestionsListAnimDuration="250"/>
+
 </RelativeLayout>
 
 
