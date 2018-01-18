@@ -74,7 +74,7 @@
     <string name="driver_number">Driver Number</string>
     <string name="only_for_you">(Only you can see)</string>
     <string name="nev_add_your_business">Add Your Business</string>
-    <string name="nev_notification">Notification</string>
+    <string name="nev_notification">Notifications</string>
     <string name="nev_log_out">Log Out</string>
     <string name="nev_share_app">Share App</string>
     <string name="nev_feature_request_feedback">Feature Request/Feedback</string>
@@ -112,4 +112,22 @@
     <string name="driver_name">Driver Name</string>
     <string name="indian_logistics_network">Indian Logistics Network</string>
     <string name="support_email">ravishankar.ahirwar@tripin.co.in</string>
+    <string name="title_activity_demo_scrolling">DemoScrollingActivity</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_landing">ILN</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_load_board">LoadBoard</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_filter">filters</string>
+    <string name="action_notifications">notifications</string>
+    <string name="nev_loadboard">Load Board</string>
 </resources>

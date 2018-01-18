@@ -35,7 +35,6 @@
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax">
-
                 </com.daimajia.slider.library.SliderLayout>
 
                 <ImageView
@@ -55,6 +54,7 @@
                     android:textAlignment="center"
                     android:textStyle="bold"
                     android:visibility="invisible"/>
+
             </FrameLayout>
 
             <android.support.v7.widget.Toolbar
@@ -64,10 +64,8 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-
-
-
         </android.support.design.widget.CollapsingToolbarLayout>
+
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_partner_detail_scrolling" />
