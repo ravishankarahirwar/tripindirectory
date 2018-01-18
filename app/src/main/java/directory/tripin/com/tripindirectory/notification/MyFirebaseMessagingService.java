@@ -156,10 +156,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendAppUpdateNotification(String docId) {
-
+//for production
 //        mUpdateDocRef = FirebaseFirestore.getInstance()
 //                .collection("updates").document(docId);
 
+        //for testing
         mUpdateDocRef = FirebaseFirestore.getInstance()
                 .collection("updatestest").document(docId);
 
