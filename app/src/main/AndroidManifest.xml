@@ -117,6 +117,23 @@
             </intent-filter>
         </activity>
 
+        <!--Forum Activities-->
+        <activity
+            android:name=".forum.MainActivity"
+            android:label="Roadpali Forum"
+            android:theme="@style/AppTheme.NoActionBar" >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".forum.NewPostActivity"
+            android:label="Now Post"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="forum.MainActivity" />
+        </activity>
 
         <activity
             android:name=".activity.LandingActivity"
@@ -144,6 +161,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
+        <activity
+            android:name=".forum.PostDetailActivity"
+            android:label="Post Detail"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".forum.MainActivity" />
         </activity>
     </application>
 

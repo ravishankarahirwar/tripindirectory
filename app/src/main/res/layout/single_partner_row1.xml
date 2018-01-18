@@ -55,7 +55,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:drawableLeft="@drawable/ic_call_black_24dp"
-                android:letterSpacing="0.04"
                 android:maxLines="1"
                 android:padding="8dp"
                 android:text="CALL"
