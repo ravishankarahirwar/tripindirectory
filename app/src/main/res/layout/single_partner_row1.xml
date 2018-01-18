@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/avgrating"
