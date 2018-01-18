@@ -4,34 +4,44 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-
+//general updates PRODUCTION function
 exports.createUpdate = functions.firestore
   .document('updates/{documentId}')
   .onCreate(event => {
-    // Get an object representing the document
-    // e.g. {'name': 'Marie', 'age': 66}
+    var newValue = event.data.data();
+	
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: newValue.mType,
+        docId: newValue.mTimeStamp
+      }
+    };
+    const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+    return admin.messaging().sendToTopic("generalUpdates", payload, options);
+});
+
+//general updates TESTING function
+exports.createUpdate = functions.firestore
+  .document('updatestest/{documentId}')
+  .onCreate(event => {
     var newValue = event.data.data();
 
-    // access a particular field as you would any JS property
-    //var name = newValue.name;
-
-    // perform desired operations ...
-	
-	// Create a notification
+	// Create a DATA notification
     const payload = {
-        notification: {
-            title:newValue.name,
-            body: newValue.text,
-            sound: "default"
-        },
+       data: {
+        type: newValue.mType,
+        docId: newValue.mTimeStamp
+      }
     };
-
-  //Create an options object that contains the time to live for the notification and the priority
     const options = {
         priority: "high",
         timeToLive: 60 * 60 * 24
     };
 
 
-    return admin.messaging().sendToTopic("generalUpdates", payload, options);
+    return admin.messaging().sendToTopic("generalUpdatesTest", payload, options);
 });

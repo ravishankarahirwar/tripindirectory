@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .poll()
                 .snackbar();
         //Add to Activity
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
 
         setContentView(R.layout.activity_home);
 
@@ -530,6 +531,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         RC_SIGN_IN);
             }
         } else if (id == R.id.nav_notification) {
+
+            startActivity(new Intent(MainActivity.this,NotificationsActivity.class));
+
+        } else if (id == R.id.nav_loadboard) {
+
+            startActivity(new Intent(MainActivity.this,LoadBoardActivity.class));
 
         } else if (id == R.id.nav_logout) {
             params = new Bundle();

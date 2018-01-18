@@ -1,24 +1,43 @@
 package directory.tripin.com.tripindirectory.notification;
 
+import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
+import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    DocumentReference mUpdateDocRef;
+    NotificationCompat.Builder generalUpdatesNotificationBuilder;
+
 
     /**
      * Called when message is received.
@@ -45,25 +64,148 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            String type = remoteMessage.getData().get("type");
+            Log.d(TAG, "type" + type);
+            if (type.equals("0")) {
+                String docId = remoteMessage.getData().get("docId");
+                Log.d(TAG, "docId" + docId);
+                sendAppUpdateNotification(docId);
+            }
+
+            if (type.equals("1")) {
+                String docId = remoteMessage.getData().get("docId");
+                Log.d(TAG, "docId" + docId);
+                sendNewsUpdateNotification(docId);
+            }
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
             } else {
                 // Handle message within 10 seconds
+
                 handleNow();
             }
 
         }
 
+
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
+            String messageTitle = remoteMessage.getNotification().getTitle();
+
             Log.d(TAG, "Message Notification Body: " + messageBody);
-            sendNotification(messageBody);        }
+            sendNotification(messageBody, messageTitle);
+        }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendNewsUpdateNotification(String docId) {
+
+
+//        mUpdateDocRef = FirebaseFirestore.getInstance()
+//                .collection("updates").document(docId);
+
+        mUpdateDocRef = FirebaseFirestore.getInstance()
+                .collection("updatestest").document(docId);
+
+
+        mUpdateDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                UpdateInfoPojo updateInfoPojo = documentSnapshot.toObject(UpdateInfoPojo.class);
+                Intent intentToURL;
+                String url = updateInfoPojo.getmUrl();
+                intentToURL = new Intent(Intent.ACTION_VIEW);
+                intentToURL.setData(Uri.parse(url));
+
+                intentToURL.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intentToURL,
+                        PendingIntent.FLAG_ONE_SHOT);
+
+                String channelId = "INL notification";
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                generalUpdatesNotificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(updateInfoPojo.getmTitle())
+                        .setContentText(updateInfoPojo.getmDiscription())
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+                if (!updateInfoPojo.getmImageUrl().isEmpty()) {
+                    Log.d(TAG, "have an mage url: " + updateInfoPojo.getmImageUrl());
+
+                    new generatePictureStyleNotification(updateInfoPojo.getmImageUrl()).execute();
+
+
+                } else {
+
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    notificationManager.notify(0 /* ID of notification */, generalUpdatesNotificationBuilder.build());
+                }
+
+            }
+        });
+
+    }
+
+    private void sendAppUpdateNotification(String docId) {
+
+//        mUpdateDocRef = FirebaseFirestore.getInstance()
+//                .collection("updates").document(docId);
+
+        mUpdateDocRef = FirebaseFirestore.getInstance()
+                .collection("updatestest").document(docId);
+
+
+        mUpdateDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                UpdateInfoPojo updateInfoPojo = documentSnapshot.toObject(UpdateInfoPojo.class);
+                final String appPackageName = getPackageName(); // package name of the app
+                Intent intentToPlayStore;
+                try {
+                    intentToPlayStore = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    intentToPlayStore = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName));
+                }
+                intentToPlayStore.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intentToPlayStore,
+                        PendingIntent.FLAG_ONE_SHOT);
+                String channelId = "INL notification";
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                generalUpdatesNotificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(updateInfoPojo.getmTitle())
+                        .setContentText(updateInfoPojo.getmDiscription())
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+
+                if (!updateInfoPojo.getmImageUrl().isEmpty()) {
+                    Log.d(TAG, "have an mage url: " + updateInfoPojo.getmImageUrl());
+
+                    new generatePictureStyleNotification(updateInfoPojo.getmImageUrl()).execute();
+
+                } else {
+
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    notificationManager.notify(0 /* ID of notification */, generalUpdatesNotificationBuilder.build());
+                }
+
+
+            }
+        });
     }
     // [END receive_message]
 
@@ -93,26 +235,74 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String messageBody, String messageTitle) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "INL notification ";
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(messageTitle)
+                        .setContentText(messageBody)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
+    public class generatePictureStyleNotification extends AsyncTask<String, Void, Bitmap> {
+
+        private Context mContext;
+        private String title, message, imageUrl;
+
+        public generatePictureStyleNotification(String imageUrl) {
+            super();
+            this.imageUrl = imageUrl;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+
+            InputStream in;
+            try {
+                URL url = new URL(this.imageUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                in = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(in);
+                return myBitmap;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
+            Log.d(TAG, "onPostExecute");
+            if (result != null) {
+                generalUpdatesNotificationBuilder.setLargeIcon(result)
+                        .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(result));
+            }
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.notify(0 /* ID of notification */, generalUpdatesNotificationBuilder.build());
+        }
+    }
+
+
 }
