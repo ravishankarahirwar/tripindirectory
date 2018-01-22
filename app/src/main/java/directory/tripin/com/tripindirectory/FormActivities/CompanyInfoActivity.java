@@ -133,6 +133,11 @@ public class CompanyInfoActivity extends AppCompatActivity {
                         mAccountStatusText.setText(R.string.unverified);
                         if(partnerInfoPojo.getmAccountStatus()>=2){
                             mAccountStatusText.setText(R.string.verified);
+                        }else {
+                            if(partnerInfoPojo.getmAccountStatus()==1){
+                                mAccountStatusText.setText("Pending");
+
+                            }
                         }
                     }else {
                         mProgressText.setText("0% Profile Complete...");
