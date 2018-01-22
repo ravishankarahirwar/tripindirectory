@@ -2,48 +2,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/light_gray"
     tools:context=".FormActivities.CompanyInfoActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:padding="5dp">
-            <TextView
-                android:id="@+id/pickup_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/fleet"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
+        android:layout_margin="6dp">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/vehicle_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/item_fleet"
-                android:layout_below="@+id/pickup_title"
-                android:nestedScrollingEnabled="false"/>
+        <TextView
+            android:id="@+id/pickup_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/fleet"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/add_vehicle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/vehicle_list"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/vehicle_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/pickup_title"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_fleet" />
 
-                android:layout_centerVertical="false"
-                android:layout_margin="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@drawable/ic_add_circle_black_24dp"
-                android:gravity="center_vertical"
-                android:text="@string/add_truck"
-                android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/add_vehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/vehicle_list"
 
-        </RelativeLayout>
+            android:layout_centerVertical="false"
+            android:layout_margin="8dp"
+            android:drawableStart="@drawable/ic_add_circle_black_24dp"
+            android:gravity="center_vertical"
+            android:text="@string/add_truck"
+            android:textStyle="bold" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_below="@id/add_vehicle"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="swipe_right_indicator.json"
+            app:lottie_loop="true" />
+
+    </RelativeLayout>
 
 
 </android.support.v4.widget.NestedScrollView>

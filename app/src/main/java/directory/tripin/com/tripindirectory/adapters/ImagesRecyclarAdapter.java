@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.AddImage;
 import directory.tripin.com.tripindirectory.model.ImageData;
@@ -99,6 +100,18 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
             if(list.get(position).getmImageBitmap()!=null){
                 holder.imageButton.setImageBitmap(list.get(position).getmImageBitmap());
 
+//                Picasso.with(context).load(list.get(position).getmImageUri()).transform(new CircleTransform()).into(holder.imageButton, new Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        //holder.lottieAnimationView.setVisibility(View.INVISIBLE);
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//                        holder.imageButton.setImageBitmap(list.get(position).getmImageBitmap());
+//                    }
+//                });
+
             }
             holder.cancel.setVisibility(View.VISIBLE);
         } else {
@@ -112,7 +125,7 @@ public class ImagesRecyclarAdapter extends RecyclerView.Adapter<ImagesRecyclarAd
 
         if (!imageUrl.isEmpty()&&!list.get(position).getSet())
         {
-            Picasso.with(context).load(imageUrl).fit().into(holder.imageButton, new Callback() {
+            Picasso.with(context).load(imageUrl).transform(new CircleTransform()).fit().into(holder.imageButton, new Callback() {
                 @Override
                 public void onSuccess() {
                     holder.lottieAnimationView.setVisibility(View.INVISIBLE);

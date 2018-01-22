@@ -6,39 +6,76 @@
                                             xmlns:app="http://schemas.android.com/apk/res-auto"
                                             tools:context=".FormActivities.CompanyInfoActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        android:background="@drawable/roundedcornerbg"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/avgrating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/upload_required_images"
-            android:textStyle="bold"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/imageslist"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/avgrating"
-            android:layout_margin="4dp"/>
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/roundedcornerbg"
+            android:elevation="3dp"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/image_upload"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/avgrating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/upload_required_images"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/imageslist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/avgrating"
+                android:layout_margin="4dp" />
+
+            <Button
+                android:id="@+id/image_upload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imageslist"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="16dp"
+                android:text="@string/image_upload"
+                android:textColor="@color/background"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <include
+            android:id="@+id/acc_status_0"
+            layout="@layout/send_verification_request_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageslist"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
-            android:text="@string/image_upload"
-            android:textStyle="bold"/>
+            android:layout_margin="8dp"
+            android:visibility="gone" />
 
-    </RelativeLayout>
+        <include
+            android:id="@+id/acc_status_1"
+            layout="@layout/company_under_verification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/acc_status_2"
+            layout="@layout/conpany_verified"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
 
 

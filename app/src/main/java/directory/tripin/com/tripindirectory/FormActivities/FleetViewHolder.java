@@ -61,7 +61,7 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(Context context, FleetViewHolder placesViewHolder) {
         ArrayAdapter<CharSequence> truckType = ArrayAdapter.createFromResource(context,
-                R.array.truck_type, R.layout.spinner_item);
+                R.array.truck_type,android.R.layout.simple_spinner_item);
 
         ArrayAdapter<CharSequence> bodyTypeAdapter = ArrayAdapter.createFromResource(context,
                 R.array.body_type, android.R.layout.simple_spinner_item);
@@ -136,11 +136,11 @@ public class FleetViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (vehicleTypeString != null && vehicleTypeString.length() > 0) {
-            vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
+           vehicleType.setSelection(truckTypeList.indexOf(placesViewHolder.getDataValue().getType().trim()));
         }
 
         if (bodyTypeString != null && bodyTypeString.length() > 0) {
-            bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
+           bodyType.setSelection(bodyTypeList.indexOf(placesViewHolder.getDataValue().getBodyType().trim()));
         }
 
         isAvailable.setChecked(placesViewHolder.getDataValue().isAvailable());

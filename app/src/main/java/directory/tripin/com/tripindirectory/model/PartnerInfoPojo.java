@@ -19,6 +19,10 @@ public class PartnerInfoPojo {
     private int mLikes;
     private int mDislikes;
     private String mRMN;
+    private int mAccountStatus = -1;
+    private String mFcmToken;
+    private String mCompanyEmail;
+    private String mCompanyWebsite;
 
 
 
@@ -56,7 +60,37 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
+    public String getmCompanyEmail() {
+        return mCompanyEmail;
+    }
 
+    public String getmCompanyWebsite() {
+        return mCompanyWebsite;
+    }
+
+    public void setmCompanyEmail(String mCompanyEmail) {
+        this.mCompanyEmail = mCompanyEmail;
+    }
+
+    public void setmCompanyWebsite(String mCompanyWebsite) {
+        this.mCompanyWebsite = mCompanyWebsite;
+    }
+
+    public String getmFcmToken() {
+        return mFcmToken;
+    }
+
+    public void setmFcmToken(String mFcmToken) {
+        this.mFcmToken = mFcmToken;
+    }
+
+    public int getmAccountStatus() {
+        return mAccountStatus;
+    }
+
+    public void setmAccountStatus(int mAccountStatus) {
+        this.mAccountStatus = mAccountStatus;
+    }
 
     public String getmRMN() {
         return mRMN;

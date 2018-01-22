@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#ef463d</color>
-    <color name="colorPrimaryDark">#b50015</color>
+    <color name="colorPrimaryDark">#e24239</color>
     <color name="colorAccent">#18110e</color>
 
     <color name="primaryColor">#ef463d</color>
 
     <color name="arrow_white">#ffffff</color>
     <color name="arrow_grey">#a0a0a0</color>
-    <color name="default_textview_color">#212121</color>
+    <color name="default_textview_color">#666464</color>
     <color name="categoriesbg">#dedada</color>
+    <color name="categoriesbg2">#f1f1f1</color>
+
     <color name="shadow">#66000000</color>
+    <color name="varify">#1BB2AC</color>
+    <color name="water">#76c0e6</color>
 
 </resources>

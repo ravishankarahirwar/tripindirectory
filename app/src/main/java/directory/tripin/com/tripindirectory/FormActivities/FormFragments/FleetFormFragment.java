@@ -81,13 +81,7 @@ public class FleetFormFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVehicles = new ArrayList<>();
-
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
-
-
-        auth = FirebaseAuth.getInstance();
-        mUserDocRef = FirebaseFirestore.getInstance()
-                .collection("partners").document(auth.getUid());
 
     }
 

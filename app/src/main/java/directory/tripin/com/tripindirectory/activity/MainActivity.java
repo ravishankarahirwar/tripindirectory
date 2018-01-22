@@ -1,9 +1,13 @@
 package directory.tripin.com.tripindirectory.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -125,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
     LottieAnimationView lottieAnimationView;
+    TextUtils textUtils;
 
 
     @Override
@@ -135,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .snackbar();
         //Add to Activity
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+        textUtils = new TextUtils();
 
         setContentView(R.layout.activity_home);
 
@@ -275,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lottieAnimationView.setVisibility(View.VISIBLE);
 
         query = FirebaseFirestore.getInstance()
-                .collection("partners").orderBy("mCompanyName").whereGreaterThan("mCompanyName", "");
+                .collection("partners").orderBy("mCompanyName").whereGreaterThan("mCompanyName", "").orderBy("mAccountStatus", Query.Direction.DESCENDING);
 
         if (!s.isEmpty()) {
             switch (searchTag) {
@@ -322,12 +328,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
 
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onBindViewHolder(final PartnersViewHolder holder, int position, final PartnerInfoPojo model) {
-                holder.mAddress.setText(model.getmCompanyAdderss().getAddress());
-                TextUtils textUtils = new TextUtils();
+
+                //set address
+                String addresstoset
+                        = model.getmCompanyAdderss().getAddress()
+                        +", "+textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
+                        +", "+textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+                if(model.getmCompanyAdderss().getPincode()!=null){
+                    addresstoset = addresstoset + ", "+model.getmCompanyAdderss().getPincode();
+                }
+                holder.mAddress.setText(addresstoset);
+
+
                 holder.mCompany.setText(textUtils.toTitleCase(model.getmCompanyName()));
-                Logger.v("onBind : "+textUtils.toTitleCase(model.getmCompanyName()));
+                Logger.v("onBind : "+textUtils.toTitleCase(model.getmCompanyName())+" "+model.getmAccountStatus());
+
+                if(model.getmAccountStatus()>=2){
+                    holder.mCompany
+                            .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                            .getDrawable(getApplicationContext(),
+                                                    R.drawable.ic_fiber_smart_record_bllue_24dp),
+                                    null,
+                                    null,
+                                    null);
+                }else {
+                    holder.mCompany
+                            .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                            .getDrawable(getApplicationContext(),
+                                                    R.drawable.ic_fiber_manual_record_black_24dp),
+                                    null,
+                                    null,
+                                    null);
+                }
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
