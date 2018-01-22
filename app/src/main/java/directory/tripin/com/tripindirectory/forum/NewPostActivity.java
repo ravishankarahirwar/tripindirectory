@@ -151,7 +151,7 @@ public class NewPostActivity extends BaseActivity {
 //        }
 
             // Disable button so there are no multi-posts
-            setEditingEnabled(false);
+//            setEditingEnabled(false);
             Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show();
 
             // [START single_value_read]
@@ -176,7 +176,7 @@ public class NewPostActivity extends BaseActivity {
                             }
 
                             // Finish this Activity, back to the stream
-                            setEditingEnabled(true);
+//                            setEditingEnabled(true);
                             finish();
                             // [END_EXCLUDE]
                         }
@@ -185,7 +185,7 @@ public class NewPostActivity extends BaseActivity {
                         public void onCancelled(DatabaseError databaseError) {
                             Log.w(TAG, "getUser:onCancelled", databaseError.toException());
                             // [START_EXCLUDE]
-                            setEditingEnabled(true);
+//                            setEditingEnabled(true);
                             // [END_EXCLUDE]
                         }
                     });
@@ -193,15 +193,15 @@ public class NewPostActivity extends BaseActivity {
 
     }
 
-    private void setEditingEnabled(boolean enabled) {
-        mTitleField.setEnabled(enabled);
-        mBodyField.setEnabled(enabled);
-        if (enabled) {
-            mSubmitButton.setVisibility(View.VISIBLE);
-        } else {
-            mSubmitButton.setVisibility(View.GONE);
-        }
-    }
+//    private void setEditingEnabled(boolean enabled) {
+//        mTitleField.setEnabled(enabled);
+//        mBodyField.setEnabled(enabled);
+//        if (enabled) {
+//            mSubmitButton.setVisibility(View.VISIBLE);
+//        } else {
+//            mSubmitButton.setVisibility(View.GONE);
+//        }
+//    }
 
     // [START write_fan_out]
     private void writeNewPost(String userId,Post post) {
