@@ -33,13 +33,17 @@
     <string name="sign_in_done">Signed In</string>
 
 
-    <string name="form_name">Your Company Data</string>
+    <string name="form_name">My Business Profile</string>
 
     <string name="action_voice_rec">Voice Search</string>
 
 
+    <string name="truck_type_prompt">Vehicle</string>
+
+
     <string-array name="truck_type">
         <item>None</item>
+        <item>Vehicle</item>
         <item>LCV</item>
         <item>Truck</item>
         <item>Tusker</item>
@@ -55,8 +59,11 @@
         <item>Hydraulic Axles</item>
     </string-array>
 
+    <string name="body_type_prompt">Body</string>
+
     <string-array name="body_type">
         <item>None</item>
+        <item>Body</item>
         <item>Normal</item>
         <item>Full Body</item>
         <item>Half Body</item>
@@ -100,7 +107,7 @@
     <string name="import_from_your_contacts">Import from your Contacts</string>
     <string name="company_landline_numbers">Company Landline Numbers :</string>
     <string name="locate_your_business_on_map">Locate Your Business On Map</string>
-    <string name="fleet">Fleet:</string>
+    <string name="fleet">Your Fleets :</string>
     <string name="add_truck">Add Truck</string>
     <string name="upload_required_images">Add and Upload required Images:</string>
     <string name="image_upload">Image Upload</string>
@@ -146,4 +153,23 @@
     <string name="post_truck">POST TRUCK</string>
 
 
+    <string name="get_verified">\t Hello user! your company details are not verified yet,
+        please send a verification request and get your company verified by ILN Executives,
+        a verified company is shown with blue check as shown in the card below. This will improve your credibility and
+        hence the chances of getting good deals. So, get Verified on ILN ASAP!</string>
+
+    <string name="under_verification">\tPlease wait while your company is been verified by ILN executivies.
+        You can modify your data anytime, Verification will be done on the latest version available.
+        You will be notified soon if everything goes right!</string>
+    <string name="comp_verified">\tCongratulations! Your Company is verified now!
+        Do not make major changes in company TAB, doing it will make you get the modified
+        data verified again. Improve reputation of your company by getting good reviews
+        from your clients. All the best!</string>
+    <string name="alert_sent_verfication_req">Make sure you have filled all the important fields in the form,
+        incomplete or inappropriate form can be rejected. Rejection can harm your company reputation or can also lead to termination of your account. You may receive a call on your registered mobile number from ILN in the process for verification</string>
+    <string name="rmn_title">Registered Mobile Number :</string>
+    <string name="action_help">Get Help</string>
+    <string name="fetching">Fetching...</string>
+    <string name="unverified">Unverified</string>
+    <string name="verified">Verified</string>
 </resources>

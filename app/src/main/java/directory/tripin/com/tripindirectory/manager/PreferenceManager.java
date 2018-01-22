@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
  */
 
 public class PreferenceManager {
-    public static final String PREF_TOKEN = "token";
+    public static final String PREF_FCM_TOKEN = "fcmtoken";
     public static final String DEVICE_ID = "device_id";
     public static final String USER_ID = "user_id";
 
@@ -23,7 +23,7 @@ public class PreferenceManager {
     private static PreferenceManager mSPreferenceManager;
     public boolean isAutoSyncGot;
 
-    private PreferenceManager() {
+    public PreferenceManager() {
     }
 
     /**
@@ -45,13 +45,13 @@ public class PreferenceManager {
         return retrivedValue;
     }
 
-    public String getToken() {
-        String token = sInstance.getString(PREF_TOKEN, null);
+    public String getFcmToken() {
+        String token = sInstance.getString(PREF_FCM_TOKEN, null);
         return token;
     }
 
-    public void setToken(String accessToken) {
-        editor.putString(PREF_TOKEN, accessToken);
+    public void setFcmToken(String accessToken) {
+        editor.putString(PREF_FCM_TOKEN, accessToken);
         editor.commit();
     }
 

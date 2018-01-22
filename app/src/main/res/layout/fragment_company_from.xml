@@ -7,9 +7,10 @@
     android:background="@color/light_gray"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:animateLayoutChanges="true"
     tools:context=".FormActivities.CompanyInfoActivity">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:app="http://schemas.android.com/apk/res-auto"
                   xmlns:tools="http://schemas.android.com/tools"
                   android:layout_width="match_parent"
@@ -27,338 +28,490 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
-                android:id="@+id/loadingtxt"
+                android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/fetching_your_data"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:layout_margin="20dp"
+                android:text="Fetching Data ..."
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/ll_form"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_company_name"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:hint="@string/company_name"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginLeft="8dp">
+                android:layout_margin="10dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/roundedcornerbg2"
+                android:elevation="3dp"
+                android:padding="5dp">
 
-                <EditText
-                    android:id="@+id/company_name"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/yourrmn"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_phone_iphone_black_24dp"
+                    android:text="@string/rmn_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/mrmn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/yourrmn"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="false"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="20dp"
+                    android:drawableLeft="@drawable/ic_fiber_manual_record_black_24dp"
+                    android:text="Fetching..."
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/change_rmn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/mrmn"
+                    android:layout_margin="8dp"
+                    android:drawableLeft="@drawable/ic_edit_black_24dp"
                     android:gravity="center_vertical"
-                    android:inputType="textCapCharacters"
-                    android:textColor="@color/default_textview_color"
-                    android:textStyle="bold"/>
+                    android:text="Change"
+                    android:textStyle="bold" />
 
-            </android.support.design.widget.TextInputLayout>
-        </RelativeLayout>
+            </RelativeLayout>
 
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/contact_person"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/contact_persons"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/contactpersons_recyclar"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/contact_person"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp"/>
-
-            <TextView
-                android:id="@+id/add_person"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/contactpersons_recyclar"
-                android:layout_margin="8dp"
-                android:drawableStart="@drawable/ic_add_circle_black_24dp"
-                android:gravity="center_vertical"
-                android:text="@string/add"
-                android:textStyle="bold"
-                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
-
-            <TextView
-                android:id="@+id/importcontacts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/add_person"
-                android:layout_alignStart="@+id/contactpersons_recyclar"
-                android:drawableLeft="@drawable/ic_person_black_24dp"
-                android:gravity="center_vertical"
-                android:text="@string/import_from_your_contacts"
-                android:textStyle="bold"
-                android:layout_alignLeft="@+id/contactpersons_recyclar" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/pickup_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/company_landline_numbers"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/landlinerecycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/pickup_title"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp"
-                android:layout_alignParentLeft="true" />
-
-            <TextView
-                android:id="@+id/add_landline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/landlinerecycler"
-                android:layout_centerVertical="false"
-                android:layout_margin="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@drawable/ic_add_circle_black_24dp"
-                android:gravity="center_vertical"
-                android:text="@string/add"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp"
-                android:drawableLeft="@drawable/ic_add_circle_black_24dp" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/locate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/input_layout_pincode"
                 android:layout_margin="10dp"
-                android:drawableStart="@drawable/ic_location_on_black_24dp"
-                android:gravity="center_vertical"
-                android:text="@string/locate_your_business_on_map"
-                android:textStyle="bold"
-                android:drawableLeft="@drawable/ic_location_on_black_24dp" />
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
 
-            <TextView
-                android:id="@+id/address_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/company_address"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_company_address"
-                android:layout_width="368dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/address_title"
-                android:layout_margin="8dp"
-                android:layout_marginTop="15dp"
-                android:hint="@string/company_address"
-                app:layout_constraintHorizontal_bias="1.0">
-
-                <EditText
-                    android:id="@+id/input_company_address"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_company_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapSentences|textPostalAddress"
-                    android:textSize="14sp"/>
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/company_name"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/company_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:inputType="textCapCharacters|textMultiLine"
+                        android:textColor="@color/default_textview_color"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_city"
-                android:layout_width="368dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/input_layout_company_address"
-                android:layout_margin="8dp"
-                android:hint="@string/city_town_village"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/input_layout_company_address"
-                app:layout_constraintTop_toBottomOf="@+id/input_layout_company_address">
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
 
-                <EditText
-                    android:id="@+id/input_city"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapCharacters|textAutoCorrect|textAutoComplete"
-                    android:textSize="14sp"/>
 
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_state"
-                android:layout_width="368dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/input_layout_city"
-                android:layout_margin="8dp"
-                android:hint="@string/state"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/input_layout_city"
-                app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
-
-                <EditText
-                    android:id="@+id/input_state"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapCharacters"
-                    android:textSize="14sp"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/input_layout_pincode"
-                android:layout_width="368dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/input_layout_state"
-                android:layout_margin="8dp"
-                android:hint="@string/pincode"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/input_layout_city"
-                app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
-
-                <EditText
-                    android:id="@+id/input_pincode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:textSize="14sp"/>
-            </android.support.design.widget.TextInputLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/natureofbusiness_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/nature_of_business"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
-
-            <ImageView
-                android:id="@+id/nobup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="false"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/natureofbusiness_title"
-                android:layout_margin="10dp"
-                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_natureofbusiness"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/natureofbusiness_title"
-                android:layout_margin="10dp"/>
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/roundedcornerbg"
-            android:padding="5dp">
-
-            <ImageView
-                android:id="@+id/nobup2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/typesofbusiness_title"
                 android:layout_margin="10dp"
-                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
+                android:animateLayoutChanges="true"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
 
-            <TextView
-                android:id="@+id/typesofbusiness_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignStart="@+id/rv_typesofservices"
-                android:layout_marginTop="11dp"
-                android:text="@string/types_of_services"
-                android:textStyle="bold"
-                android:layout_alignLeft="@+id/rv_typesofservices" />
+                <TextView
+                    android:id="@+id/contact_person"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableLeft="@drawable/ic_perm_contact_calendar_black_24dp"
+                    android:text="@string/contact_persons"
+                    android:textStyle="bold" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_typesofservices"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/contactpersons_recyclar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/contact_person"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="15dp" />
+
+                <TextView
+                    android:id="@+id/add_person"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/contactpersons_recyclar"
+                    android:layout_margin="8dp"
+                    android:drawableLeft="@drawable/ic_add_circle_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/add"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/importcontacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/add_person"
+                    android:layout_alignLeft="@+id/contactpersons_recyclar"
+                    android:layout_alignStart="@+id/contactpersons_recyclar"
+                    android:drawableLeft="@drawable/ic_person_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/import_from_your_contacts"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/typesofbusiness_title"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/pickup_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableLeft="@drawable/ic_call_landline_24dp"
+
+                    android:text="@string/company_landline_numbers"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/landlinerecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/pickup_title"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="15dp" />
+
+                <TextView
+                    android:id="@+id/add_landline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/landlinerecycler"
+                    android:layout_centerVertical="false"
+                    android:layout_margin="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_add_circle_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/add"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/email_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_contact_mail_black_24dp"
+                    android:text=" Company Email and Website"
+                    android:textStyle="bold" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/email_title"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="Company Email Id"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/company_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:inputType="textEmailAddress"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </android.support.design.widget.TextInputLayout>
 
 
-        </RelativeLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_website"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/input_layout_email"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="Company Website"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/company_website"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:inputType="textWebEditText"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/locate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_layout_pincode"
+                    android:layout_margin="10dp"
+                    android:drawableStart="@drawable/ic_map_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/locate_your_business_on_map"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/address_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_location_on_black_24dp"
+                    android:text="@string/company_address"
+                    android:textStyle="bold" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_company_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/address_title"
+                    android:layout_margin="8dp"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/company_address"
+                    app:layout_constraintHorizontal_bias="1.0">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/input_company_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences|textMultiLine|textImeMultiLine|textPostalAddress"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_layout_company_address"
+                    android:layout_margin="8dp"
+                    android:hint="@string/city_town_village"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/input_layout_company_address"
+                    app:layout_constraintTop_toBottomOf="@+id/input_layout_company_address">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/input_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapCharacters|textAutoCorrect|textAutoComplete"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_layout_city"
+                    android:layout_margin="8dp"
+                    android:hint="@string/state"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/input_layout_city"
+                    app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/input_state"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapCharacters"
+                        android:textSize="14sp" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_pincode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/input_layout_state"
+                    android:layout_margin="8dp"
+                    android:hint="@string/pincode"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/input_layout_city"
+                    app:layout_constraintTop_toBottomOf="@+id/input_layout_city">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/input_pincode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:textSize="14sp" />
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/natureofbusiness_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/nature_of_business"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/nobup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/natureofbusiness_title"
+                    android:layout_margin="10dp"
+                    app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_natureofbusiness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/natureofbusiness_title"
+                    android:layout_margin="10dp" />
 
 
-    </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/roundedcornerbg"
+                android:padding="5dp">
+
+                <ImageView
+                    android:id="@+id/nobup2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/typesofbusiness_title"
+                    android:layout_margin="10dp"
+                    app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
+
+                <TextView
+                    android:id="@+id/typesofbusiness_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/rv_typesofservices"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignStart="@+id/rv_typesofservices"
+                    android:layout_marginTop="11dp"
+                    android:text="@string/types_of_services"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_typesofservices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/typesofbusiness_title"
+                    android:layout_margin="10dp" />
+
+
+            </RelativeLayout>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animation_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="swipe_right_indicator.json"
+                app:lottie_loop="true" />
+
+
+        </LinearLayout>
+
+
+
+
+
+    </FrameLayout>
 
 </android.support.v4.widget.NestedScrollView>

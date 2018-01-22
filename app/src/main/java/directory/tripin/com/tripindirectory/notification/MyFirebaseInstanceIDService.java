@@ -2,13 +2,25 @@ package directory.tripin.com.tripindirectory.notification;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+
+import java.util.HashMap;
+
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
+    DocumentReference mUserDocRef;
+    FirebaseAuth mAuth;
+
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -25,6 +37,8 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
+        mAuth = FirebaseAuth.getInstance();
+
         sendRegistrationToServer(refreshedToken);
     }
     // [END refresh_token]
@@ -38,6 +52,25 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
+
+        if(mAuth.getCurrentUser()!=null){
+            mUserDocRef = FirebaseFirestore.getInstance()
+                    .collection("partners").document(mAuth.getUid());
+            HashMap<String, String> hashMap6 = new HashMap<>();
+            hashMap6.put("mFcmToken", token);
+            mUserDocRef.set(hashMap6, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Refreshed token: " + "Updated to Firestore");
+                }
+            });
+        }else {
+            //save to shared pref
+            PreferenceManager preferenceManager =  PreferenceManager.getInstance(getApplicationContext());
+            preferenceManager.setFcmToken(token);
+            Log.d(TAG, "Refreshed token: " + "Saved In Shared Pref");
+
+        }
+
     }
 }

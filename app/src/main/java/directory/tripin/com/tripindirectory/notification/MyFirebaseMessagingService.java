@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
@@ -78,6 +79,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 sendNewsUpdateNotification(docId);
             }
 
+            if(type.equals("2")){
+                //verification request approved notification
+                String mCompName = remoteMessage.getData().get("mCompanyName");
+                sendVerificationApprovedNotification(mCompName);
+
+            }
+            if(type.equals("3")){
+                //verification request rejected notification
+                sendVerificationRejectedNotification();
+
+            }
+
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
@@ -101,6 +114,53 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendVerificationRejectedNotification() {
+        Intent intent = new Intent(this, CompanyInfoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        String channelId = "INL notification";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle("ILN Verification Rejected!")
+                        .setContentText("Dear User! your company verification request is rejected. Please be serious next time")
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private void sendVerificationApprovedNotification(String mCompName) {
+        Intent intent = new Intent(this, CompanyInfoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        String channelId = "INL notification";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle("ILN Company Verification")
+                        .setContentText("Congratulations "+mCompName+"! your company verification request s approved.")
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
     }
 
     private void sendNewsUpdateNotification(String docId) {
