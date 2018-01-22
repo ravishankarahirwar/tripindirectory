@@ -21,6 +21,7 @@ public class Post {
     public String mMeterial;
     public String mDate;
     public String mTruckType;
+    public String mTruckBodyType;
     public String mTruckLength;
     public String mPayload;
     public String mRemark;
@@ -33,7 +34,21 @@ public class Post {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public Post(String uid, String author, String findOrPost, String source, String destination, String meterial, String date, String truckType, String truckLength, String payload, String remark) {
+    /**
+     *
+     * @param uid
+     * @param author
+     * @param findOrPost
+     * @param source
+     * @param destination
+     * @param meterial
+     * @param date
+     * @param truckType
+     * @param truckLength
+     * @param payload
+     * @param remark
+     */
+    public Post(String uid, String author, String findOrPost, String source, String destination, String meterial, String date, String truckType, String bodyType, String truckLength, String payload, String remark) {
         this.mUid = uid;
         this.mAuthor = author;
         this.mFindOrPost = findOrPost;
@@ -42,6 +57,7 @@ public class Post {
         this.mMeterial = meterial;
         this.mDate = date;
         this.mTruckType = truckType;
+        this.mTruckBodyType = bodyType;
         this.mTruckLength = truckLength;
         this.mPayload = payload;
         this.mRemark = remark;

@@ -161,6 +161,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
+        </activity>
         <activity
             android:name=".forum.PostDetailActivity"
             android:label="Post Detail"

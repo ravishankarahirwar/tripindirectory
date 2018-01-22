@@ -38,15 +38,15 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
 
-        if (!TextUtils.isEmpty(post.title)) {
-            titleView.setVisibility(View.VISIBLE);
-            titleView.setText(post.title);
-        } else {
-            titleView.setVisibility(View.GONE);
-        }
-        authorView.setText(post.author);
-        numStarsView.setText(String.valueOf(post.starCount));
-        bodyView.setText(post.body);
+//        if (!TextUtils.isEmpty(post.title)) {
+//            titleView.setVisibility(View.VISIBLE);
+//            titleView.setText(post.title);
+//        } else {
+//            titleView.setVisibility(View.GONE);
+//        }
+//        authorView.setText(post.author);
+//        numStarsView.setText(String.valueOf(post.starCount));
+//        bodyView.setText(post.body);
 
         starView.setOnClickListener(starClickListener);
     }

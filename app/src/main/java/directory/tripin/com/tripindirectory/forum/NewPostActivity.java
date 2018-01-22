@@ -135,8 +135,10 @@ public class NewPostActivity extends BaseActivity {
         final String bodyTypestr = bodyType.getSelectedItem().toString();
         final String payload = mPayload.getText().toString();
         final String length = mLength.getText().toString();
-        Post post = new Post(userId, username, title, body);
-        // Title is required
+
+       final Post post = new Post(getUid(), "Ravi", source, "findOrPost",  destination,"material","date", turckType,  bodyTypestr, length, payload,"Remark");
+
+            // Title is required
         //if (TextUtils.isEmpty(title)) {
             //mTitleField.setError(REQUIRED);
          //   return;
@@ -170,7 +172,7 @@ public class NewPostActivity extends BaseActivity {
                                         Toast.LENGTH_SHORT).show();
                             } else {
                                 // Write new post
-                                writeNewPost(userId, user.username, title, body);
+                                writeNewPost(userId, post);
                             }
 
                             // Finish this Activity, back to the stream
@@ -202,11 +204,11 @@ public class NewPostActivity extends BaseActivity {
     }
 
     // [START write_fan_out]
-    private void writeNewPost(String userId, post) {
+    private void writeNewPost(String userId,Post post) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body);
+//        Post post = new Post(userId, username, title, body);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

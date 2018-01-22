@@ -95,14 +95,14 @@ public abstract class PostListFragment extends Fragment {
                 viewHolder.copyPost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        copyMessage(getActivity(),model.body);
+//                        copyMessage(getActivity(),model.body);
                     }
                 });
 
                 viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        shareMesssages(getActivity(), model.title, model.body);
+//                        shareMesssages(getActivity(), model.mFindOrPost, model.body);
                     }
                 });
 
@@ -119,7 +119,7 @@ public abstract class PostListFragment extends Fragment {
                     public void onClick(View starView) {
                         // Need to write to both places the post is stored
                         DatabaseReference globalPostRef = mDatabase.child("posts").child(postRef.getKey());
-                        DatabaseReference userPostRef = mDatabase.child("user-posts").child(model.uid).child(postRef.getKey());
+                        DatabaseReference userPostRef = mDatabase.child("user-posts").child(model.mUid).child(postRef.getKey());
 
                         // Run two transactions
                         onStarClicked(globalPostRef);
