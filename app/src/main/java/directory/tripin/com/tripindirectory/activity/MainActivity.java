@@ -541,6 +541,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(mContext, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
             String enquiry = matches.get(0).toString();
             onVoiceSearch(enquiry);
+        } else if (requestCode ==  SIGN_IN_FOR_FORUM && resultCode == RESULT_OK) {
+            if (mAuth.getCurrentUser() != null) {
+                onAuthSuccess(mAuth.getCurrentUser());
+            } else {
+                Toast.makeText(mContext, "Unknow error", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

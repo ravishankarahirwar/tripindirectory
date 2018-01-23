@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +45,7 @@ public abstract class PostListFragment extends Fragment {
     private FirebaseRecyclerAdapter<Post, PostViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
+    private FirebaseAuth mAuth;
 
     public PostListFragment() {}
 
@@ -54,6 +57,9 @@ public abstract class PostListFragment extends Fragment {
 
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        // Initialize Database
+        mAuth = FirebaseAuth.getInstance();
+
         // [END create_database_reference]
 
         mRecycler = (RecyclerView) rootView.findViewById(R.id.messages_list);
@@ -92,25 +98,42 @@ public abstract class PostListFragment extends Fragment {
                     }
                 });
 
-                viewHolder.copyPost.setOnClickListener(new View.OnClickListener() {
+                viewHolder.comments.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        copyMessage(getActivity(),model.body);
+                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
+                        startActivity(intent);
                     }
                 });
 
                 viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        shareMesssages(getActivity(), model.mFindOrPost, model.body);
+                        if (model.mFindOrPost == 1) {
+                            shareMesssages(getActivity(), "Need Truck", model.toString());
+
+                        }else if (model.mFindOrPost == 2) {
+                            shareMesssages(getActivity(), "Need LOAD", model.toString());
+                        }
                     }
                 });
 
+                viewHolder.call.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        callNumber(user.getPhoneNumber());;
+                    }
+                });
+
+
+
                 // Determine if the current user has liked this post and set UI accordingly
                 if (model.stars.containsKey(getUid())) {
-                    viewHolder.starView.setImageResource(R.drawable.ic_action_like);
+                    viewHolder.starView.setImageResource(R.drawable.ic_favorite);
                 } else {
-                    viewHolder.starView.setImageResource(R.drawable.ic_action_unlike);
+                    viewHolder.starView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 }
 
                 // Bind Post to ViewHolder, setting OnClickListener for the star button
@@ -198,5 +221,12 @@ public abstract class PostListFragment extends Fragment {
         ClipData clip = ClipData.newPlainText("Hindi Message",content);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
+    private void callNumber(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
+        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(callIntent);
     }
 }

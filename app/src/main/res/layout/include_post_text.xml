@@ -6,27 +6,219 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/post_title"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:maxLength="100"
-        android:textStyle="bold"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        tools:text="My First Post" />
 
-    <TextView
-        android:id="@+id/post_body"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:autoLink="all"
-        android:maxLength="500"
-        android:linksClickable="true"
-        android:textColorLink="#00F"
-        android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:drawableLeft="@drawable/ic_place_green_24dp"
+            android:maxLines="1"
+            android:text ="Source: " />
 
+        <TextView
+            android:id="@+id/source"
+            android:layout_width="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_place_red_24dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Destination: " />
+
+        <TextView
+            android:id="@+id/destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Material: " />
+
+        <TextView
+            android:id="@+id/material"
+            android:layout_width="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Truck Type: " />
+
+        <TextView
+            android:id="@+id/truck_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Body Type: " />
+
+        <TextView
+            android:id="@+id/body_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Length: " />
+
+        <TextView
+            android:id="@+id/length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text ="Weight: " />
+
+        <TextView
+            android:id="@+id/weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:autoLink="all"
+            android:text="Destination"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:id="@+id/post_requirement_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+
+            android:text ="Requirement: " />
+
+        <TextView
+            android:id="@+id/post_requirement"
+            android:layout_width="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:linksClickable="true"
+            android:textColorLink="#00F"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+    </LinearLayout>
 </LinearLayout>
+

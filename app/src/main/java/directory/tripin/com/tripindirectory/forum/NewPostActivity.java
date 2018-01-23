@@ -1,7 +1,10 @@
 package directory.tripin.com.tripindirectory.forum;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -18,6 +21,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,12 +35,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
+import directory.tripin.com.tripindirectory.helper.Logger;
 
 
 public class NewPostActivity extends BaseActivity {
@@ -43,7 +56,7 @@ public class NewPostActivity extends BaseActivity {
     // [START declare_database_ref]
     private DatabaseReference mDatabase;
     // [END declare_database_ref]
-
+    private TextView mPaste;
     private EditText mTitleField;
     private EditText mBodyField;
     private FloatingActionButton mSubmitButton;
@@ -54,9 +67,11 @@ public class NewPostActivity extends BaseActivity {
 
     private TextInputEditText mPayload;
     private TextInputEditText mLength;
-    private TextInputEditText mSource;
-    private TextInputEditText mDestination;
+    private EditText mSource;
+    private EditText mDestination;
     private TextInputEditText mMaterial;
+    private TextInputEditText mPostRequirement;
+
 
     private TextInputLayout mMaterialInputLayout;
 
@@ -64,17 +79,16 @@ public class NewPostActivity extends BaseActivity {
     private RadioButton mPostLoad;
     private RadioButton mPostTruck;
 
+    private int SELECT_SOURCE = 1;
+    private int SELECT_DESTINATION = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
 
         setupToolbar();
-
-        // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        // [END initialize_database_ref]
-
 
         mSource = findViewById(R.id.source);
         mDestination = findViewById(R.id.destination);
@@ -83,7 +97,8 @@ public class NewPostActivity extends BaseActivity {
         bodyType = findViewById(R.id.body_type);
         mPayload = findViewById(R.id.input_payload);
         mLength = findViewById(R.id.input_length);
-
+        mPostRequirement = findViewById(R.id.post_requirement);
+        mPaste = findViewById(R.id.paste);
         mMaterialInputLayout = findViewById(R.id.input_layout_material);
 
         mPostTypeGroup = findViewById(R.id.post_type_group);
@@ -95,8 +110,14 @@ public class NewPostActivity extends BaseActivity {
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                submitPost(view);
-            }
+                final String postRequirement = mPostRequirement.getText().toString();
+                final String source = mSource.getText().toString();
+
+                if( (postRequirement != null || source != null) && (postRequirement.trim().length() > 0 || source.trim().length() > 0)) {
+                    submitPost();
+                } else {
+                    Toast.makeText(NewPostActivity.this,"Please fill Source or Requirement", Toast.LENGTH_SHORT).show();
+                }  }
         });
 
         ArrayAdapter<CharSequence> truckType = ArrayAdapter.createFromResource(this,
@@ -138,6 +159,20 @@ public class NewPostActivity extends BaseActivity {
         viewSetup();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SELECT_SOURCE && resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(NewPostActivity.this, data);
+                String sourceCityName = place.getName().toString().toUpperCase();
+                mSource.setText(sourceCityName);
+                }
+            } else if (requestCode == SELECT_DESTINATION && resultCode == RESULT_OK) {
+            Place place = PlaceAutocomplete.getPlace(NewPostActivity.this, data);
+            String sourceCityName = place.getName().toString().toUpperCase();
+            mDestination.setText(sourceCityName);
+        }
+        }
     private void viewSetup() {
         mPostTypeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -151,7 +186,55 @@ public class NewPostActivity extends BaseActivity {
                 }
             }
         });
+
+        mSource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starttheplacesfragment(SELECT_SOURCE);
+            }
+        });
+
+        mDestination.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starttheplacesfragment(SELECT_DESTINATION);
+            }
+        });
+
+        mPaste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String pasteString = paste();
+                if(pasteString != null) {
+                    mPostRequirement.setText(pasteString);
+                } else {
+                   Toast.makeText(NewPostActivity.this, "Nothing to paste, please copy first",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
+
+    public String paste() {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard.getText() != null) {
+                return clipboard.getText().toString();
+            } else {
+                return null;
+            }
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            if (item.getText() != null) {
+                return clipboard.getText().toString();
+            } else {
+                return null;
+            }
+
+        }
+    }
+
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -162,7 +245,25 @@ public class NewPostActivity extends BaseActivity {
 
     }
 
-    private void submitPost(View view) {
+    private void starttheplacesfragment(int selectFor){
+        try {
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setCountry("IN")
+                    .build();
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(typeFilter)
+                            .build(NewPostActivity.this);
+            startActivityForResult(intent, selectFor);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
+    private void submitPost() {
         final String source = mSource.getText().toString();
         final String destination = mDestination.getText().toString();
         final String material = mMaterial.getText().toString();
@@ -171,8 +272,10 @@ public class NewPostActivity extends BaseActivity {
         final String bodyTypestr = bodyType.getSelectedItem().toString();
         final String payload = mPayload.getText().toString();
         final String length = mLength.getText().toString();
+        final String postinhDate = getDate();
+        final String postRequirement = mPostRequirement.getText().toString();
 
-       final Post post = new Post(getUid(), "Ravi", POST_TYPE, source,   destination, material,"date", turckType,  bodyTypestr, length, payload,"Remark");
+        final Post post = new Post(getUid(), "Ravi", POST_TYPE, source,   destination, material, postinhDate, turckType,  bodyTypestr, length, payload, postRequirement);
 
             // Title is required
         //if (TextUtils.isEmpty(title)) {
@@ -254,4 +357,13 @@ public class NewPostActivity extends BaseActivity {
         mDatabase.updateChildren(childUpdates);
     }
     // [END write_fan_out]
+
+    private String getDate() {
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => " + c.getTime());
+
+        SimpleDateFormat df = new SimpleDateFormat("dd/MMM HH:mm");
+        String formattedDate = df.format(c.getTime());
+        return formattedDate;
+    }
 }

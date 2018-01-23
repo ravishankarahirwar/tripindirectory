@@ -15,39 +15,86 @@ import directory.tripin.com.tripindirectory.forum.models.Post;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView titleView;
-    public TextView authorView;
+    public TextView postType;
+
+    public TextView date;
+    public TextView source;
+    public TextView destination;
+    public TextView material;
+    public TextView truckType;
+    public TextView bodyType;
+    public TextView length;
+    public TextView weight;
+    public TextView postRequirement;
+    public TextView postRequirementCaption;
+
+
+    public ImageView postTypeIcon;
+    public ImageView call;
     public ImageView starView;
     public TextView numStarsView;
-    public TextView bodyView;
-    public ImageButton copyPost;
+    public ImageButton comments;
     public ImageView sharePost;
     public LinearLayout postTextContainer;
     public PostViewHolder(View itemView) {
         super(itemView);
 
-        postTextContainer = (LinearLayout) itemView.findViewById(R.id.post_text_container);
-        titleView = (TextView) itemView.findViewById(R.id.post_title);
-        authorView = (TextView) itemView.findViewById(R.id.post_author);
-        starView = (ImageView) itemView.findViewById(R.id.star);
-        numStarsView = (TextView) itemView.findViewById(R.id.post_num_stars);
-        bodyView = (TextView) itemView.findViewById(R.id.post_body);
-        copyPost = (ImageButton) itemView.findViewById(R.id.copy);
-        sharePost = (ImageButton) itemView.findViewById(R.id.share);
+
+        postTypeIcon =  itemView.findViewById(R.id.post_type_icon);
+        postTextContainer =  itemView.findViewById(R.id.post_text_container);
+        postType =  itemView.findViewById(R.id.post_type);
+        date = itemView.findViewById(R.id.date);
+        source = itemView.findViewById(R.id.source);
+        destination = itemView.findViewById(R.id.destination);
+        material = itemView.findViewById(R.id.material);
+        truckType = itemView.findViewById(R.id.truck_type);
+        bodyType = itemView.findViewById(R.id.body_type);
+        length = itemView.findViewById(R.id.length);
+        weight = itemView.findViewById(R.id.weight);
+        postRequirement = itemView.findViewById(R.id.post_requirement);
+        postRequirementCaption = itemView.findViewById(R.id.post_requirement_caption);
+
+        starView =  itemView.findViewById(R.id.star);
+        numStarsView = itemView.findViewById(R.id.post_num_stars);
+        comments =  itemView.findViewById(R.id.comment);
+        sharePost =  itemView.findViewById(R.id.share);
+        call = itemView.findViewById(R.id.call);
+
+
     }
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
 
-        if (!TextUtils.isEmpty(post.mSource)) {
-            titleView.setVisibility(View.VISIBLE);
-            titleView.setText(post.mFindOrPost);
+        if (post.mFindOrPost == 1) {
+            postType.setText("Need Truck");
+            postTypeIcon.setImageResource(R.drawable.delivery_truck_front);
+        }else if (post.mFindOrPost == 2) {
+            postType.setText("Need Load");
+            postTypeIcon.setImageResource(R.drawable.ic_widgets_red_24dp);
+            material.setVisibility(View.GONE);
         } else {
-            titleView.setVisibility(View.GONE);
+            postType.setVisibility(View.GONE);
         }
-        authorView.setText(post.mSource);
-        numStarsView.setText(String.valueOf(post.starCount));
-        bodyView.setText(post.mSource);
 
+        date.setText(post.getmDate());
+        source.setText(post.getmSource());
+        destination.setText(post.getmDestination());
+        material.setText(post.getmMeterial());
+        truckType.setText(post.getmTruckType());
+        bodyType.setText(post.getmTruckBodyType());
+        length.setText(post.getmTruckLength());
+        weight.setText(post.getmPayload());
+
+        if(post.getmRemark() != null && post.getmRemark().trim().length() > 0) {
+            postRequirement.setVisibility(View.VISIBLE);
+            postRequirementCaption.setVisibility(View.VISIBLE);
+            postRequirement.setText(post.getmRemark());
+        } else {
+            postRequirement.setVisibility(View.GONE);
+            postRequirementCaption.setVisibility(View.GONE);
+        }
+
+        numStarsView.setText(String.valueOf(post.starCount));
         starView.setOnClickListener(starClickListener);
     }
 }

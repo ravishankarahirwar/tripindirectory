@@ -107,8 +107,10 @@
     <string name="available">Available</string>
     <string name="not_available">Not Available</string>
     <string name="vehicle_number">Vehicle Number</string>
-    <string name="payload">Payload</string>
+    <string name="payload">Weight</string>
     <string name="length">Length</string>
+    <string name="requirement">Your Requirement</string>
+
     <string name="driver_name">Driver Name</string>
     <string name="indian_logistics_network">Indian Logistics Network</string>
     <string name="support_email">ravishankar.ahirwar@tripin.co.in</string>

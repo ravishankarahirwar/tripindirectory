@@ -34,7 +34,6 @@ public class Post {
     }
 
     /**
-     *
      * @param uid
      * @param author
      * @param findOrPost
@@ -187,6 +186,7 @@ public class Post {
         result.put("mMeterial", mMeterial);
         result.put("mDate", mDate);
         result.put("mTruckType", mTruckType);
+        result.put("mTruckBodyType", mTruckBodyType);
         result.put("mTruckLength", mTruckLength);
         result.put("mPayload", mPayload);
         result.put("mRemark", mRemark);
@@ -198,5 +198,19 @@ public class Post {
     }
     // [END post_to_map]
 
+
+    @Override
+    public String toString() {
+        return  " Source =" + mSource + "\n" +
+                " Destination = " + mDestination + "\n" +
+                " Material = " + mMeterial + "\n" +
+                " Date = " + mDate + "\n" +
+                " TruckType = " + mTruckType + "\n" +
+                " TruckBodyType = " + mTruckBodyType + "\n" +
+                " TruckLength = " + mTruckLength + "\n" +
+                " Payload = " + mPayload + "\n" +
+                " Remark = " + mRemark + "\n"  +
+                " Share By: Indian Logistics Network \n" + "http://bit.ly/ILNAPPS";
+    }
 }
 // [END post_class]

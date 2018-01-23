@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,13 +44,25 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
 
     private DatabaseReference mPostReference;
     private DatabaseReference mCommentsReference;
+
     private ValueEventListener mPostListener;
     private String mPostKey;
     private CommentAdapter mAdapter;
 
-    private TextView mAuthorView;
-    private TextView mTitleView;
-    private TextView mBodyView;
+    public TextView postType;
+    public ImageView postTypeIcon;
+
+    public TextView date;
+    public TextView source;
+    public TextView destination;
+    public TextView material;
+    public TextView truckType;
+    public TextView bodyType;
+    public TextView length;
+    public TextView weight;
+    public TextView postRequirement;
+
+
     private EditText mCommentField;
     private ImageButton mCommentButton;
     private RecyclerView mCommentsRecycler;
@@ -66,16 +80,24 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
             throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
         }
 
-        // Initialize Database
         mPostReference = FirebaseDatabase.getInstance().getReference()
                 .child("posts").child(mPostKey);
         mCommentsReference = FirebaseDatabase.getInstance().getReference()
                 .child("post-comments").child(mPostKey);
 
-        // Initialize Views
-        mAuthorView = (TextView) findViewById(R.id.post_author);
-        mTitleView = (TextView) findViewById(R.id.post_title);
-        mBodyView = (TextView) findViewById(R.id.post_body);
+        postTypeIcon =  findViewById(R.id.post_type_icon);
+        postType =  findViewById(R.id.post_type);
+        date = findViewById(R.id.date);
+        source = findViewById(R.id.source);
+        destination = findViewById(R.id.destination);
+        material = findViewById(R.id.material);
+        truckType = findViewById(R.id.truck_type);
+        bodyType = findViewById(R.id.body_type);
+        length = findViewById(R.id.length);
+        weight = findViewById(R.id.weight);
+        postRequirement = findViewById(R.id.post_requirement);
+
+
         mCommentField = (EditText) findViewById(R.id.field_comment_text);
         mCommentButton = (ImageButton) findViewById(R.id.button_post_comment);
         mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
@@ -98,18 +120,31 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
     public void onStart() {
         super.onStart();
 
-        // Add value event listener to the post
-        // [START post_value_event_listener]
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
-                // [START_EXCLUDE]
-                mAuthorView.setText(post.mAuthor);
-                mTitleView.setText(post.mDate);
-                mBodyView.setText(post.mFindOrPost);
-                // [END_EXCLUDE]
+                if (post.mFindOrPost == 1) {
+                    postType.setText("Need Truck");
+                    postTypeIcon.setImageResource(R.drawable.delivery_truck_front);
+                } else if (post.mFindOrPost == 2) {
+                    postType.setText("Need Load");
+                    postTypeIcon.setImageResource(R.drawable.ic_widgets_red_24dp);
+                    material.setVisibility(View.GONE);
+                } else {
+                    postType.setVisibility(View.GONE);
+                }
+
+                date.setText(post.getmDate());
+                source.setText(post.getmSource());
+                destination.setText(post.getmDestination());
+                material.setText(post.getmMeterial());
+                truckType.setText(post.getmTruckType());
+                bodyType.setText(post.getmTruckBodyType());
+                length.setText(post.getmTruckLength());
+                weight.setText(post.getmPayload());
+                postRequirement.setText(post.getmRemark());
             }
 
             @Override
@@ -198,7 +233,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
             super(itemView);
 
             authorView = (TextView) itemView.findViewById(R.id.comment_author);
-            bodyView = (TextView) itemView.findViewById(R.id.comment_body);
+            bodyView = (TextView)itemView.findViewById(R.id.comment_body);
         }
     }
 

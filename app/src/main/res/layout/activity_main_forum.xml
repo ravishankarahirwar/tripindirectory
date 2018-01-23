@@ -38,6 +38,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_action_post" />
+            app:borderWidth="1dp"
+            app:elevation="6dp"
+            app:rippleColor="@color/colorPrimaryDark"
+            app:fabSize="normal"
+            app:backgroundTint="@color/primaryColor"
+            app:srcCompat="@drawable/ic_border_color_black_24dp" />
 
     </android.support.design.widget.CoordinatorLayout>
