@@ -38,7 +38,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
 
-        if (!TextUtils.isEmpty(post.mFindOrPost)) {
+        if (!TextUtils.isEmpty(post.mSource)) {
             titleView.setVisibility(View.VISIBLE);
             titleView.setText(post.mFindOrPost);
         } else {

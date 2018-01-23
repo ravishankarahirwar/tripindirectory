@@ -120,7 +120,7 @@
         <!--Forum Activities-->
         <activity
             android:name=".forum.MainActivity"
-            android:label="Roadpali Forum"
+            android:label="ILN Loadboard"
             android:theme="@style/AppTheme.NoActionBar" >
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"

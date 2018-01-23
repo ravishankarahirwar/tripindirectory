@@ -136,6 +136,7 @@
     <string name="heading_my_top_posts">My Top Posts</string>
 
     <string name="source">Source</string>
+    <string name="hint_material">Material</string>
 
     <string name="post_load">POST LOAD</string>
     <string name="post_truck">POST TRUCK</string>

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +34,9 @@ import directory.tripin.com.tripindirectory.forum.models.User;
 
 
 public class NewPostActivity extends BaseActivity {
-
+    private static final int POST_LOAD = 1;
+    private static final int POST_TRUCK = 2;
+    private int POST_TYPE = POST_LOAD;
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
 
@@ -51,7 +56,13 @@ public class NewPostActivity extends BaseActivity {
     private TextInputEditText mLength;
     private TextInputEditText mSource;
     private TextInputEditText mDestination;
+    private TextInputEditText mMaterial;
 
+    private TextInputLayout mMaterialInputLayout;
+
+    private RadioGroup mPostTypeGroup;
+    private RadioButton mPostLoad;
+    private RadioButton mPostTruck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +78,17 @@ public class NewPostActivity extends BaseActivity {
 
         mSource = findViewById(R.id.source);
         mDestination = findViewById(R.id.destination);
+        mMaterial = findViewById(R.id.material);
         vehicleType = findViewById(R.id.vehicle_type);
         bodyType = findViewById(R.id.body_type);
         mPayload = findViewById(R.id.input_payload);
         mLength = findViewById(R.id.input_length);
 
+        mMaterialInputLayout = findViewById(R.id.input_layout_material);
+
+        mPostTypeGroup = findViewById(R.id.post_type_group);
+        mPostLoad = findViewById(R.id.post_load);
+        mPostTruck = findViewById(R.id.post_truck);
 
         mSubmitButton = (FloatingActionButton) findViewById(R.id.fab_submit_post);
 
@@ -117,6 +134,23 @@ public class NewPostActivity extends BaseActivity {
 
         vehicleType.setAdapter(truckType);
         bodyType.setAdapter(bodyTypeAdapter);
+
+        viewSetup();
+    }
+
+    private void viewSetup() {
+        mPostTypeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
+                if (radioButtonID == R.id.post_load) {
+                    POST_TYPE = POST_LOAD;
+                    mMaterialInputLayout.setVisibility(TextInputLayout.VISIBLE);
+                } else if (radioButtonID == R.id.post_truck) {
+                    mMaterialInputLayout.setVisibility(TextInputLayout.GONE);
+                    POST_TYPE = POST_TRUCK;
+                }
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -131,12 +165,14 @@ public class NewPostActivity extends BaseActivity {
     private void submitPost(View view) {
         final String source = mSource.getText().toString();
         final String destination = mDestination.getText().toString();
+        final String material = mMaterial.getText().toString();
+
         final String turckType = vehicleType.getSelectedItem().toString();
         final String bodyTypestr = bodyType.getSelectedItem().toString();
         final String payload = mPayload.getText().toString();
         final String length = mLength.getText().toString();
 
-       final Post post = new Post(getUid(), "Ravi", source, "findOrPost",  destination,"material","date", turckType,  bodyTypestr, length, payload,"Remark");
+       final Post post = new Post(getUid(), "Ravi", POST_TYPE, source,   destination, material,"date", turckType,  bodyTypestr, length, payload,"Remark");
 
             // Title is required
         //if (TextUtils.isEmpty(title)) {

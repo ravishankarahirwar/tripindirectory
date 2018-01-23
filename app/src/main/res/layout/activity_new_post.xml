@@ -9,39 +9,39 @@
     <include layout="@layout/toolbar" />
 
     <RadioGroup
-        android:id="@+id/post_find_tag"
+        android:id="@+id/post_type_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
         android:gravity="center"
         android:layout_marginBottom="4dp"
-        android:layout_marginTop="8dp"
+        android:background="@color/categoriesbg"
         android:orientation="horizontal">
 
     <RadioButton
-        android:id="@+id/search_by_route"
+        android:id="@+id/post_load"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/search_tag_selector"
         android:button="@null"
         android:checked="true"
         android:elevation="2dp"
         android:padding="8dp"
         android:text="@string/post_load"
-        android:textColor="@color/arrow_white"
+        android:textColor="@color/arrow_grey"
         />
 
     <RadioButton
-        android:id="@+id/search_by_company"
+        android:id="@+id/post_truck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/search_tag_selector"
         android:button="@null"
         android:elevation="2dp"
@@ -55,7 +55,7 @@
         android:id="@+id/input_layout_source"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/post_find_tag"
+        android:layout_below="@+id/post_type_group"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,11 +86,28 @@
         android:hint="@string/destination" />
 </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_material"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/input_layout_destination"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/material"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_material" />
+    </android.support.design.widget.TextInputLayout>
+
     <LinearLayout
         android:id="@+id/truck_type_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/input_layout_destination">
+        android:layout_below="@+id/input_layout_material">
 
     <Spinner
         android:id="@+id/vehicle_type"
