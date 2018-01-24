@@ -63,6 +63,7 @@
 
     <string-array name="body_type">
         <item>None</item>
+
         <item>Body</item>
         <item>Normal</item>
         <item>Full Body</item>
@@ -120,6 +121,7 @@
     <string name="length">Length(Ft)</string>
     <string name="requirement">Your Requirement</string>
 
+
     <string name="driver_name">Driver Name</string>
     <string name="indian_logistics_network">Indian Logistics Network</string>
     <string name="support_email">ravishankar.ahirwar@tripin.co.in</string>
@@ -151,7 +153,6 @@
 
     <string name="post_load">POST LOAD</string>
     <string name="post_truck">POST TRUCK</string>
-
 
     <string name="get_verified">\t Hello user! your company details are not verified yet,
         please send a verification request and get your company verified by ILN Executives,
