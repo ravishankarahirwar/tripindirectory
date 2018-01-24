@@ -123,7 +123,12 @@ public abstract class PostListFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        callNumber(user.getPhoneNumber());;
+                        String phoneNO = model.getmContactNo();
+                        if(phoneNO != null && phoneNO.length() > 0) {
+                            callNumber(phoneNO);
+                        } else {
+                            Toast.makeText(getContext(), "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 

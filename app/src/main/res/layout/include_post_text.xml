@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/post_container"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,52 +10,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
             android:drawableLeft="@drawable/ic_place_green_24dp"
+            android:drawablePadding="4dp"
+            android:ellipsize="end"
             android:maxLines="1"
-            android:text ="Source: " />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
             android:id="@+id/source"
-            android:layout_width="wrap_content"
             style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="all"
-            android:text="Destination"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"
             android:linksClickable="true"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            android:text="Source" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal">
+
         <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_place_red_24dp"
+            android:drawablePadding="4dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text ="Destination: " />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
             android:id="@+id/destination"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
             android:layout_width="wrap_content"
+
             android:layout_height="wrap_content"
 
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-
             android:autoLink="all"
-            android:text="Destination"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"
             android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            android:text="Destination"
+            android:textColorLink="#00F" />
 
     </LinearLayout>
 
@@ -65,26 +67,20 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:orientation="horizontal">
+
         <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text ="Material: " />
+            android:text="Material: "
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
             android:id="@+id/material"
-            android:layout_width="wrap_content"
             style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:text="Destination"
-            android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -92,107 +88,109 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
+        android:weightSum="2"
         android:orientation="horizontal">
-        <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
 
-
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text ="Truck Type: " />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/truck_type"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Truck Type: "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                <TextView
+                    android:id="@+id/truck_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Body Type: "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                <TextView
+                    android:id="@+id/body_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:autoLink="all"
-            android:text="Destination"
-            android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:orientation="horizontal">
-        <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Length: "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
+                <TextView
+                    android:id="@+id/length"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text ="Body Type: " />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/body_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:autoLink="all"
-            android:text="Destination"
-            android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weight: "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:orientation="horizontal">
-        <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text ="Length: " />
-
-        <TextView
-            android:id="@+id/length"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:autoLink="all"
-            android:text="Destination"
-            android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:orientation="horizontal">
-        <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text ="Weight: " />
-
-        <TextView
-            android:id="@+id/weight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-            android:autoLink="all"
-            android:text="Destination"
-            android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+                <TextView
+                    android:id="@+id/weight"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -200,25 +198,26 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:orientation="vertical">
+
         <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:id="@+id/post_requirement_caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="Requirement: "
 
-            android:text ="Requirement: " />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
             android:id="@+id/post_requirement"
-            android:layout_width="wrap_content"
             style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="all"
+            android:lineSpacingExtra="@dimen/activity_horizontal_margin"
             android:linksClickable="true"
-            android:textColorLink="#00F"
-            android:lineSpacingExtra="@dimen/activity_horizontal_margin"/>
+            android:textColorLink="#00F" />
     </LinearLayout>
 </LinearLayout>
 

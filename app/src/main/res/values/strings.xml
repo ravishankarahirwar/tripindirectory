@@ -110,7 +110,7 @@
     <string name="not_available">Not Available</string>
     <string name="vehicle_number">Vehicle Number</string>
     <string name="payload">Weight</string>
-    <string name="length">Length</string>
+    <string name="length">Length(Ft)</string>
     <string name="requirement">Your Requirement</string>
 
     <string name="driver_name">Driver Name</string>
