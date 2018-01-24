@@ -39,6 +39,7 @@
 
 
     <string-array name="truck_type">
+        <item>None</item>
         <item>LCV</item>
         <item>Truck</item>
         <item>Tusker</item>
@@ -55,6 +56,7 @@
     </string-array>
 
     <string-array name="body_type">
+        <item>None</item>
         <item>Normal</item>
         <item>Full Body</item>
         <item>Half Body</item>

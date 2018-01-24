@@ -205,7 +205,7 @@ public class NewPostActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 String pasteString = paste();
-                if(pasteString != null) {
+                if(pasteString != null && (!pasteString.isEmpty()) && pasteString.length() > 0) {
                     mPostRequirement.setText(pasteString);
                 } else {
                    Toast.makeText(NewPostActivity.this, "Nothing to paste, please copy first",Toast.LENGTH_LONG).show();
@@ -225,14 +225,16 @@ public class NewPostActivity extends BaseActivity {
             }
         } else {
             android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            android.content.ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-            if (item.getText() != null) {
-                return clipboard.getText().toString();
-            } else {
-                return null;
+            if (clipboard != null &&  clipboard.getPrimaryClip() != null && clipboard.getPrimaryClip().getItemCount() > 0) {
+                android.content.ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                if (item.getText() != null) {
+                    return clipboard.getText().toString();
+                } else {
+                    return null;
+                }
             }
-
         }
+        return null;
     }
 
 
@@ -274,8 +276,9 @@ public class NewPostActivity extends BaseActivity {
         final String length = mLength.getText().toString();
         final String postinhDate = getDate();
         final String postRequirement = mPostRequirement.getText().toString();
+        final String userPhoneNo = getUserPhoneNo();
 
-        final Post post = new Post(getUid(), "Ravi", POST_TYPE, source,   destination, material, postinhDate, turckType,  bodyTypestr, length, payload, postRequirement);
+        final Post post = new Post(getUid(), userPhoneNo, POST_TYPE, source,   destination, material, postinhDate, turckType,  bodyTypestr, length, payload, postRequirement);
 
             // Title is required
         //if (TextUtils.isEmpty(title)) {

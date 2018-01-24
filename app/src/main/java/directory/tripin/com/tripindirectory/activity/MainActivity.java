@@ -262,6 +262,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("gotoforum", "Click");
+                mFirebaseAnalytics.logEvent("ClickGoToForum", params);
+
                 if (mAuth.getCurrentUser() != null) {
                     onAuthSuccess(mAuth.getCurrentUser());
                 } else {
