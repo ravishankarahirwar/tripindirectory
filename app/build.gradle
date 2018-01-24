@@ -9,8 +9,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 21
-        versionName "4.4"
+        versionCode 22
+        versionName "4.5"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -41,7 +41,6 @@ android {
         stagging {
             buildConfigField "Boolean", "LOG", 'true'
             dimension "default"
-
         }
 
         prod {

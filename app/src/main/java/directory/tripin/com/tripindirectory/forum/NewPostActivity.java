@@ -278,7 +278,7 @@ public class NewPostActivity extends BaseActivity {
         final String postRequirement = mPostRequirement.getText().toString();
         final String userPhoneNo = getUserPhoneNo();
 
-        final Post post = new Post(getUid(), userPhoneNo, POST_TYPE, source,   destination, material, postinhDate, turckType,  bodyTypestr, length, payload, postRequirement);
+        final Post post = new Post(getUid(), userPhoneNo, POST_TYPE, source,   destination, material, postinhDate, turckType,  bodyTypestr, length, payload, postRequirement, userPhoneNo);
 
             // Title is required
         //if (TextUtils.isEmpty(title)) {
@@ -365,7 +365,7 @@ public class NewPostActivity extends BaseActivity {
         Calendar c = Calendar.getInstance();
         System.out.println("Current time => " + c.getTime());
 
-        SimpleDateFormat df = new SimpleDateFormat("dd/MMM HH:mm");
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd, HH:mm");
         String formattedDate = df.format(c.getTime());
         return formattedDate;
     }

@@ -24,6 +24,7 @@ public class Post {
     public String mTruckBodyType;
     public String mTruckLength;
     public String mPayload;
+    public String mContactNo;
     public String mRemark;
 
     public int starCount = 0;
@@ -46,7 +47,7 @@ public class Post {
      * @param payload
      * @param remark
      */
-    public Post(String uid, String author, int findOrPost, String source, String destination, String meterial, String date, String truckType, String bodyType, String truckLength, String payload, String remark) {
+    public Post(String uid, String author, int findOrPost, String source, String destination, String meterial, String date, String truckType, String bodyType, String truckLength, String payload, String remark, String contactNo) {
         this.mUid = uid;
         this.mAuthor = author;
         this.mFindOrPost = findOrPost;
@@ -59,6 +60,7 @@ public class Post {
         this.mTruckLength = truckLength;
         this.mPayload = payload;
         this.mRemark = remark;
+        this.mContactNo = contactNo;
     }
 
     public String getmUid() {
@@ -173,6 +175,15 @@ public class Post {
         this.stars = stars;
     }
 
+
+    public String getmContactNo() {
+        return mContactNo;
+    }
+
+    public void setmContactNo(String mContactNo) {
+        this.mContactNo = mContactNo;
+    }
+
     // [START post_to_map]
     @Exclude
     public Map<String, Object> toMap() {
@@ -189,6 +200,7 @@ public class Post {
         result.put("mTruckBodyType", mTruckBodyType);
         result.put("mTruckLength", mTruckLength);
         result.put("mPayload", mPayload);
+        result.put("mContactNo", mContactNo);
         result.put("mRemark", mRemark);
 
         result.put("starCount", starCount);

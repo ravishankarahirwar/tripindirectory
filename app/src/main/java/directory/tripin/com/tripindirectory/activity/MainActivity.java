@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void onAuthSuccess(FirebaseUser user) {
         String userPhoneNo = user.getPhoneNumber();
         // Write new user
-        writeNewUser(user.getUid(),"Ravi", userPhoneNo);
+        writeNewUser(user.getUid(),userPhoneNo, userPhoneNo);
         // Go to MainActivity
         startActivity(new Intent(MainActivity.this, directory.tripin.com.tripindirectory.forum.MainActivity.class));
     }
