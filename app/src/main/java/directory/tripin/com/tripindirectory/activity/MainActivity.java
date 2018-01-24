@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -55,8 +56,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -76,6 +81,7 @@ import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
+import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
@@ -96,7 +102,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int SEARCHTAG_CITY = 2;
     private static final int SEARCHTAG_TRANSPORTER = 3;
 
-    private static final int RC_SIGN_IN = 123;
+    private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
+    private static final int SIGN_IN_FOR_FORUM = 222;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
@@ -126,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerViewAnimator mAnimator;
     LottieAnimationView lottieAnimationView;
 
+    private DatabaseReference mDatabase;
+    private DatabaseReference myRef;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .poll()
                 .snackbar();
         //Add to Activity
+        //For Production
+//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
+
+        //For Testing
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
 
         setContentView(R.layout.activity_home);
@@ -156,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSearchData = new SearchData();
         mGeoDataClient = Places.getGeoDataClient(this, null);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        FirebaseApp.initializeApp(getApplicationContext());
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -240,6 +257,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         setupSearchBar();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("gotoforum", "Click");
+                mFirebaseAnalytics.logEvent("ClickGoToForum", params);
+
+                if (mAuth.getCurrentUser() != null) {
+                    onAuthSuccess(mAuth.getCurrentUser());
+                } else {
+                    // not signed in
+                    startSignInFor(SIGN_IN_FOR_FORUM);
+                }
+            }
+        });
+    }
+
+    private void onAuthSuccess(FirebaseUser user) {
+        String userPhoneNo = user.getPhoneNumber();
+        // Write new user
+        writeNewUser(user.getUid(),"Ravi", userPhoneNo);
+        // Go to MainActivity
+        startActivity(new Intent(MainActivity.this, directory.tripin.com.tripindirectory.forum.MainActivity.class));
+    }
+
+    private void writeNewUser(String userId, String name, String userPhoneNo) {
+        User user = new User(name, userPhoneNo);
+        mDatabase.child("users").child(userId).setValue(user);
     }
 
     private void fetchCompanyAutoSuggestions(String s) {
@@ -426,8 +473,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
-        if (requestCode == RC_SIGN_IN) {
+        // SIGN_IN_FOR_CREATE_COMPANY is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == SIGN_IN_FOR_CREATE_COMPANY) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             // Successfully signed in
@@ -498,6 +545,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(mContext, matches.get(0).toString(), Toast.LENGTH_SHORT).show();
             String enquiry = matches.get(0).toString();
             onVoiceSearch(enquiry);
+        } else if (requestCode ==  SIGN_IN_FOR_FORUM && resultCode == RESULT_OK) {
+            if (mAuth.getCurrentUser() != null) {
+                onAuthSuccess(mAuth.getCurrentUser());
+            } else {
+                Toast.makeText(mContext, "Unknow error", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -521,14 +574,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
             } else {
                 // not signed in
-                startActivityForResult(
-                        // Get an instance of AuthUI based on the default app
-                        AuthUI.getInstance().createSignInIntentBuilder()
-                                .setAvailableProviders(
-                                        Collections.singletonList(
-                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
-                                .build(),
-                        RC_SIGN_IN);
+                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+//                startActivityForResult(
+//                        // Get an instance of AuthUI based on the default app
+//                        AuthUI.getInstance().createSignInIntentBuilder()
+//                                .setAvailableProviders(
+//                                        Collections.singletonList(
+//                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                .build(),
+//                        SIGN_IN_FOR_CREATE_COMPANY);
             }
         } else if (id == R.id.nav_notification) {
 
@@ -942,6 +996,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(callIntent);
+    }
+    
+    private void startSignInFor(int signInFor) {
+        // not signed in
+        startActivityForResult(
+                // Get an instance of AuthUI based on the default app
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Collections.singletonList(
+                                        new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+                        .build(),
+                signInFor);
     }
 
 }

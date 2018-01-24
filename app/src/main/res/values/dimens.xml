@@ -9,4 +9,31 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
 
+    <dimen name="spacing_micro">4dp</dimen>
+    <dimen name="spacing_normal">8dp</dimen>
+    <dimen name="spacing_double">16dp</dimen>
+    <dimen name="spacing_huge">72dp</dimen>
+
+    <dimen name="elevation_header">4dp</dimen>
+    <dimen name="elevation_fab">8dp</dimen>
+
+    <dimen name="size_icon_toolbar">40dp</dimen>
+
+    <integer name="anim_duration_very_long">1500</integer>
+    <integer name="anim_duration_long">800</integer>
+    <integer name="anim_duration_medium">300</integer>
+
+    <dimen name="button_elevation">1dp</dimen>
+    <dimen name="button_press_elevation">18dp</dimen>
+    <dimen name="card_elevation">1dp</dimen>
+    <dimen name="card_corner_radius">0dp</dimen>
+
+    <dimen name="detail_backdrop_height">256dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="list_item_avatar_size">40dp</dimen>
+
+    <dimen name="divider_height">1dp</dimen>
+    <dimen name="divider_left_margin">72dp</dimen>
+    <dimen name="song_title_text_size">14sp</dimen>
+    <dimen name="song_sub_title_text_size">10sp</dimen>
 </resources>

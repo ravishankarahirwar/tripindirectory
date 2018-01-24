@@ -12,7 +12,6 @@
     <string name="invitation_custom_image">https://ibb.co/cYAajw</string>
     <string name="invitation_cta">Download Now</string>
 
-
     <string name="menu_location_text">Location</string>
     <string name="menu_Message_text">Message</string>
 
@@ -40,6 +39,7 @@
 
 
     <string-array name="truck_type">
+        <item>None</item>
         <item>LCV</item>
         <item>Truck</item>
         <item>Tusker</item>
@@ -56,6 +56,7 @@
     </string-array>
 
     <string-array name="body_type">
+        <item>None</item>
         <item>Normal</item>
         <item>Full Body</item>
         <item>Half Body</item>
@@ -108,8 +109,10 @@
     <string name="available">Available</string>
     <string name="not_available">Not Available</string>
     <string name="vehicle_number">Vehicle Number</string>
-    <string name="payload">Payload</string>
+    <string name="payload">Weight</string>
     <string name="length">Length</string>
+    <string name="requirement">Your Requirement</string>
+
     <string name="driver_name">Driver Name</string>
     <string name="indian_logistics_network">Indian Logistics Network</string>
     <string name="support_email">ravishankar.ahirwar@tripin.co.in</string>
@@ -131,4 +134,16 @@
     <string name="action_filter">filters</string>
     <string name="action_notifications">notifications</string>
     <string name="nev_loadboard">Load Board</string>
+
+    <string name="heading_recent">Recent</string>
+    <string name="heading_my_posts">My Posts</string>
+    <string name="heading_my_top_posts">My Top Posts</string>
+
+    <string name="source">Source</string>
+    <string name="hint_material">Material</string>
+
+    <string name="post_load">POST LOAD</string>
+    <string name="post_truck">POST TRUCK</string>
+
+
 </resources>

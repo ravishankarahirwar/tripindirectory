@@ -8,8 +8,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -117,6 +115,23 @@
             </intent-filter>
         </activity>
 
+        <!--Forum Activities-->
+        <activity
+            android:name=".forum.MainActivity"
+            android:label="ILN Loadboard"
+            android:theme="@style/AppTheme.NoActionBar" >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".forum.NewPostActivity"
+            android:label="Now Post"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".forum.MainActivity" />
+        </activity>
 
         <activity
             android:name=".activity.LandingActivity"
@@ -144,6 +159,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".forum.PostDetailActivity"
+            android:label="Post Detail"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".forum.MainActivity" />
         </activity>
     </application>
 
