@@ -9,11 +9,15 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,12 +47,14 @@ import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumber
 import directory.tripin.com.tripindirectory.FormActivities.ContactPersonsAdapter;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 import static android.app.Activity.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,9 +67,12 @@ public class CompanyFromFragment extends BaseFragment {
     DocumentReference mUserDocRef;
     FirebaseAuth auth;
     TextUtils textUtils;
+    PreferenceManager preferenceManager;
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
     private EditText mCompanyNmae;
+    private EditText mCompanyEmail;
+    private EditText mCompanyWeb;
+
     private EditText mCompanyAddress;
     private EditText mCompanyCity;
     private EditText mCompanyState;
@@ -91,6 +100,10 @@ public class CompanyFromFragment extends BaseFragment {
     private ContactPersonsAdapter contactPersonsAdapter;
     private CompanyLandLineNumbersAdapter companyLandLineNumbersAdapter;
     private LinearLayout mLoadingDataLin;
+    private LinearLayout mFormLin;
+
+    private TextView mRMNText;
+
 
     private ImageView togglenoblist, toggletoslist;
 
@@ -135,16 +148,19 @@ public class CompanyFromFragment extends BaseFragment {
     public void FetchUserData() {
         //get the updated partner pojo and set all fields if not null
         auth = FirebaseAuth.getInstance();
+        mRMNText.setText(auth.getCurrentUser().getPhoneNumber()+" ");
+
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
-        Logger.v("Fetching Data");
+        Logger.v("Fetching Data...");
         //mLoadingDataLin.setVisibility(View.VISIBLE);
+
+
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 isDataFatched = true;
                 if (task.isSuccessful() && task.getResult().exists()) {
-                    mLoadingDataLin.setVisibility(View.GONE);
                     PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
 
                     if (partnerInfoPojo.getmContactPersonsList() != null) {
@@ -161,6 +177,17 @@ public class CompanyFromFragment extends BaseFragment {
 
 
                     mCompanyNmae.setText(partnerInfoPojo.getmCompanyName());
+                    mCompanyEmail.setText(partnerInfoPojo.getmCompanyEmail());
+                    mCompanyWeb.setText(partnerInfoPojo.getmCompanyWebsite());
+                    if(partnerInfoPojo.getmAccountStatus()>=2){
+                        mRMNText
+                                .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_fiber_smart_record_bllue_24dp),
+                                        null,
+                                        null,
+                                        null);
+                    }
 
                     if (partnerInfoPojo.getmCompanyAdderss() != null) {
                         mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getAddress());
@@ -210,7 +237,13 @@ public class CompanyFromFragment extends BaseFragment {
 
 
                     Logger.v("On Data Fetch and set Company Data");
+                    mFormLin.setVisibility(View.VISIBLE);
+                    mLoadingDataLin.setVisibility(View.GONE);
 
+
+                }else {
+                    mFormLin.setVisibility(View.VISIBLE);
+                    mLoadingDataLin.setVisibility(View.GONE);
                 }
 
             }
@@ -223,7 +256,7 @@ public class CompanyFromFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         isDataFatched = false;
         textUtils = new TextUtils();
-        FetchUserData();
+        preferenceManager = PreferenceManager.getInstance(getApplicationContext());
     }
 
     @Override
@@ -247,23 +280,34 @@ public class CompanyFromFragment extends BaseFragment {
             List<ContactPersonPojo> contacts = new ArrayList<>();
             for (int i = 0; i < mContactPersonsList.size(); i++) {
                 View v = mPersonsRecyclarView.getLayoutManager().findViewByPosition(i);
-                EditText name = v.findViewById(R.id.contact_person_name);
-                EditText number = v.findViewById(R.id.contact_person_number);
-                contacts.add(new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
+                if(v!=null){
+                    EditText name = v.findViewById(R.id.contact_person_name);
+                    EditText number = v.findViewById(R.id.contact_person_number);
+                    contacts.add(new ContactPersonPojo(name.getText().toString().trim(), number.getText().toString().trim()));
+                }
+
             }
             List<String> landlines = new ArrayList<>();
             for (int i = 0; i < mCompanyLandLineNumbers.size(); i++) {
                 View v = mLandlineRecyclarView.getLayoutManager().findViewByPosition(i);
-                EditText number = v.findViewById(R.id.landline_number);
-                landlines.add(number.getText().toString().trim());
+                if(v!=null){
+                    EditText number = v.findViewById(R.id.landline_number);
+                    landlines.add(number.getText().toString().trim());
+                }
             }
             PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
             partnerInfoPojo.setContactPersonsList(contacts);
             partnerInfoPojo.setmCompanyLandLineNumbers(landlines);
 
 
-            //setname
+            //get company name
             partnerInfoPojo.setCompanyName(mCompanyNmae.getText().toString().trim().toUpperCase());
+
+            //setCompany Email
+            partnerInfoPojo.setmCompanyEmail(mCompanyEmail.getText().toString().trim());
+
+            //getcompany Wensite
+            partnerInfoPojo.setmCompanyWebsite(mCompanyWeb.getText().toString().trim());
 
             //setaddress
             partnerInfoPojo
@@ -303,10 +347,22 @@ public class CompanyFromFragment extends BaseFragment {
             mUserDocRef.set(hashMap5, SetOptions.merge());
 
             HashMap<String, String> hashMap6 = new HashMap<>();
-            hashMap6.put("mRMN", mAuth.getCurrentUser().getPhoneNumber() + "");
+            hashMap6.put("mRMN", auth.getCurrentUser().getPhoneNumber() + "");
             mUserDocRef.set(hashMap6, SetOptions.merge());
 
+            HashMap<String, String> hashMap9 = new HashMap<>();
+            hashMap9.put("mCompanyEmail", partnerInfoPojo.getmCompanyEmail());
+            mUserDocRef.set(hashMap9, SetOptions.merge());
 
+            HashMap<String, String> hashMap10 = new HashMap<>();
+            hashMap10.put("mCompanyWebsite",partnerInfoPojo.getmCompanyWebsite());
+            mUserDocRef.set(hashMap10, SetOptions.merge());
+
+            if(partnerInfoPojo.getmFcmToken()==null){
+                HashMap<String, String> hashMap7 = new HashMap<>();
+                hashMap7.put("mFcmToken",preferenceManager.getFcmToken());
+                mUserDocRef.set(hashMap7, SetOptions.merge());
+            }
 
         }
 
@@ -321,6 +377,8 @@ public class CompanyFromFragment extends BaseFragment {
         init();
 
         mCompanyNmae = v.findViewById(R.id.company_name);
+        mCompanyEmail = v.findViewById(R.id.company_email);
+        mCompanyWeb = v.findViewById(R.id.company_website);
         mCompanyAddress = v.findViewById(R.id.input_company_address);
         mCompanyCity = v.findViewById(R.id.input_city);
         mCompanyState = v.findViewById(R.id.input_state);
@@ -329,8 +387,10 @@ public class CompanyFromFragment extends BaseFragment {
         mAddCompanyTxt = v.findViewById(R.id.add_landline);
         mLocateBusiness = v.findViewById(R.id.locate);
         mLoadingDataLin = v.findViewById(R.id.ll_loading);
+        mFormLin = v.findViewById(R.id.ll_form);
         togglenoblist = v.findViewById(R.id.nobup);
         toggletoslist = v.findViewById(R.id.nobup2);
+        mRMNText = v.findViewById(R.id.mrmn);
 
 
         mPersonsRecyclarView = v.findViewById(R.id.contactpersons_recyclar);
@@ -356,6 +416,7 @@ public class CompanyFromFragment extends BaseFragment {
         mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
 
+        FetchUserData();
 
         mAddContactPersonTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -430,6 +491,28 @@ public class CompanyFromFragment extends BaseFragment {
 
             }
         });
+
+        mPinCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.length()==6){
+                    InputMethodManager imm = (InputMethodManager)getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    assert imm != null;
+                    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         return v;
     }
 
@@ -442,7 +525,6 @@ public class CompanyFromFragment extends BaseFragment {
 
     private void init() {
         //firebase
-        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
     }
@@ -479,6 +561,9 @@ public class CompanyFromFragment extends BaseFragment {
                     Place place = PlacePicker.getPlace(getContext(), data);
                     if (place.getLatLng() != null) {
                         latLng = place.getLatLng();
+                        if(mCompanyAddress.getText().toString().isEmpty()){
+                            mCompanyAddress.setText(place.toString());
+                        }
                         mLocateBusiness.setText("Locate Your Business On Map(set)");
                     }
 

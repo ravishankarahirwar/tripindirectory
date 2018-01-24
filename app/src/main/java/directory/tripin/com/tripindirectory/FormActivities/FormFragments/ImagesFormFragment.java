@@ -1,14 +1,14 @@
 package directory.tripin.com.tripindirectory.FormActivities.FormFragments;
 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,8 +23,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,22 +40,23 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;
-import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
-import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.ImageData;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.EasyImagePickUP;
-import directory.tripin.com.tripindirectory.viewmodel.AddPerson;
+import directory.tripin.com.tripindirectory.utils.TextUtils;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -68,6 +72,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     List<ImageData> images;
     List<Uri> imagesUriList;
     EasyImagePickUP easyImagePickUP;
+    Dialog dialog;
     ImagesRecyclarAdapter imagesRecyclarAdapter;
     int position;
     private StorageReference mStorageRef;
@@ -77,6 +82,15 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     private FirebaseFirestore db;
     Context mContext;
     private Button mImageUpload;
+    TextView mCompName;
+    TextView mCompAddress;
+    TextUtils textUtils;
+    TextView mSendReq;
+    View view1;
+    View view2;
+    View view3;
+
+
     public ImagesFormFragment() {
         // Required empty public constructor
         //initially add 3 blank ImageData Objects
@@ -87,6 +101,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         mUrlList = new ArrayList<>();
 
     }
+
     private DocumentReference mUserDocRef;
     private FirebaseAuth auth;
 
@@ -94,13 +109,14 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+        textUtils = new TextUtils();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        imagesRecyclarAdapter = new ImagesRecyclarAdapter(images,this,getActivity());
+        imagesRecyclarAdapter = new ImagesRecyclarAdapter(images, this, getActivity());
 
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
@@ -126,6 +142,16 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         imagesUriList = new ArrayList<>();
         progressDialog = new ProgressDialog(getActivity());
 
+        mCompName = view.findViewById(R.id.company_name1);
+        mCompAddress = view.findViewById(R.id.company_address);
+        mSendReq = view.findViewById(R.id.textViewSendRequest);
+
+
+        view1 = view.findViewById(R.id.acc_status_0);
+        view2 = view.findViewById(R.id.acc_status_1);
+        view3 = view.findViewById(R.id.acc_status_2);
+
+
         mImageUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -147,12 +173,12 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
 
     void uploadImagesandGetURL(final int index) {
 
-        if(images.get(index).getSet()){
+        if (images.get(index).getSet()) {
             Uri file = images.get(index).getmImageUri();
             if (file != null) {
                 if (mAuth.getCurrentUser() != null) {
                     imagesRef = mStorageRef.child(mAuth.getUid()).child(index + ".jpeg");
-                    progressDialog.setTitle("Uploading " + getImageName(index)+" Image...");
+                    progressDialog.setTitle("Uploading " + getImageName(index) + " Image...");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
                     imagesRef.putFile(file)
@@ -182,16 +208,15 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
                             });
                 }
             }
-        }else {
+        } else {
             if (index < 2) {
                 uploadImagesandGetURL(index + 1);
-            }else {
+            } else {
                 uploadData();
             }
 
         }
-        Toast.makeText(getActivity(), "Uploaded!", Toast.LENGTH_LONG).show();
-        mImageUpload.setTextColor(Color.BLACK);
+        mImageUpload.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.arrow_grey));
     }
 
     private String getImageName(int index) {
@@ -214,7 +239,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     private void uploadData() {
 
         List<String> urls = new ArrayList<>();
-        for(ImageData imageData: images){
+        for (ImageData imageData : images) {
             urls.add(imageData.getmImageUrl());
         }
 
@@ -223,26 +248,103 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         mUserDocRef.set(data, SetOptions.merge());
 
 //        db.collection("partners").document(mAuth.getUid()).set(partnerInfoPojo);
-        Toast.makeText(getActivity(), "Data uploaded!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "Data Modified!", Toast.LENGTH_SHORT).show();
+        mImageUpload.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.arrow_grey));
     }
 
 
     private void fetchImagesURL() {
 
+        view1.setVisibility(View.GONE);
+        view2.setVisibility(View.GONE);
+        view3.setVisibility(View.GONE);
+
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+            public void onComplete(@NonNull final Task<DocumentSnapshot> task) {
 
-                if(task.isSuccessful()){
-                    if(task.getResult().exists()){
+                if (task.isSuccessful()) {
+                    if (task.getResult().exists()) {
                         PartnerInfoPojo partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
                         mUrlList = partnerInfoPojo.getmImagesUrl();
-                        if(mUrlList!=null){
-                            for(int i=0;i<mUrlList.size();i++){
+
+                        if (mUrlList != null) {
+                            for (int i = 0; i < mUrlList.size(); i++) {
                                 images.get(i).setmImageUrl(mUrlList.get(i));
                             }
                             imagesRecyclarAdapter.notifyDataSetChanged();
                         }
+
+
+                        //manage view
+                        switch (partnerInfoPojo.getmAccountStatus()) {
+                            case 0: {
+                                mCompName.setText(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()));
+                                //set address
+                                String addresstoset
+                                        = partnerInfoPojo.getmCompanyAdderss().getAddress()
+                                        + ", " + textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getCity())
+                                        + ", " + textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getState());
+                                if (partnerInfoPojo.getmCompanyAdderss().getPincode() != null) {
+                                    addresstoset = addresstoset + ", " + partnerInfoPojo.getmCompanyAdderss().getPincode();
+                                }
+                                mCompAddress.setText(addresstoset);
+                                mCompName
+                                        .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                        .getDrawable(getApplicationContext(),
+                                                                R.drawable.ic_fiber_smart_record_bllue_24dp),
+                                                null,
+                                                null,
+                                                null);
+
+                                mSendReq.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                                        alertDialog.setTitle("Send Verification Request");
+                                        alertDialog.setMessage(getString(R.string.alert_sent_verfication_req));
+                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SEND NOW!",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        mSendReq.setText("Sending...");
+                                                        final HashMap<String, Integer> hashMap6 = new HashMap<>();
+                                                        hashMap6.put("mAccountStatus", 1);
+                                                        mUserDocRef.set(hashMap6, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                //make layout 1 invisible make layout 2 visible
+                                                                view1.setVisibility(View.GONE);
+                                                                view2.setVisibility(View.VISIBLE);
+
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL!",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                        alertDialog.show();
+
+                                    }
+                                });
+                                view1.setVisibility(View.VISIBLE);
+
+                                break;
+                            }
+                            case 1: {
+                                view2.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case 2: {
+                                view3.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                        }
+
                     }
                 }
             }
@@ -254,9 +356,64 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
 
     @Override
     public void onPickClicked(int position) {
-        easyImagePickUP.imagepicker(position);
-        Log.e("tagg", "onPickClicked");
-        this.position = position;
+
+
+        if (images.get(position).getmImageBitmap() != null) {
+            createDialog(images.get(position), position);
+        } else if (!images.get(position).getmImageUrl().isEmpty()) {
+            createDialog(images.get(position), position);
+        } else {
+            easyImagePickUP.imagepicker(position);
+            Log.e("tagg", "onPickClicked");
+            this.position = position;
+        }
+
+
+    }
+
+    private void createDialog(ImageData imageData, int p) {
+        dialog = new Dialog(getContext());
+
+        //SET TITLE
+        switch (p) {
+            case 0:
+                dialog.setTitle("Office Image");
+                break;
+            case 1:
+                dialog.setTitle("Card Image");
+                break;
+            case 2:
+                dialog.setTitle("Self Image");
+                break;
+        }
+
+        //set content
+        dialog.setContentView(R.layout.dialog_image_view);
+
+
+        ImageView imageView = dialog.findViewById(R.id.imageView);
+        final LottieAnimationView lottieAnimationView = dialog.findViewById(R.id.animation_view);
+
+        if (imageData.getmImageBitmap() != null) {
+            dialog.show();
+            imageView.setImageBitmap(imageData.getmImageBitmap());
+            lottieAnimationView.setVisibility(View.INVISIBLE);
+
+        } else if (!imageData.getmImageUrl().isEmpty()) {
+            dialog.show();
+            Picasso.with(getContext()).load(imageData.getmImageUrl()).into(imageView, new Callback() {
+                @Override
+                public void onSuccess() {
+                    lottieAnimationView.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
+        }
+
 
     }
 
@@ -292,7 +449,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         images.set(position, new ImageData(uri, bitmap));
         imagesUriList.add(uri);
         imagesRecyclarAdapter.notifyDataSetChanged();
-        mImageUpload.setTextColor(ContextCompat.getColor(getActivity(),R.color.primaryColor));
+        mImageUpload.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primaryColor));
     }
 
     @Override
@@ -311,7 +468,6 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         easyImagePickUP.request_permission_result(requestCode, permissions, grantResults);
     }
-
 
 
     @Override

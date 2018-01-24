@@ -157,6 +157,7 @@ public class RouteFormFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 mPlaceCode = 1;
+                addPickUpCity.setText("Loading...");
                 starttheplacesfragment();
             }
         });
@@ -165,6 +166,7 @@ public class RouteFormFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 mPlaceCode = 2;
+                addDropOffCity.setText("Loading...");
                 starttheplacesfragment();
             }
         });
@@ -273,6 +275,7 @@ public class RouteFormFragment extends BaseFragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
+                            addPickUpCity.setText("Add More");
 
                         }
                     });
@@ -287,6 +290,7 @@ public class RouteFormFragment extends BaseFragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(),"Drop City Added",Toast.LENGTH_SHORT).show();
+                            addDropOffCity.setText("Add More");
 
                         }
                     });

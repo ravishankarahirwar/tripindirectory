@@ -21,7 +21,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM" />
@@ -40,9 +39,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="directory.tripin.com.tripindirectory.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -100,17 +98,19 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />
 
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
@@ -160,6 +160,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
         </activity>
+
         <activity
             android:name=".forum.PostDetailActivity"
             android:label="Post Detail"
@@ -169,6 +170,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".forum.MainActivity" />
         </activity>
+
+        <activity android:name=".activity.ProfileHelpActivity"
+            android:label="Company Profile Help"
+            android:parentActivityName=".FormActivities.CompanyInfoActivity"
+            ></activity>
+
     </application>
 
 </manifest>
