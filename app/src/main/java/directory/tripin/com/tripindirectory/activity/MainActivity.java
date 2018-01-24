@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .snackbar();
         //Add to Activity
         //For Production
-//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
 
         //For Testing
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
 
         setContentView(R.layout.activity_home);

@@ -42,8 +42,14 @@ public class NotificationsActivity extends AppCompatActivity {
         mLayoutManager.setStackFromEnd(true);
         mUpdatesList.setLayoutManager(mLayoutManager);
         mAnimator = new RecyclerViewAnimator(mUpdatesList);
+
+//        For production only
         query = FirebaseFirestore.getInstance()
-                .collection("updatestest").orderBy("mTimeStamp");
+                .collection("updates").orderBy("mTimeStamp");
+
+//        for testing purpose
+//        query = FirebaseFirestore.getInstance()
+//                .collection("updatestest").orderBy("mTimeStamp");
 
         options = new FirestoreRecyclerOptions.Builder<UpdateInfoPojo>()
                 .setQuery(query, UpdateInfoPojo.class)
