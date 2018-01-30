@@ -241,6 +241,40 @@ public class FleetFormFragment extends BaseFragment {
             Map<String, List<Vehicle>> data = new HashMap<>();
             data.put("vehicles", mVehiclesSend);
             mUserDocRef.set(data, SetOptions.merge());
+
+            HashMap<String,Boolean> mFilters = new HashMap<>();
+            for(Vehicle v : mVehiclesSend){
+                mFilters.put(v.getBodyType().toUpperCase(),true);
+                mFilters.put(v.getType().toUpperCase(),true);
+
+                if(!v.getLength().isEmpty()){
+                    if(Integer.parseInt(v.getLength())>=0&&Integer.parseInt(v.getLength())<10){
+                        mFilters.put("Between 0-10 Ft".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getLength())>=10&&Integer.parseInt(v.getLength())<20){
+                        mFilters.put("Between 10-20 Ft".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getLength())>=20&&Integer.parseInt(v.getLength())<30){
+                        mFilters.put("Between 20-30 Ft".toUpperCase(),true);
+                    }else {
+                        mFilters.put("Above 30 Ft".toUpperCase(),true);
+                    }
+                }
+
+                if(!v.getPayload().isEmpty()){
+                    if(Integer.parseInt(v.getPayload())>=0&&Integer.parseInt(v.getPayload())<10){
+                        mFilters.put("Between 0-10 MT".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getPayload())>=10&&Integer.parseInt(v.getPayload())<20){
+                        mFilters.put("Between 10-20 MT".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getPayload())>=20&&Integer.parseInt(v.getPayload())<30){
+                        mFilters.put("Between 20-30 MT".toUpperCase(),true);
+                    }else {
+                        mFilters.put("Above 30 MT".toUpperCase(),true);
+                    }
+                }
+            }
+
+            HashMap<String,HashMap<String,Boolean>> mFiltersHashMap = new HashMap<>();
+            mFiltersHashMap.put("mFilters",mFilters);
+            mUserDocRef.set(mFiltersHashMap, SetOptions.merge());
         }
 
     }
