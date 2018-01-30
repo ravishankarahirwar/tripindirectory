@@ -500,7 +500,7 @@ public class CompanyFromFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.length()==6){
+                if(charSequence.length()==6&&i2==1){
                     InputMethodManager imm = (InputMethodManager)getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     assert imm != null;
                     imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);

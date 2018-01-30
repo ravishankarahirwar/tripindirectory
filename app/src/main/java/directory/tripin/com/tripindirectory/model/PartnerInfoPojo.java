@@ -46,6 +46,7 @@ public class PartnerInfoPojo {
 
 
 
+
     public PartnerInfoPojo() {
     }
 
@@ -146,6 +147,7 @@ public class PartnerInfoPojo {
 
     public void setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
+
     }
 
     public Map<String, Boolean> getmSourceCities() {
