@@ -85,10 +85,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 sendVerificationApprovedNotification(mCompName);
 
             }
-            if(type.equals("3")){
+            if(type.equals("3")) {
                 //verification request rejected notification
-                sendVerificationRejectedNotification();
+//                sendVerificationRejectedNotification();
 
+            }
+            //Loadboard Notification
+            if (type.equals("5")) {
+                String body = remoteMessage.getNotification().getBody();
+                String title = remoteMessage.getNotification().getTitle();
+
+                sendLoadboardNotification(title, body);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
@@ -96,15 +103,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 scheduleJob();
             } else {
                 // Handle message within 10 seconds
-
                 handleNow();
             }
 
-        }
-
-
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
+        } else if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
             String messageTitle = remoteMessage.getNotification().getTitle();
 
@@ -116,28 +118,53 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private void sendVerificationRejectedNotification() {
-        Intent intent = new Intent(this, CompanyInfoActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+//    private void sendVerificationRejectedNotification() {
+//        Intent intent = new Intent(this, CompanyInfoActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//                PendingIntent.FLAG_ONE_SHOT);
+//    }
 
-        String channelId = "ILN notification";
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentTitle("ILN Verification Rejected!")
-                        .setContentText("Dear User! your company verification request is rejected. Please be serious next time")
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+    private void sendLoadboardNotification (String messageBody, String messageTitle) {
+            Intent intent = new Intent(this,MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            String channelId = "ILN notification ";
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder =
+                    new NotificationCompat.Builder(this, channelId)
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentTitle(messageTitle)
+                            .setContentText(messageBody)
+                            .setAutoCancel(true)
+                            .setSound(defaultSoundUri)
+                            .setContentIntent(pendingIntent);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+//    private void sendNewsUpdateNotification(String docId) {
+//
+//        String channelId = "ILN notification";
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, channelId)
+//                        .setSmallIcon(R.drawable.ic_notification)
+//                        .setContentTitle("ILN Verification Rejected!")
+//                        .setContentText("Dear User! your company verification request is rejected. Please be serious next time")
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setContentIntent(pendingIntent);
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//    }
 
     private void sendVerificationApprovedNotification(String mCompName) {
         Intent intent = new Intent(this, CompanyInfoActivity.class);
@@ -263,8 +290,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     notificationManager.notify(0 /* ID of notification */, generalUpdatesNotificationBuilder.build());
                 }
-
-
             }
         });
     }

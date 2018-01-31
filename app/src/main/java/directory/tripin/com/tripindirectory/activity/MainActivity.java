@@ -156,6 +156,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+        //Add to Activity
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
         setContentView(R.layout.activity_home);
 
