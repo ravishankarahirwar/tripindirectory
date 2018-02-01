@@ -59,8 +59,6 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         comments =  itemView.findViewById(R.id.comment);
         sharePost =  itemView.findViewById(R.id.share);
         call = itemView.findViewById(R.id.call);
-
-
     }
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
