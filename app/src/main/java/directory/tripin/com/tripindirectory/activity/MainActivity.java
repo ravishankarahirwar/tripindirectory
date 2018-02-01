@@ -830,8 +830,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         lottieAnimationView.setVisibility(View.VISIBLE);
         mTextCount.setVisibility(View.INVISIBLE);
-
-
         //base query
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
@@ -978,9 +976,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             // User cancelled the dialog
                                         }
                                     });
-
                                     builder.create();
                                     builder.show();
+
 
                                 } else {
 
@@ -993,8 +991,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     }
                 }
-
-
             }
 
             @Override
