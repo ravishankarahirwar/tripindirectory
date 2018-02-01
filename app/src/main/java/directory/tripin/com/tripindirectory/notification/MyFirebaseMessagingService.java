@@ -122,7 +122,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        String channelId = "INL notification";
+        String channelId = "ILN notification";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
@@ -145,7 +145,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        String channelId = "INL notification";
+        String channelId = "ILN notification";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
@@ -165,12 +165,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendNewsUpdateNotification(String docId) {
 
+//For Production
+        mUpdateDocRef = FirebaseFirestore.getInstance()
+                .collection("updates").document(docId);
 
 //        mUpdateDocRef = FirebaseFirestore.getInstance()
-//                .collection("updates").document(docId);
-
-        mUpdateDocRef = FirebaseFirestore.getInstance()
-                .collection("updatestest").document(docId);
+//                .collection("updatestest").document(docId);
 
 
         mUpdateDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -186,7 +186,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intentToURL,
                         PendingIntent.FLAG_ONE_SHOT);
 
-                String channelId = "INL notification";
+                String channelId = "ILN notification";
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 generalUpdatesNotificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
                         .setSmallIcon(R.drawable.ic_notification)
@@ -217,12 +217,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendAppUpdateNotification(String docId) {
 //for production
-//        mUpdateDocRef = FirebaseFirestore.getInstance()
-//                .collection("updates").document(docId);
+        mUpdateDocRef = FirebaseFirestore.getInstance()
+                .collection("updates").document(docId);
 
         //for testing
-        mUpdateDocRef = FirebaseFirestore.getInstance()
-                .collection("updatestest").document(docId);
+//        mUpdateDocRef = FirebaseFirestore.getInstance()
+//                .collection("updatestest").document(docId);
 
 
         mUpdateDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -239,7 +239,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 intentToPlayStore.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intentToPlayStore,
                         PendingIntent.FLAG_ONE_SHOT);
-                String channelId = "INL notification";
+                String channelId = "ILN notification";
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
                 generalUpdatesNotificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
@@ -302,7 +302,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        String channelId = "INL notification ";
+        String channelId = "ILN notification ";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
