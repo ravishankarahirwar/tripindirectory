@@ -21,7 +21,7 @@
 
 
     <color name="window_background">#FFF5F5F5</color>
-    <color name="app_title">#1E1E1E</color>
-    <color name="app_version">#8F8F8F</color>
+    <color name="app_title">#1e1e1e</color>
+    <color name="app_version">#8f8f8f</color>
     <color name="app_menu_text">#de000000</color>
 </resources>

@@ -1,193 +1,320 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parent_view"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="directory.tripin.com.tripindirectory.activity.HomeActivity">
+    android:gravity="bottom"
+    sothree:umanoPanelHeight="0dp"
+    sothree:umanoShadowHeight="4dp">
 
-    <android.support.design.widget.CoordinatorLayout
+
+    <RelativeLayout
+        android:id="@+id/parent_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:fitsSystemWindows="true"
-        tools:context="mumbai.d360.activity.MainActivity">
+        tools:context=".activity.MainActivity">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:background="@color/colorPrimary"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/edit_text_round_corner"
-                android:fontFamily="sans-serif"
-                android:hint="@string/destination"
-                android:paddingLeft="8dp"
-                android:text="@string/destination"
-                android:textColor="@android:color/black"
-                android:visibility="gone"/>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <LinearLayout
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="3"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:fitsSystemWindows="true"
+            tools:context=".activity.MainActivity">
 
-            <HorizontalScrollView
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/categoriesbg"
-                android:elevation="3dp"
-                android:scrollbars="none">
+                android:background="@color/colorPrimaryDark"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <RadioGroup
-                    android:id="@+id/search_tag_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:background="@color/colorPrimary" />
 
-                    <RadioButton
-                        android:id="@+id/search_by_route"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@drawable/search_tag_selector"
-                        android:button="@null"
-                        android:checked="true"
-                        android:elevation="2dp"
-                        android:padding="8dp"
-                        android:text="@string/route"
-                        android:textColor="@color/arrow_white"
-                        />
+            </android.support.design.widget.AppBarLayout>
 
-                    <RadioButton
-                        android:id="@+id/search_by_company"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@drawable/search_tag_selector"
-                        android:button="@null"
-                        android:elevation="2dp"
-                        android:padding="8dp"
-                        android:text="@string/company_name_caps"
-                        android:textColor="@color/arrow_grey"
-                        />
-
-                    <RadioButton
-                        android:id="@+id/search_by_city"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@drawable/search_tag_selector"
-                        android:button="@null"
-                        android:elevation="2dp"
-                        android:padding="8dp"
-                        android:text="@string/search_tag_city"
-                        android:textColor="@color/arrow_grey"
-                        />
-
-                    <RadioButton
-                        android:id="@+id/search_by_transporter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@drawable/search_tag_selector"
-                        android:button="@null"
-                        android:elevation="2dp"
-                        android:padding="8dp"
-                        android:text="@string/transporter"
-                        android:textColor="@color/arrow_grey"
-                        android:textStyle="bold"
-                        android:visibility="invisible"/>
-                </RadioGroup>
-            </HorizontalScrollView>
-
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="3"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/animation_view"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="loading.json"
-                    app:lottie_loop="true"/>
+                    android:background="@color/categoriesbg"
+                    android:elevation="3dp"
+                    android:scrollbars="none">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/transporter_list"
+                    <RadioGroup
+                        android:id="@+id/search_tag_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/search_by_route"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:checked="true"
+                            android:drawableLeft="@drawable/ic_directions_grey_24dp"
+                            android:elevation="2dp"
+                            android:padding="8dp"
+                            android:text="@string/route"
+                            android:textColor="@color/arrow_white"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/search_by_company"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawableLeft="@drawable/ic_domain_black_24dp"
+                            android:elevation="2dp"
+                            android:padding="8dp"
+                            android:text="@string/company_name_caps"
+                            android:textColor="@color/arrow_grey"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/search_by_city"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawableLeft="@drawable/ic_location_on_white_24dp"
+                            android:elevation="2dp"
+                            android:padding="8dp"
+                            android:text="@string/search_tag_city"
+                            android:textColor="@color/arrow_grey"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/search_by_transporter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:elevation="2dp"
+                            android:padding="8dp"
+                            android:text="@string/transporter"
+                            android:textColor="@color/arrow_grey"
+                            android:textStyle="bold"
+                            android:visibility="invisible" />
+                    </RadioGroup>
+                </HorizontalScrollView>
+
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:overScrollMode="ifContentScrolls"
-                    app:layoutManager="LinearLayoutManager"
-                    tools:context="directory.tripin.com.tripindirectory.activity.MainActivity"/>
-            </FrameLayout>
+                    android:layout_marginBottom="?attr/actionBarSize">
 
-        </LinearLayout>
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/animation_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:lottie_autoPlay="true"
+                        app:lottie_fileName="loading.json"
+                        app:lottie_loop="true" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/transporter_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:overScrollMode="ifContentScrolls"
+                        app:fastScrollEnabled="true"
+                        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+                        app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+                        app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+                        app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
+                        app:layoutManager="LinearLayoutManager"
+                        tools:context="directory.tripin.com.tripindirectory.activity.MainActivity" />
+
+                    <TextView
+                        android:id="@+id/textViewResCount"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/white_circle_bg"
+                        android:elevation="8dp"
+                        android:gravity="center"
+                        android:text="101"
+                        android:textColor="@color/app_title"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="@dimen/fab_margin"
+                android:visibility="gone"
+                app:backgroundTint="@color/primaryColor"
+                app:borderWidth="1dp"
+                app:elevation="6dp"
+                app:fabSize="normal"
+                app:rippleColor="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_forum_black_24dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="bottom"
+                android:background="@color/colorPrimary"
+                android:elevation="5dp"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:weightSum="10">
+
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animation_bookmark"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="bookmark.json"
+                    app:lottie_loop="false" />
+
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/background"
+                    android:padding="5dp" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
+
+                    <TextView
+                        android:id="@+id/sort"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:drawableStart="@drawable/ic_sort_black_24dp"
+                        android:text="Sort"
+                        android:textColor="@color/background"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/background" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
+
+                    <TextView
+                        android:id="@+id/filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:drawableStart="@drawable/ic_filter_list_white_24dp"
+                        android:text="Filter"
+                        android:textAllCaps="false"
+                        android:textColor="@color/background"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+
+            </LinearLayout>
+        </android.support.design.widget.CoordinatorLayout>
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="@dimen/fab_margin"
-            app:borderWidth="1dp"
-            app:elevation="6dp"
-            app:fabSize="normal"
-            app:rippleColor="@color/colorPrimaryDark"
-            app:backgroundTint="@color/primaryColor"
-            app:srcCompat="@drawable/ic_forum_black_24dp" />
-    </android.support.design.widget.CoordinatorLayout>
+            android:transitionName="profile"
+            android:visibility="visible"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
+            app:floatingSearch_dimBackground="false"
+            app:floatingSearch_dismissOnOutsideTouch="true"
+            app:floatingSearch_leftActionMode="showHamburger"
+            app:floatingSearch_menu="@menu/menu_search_view"
+            app:floatingSearch_searchBarMarginLeft="4dp"
+            app:floatingSearch_searchBarMarginRight="4dp"
+            app:floatingSearch_searchBarMarginTop="4dp"
+            app:floatingSearch_searchHint="Source To Destination"
+            app:floatingSearch_showSearchKey="true"
+            app:floatingSearch_suggestionsListAnimDuration="250"
+            app:layout_behavior="com.example.blar.myapplication.ScrollAwareFABBehavior" />
+    </RelativeLayout>
 
-    <com.arlib.floatingsearchview.FloatingSearchView
-        android:transitionName="profile"
-        android:id="@+id/floating_search_view"
-        app:layout_behavior="com.example.blar.myapplication.ScrollAwareFABBehavior"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:floatingSearch_close_search_on_keyboard_dismiss="true"
-        app:floatingSearch_dimBackground="false"
-        app:floatingSearch_dismissOnOutsideTouch="true"
-        app:floatingSearch_leftActionMode="showHamburger"
-        app:floatingSearch_menu="@menu/menu_search_view"
-        app:floatingSearch_searchBarMarginLeft="4dp"
-        app:floatingSearch_searchBarMarginRight="4dp"
-        app:floatingSearch_searchBarMarginTop="4dp"
-        app:floatingSearch_searchHint="Source To Destination"
-        app:floatingSearch_showSearchKey="true"
-        app:floatingSearch_suggestionsListAnimDuration="250"/>
-</RelativeLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/include_filters"
+            layout="@layout/layout_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/include_sort"
+            layout="@layout/layout_sort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/include_bookmark"
+            layout="@layout/layout_bookmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
 
 
