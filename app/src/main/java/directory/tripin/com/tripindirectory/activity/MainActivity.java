@@ -1149,6 +1149,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         partnersViewHolder.mFleetSize.setText(String.valueOf(fleetSize));
 
+                        ((PartnersViewHolder) holder).mShareCompany.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String companyName = model.getmCompanyName();
+                                //set address
+                                String addresstoset
+                                        = model.getmCompanyAdderss().getAddress()
+                                        + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
+                                        + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+                                if (model.getmCompanyAdderss().getPincode() != null) {
+                                    addresstoset = addresstoset + ", " + model.getmCompanyAdderss().getPincode();
+                                }
+
+                                shareMesssages(MainActivity.this, companyName, addresstoset);
+                            }
+                        });
+
                         partnersViewHolder.mCompany.setText(textUtils.toTitleCase(model.getmCompanyName()));
                         Logger.v("onBind : " + textUtils.toTitleCase(model.getmCompanyName()) + " " + model.getmAccountStatus());
 
@@ -2086,6 +2103,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onBackPressed();
 
             }
+        }
+    }
+
+    private void shareMesssages(Context context, String subject, String body) {
+        try {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, subject + "\n" + body + "\n" + " Share By: Indian Logistics Network \n" + "http://bit.ly/ILNAPPS");
+            context.startActivity(Intent.createChooser(shareIntent, "Share via"));
+        }
+        catch (ActivityNotFoundException exception) {
+            Toast.makeText(context, "No application found for send Email" , Toast.LENGTH_LONG).show();
         }
     }
 }
