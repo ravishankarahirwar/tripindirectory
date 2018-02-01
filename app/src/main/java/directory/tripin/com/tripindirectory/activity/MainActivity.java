@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     QueryBookmarkPojo queryBookmarkPojo;
 
 
-    private RadioButton radioButton3;
     private RadioButton radioButton2;
     private RadioButton radioButton1;
     private RadioButton radioButton4;
@@ -182,14 +181,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String, Boolean> mTypesofLengthsHashMap;
     private List<FilterPojo> mFiltersList;
 
-
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter3;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter4;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter5;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter6;
-
 
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
@@ -243,7 +240,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initiateFiltersHashmaps();
 
-
         checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
         checkBoxRecyclarAdapter2 = new CheckBoxRecyclarAdapter(mTypesofServicesHashMap);
         checkBoxRecyclarAdapter3 = new CheckBoxRecyclarAdapter(mTypesofVehiclesHashMap);
@@ -270,13 +266,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofVehiclesRecyclarView.setNestedScrollingEnabled(false);
         tbtov = findViewById(R.id.tovup);
 
-
         mTypesofBodyRecyclarView = findViewById(R.id.rv_tob);
         mTypesofBodyRecyclarView.setAdapter(checkBoxRecyclarAdapter4);
         mTypesofBodyRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofBodyRecyclarView.setNestedScrollingEnabled(false);
         tbtob = findViewById(R.id.tobup);
-
 
         mTypesofWeightsRecyclarView = findViewById(R.id.rv_wc);
         mTypesofWeightsRecyclarView.setAdapter(checkBoxRecyclarAdapter5);
@@ -284,13 +278,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofWeightsRecyclarView.setNestedScrollingEnabled(false);
         tbwc = findViewById(R.id.wcup);
 
-
         mTypesofLengthsRecyclarView = findViewById(R.id.rv_lov);
         mTypesofLengthsRecyclarView.setAdapter(checkBoxRecyclarAdapter6);
         mTypesofLengthsRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofLengthsRecyclarView.setNestedScrollingEnabled(false);
         tblov = findViewById(R.id.lovup);
-
 
         init();
 
@@ -301,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             Logger.v("Multiple times app opened");
         }
-
         setAdapter("");
         setBookmarkListAdapter();
     }
@@ -489,7 +480,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initiateFiltersHashmaps() {
-
         mNatureofBusinessHashMap.put("Fleet Owner".toUpperCase(), false);
         mNatureofBusinessHashMap.put("Transport Contractor".toUpperCase(), false);
         mNatureofBusinessHashMap.put("Commission Agent".toUpperCase(), false);
@@ -585,7 +575,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        radioButton3 = findViewById(R.id.search_by_transporter);
         radioButton2 = findViewById(R.id.search_by_company);
         radioButton1 = findViewById(R.id.search_by_route);
         radioButton4 = findViewById(R.id.search_by_city);
@@ -623,7 +612,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     //radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
@@ -635,22 +623,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     //radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
-                } else if (radioButtonID == R.id.search_by_transporter) {
-                    Bundle params = new Bundle();
-                    params.putString("search_by", "ByTransporter");
-                    mFirebaseAnalytics.logEvent("SearchBy", params);
-                    searchTag = SEARCHTAG_TRANSPORTER;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    radioButton3.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    mSearchView.clearQuery();
-                    mSearchView.setSearchHint("Search by transporter name");
                 } else if (radioButtonID == R.id.search_by_city) {
                     Bundle params = new Bundle();
                     params.putString("search_by", "ByCity");
@@ -658,7 +633,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     searchTag = SEARCHTAG_CITY;
                     radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton3.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
                     //radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
                     mSearchView.clearQuery();
@@ -919,6 +893,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     }
                     case R.id.radioButton4: {
+
                         mSortIndex = 4;
                         break;
                     }
@@ -1168,6 +1143,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         partnersViewHolder.mAddress.setText(addresstoset);
 
+                        int fleetSize = 0;
+                        if(model.getVehicles() != null) {
+                            fleetSize = model.getVehicles().size();
+                        }
+                        partnersViewHolder.mFleetSize.setText(String.valueOf(fleetSize));
 
                         partnersViewHolder.mCompany.setText(textUtils.toTitleCase(model.getmCompanyName()));
                         Logger.v("onBind : " + textUtils.toTitleCase(model.getmCompanyName()) + " " + model.getmAccountStatus());
@@ -1674,10 +1654,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switch (searchTag) {
                     case SEARCHTAG_ROUTE: {
                         String selectedCity = searchSuggestion.getBody();
-
-
                         if (isSourceSelected) {
-
                             //destination suggestion tapped
                             mSearchView.setSearchText(mSourceCity + selectedCity);
                             mSearchView.clearFocus();
@@ -1686,14 +1663,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             setAdapter(mSourceCity + selectedCity);
                             isDestinationSelected = true;
                             mDestinationCity = selectedCity;
-
                         } else {
-
                             //source suggestion tapped
                             mSearchView.setSearchText(selectedCity);
                             isSourceSelected = true;
                             mSourceCity = selectedCity;
-
                         }
 
 

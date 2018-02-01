@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.CardView
         android:id="@+id/partner_card_view"
@@ -45,25 +46,91 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="0.90"
-                android:background="@drawable/border_stroke_bg"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:padding="10dp"
                 android:textColor="#b34a4a4a"
                 android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/call"
-                android:layout_width="wrap_content"
+            <View
+                android:id="@+id/devider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/list_divider"
+                android:layout_below="@+id/post_text_container"
+                android:layout_marginTop="8dp"></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:drawableLeft="@drawable/ic_call_black_24dp"
-                android:maxLines="1"
-                android:padding="8dp"
-                android:text="CALL"
-                android:textColor="@color/colorPrimary"
-                android:textSize="15sp"
-                android:visibility="visible" />
+                android:layout_below="@+id/devider"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
+
+                <TextView
+                    android:id="@+id/fleet_size"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0"
+                    android:background="@android:color/transparent"
+                    android:drawablePadding="8dp"
+                    android:drawableLeft="@drawable/delivery_truck_front"/>
+
+                <ImageButton
+                    android:id="@+id/share_company"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/ic_share_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:id="@+id/star"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+
+
+                    <TextView
+                        android:id="@+id/post_num_stars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center"
+                        android:layout_marginLeft="4dp"
+                        tools:text="7" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/call"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    app:srcCompat="@drawable/ic_call_black_24dp" />
+            </LinearLayout>
+
+            <!--<TextView-->
+                <!--android:id="@+id/call"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="right"-->
+                <!--android:drawableLeft="@drawable/ic_call_black_24dp"-->
+                <!--android:maxLines="1"-->
+                <!--android:padding="8dp"-->
+                <!--android:text="CALL"-->
+                <!--android:textColor="@color/colorPrimary"-->
+                <!--android:textSize="15sp"-->
+                <!--android:visibility="visible" />-->
 
 
             <TextView
