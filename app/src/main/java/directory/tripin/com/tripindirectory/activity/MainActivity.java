@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
+    private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
     private FirebaseAuth auth;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
@@ -155,6 +156,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+        //Add to Activity
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
         setContentView(R.layout.activity_home);
 

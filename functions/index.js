@@ -58,7 +58,6 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
     .onCreate(event => {
       // Grab the current value of what was written to the Realtime Database.
       var newValue = event.data.val();
-	  
 	  if(newValue.mFcmToken !=null){
 		   console.log('Sending Verified Notification', event.params.pushId, newValue);
 	  // Create a DATA notification
@@ -82,15 +81,13 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
 	  }else{
 		  		   console.log('Sending No Verified Notification', event.params.pushId, newValue);
 	  }
-     
-     
+
     });
-	
+
 	exports.newRejectedCompany = functions.database.ref('/userCategories/companyRejectedUsers/{pushId}')
     .onCreate(event => {
       // Grab the current value of what was written to the Realtime Database.
       var newValue = event.data.val();
-	  
 	  if(newValue.mFcmToken !=null){
 		   console.log('Sending Verified Notification', event.params.pushId, newValue);
 	  // Create a DATA notification
@@ -104,8 +101,7 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
         timeToLive: 60 * 60 * 24
     };
 
-
-     return admin.messaging().sendToDevice(newValue.mFcmToken, payload,options).then((response)=> {
+    return admin.messaging().sendToDevice(newValue.mFcmToken, payload,options).then((response)=> {
         console.info("Successfully sent notification")
       }).catch(function(error) {
         console.warn("Error sending notification " , error)
@@ -113,7 +109,5 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
 	  }else{
 		  		   console.log('Sending No Rejected Notification', event.params.pushId, newValue);
 	  }
-     
-     
     });
 

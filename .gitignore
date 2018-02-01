@@ -19,4 +19,8 @@ app/prod/
 firebase.json
 functions/
 functions/node_modules
+serc
+.firebaserc
+node_modules/
+
 
