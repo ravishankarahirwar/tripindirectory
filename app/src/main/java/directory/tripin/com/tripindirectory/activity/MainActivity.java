@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
