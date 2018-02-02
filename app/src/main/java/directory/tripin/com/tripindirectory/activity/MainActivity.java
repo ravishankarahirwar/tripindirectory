@@ -3,6 +3,7 @@ package directory.tripin.com.tripindirectory.activity;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,8 +24,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -72,16 +71,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.keiferstone.nonet.NoNet;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -94,14 +94,16 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivit
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
+import directory.tripin.com.tripindirectory.adapters.QueryBookmarkViewHolder;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
-import directory.tripin.com.tripindirectory.model.ImageData;
+import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
@@ -118,14 +120,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int SEARCHTAG_TRANSPORTER = 3;
 
     private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
+    private static final int SIGN_IN_FOR_BOOKMARK = 124;
+
     private static final int SIGN_IN_FOR_FORUM = 222;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
     private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
-    private FirebaseAuth auth;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
+    private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
+
     private FirestoreRecyclerAdapter adapter;
     boolean isCompanySuggestionClicked = false;
     private Context mContext;
@@ -143,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean isDestinationSelected = false;
     private String mSourceCity = "";
     private String mDestinationCity = "";
+    boolean isBookmarkSaved = false;
+    int signinginfor = 0;
+    QueryBookmarkPojo queryBookmarkPojo;
+
 
     private RadioButton radioButton3;
     private RadioButton radioButton2;
@@ -150,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RadioButton radioButton4;
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
-    LottieAnimationView lottieAnimationView;
+    LottieAnimationView lottieAnimationView,animationBookmark;
     TextUtils textUtils;
     SlidingUpPanelLayout sliderLayout;
     private Button mBtnApplyFilters;
@@ -171,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String, Boolean> mTypesofBodyHashMap;
     private HashMap<String, Boolean> mTypesofWeightsHashMap;
     private HashMap<String, Boolean> mTypesofLengthsHashMap;
-    private List<String> mFiltersList;
+    private List<FilterPojo> mFiltersList;
 
 
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
@@ -195,14 +204,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
-    private RadioButton radioButtonAlphabetically,radioButtonRatings,radioButtonFavourite,radioButtonCrediblity;
+    private RadioButton radioButtonAlphabetically, radioButtonRatings, radioButtonFavourite, radioButtonCrediblity;
     private RadioGroup mSortRadioGroup;
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
     private int mSortIndex;
     boolean isApplySortPressed;
 
-
+    private RecyclerView mBookmarksList;
+    private FirestoreRecyclerAdapter bookmarksAdapter;
 
 
     @Override
@@ -232,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofLengthsHashMap = new HashMap<>();
 
         initiateFiltersHashmaps();
-
 
 
         checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
@@ -294,6 +303,189 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         setAdapter("");
+        setBookmarkListAdapter();
+    }
+
+    private void setBookmarkListAdapter() {
+
+
+        if (mAuth.getCurrentUser() != null) {
+            Logger.v("setting bookmarks adapter " + mAuth.getUid());
+
+            Query queryBookmark = FirebaseFirestore
+                    .getInstance()
+                    .collection("partners")
+                    .document(mAuth.getUid())
+                    .collection("mQueryBookmarks").orderBy("mTimeStamp", Query.Direction.DESCENDING);
+
+            optionsbookmark = new FirestoreRecyclerOptions.Builder<QueryBookmarkPojo>()
+                    .setQuery(queryBookmark, QueryBookmarkPojo.class)
+                    .build();
+
+            bookmarksAdapter = new FirestoreRecyclerAdapter<QueryBookmarkPojo, QueryBookmarkViewHolder>(optionsbookmark) {
+                @Override
+                protected void onBindViewHolder(final QueryBookmarkViewHolder holder, int position, final QueryBookmarkPojo model) {
+
+                    Logger.v("onBindBookmark: " + model.getmBookmarkName());
+                    holder.title.setText(model.getmBookmarkName());
+                    holder.remove.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            holder.remove.setText("Removing");
+                            DocumentSnapshot snapshot = getSnapshots().getSnapshot(holder.getAdapterPosition());
+                            snapshot.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(), "Bookmark Removed", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+                    holder.searchnow.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            // set the book mark
+                            searchTag = model.getmSearchTag();
+                            mSortIndex = model.getmSortIndex();
+                            mSearchQuery = model.getmSearchQuery();
+                            mFiltersList.clear();
+                            mFiltersList.addAll(model.getmFiltersList());
+
+                            if(model.getmSortIndex()!=0){
+                                mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_sort_black_24dp),
+                                        null,
+                                        ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_bubble_chart_white_24dp),
+                                        null);
+                            }
+
+                            if(model.getmFiltersList().size()!=0){
+                                mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_sort_black_24dp),
+                                        null,
+                                        ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_bubble_chart_white_24dp),
+                                        null);
+                            }
+
+
+                            mSearchView.setSearchText(model.getmSearchQuery());
+                            setAdapter(model.getmSearchQuery());
+                            sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+                        }
+                    });
+
+                    if (model.getmSearchQuery().isEmpty()) {
+                        holder.searchquery.setVisibility(View.GONE);
+                    } else {
+
+                        switch (model.getmSearchTag()) {
+                            case SEARCHTAG_ROUTE: {
+                                holder.searchquery.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_directions_grey_24dp),
+                                        null,
+                                        null,
+                                        null);
+
+                                break;
+                            }
+                            case SEARCHTAG_COMPANY: {
+                                holder.searchquery.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_domain_black_24dp),
+                                        null,
+                                        null,
+                                        null);
+                                break;
+                            }
+                            case SEARCHTAG_CITY: {
+                                holder.searchquery.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_location_on_black_24dp),
+                                        null,
+                                        null,
+                                        null);
+                                break;
+                            }
+                        }
+                        holder.searchquery.setText(model.getmSearchQuery());
+                    }
+
+                    StringBuilder filterss = new StringBuilder();
+                    for (FilterPojo f : model.getmFiltersList()) {
+                        filterss.append(" (").append(f.getmFilterName()).append(") +");
+                    }
+                    if (!filterss.toString().isEmpty()) {
+                        String s = filterss.substring(0, filterss.length() - 2);
+                        holder.filters.setText(s);
+                    } else {
+                        holder.filters.setVisibility(View.GONE);
+                    }
+
+                    switch (model.getmSortIndex()) {
+                        case 0: {
+                            holder.sorting.setVisibility(View.GONE);
+                            break;
+                        }
+                        case 1: {
+                            holder.sorting.setText("Sorted Alphabetically");
+                            break;
+                        }
+                        case 2: {
+                            holder.sorting.setText("Sorted By User Ratings");
+                            break;
+                        }
+                        case 3: {
+                            holder.sorting.setText("Sorted By Favourites");
+                            break;
+                        }
+                        case 4: {
+                            holder.sorting.setText("Sorted By Crediblity");
+                            break;
+                        }
+                    }
+
+                }
+
+                @Override
+                public QueryBookmarkViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    View view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.item_bookmark_query, parent, false);
+                    Logger.v("onCreat ViewHolder Bookmark");
+
+                    return new QueryBookmarkViewHolder(view);
+                }
+
+                @Override
+                public void onDataChanged() {
+                    super.onDataChanged();
+                    Logger.v("onDataChanged Bookmark");
+                }
+
+                @Override
+                public void onError(FirebaseFirestoreException e) {
+                    super.onError(e);
+                    Logger.v("onError Bookmark");
+
+                }
+            };
+
+            mBookmarksList.setAdapter(bookmarksAdapter);
+            bookmarksAdapter.startListening();
+        } else {
+            //show sign in options in bookmarks layout
+            Logger.v("sign in is required to access this feature");
+        }
+
+
     }
 
     private void initiateFiltersHashmaps() {
@@ -365,8 +557,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
+        mBookmarksList = findViewById(R.id.rv_bookmarks);
         mSearchTagRadioGroup = findViewById(R.id.search_tag_group);
         mPartnerList.setLayoutManager(new LinearLayoutManager(this));
+        mBookmarksList.setLayoutManager(new LinearLayoutManager(this));
+
         ListPaddingDecoration listPaddingDecoration = new ListPaddingDecoration(getApplicationContext());
         mPartnerList.addItemDecoration(listPaddingDecoration);
 
@@ -396,6 +591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         radioButton4 = findViewById(R.id.search_by_city);
 
         lottieAnimationView = findViewById(R.id.animation_view);
+        animationBookmark = findViewById(R.id.animation_bookmark);
 
         mBtnApplyFilters = findViewById(R.id.buttonApplyFilters);
         mBtnClearFilters = findViewById(R.id.buttonClearFilters);
@@ -603,38 +799,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mFiltersList.clear();
                 for (String f : checkBoxRecyclarAdapter1.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter1.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 6, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
                 for (String f : checkBoxRecyclarAdapter2.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter2.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 5, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
                 for (String f : checkBoxRecyclarAdapter3.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter3.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 1, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
                 for (String f : checkBoxRecyclarAdapter4.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter4.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 2, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
                 for (String f : checkBoxRecyclarAdapter5.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter5.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 3, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
                 for (String f : checkBoxRecyclarAdapter6.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter6.getmDataMap().get(f)) {
-                        mFiltersList.add(f);
+                        FilterPojo filterPojo = new FilterPojo(f, 4, 1);
+                        mFiltersList.add(filterPojo);
                     }
                 }
 
-                if(mFiltersList.size()!=0){
+                if (mFiltersList.size() != 0) {
                     isApplyFilterPressed = true;
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_filter_list_white_24dp),
                             null,
@@ -642,8 +844,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_bubble_chart_white_24dp),
                             null);
-                }else {
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                } else {
+                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_filter_list_white_24dp),
                             null,
@@ -667,9 +869,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 checkBoxRecyclarAdapter4.notifyDataSetChanged();
                 checkBoxRecyclarAdapter5.notifyDataSetChanged();
                 checkBoxRecyclarAdapter6.notifyDataSetChanged();
-                if(mFiltersList.size()!=0){
+                if (mFiltersList.size() != 0) {
                     mFiltersList.clear();
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_filter_list_white_24dp),
                             null,
@@ -684,10 +886,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
 
-                if(mSortIndex!=0){
+                if (mSortIndex != 0) {
                     mSortRadioGroup.clearCheck();
                     mSortIndex = 0;
-                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_sort_black_24dp),
                             null,
@@ -703,34 +905,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mBtnApplySorts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (mSortRadioGroup.getCheckedRadioButtonId()){
-                    case R.id.radioButton1 :{
+                switch (mSortRadioGroup.getCheckedRadioButtonId()) {
+                    case R.id.radioButton1: {
                         mSortIndex = 1;
                         break;
                     }
-                    case R.id.radioButton2 :{
+                    case R.id.radioButton2: {
                         mSortIndex = 2;
                         break;
                     }
-                    case R.id.radioButton3 :{
+                    case R.id.radioButton3: {
                         mSortIndex = 3;
                         break;
                     }
-                    case R.id.radioButton4 :{
+                    case R.id.radioButton4: {
                         mSortIndex = 4;
                         break;
                     }
-                    default:{
-                        mSortIndex=0;
+                    default: {
+                        mSortIndex = 0;
                         break;
                     }
                 }
 
-                if(mSortIndex != 0){
+                if (mSortIndex != 0) {
                     isApplySortPressed = true;
                     sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
-                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_sort_black_24dp),
                             null,
@@ -738,8 +940,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_bubble_chart_white_24dp),
                             null);
-                }else {
-                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                } else {
+                    mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_sort_black_24dp),
                             null,
@@ -753,7 +955,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
 
-                createDialog(mFiltersList,searchTag,mSearchView.getQuery(),adapter.getItemCount());
+                createDialog(mFiltersList, searchTag, mSearchView.getQuery(), adapter.getItemCount());
             }
         });
 
@@ -766,13 +968,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
 
-                if(newState==SlidingUpPanelLayout.PanelState.COLLAPSED){
-                    if(isApplyFilterPressed){
-                        isApplyFilterPressed=false;
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    if (isApplyFilterPressed) {
+                        isApplyFilterPressed = false;
                         setAdapter(mSearchView.getQuery());
                     }
-                    if(isApplySortPressed){
-                        isApplySortPressed=false;
+                    if (isApplySortPressed) {
+                        isApplySortPressed = false;
                         setAdapter(mSearchView.getQuery());
                     }
                     mFilterView.setVisibility(View.GONE);
@@ -830,13 +1032,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         lottieAnimationView.setVisibility(View.VISIBLE);
         mTextCount.setVisibility(View.INVISIBLE);
+        isBookmarkSaved = false;
+
         //base query
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
 
         //apply filters
-        for(String f: mFiltersList){
-            query = query.whereEqualTo("mFilters."+f.toUpperCase().trim(),true);
+        for (FilterPojo f : mFiltersList) {
+            switch (f.getmFilterType()) {
+                case 1: {
+                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                    break;
+                }
+                case 2: {
+                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                    break;
+                }
+                case 3: {
+                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                    break;
+                }
+                case 4:{
+                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                    break;
+                }
+                case 5:{
+                    query = query.whereEqualTo("mTypesOfServices." + f.getmFilterName().toUpperCase().trim(), true);
+                    break;
+                }
+                case 6:{
+                    query = query.whereEqualTo("mNatureOfBusiness." + f.getmFilterName().toUpperCase().trim(), true);
+
+                    break;
+                }
+
+            }
+
+        }
+
+        //apply sorting
+        switch (mSortIndex) {
+            case 1: {
+                // a to z by comp name
+                query = query.orderBy("mCompanyName");
+                break;
+            }
+            case 2: {
+                //User Ratings
+                query = query.orderBy("mCompanyName");
+                break;
+            }
+            case 3: {
+                //Favourites
+                query = query.orderBy("mCompanyName");
+                break;
+            }
+            case 4: {
+                // account status
+                query = query.orderBy("mAccountStatus", Query.Direction.DESCENDING);
+                break;
+            }
+            case 0: {
+                query = query.orderBy("mCompanyName");
+                break;
+            }
         }
 
         //apply sorts
@@ -858,9 +1118,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case SEARCHTAG_COMPANY: {
 
                     if (isCompanySuggestionClicked) {
-                        query = query.orderBy("mCompanyName").whereEqualTo("mCompanyName", s.trim());
+                        query = query.whereEqualTo("mCompanyName", s.trim());
                     } else {
-                        query = query.orderBy("mCompanyName").whereGreaterThanOrEqualTo("mCompanyName", s.trim().toUpperCase());
+                        query = query.whereGreaterThanOrEqualTo("mCompanyName", s.trim().toUpperCase());
                     }
                     isCompanySuggestionClicked = false;
                     break;
@@ -870,8 +1130,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 }
             }
-        }else {
-            query = query.orderBy("mCompanyName").whereGreaterThan("mCompanyName", "");
+        } else {
+            if (mSortIndex != 4)
+                query = query.whereGreaterThan("mCompanyName", "");
         }
 
 
@@ -1001,7 +1262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         //first item
                         View view = LayoutInflater.from(group.getContext())
                                 .inflate(R.layout.item_first_element_main, group, false);
-                        // mAnimator.onCreateViewHolder(view);
+                        mAnimator.onCreateViewHolder(view);
                         return new FirstItemMainViewHolder(view);
                     }
                     case 1: {
@@ -1049,12 +1310,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         adapter.startListening();
+
+        bookmarksAdapter.startListening();
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+        if (bookmarksAdapter != null) {
+            bookmarksAdapter.stopListening();
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1066,29 +1333,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 //signed in
+                final Dialog dialogWait = new ProgressDialog(MainActivity.this);
+                dialogWait.show();
+
                 mUserDocRef = FirebaseFirestore.getInstance()
-                        .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
+                        .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
 
                 mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                            Logger.v("document exist :" + auth.getCurrentUser().getPhoneNumber());
+                            Logger.v("document exist :" + mAuth.getCurrentUser().getPhoneNumber());
 
                             mUserDocRef = FirebaseFirestore.getInstance()
-                                    .collection("partners").document(auth.getUid());
+                                    .collection("partners").document(mAuth.getUid());
                             PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
                             mUserDocRef.set(partnerInfoPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Logger.v("data set to :" + auth.getUid());
+                                    Logger.v("data set to :" + mAuth.getUid());
                                     mUserDocRef = FirebaseFirestore.getInstance()
-                                            .collection("partners").document(auth.getCurrentUser().getPhoneNumber());
+                                            .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
                                     mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
+                                            if (dialogWait.isShowing()) {
+                                                dialogWait.dismiss();
+                                            }
+                                            switch (signinginfor) {
+                                                case 1: {
+                                                    //for loadboard
+                                                    startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
+                                                    break;
+                                                }
+                                                case 2: {
+                                                    //for bookmark
+                                                    FirebaseFirestore.getInstance()
+                                                            .collection("partners").document(mAuth.getUid()).collection("mQueryBookmarks").add(queryBookmarkPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                        @Override
+                                                        public void onSuccess(DocumentReference documentReference) {
+                                                            dialog.cancel();
+                                                            Toast.makeText(getApplicationContext(), "Bookmark Added!", Toast.LENGTH_LONG).show();
+                                                            isBookmarkSaved = true;
+                                                            setBookmarkListAdapter();
+                                                        }
+                                                    });
+                                                    break;
+                                                }
+                                                case 3: {
+                                                    //for like
+                                                    break;
+                                                }
+                                                case 0: {
+                                                    //nothing
+                                                }
+                                            }
                                             showSnackbar(R.string.sign_in_done);
                                         }
                                     });
@@ -1096,8 +1396,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             });
                         } else {
-                            Logger.v("document dosent exist :" + auth.getCurrentUser().getPhoneNumber());
-                            startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
+                            Logger.v("document dosent exist :" + mAuth.getCurrentUser().getPhoneNumber());
+                            if (dialogWait.isShowing()) {
+                                dialogWait.dismiss();
+                            }
+                            switch (signinginfor) {
+                                case 1: {
+                                    //for loadboard
+                                    startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
+                                    break;
+                                }
+                                case 2: {
+                                    //for bookmark
+                                    FirebaseFirestore.getInstance()
+                                            .collection("partners").document(mAuth.getUid()).collection("mQueryBookmarks").add(queryBookmarkPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            dialog.cancel();
+                                            Toast.makeText(getApplicationContext(), "Bookmark Added!", Toast.LENGTH_LONG).show();
+                                            isBookmarkSaved = true;
+                                            setBookmarkListAdapter();
+                                        }
+                                    });
+                                    break;
+                                }
+                                case 3: {
+                                    //for like
+                                    break;
+                                }
+                                case 0: {
+                                    //nothing
+                                }
+                            }
                             showSnackbar(R.string.sign_in_done);
                         }
                     }
@@ -1154,12 +1484,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_add_business) {
-            auth = FirebaseAuth.getInstance();
-            if (auth.getCurrentUser() != null) {
+            if (mAuth.getCurrentUser() != null) {
                 // already signed in
                 startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
             } else {
                 // not signed in
+                signinginfor = 1;
                 startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
 //                startActivityForResult(
 //                        // Get an instance of AuthUI based on the default app
@@ -1183,8 +1513,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             params.putString("logout", "Click");
             mFirebaseAnalytics.logEvent("ClickOnLogout", params);
 
-            auth = FirebaseAuth.getInstance();
-            auth.signOut();
+            mAuth.signOut();
             Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
             params = new Bundle();
@@ -1617,11 +1946,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         animator.start();
     }
 
-    private void createDialog(List<String> filters,int tag,String StringInFSV, int numberOfResults) {
+    private void createDialog(List<FilterPojo> filters, int tag, String StringInFSV, int numberOfResults) {
         dialog = new Dialog(MainActivity.this);
 
         //SET TITLE
-        dialog.setTitle("Showing "+numberOfResults+ " Results...........");
+        dialog.setTitle("Showing " + numberOfResults + " Results...........");
 
 
         //set content
@@ -1633,13 +1962,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mFilters = dialog.findViewById(R.id.textViewFilters);
         mSorting = dialog.findViewById(R.id.textViewSort);
 
-        if(mSearchQuery.isEmpty()){
+        if (mSearchQuery.isEmpty()) {
             mUpperSearchTv.setVisibility(View.GONE);
-        }else {
+        } else {
 
-            switch (searchTag){
-                case SEARCHTAG_ROUTE:{
-                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+            switch (searchTag) {
+                case SEARCHTAG_ROUTE: {
+                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_directions_grey_24dp),
                             null,
@@ -1648,8 +1977,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     break;
                 }
-                case SEARCHTAG_COMPANY:{
-                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                case SEARCHTAG_COMPANY: {
+                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_domain_black_24dp),
                             null,
@@ -1657,8 +1986,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             null);
                     break;
                 }
-                case SEARCHTAG_CITY:{
-                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds( ContextCompat
+                case SEARCHTAG_CITY: {
+                    mUpperSearchTv.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
                                             R.drawable.ic_location_on_black_24dp),
                             null,
@@ -1671,34 +2000,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         StringBuilder filterss = new StringBuilder();
-        for(String f: mFiltersList){
-            filterss.append(" (").append(f).append(") +");
+        for (FilterPojo f : mFiltersList) {
+            filterss.append(" (").append(f.getmFilterName()).append(") +");
         }
-        if(!filters.isEmpty()){
-            String s =  filterss.substring(0, filterss.length() - 2);
+        if (!filters.isEmpty()) {
+            String s = filterss.substring(0, filterss.length() - 2);
             mFilters.setText(s);
-        }else {
+        } else {
             mFilters.setVisibility(View.GONE);
         }
 
-        switch (mSortIndex){
-            case 0:{
+        switch (mSortIndex) {
+            case 0: {
                 mSorting.setVisibility(View.GONE);
                 break;
             }
-            case 1:{
+            case 1: {
                 mSorting.setText("Sorted Alphabetically");
                 break;
             }
-            case 2:{
+            case 2: {
                 mSorting.setText("Sorted By User Ratings");
                 break;
             }
-            case 3:{
+            case 3: {
                 mSorting.setText("Sorted By Favourites");
                 break;
             }
-            case 4:{
+            case 4: {
                 mSorting.setText("Sorted By Crediblity");
                 break;
             }
@@ -1708,12 +2037,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final Button buttonBookmark = dialog.findViewById(R.id.buttonBookmark);
         Button exit = dialog.findViewById(R.id.buttonExit);
 
-
+        if (isBookmarkSaved) {
+            editTextBookamrkTitle.setVisibility(View.GONE);
+            buttonBookmark.setVisibility(View.GONE);
+        }
+        if (mAuth.getCurrentUser() == null) {
+            buttonBookmark.setText("Bookmark(Sign In Required)");
+        }
         buttonBookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //generate new bookmarkquerypojo object
+                buttonBookmark.setText("Saving...");
+                String title = editTextBookamrkTitle.getText().toString().trim();
+                if (!title.isEmpty()) {
+
+                    @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
+                    String timestamp = simpleDateFormat.format(new Date());
+
+
+                    queryBookmarkPojo = new QueryBookmarkPojo(mFiltersList,
+                            title,
+                            mSortIndex,
+                            searchTag,
+                            mSearchQuery,timestamp);
+
+                    if (mAuth.getCurrentUser() != null) {
+                        //add bookmark to sub collection
+                        FirebaseFirestore.getInstance().collection("partners").document(mAuth.getUid()).collection("mQueryBookmarks").add(queryBookmarkPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                buttonBookmark.setText("Bookmark");
+                                Toast.makeText(getApplicationContext(), "Bookmark Added!", Toast.LENGTH_LONG).show();
+                                dialog.cancel();
+                                animationBookmark.resumeAnimation();
+                                isBookmarkSaved = true;
+                            }
+                        });
+                    } else {
+                        //sign in user
+                        signinginfor = 2;
+                        startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Title Is Empty!", Toast.LENGTH_LONG).show();
+                }
             }
+
         });
 
         exit.setOnClickListener(new View.OnClickListener() {
@@ -1731,12 +2103,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
 
-        if(sliderLayout.getPanelState()== SlidingUpPanelLayout.PanelState.EXPANDED){
+        if (sliderLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        }else {
-            if(mDrawerLayout.isDrawerOpen(GravityCompat.START)){
+        } else {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-            }else {
+            } else {
                 super.onBackPressed();
 
             }
