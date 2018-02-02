@@ -266,14 +266,14 @@ public class NewPostActivity extends BaseActivity {
         }
     }
     private void submitPost() {
-        final String source = mSource.getText().toString();
-        final String destination = mDestination.getText().toString();
-        final String material = mMaterial.getText().toString();
+        final String source = mSource.getText().toString().toUpperCase().trim();
+        final String destination = mDestination.getText().toString().toUpperCase().trim();
+        final String material = mMaterial.getText().toString().toUpperCase().trim();
 
-        final String turckType = vehicleType.getSelectedItem().toString();
-        final String bodyTypestr = bodyType.getSelectedItem().toString();
-        final String payload = mPayload.getText().toString();
-        final String length = mLength.getText().toString();
+        final String turckType = vehicleType.getSelectedItem().toString().trim();
+        final String bodyTypestr = bodyType.getSelectedItem().toString().trim();
+        final String payload = mPayload.getText().toString().trim();
+        final String length = mLength.getText().toString().trim();
         final String postinhDate = getDate();
         final String postRequirement = mPostRequirement.getText().toString();
         final String userPhoneNo = getUserPhoneNo();

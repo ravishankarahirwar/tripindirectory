@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
+    private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
@@ -222,11 +223,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .snackbar();
         //Add to Activity
         //For Production
-//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
 
         //For Testing
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+        //Add to Activity
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
         setContentView(R.layout.activity_home);
 
@@ -1030,7 +1034,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextCount.setVisibility(View.INVISIBLE);
         isBookmarkSaved = false;
 
-
         //base query
         query = FirebaseFirestore.getInstance()
                 .collection("partners");
@@ -1234,9 +1237,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             // User cancelled the dialog
                                         }
                                     });
-
                                     builder.create();
                                     builder.show();
+
 
                                 } else {
 
@@ -1249,8 +1252,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     }
                 }
-
-
             }
 
             @Override

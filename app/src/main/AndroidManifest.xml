@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name="directory.tripin.com.tripindirectory.TripinDirectoryApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -120,9 +121,16 @@
             android:name=".forum.MainActivity"
             android:label="ILN Loadboard"
             android:theme="@style/AppTheme.NoActionBar" >
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".activity.MainActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="http://tripin.co.in/" android:scheme="http"></data>
+            </intent-filter>
         </activity>
         <activity
             android:name=".forum.NewPostActivity"
@@ -175,6 +183,16 @@
             android:label="Company Profile Help"
             android:parentActivityName=".FormActivities.CompanyInfoActivity"
             ></activity>
+
+
+        <!-- Used for Google Play Store Campaign Measurement-->
+        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
