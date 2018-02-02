@@ -272,9 +272,7 @@ public class FleetFormFragment extends BaseFragment {
                 }
             }
 
-            HashMap<String,HashMap<String,Boolean>> mFiltersHashMap = new HashMap<>();
-            mFiltersHashMap.put("mFilters",mFilters);
-            mUserDocRef.set(mFiltersHashMap, SetOptions.merge());
+            mUserDocRef.update("mFiltersVehicle",mFilters);
         }
 
     }

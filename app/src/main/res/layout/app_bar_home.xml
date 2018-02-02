@@ -200,15 +200,21 @@
                 android:showDividers="middle"
                 android:weightSum="10">
 
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/animation_bookmark"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="4"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="bookmark.json"
-                    app:lottie_loop="false" />
+                    android:layout_weight="4">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/animation_bookmark"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:lottie_autoPlay="true"
+                        app:lottie_fileName="bookmark.json"
+                        app:lottie_loop="false" />
+                </RelativeLayout>
+
+
 
 
                 <View
