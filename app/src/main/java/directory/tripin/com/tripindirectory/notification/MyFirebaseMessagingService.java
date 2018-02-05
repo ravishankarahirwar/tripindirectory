@@ -1,12 +1,14 @@
 package directory.tripin.com.tripindirectory.notification;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,6 +28,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
@@ -329,7 +332,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String messageBody, String messageTitle) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//        int random = (int)System.currentTimeMillis();
+        int random = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, random /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "ILN notification ";
@@ -338,15 +343,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(messageTitle)
+                        .setLights(Color.RED, 500, 500)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
 
+        Notification notification = notificationBuilder.build();
+        // Clear the notification when it is pressed
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(random, notification);
     }
 
     public class generatePictureStyleNotification extends AsyncTask<String, Void, Bitmap> {

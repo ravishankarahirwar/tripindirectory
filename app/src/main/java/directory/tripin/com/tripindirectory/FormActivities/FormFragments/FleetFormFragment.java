@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolderNew;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.Driver;
@@ -81,6 +82,21 @@ public class FleetFormFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVehicles = new ArrayList<>();
+
+        mVehicles.add(new Vehicle("LCV"));
+        mVehicles.add(new Vehicle("Truck"));
+        mVehicles.add(new Vehicle("Tusker"));
+        mVehicles.add(new Vehicle("Taurus"));
+        mVehicles.add( new Vehicle("Trailers"));
+        mVehicles.add( new Vehicle("Container Body"));
+        mVehicles.add( new Vehicle("Refrigerated Vans"));
+        mVehicles.add(new Vehicle("Tankers"));
+        mVehicles.add(new Vehicle("Tippers"));
+        mVehicles.add( new Vehicle("Bulkers"));
+        mVehicles.add( new Vehicle("Car Carriers"));
+        mVehicles.add(new Vehicle("Scooter Body"));
+        mVehicles.add( new Vehicle("Hydraulic Axles"));
+
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
 
     }
@@ -109,7 +125,7 @@ public class FleetFormFragment extends BaseFragment {
             }
         });
 
-        fetchUserData();
+//        fetchUserData();
         return rootView;
 
     }
@@ -277,7 +293,7 @@ public class FleetFormFragment extends BaseFragment {
 
     }
 
-    public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolder> {
+    public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolderNew> {
         private List<Vehicle> mDataValues;
 
         private int getDataValuesSize() {
@@ -297,40 +313,40 @@ public class FleetFormFragment extends BaseFragment {
 
         // inflates the row layout from xml when needed
         @Override
-        public FleetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fleet, parent, false);
-            FleetViewHolder viewHolder = new FleetViewHolder(view);
+        public FleetViewHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_fleet, parent, false);
+            FleetViewHolderNew viewHolder = new FleetViewHolderNew(view);
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(final FleetViewHolder holder, final int position) {
+        public void onBindViewHolder(final FleetViewHolderNew holder, final int position) {
             holder.setDataValue(mDataValues.get(position));
             holder.onBind(mContext, holder);
 
 
-            holder.vehicleRemove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mVehicles.size() > 0) {
-                        mVehicles.remove(position);
-                        setDataValues(mVehicles);
-                    }
-                }
-            });
-
-            holder.vehicleShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(position >= 0) {
-                        Vehicle dataValue = mDataValues.get(position);
-                        shareTruck(dataValue);
-                    } else {
-
-                    }
-
-                }
-            });
+//            holder.vehicleRemove.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(mVehicles.size() > 0) {
+//                        mVehicles.remove(position);
+//                        setDataValues(mVehicles);
+//                    }
+//                }
+//            });
+//
+//            holder.vehicleShare.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(position >= 0) {
+//                        Vehicle dataValue = mDataValues.get(position);
+//                        shareTruck(dataValue);
+//                    } else {
+//
+//                    }
+//
+//                }
+//            });
         }
 
         // total number of rows
