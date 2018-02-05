@@ -180,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String, Boolean> mTypesofWeightsHashMap;
     private HashMap<String, Boolean> mTypesofLengthsHashMap;
     private List<FilterPojo> mFiltersList;
-
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter3;
