@@ -1306,9 +1306,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         adapter.startListening();
-
-        bookmarksAdapter.startListening();
-
+        if (bookmarksAdapter != null) {
+            bookmarksAdapter.startListening();
+        }
     }
 
     @Override
