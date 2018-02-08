@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,11 +33,13 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolderNew;
+import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.Driver;
@@ -53,10 +56,14 @@ public class FleetFormFragment extends BaseFragment {
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FleetAdapter adapterp;
-    private List<Vehicle> mVehicles;
+    private WorkingWithAdapter mWorkingWithAdapter;
 
+    private List<Vehicle> mVehicles;
+    private Set<String> mWorkingWithVehicle;
+    private HashMap<String,Boolean> mWorkingWith;
     private Context mContext;
     private RecyclerView mVechileList;
+    private RecyclerView mVechilWorkingWithList;
     private TextView mAddVechile;
     private PartnerInfoPojo partnerInfoPojo;
 
@@ -82,23 +89,39 @@ public class FleetFormFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVehicles = new ArrayList<>();
+        mWorkingWith = new HashMap<>();
 
-        mVehicles.add(new Vehicle("LCV"));
-        mVehicles.add(new Vehicle("Truck"));
-        mVehicles.add(new Vehicle("Tusker"));
-        mVehicles.add(new Vehicle("Taurus"));
-        mVehicles.add( new Vehicle("Trailers"));
-        mVehicles.add( new Vehicle("Container Body"));
-        mVehicles.add( new Vehicle("Refrigerated Vans"));
-        mVehicles.add(new Vehicle("Tankers"));
-        mVehicles.add(new Vehicle("Tippers"));
-        mVehicles.add( new Vehicle("Bulkers"));
-        mVehicles.add( new Vehicle("Car Carriers"));
-        mVehicles.add(new Vehicle("Scooter Body"));
-        mVehicles.add( new Vehicle("Hydraulic Axles"));
-
+        mWorkingWithVehicle = new HashSet<>();
         adapterp = new FleetAdapter(mContext, mVehicles, 1);
 
+//        mWorkingWithVehicle.add("LCV");
+//        mWorkingWithVehicle.add("Truck");
+//        mWorkingWithVehicle.add("Tusker");
+//        mWorkingWithVehicle.add("Trailers");
+//        mWorkingWithVehicle.add("Container");
+//        mWorkingWithVehicle.add("Refrigerated");
+//        mWorkingWithVehicle.add("Tankers");
+//        mWorkingWithVehicle.add("Tippers");
+//        mWorkingWithVehicle.add("Bulkers");
+//        mWorkingWithVehicle.add("Car Carriers");
+//        mWorkingWithVehicle.add("Scooter Body");
+//        mWorkingWithVehicle.add("Hydraulic Axles");
+
+        mWorkingWith.put("LCV",false);
+        mWorkingWith.put("Truck",false);
+        mWorkingWith.put("Trailers",false);
+        mWorkingWith.put("Container",false);
+        mWorkingWith.put("Refrigerated",false);
+        mWorkingWith.put("Tankers",false);
+        mWorkingWith.put("Tippers",false);
+        mWorkingWith.put("Bulkers",false);
+        mWorkingWith.put("Car Carriers",false);
+        mWorkingWith.put("Scooter Body",false);
+        mWorkingWith.put("Hydraulic Axles",false);
+
+        mWorkingWithVehicle = mWorkingWith.keySet();
+
+        mWorkingWithAdapter = new WorkingWithAdapter(mContext, mWorkingWith, 1);
     }
 
     @Override
@@ -110,9 +133,12 @@ public class FleetFormFragment extends BaseFragment {
         mAddVechile = rootView.findViewById(R.id.add_vehicle);
 
         mVechileList = rootView.findViewById(R.id.vehicle_list);
+        mVechilWorkingWithList = rootView.findViewById(R.id.working_with_vehicle_list);
         mVechileList.setLayoutManager(new LinearLayoutManager(mContext));
-        mVechileList.setAdapter(adapterp);
+        mVechilWorkingWithList.setLayoutManager(new LinearLayoutManager(mContext));
 
+        mVechileList.setAdapter(adapterp);
+        mVechilWorkingWithList.setAdapter(mWorkingWithAdapter);
         mAddVechile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,7 +151,7 @@ public class FleetFormFragment extends BaseFragment {
             }
         });
 
-//        fetchUserData();
+        fetchUserData();
         return rootView;
 
     }
@@ -254,11 +280,26 @@ public class FleetFormFragment extends BaseFragment {
                 }
             }
 
+            HashMap<String,Boolean> mFilters = new HashMap<>();
+            for(int i=0; i < mWorkingWithVehicle.size(); i++){
+                View itemView = mVechilWorkingWithList.getLayoutManager().findViewByPosition(i);
+                if(itemView != null) {
+                    CheckBox turckAva = itemView.findViewById(R.id.i_have);
+                    TextView vehicleType = itemView.findViewById(R.id.truck_type);
+
+                    if(turckAva != null && vehicleType != null) {
+                        boolean value = turckAva.isChecked();
+                        String key = vehicleType.getText().toString().trim();
+                        mFilters.put(key, value);
+                    }
+                }
+            }
+
             Map<String, List<Vehicle>> data = new HashMap<>();
             data.put("vehicles", mVehiclesSend);
             mUserDocRef.set(data, SetOptions.merge());
 
-            HashMap<String,Boolean> mFilters = new HashMap<>();
+//            HashMap<String,Boolean> mFilters = new HashMap<>();
             for(Vehicle v : mVehiclesSend){
                 mFilters.put(v.getBodyType().toUpperCase(),true);
                 mFilters.put(v.getType().toUpperCase(),true);
@@ -293,7 +334,49 @@ public class FleetFormFragment extends BaseFragment {
 
     }
 
-    public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolderNew> {
+    public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
+        private  HashMap<String,Boolean> mDataValues;
+
+        private int getDataValuesSize() {
+            return mDataValues.size();
+        }
+
+        // data is passed into the constructor
+        public WorkingWithAdapter(Context context, HashMap<String,Boolean> data, int type) {
+            this.mDataValues = data;
+
+        }
+
+        private void setDataValues(HashMap<String,Boolean> dataValues) {
+            mDataValues = dataValues;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public WorkingWithHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_working_with_vehicle, parent, false);
+            WorkingWithHolderNew viewHolder = new WorkingWithHolderNew(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
+            String key = mDataValues.keySet().toArray()[position].toString();
+            boolean value = mDataValues.get(key);
+            holder.setDataValue(key);
+            holder.onBind(mContext, holder);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return mDataValues.size();
+
+        }
+    }
+//**************************************
+    public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolder> {
         private List<Vehicle> mDataValues;
 
         private int getDataValuesSize() {
@@ -313,40 +396,40 @@ public class FleetFormFragment extends BaseFragment {
 
         // inflates the row layout from xml when needed
         @Override
-        public FleetViewHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_fleet, parent, false);
-            FleetViewHolderNew viewHolder = new FleetViewHolderNew(view);
+        public FleetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fleet, parent, false);
+            FleetViewHolder viewHolder = new FleetViewHolder(view);
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(final FleetViewHolderNew holder, final int position) {
+        public void onBindViewHolder(final FleetViewHolder holder, final int position) {
             holder.setDataValue(mDataValues.get(position));
             holder.onBind(mContext, holder);
 
 
-//            holder.vehicleRemove.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if(mVehicles.size() > 0) {
-//                        mVehicles.remove(position);
-//                        setDataValues(mVehicles);
-//                    }
-//                }
-//            });
-//
-//            holder.vehicleShare.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if(position >= 0) {
-//                        Vehicle dataValue = mDataValues.get(position);
-//                        shareTruck(dataValue);
-//                    } else {
-//
-//                    }
-//
-//                }
-//            });
+            holder.vehicleRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(mVehicles.size() > 0) {
+                        mVehicles.remove(position);
+                        setDataValues(mVehicles);
+                    }
+                }
+            });
+
+            holder.vehicleShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(position >= 0) {
+                        Vehicle dataValue = mDataValues.get(position);
+                        shareTruck(dataValue);
+                    } else {
+
+                    }
+
+                }
+            });
         }
 
         // total number of rows

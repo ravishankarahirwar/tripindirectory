@@ -110,6 +110,8 @@
     <string name="company_landline_numbers">Company Landline Numbers :</string>
     <string name="locate_your_business_on_map">Locate Your Business On Map</string>
     <string name="fleet">Your Fleets :</string>
+    <string name="working_with">Working With :</string>
+
     <string name="add_truck">Add Truck</string>
     <string name="upload_required_images">Add and Upload required Images:</string>
     <string name="image_upload">Image Upload</string>
