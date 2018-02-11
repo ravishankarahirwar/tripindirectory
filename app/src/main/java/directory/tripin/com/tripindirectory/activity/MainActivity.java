@@ -75,9 +75,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,6 +110,7 @@ import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
@@ -297,8 +303,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setBookmarkListAdapter() {
-
-
         if (mAuth.getCurrentUser() != null) {
             Logger.v("setting bookmarks adapter " + mAuth.getUid());
 

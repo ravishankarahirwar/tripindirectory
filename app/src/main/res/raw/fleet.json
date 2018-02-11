@@ -1,0 +1,28 @@
+{
+  "trucks": [{
+    "truckType": "LCV",
+    "truckBodyType": {
+      "title": "Body Type",
+      "properties": {
+        "Full Body": false
+      }
+    },
+    "truckLength": {
+      "title": "Length",
+      "properties": {
+        "Full": false,
+        "17": false,
+        "19": false
+      }
+    },
+    "truckModelNo": {
+      "title": "Model No",
+      "properties": {
+        "407": false,
+        "709": false,
+        "907": false,
+        "1109": false
+      }
+    }
+  }]
+}

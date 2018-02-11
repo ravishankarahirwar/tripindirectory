@@ -5,5 +5,4 @@ package directory.tripin.com.tripindirectory.utils;
  */
 
 public class FilterUtil {
-    public static
 }

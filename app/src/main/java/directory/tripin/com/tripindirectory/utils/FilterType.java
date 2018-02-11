@@ -5,11 +5,11 @@ package directory.tripin.com.tripindirectory.utils;
  */
 
 public interface FilterType {
-    int TYPE_OF_VEHICLE = 1;
-    int TYPE_OF_BODY = 1;
-    int TYPE_OF_VEHICLE = 1;
-    int TYPE_OF_VEHICLE = 1;
-    int TYPE_OF_VEHICLE = 1;
-    int TYPE_OF_VEHICLE = 1;
+//    int TYPE_OF_VEHICLE = 1;
+//    int TYPE_OF_BODY = 1;
+//    int TYPE_OF_VEHICLE = 1;
+//    int TYPE_OF_VEHICLE = 1;
+//    int TYPE_OF_VEHICLE = 1;
+//    int TYPE_OF_VEHICLE = 1;
 
 }

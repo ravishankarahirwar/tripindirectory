@@ -30,7 +30,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +50,7 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.Driver;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -121,7 +127,12 @@ public class FleetFormFragment extends BaseFragment {
 
         mWorkingWithVehicle = mWorkingWith.keySet();
 
-        mWorkingWithAdapter = new WorkingWithAdapter(mContext, mWorkingWith, 1);
+        InputStream raw =  getResources().openRawResource(R.raw.fleet);
+        Reader rd = new BufferedReader(new InputStreamReader(raw));
+        Gson gson = new Gson();
+        Fleet fleet = gson.fromJson(rd, Fleet.class);
+
+        mWorkingWithAdapter = new WorkingWithAdapter(mContext, fleet);
     }
 
     @Override
@@ -233,121 +244,120 @@ public class FleetFormFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(partnerInfoPojo != null && isDataFatched) {
-//            mVehicles.clear();
-            //send the modified data to parent activity
-             List<Vehicle> mVehiclesSend = new ArrayList<>();
-
-            for(int i=0; i < mVehicles.size(); i++){
-
-                View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
-                if(itemView != null) {
-                    Switch turckAva = itemView.findViewById(R.id.is_available);
-
-                    Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
-                    Spinner bodyType = itemView.findViewById(R.id.body_type);
-
-                    TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
-                    TextInputEditText payload = itemView.findViewById(R.id.input_payload);
-                    TextInputEditText length = itemView.findViewById(R.id.input_length);
-                    TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
-                    TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
-
-                    boolean isAvailable = turckAva.isChecked();
-                    String vehicleTypeString = vehicleType.getSelectedItem().toString();
-                    String bodyTypeString = bodyType.getSelectedItem().toString();
-
-                    String vechileNo = vechcleNumber.getText().toString();
-                    String truckPayload = payload.getText().toString();
-                    String truckLength = length.getText().toString();
-                    String driverNameString = driverName.getText().toString();
-                    String driverNo = driverNumber.getText().toString();
-
-                    Vehicle vehicle = new Vehicle();
-                    vehicle.setAvailable(isAvailable);
-                    vehicle.setType(vehicleTypeString);
-                    vehicle.setBodyType(bodyTypeString);
-                    vehicle.setNumber(vechileNo);
-                    vehicle.setPayload(truckPayload);
-                    vehicle.setLength(truckLength);
-                    Driver driver = new Driver();
-                    driver.setName(driverNameString);
-                    driver.setNumber(driverNo);
-                    vehicle.setDriver(driver);
-                    vehicle.setNumber(vechileNo);
-                    mVehiclesSend.add(vehicle);
-                    Logger.v("Fetch Set Fleet");
-                }
-            }
-
-            HashMap<String,Boolean> mFilters = new HashMap<>();
-            for(int i=0; i < mWorkingWithVehicle.size(); i++){
-                View itemView = mVechilWorkingWithList.getLayoutManager().findViewByPosition(i);
-                if(itemView != null) {
-                    CheckBox turckAva = itemView.findViewById(R.id.i_have);
-                    TextView vehicleType = itemView.findViewById(R.id.truck_type);
-
-                    if(turckAva != null && vehicleType != null) {
-                        boolean value = turckAva.isChecked();
-                        String key = vehicleType.getText().toString().trim();
-                        mFilters.put(key, value);
-                    }
-                }
-            }
-
-            Map<String, List<Vehicle>> data = new HashMap<>();
-            data.put("vehicles", mVehiclesSend);
-            mUserDocRef.set(data, SetOptions.merge());
-
+//        if(partnerInfoPojo != null && isDataFatched) {
+////            mVehicles.clear();
+//            //send the modified data to parent activity
+//             List<Vehicle> mVehiclesSend = new ArrayList<>();
+//
+//            for(int i=0; i < mVehicles.size(); i++){
+//
+//                View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
+//                if(itemView != null) {
+//                    Switch turckAva = itemView.findViewById(R.id.is_available);
+//
+//                    Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
+//                    Spinner bodyType = itemView.findViewById(R.id.body_type);
+//
+//                    TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+//                    TextInputEditText payload = itemView.findViewById(R.id.input_payload);
+//                    TextInputEditText length = itemView.findViewById(R.id.input_length);
+//                    TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
+//                    TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
+//
+//                    boolean isAvailable = turckAva.isChecked();
+//                    String vehicleTypeString = vehicleType.getSelectedItem().toString();
+//                    String bodyTypeString = bodyType.getSelectedItem().toString();
+//
+//                    String vechileNo = vechcleNumber.getText().toString();
+//                    String truckPayload = payload.getText().toString();
+//                    String truckLength = length.getText().toString();
+//                    String driverNameString = driverName.getText().toString();
+//                    String driverNo = driverNumber.getText().toString();
+//
+//                    Vehicle vehicle = new Vehicle();
+//                    vehicle.setAvailable(isAvailable);
+//                    vehicle.setType(vehicleTypeString);
+//                    vehicle.setBodyType(bodyTypeString);
+//                    vehicle.setNumber(vechileNo);
+//                    vehicle.setPayload(truckPayload);
+//                    vehicle.setLength(truckLength);
+//                    Driver driver = new Driver();
+//                    driver.setName(driverNameString);
+//                    driver.setNumber(driverNo);
+//                    vehicle.setDriver(driver);
+//                    vehicle.setNumber(vechileNo);
+//                    mVehiclesSend.add(vehicle);
+//                    Logger.v("Fetch Set Fleet");
+//                }
+//            }
+//
 //            HashMap<String,Boolean> mFilters = new HashMap<>();
-            for(Vehicle v : mVehiclesSend){
-                mFilters.put(v.getBodyType().toUpperCase(),true);
-                mFilters.put(v.getType().toUpperCase(),true);
-
-                if(!v.getLength().isEmpty()){
-                    if(Integer.parseInt(v.getLength())>=0&&Integer.parseInt(v.getLength())<10){
-                        mFilters.put("Between 0-10 Ft".toUpperCase(),true);
-                    }else if(Integer.parseInt(v.getLength())>=10&&Integer.parseInt(v.getLength())<20){
-                        mFilters.put("Between 10-20 Ft".toUpperCase(),true);
-                    }else if(Integer.parseInt(v.getLength())>=20&&Integer.parseInt(v.getLength())<30){
-                        mFilters.put("Between 20-30 Ft".toUpperCase(),true);
-                    }else {
-                        mFilters.put("Above 30 Ft".toUpperCase(),true);
-                    }
-                }
-
-                if(!v.getPayload().isEmpty()){
-                    if(Integer.parseInt(v.getPayload())>=0&&Integer.parseInt(v.getPayload())<10){
-                        mFilters.put("Between 0-10 MT".toUpperCase(),true);
-                    }else if(Integer.parseInt(v.getPayload())>=10&&Integer.parseInt(v.getPayload())<20){
-                        mFilters.put("Between 10-20 MT".toUpperCase(),true);
-                    }else if(Integer.parseInt(v.getPayload())>=20&&Integer.parseInt(v.getPayload())<30){
-                        mFilters.put("Between 20-30 MT".toUpperCase(),true);
-                    }else {
-                        mFilters.put("Above 30 MT".toUpperCase(),true);
-                    }
-                }
-            }
-
-            mUserDocRef.update("mFiltersVehicle",mFilters);
-        }
+//            for(int i=0; i < mWorkingWithVehicle.size(); i++){
+//                View itemView = mVechilWorkingWithList.getLayoutManager().findViewByPosition(i);
+//                if(itemView != null) {
+//                    CheckBox turckAva = itemView.findViewById(R.id.i_have);
+//                    TextView vehicleType = itemView.findViewById(R.id.truck_type);
+//
+//                    if(turckAva != null && vehicleType != null) {
+//                        boolean value = turckAva.isChecked();
+//                        String key = vehicleType.getText().toString().trim();
+//                        mFilters.put(key, value);
+//                    }
+//                }
+//            }
+//
+//            Map<String, List<Vehicle>> data = new HashMap<>();
+//            data.put("vehicles", mVehiclesSend);
+//            mUserDocRef.set(data, SetOptions.merge());
+//
+////            HashMap<String,Boolean> mFilters = new HashMap<>();
+//            for(Vehicle v : mVehiclesSend){
+//                mFilters.put(v.getBodyType().toUpperCase(),true);
+//                mFilters.put(v.getType().toUpperCase(),true);
+//
+//                if(!v.getLength().isEmpty()){
+//                    if(Integer.parseInt(v.getLength())>=0&&Integer.parseInt(v.getLength())<10){
+//                        mFilters.put("Between 0-10 Ft".toUpperCase(),true);
+//                    }else if(Integer.parseInt(v.getLength())>=10&&Integer.parseInt(v.getLength())<20){
+//                        mFilters.put("Between 10-20 Ft".toUpperCase(),true);
+//                    }else if(Integer.parseInt(v.getLength())>=20&&Integer.parseInt(v.getLength())<30){
+//                        mFilters.put("Between 20-30 Ft".toUpperCase(),true);
+//                    }else {
+//                        mFilters.put("Above 30 Ft".toUpperCase(),true);
+//                    }
+//                }
+//
+//                if(!v.getPayload().isEmpty()){
+//                    if(Integer.parseInt(v.getPayload())>=0&&Integer.parseInt(v.getPayload())<10){
+//                        mFilters.put("Between 0-10 MT".toUpperCase(),true);
+//                    }else if(Integer.parseInt(v.getPayload())>=10&&Integer.parseInt(v.getPayload())<20){
+//                        mFilters.put("Between 10-20 MT".toUpperCase(),true);
+//                    }else if(Integer.parseInt(v.getPayload())>=20&&Integer.parseInt(v.getPayload())<30){
+//                        mFilters.put("Between 20-30 MT".toUpperCase(),true);
+//                    }else {
+//                        mFilters.put("Above 30 MT".toUpperCase(),true);
+//                    }
+//                }
+//            }
+//
+//            mUserDocRef.update("mFiltersVehicle",mFilters);
+//        }
 
     }
 
     public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
-        private  HashMap<String,Boolean> mDataValues;
+        private  Fleet mDataValues;
 
         private int getDataValuesSize() {
-            return mDataValues.size();
+            return mDataValues.getTrucks().size();
         }
 
         // data is passed into the constructor
-        public WorkingWithAdapter(Context context, HashMap<String,Boolean> data, int type) {
-            this.mDataValues = data;
-
+        public WorkingWithAdapter(Context context,Fleet fleet) {
+            this.mDataValues = fleet;
         }
 
-        private void setDataValues(HashMap<String,Boolean> dataValues) {
+        private void setDataValues(Fleet dataValues) {
             mDataValues = dataValues;
             this.notifyDataSetChanged();
         }
@@ -362,16 +372,16 @@ public class FleetFormFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
-            String key = mDataValues.keySet().toArray()[position].toString();
-            boolean value = mDataValues.get(key);
+            String key = mDataValues.getTrucks().get(position).getTruckType();
+//            boolean value = mDataValues.get(key);
             holder.setDataValue(key);
-            holder.onBind(mContext, holder);
+//            holder.onBind(mContext, holder);
         }
 
         // total number of rows
         @Override
         public int getItemCount() {
-            return mDataValues.size();
+            return mDataValues.getTrucks().size();
 
         }
     }
