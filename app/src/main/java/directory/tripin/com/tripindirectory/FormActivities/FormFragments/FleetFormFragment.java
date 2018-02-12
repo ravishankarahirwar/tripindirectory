@@ -9,13 +9,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -44,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
 import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -51,6 +55,8 @@ import directory.tripin.com.tripindirectory.model.Driver;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
+import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,7 +78,7 @@ public class FleetFormFragment extends BaseFragment {
     private RecyclerView mVechilWorkingWithList;
     private TextView mAddVechile;
     private PartnerInfoPojo partnerInfoPojo;
-
+    private Fleet mFleet;
     public FleetFormFragment() {
     }
 
@@ -126,13 +132,35 @@ public class FleetFormFragment extends BaseFragment {
         mWorkingWith.put("Hydraulic Axles",false);
 
         mWorkingWithVehicle = mWorkingWith.keySet();
-
+        auth = FirebaseAuth.getInstance();
+        mUserDocRef = FirebaseFirestore.getInstance()
+                .collection("partners").document(auth.getUid());
         InputStream raw =  getResources().openRawResource(R.raw.fleet);
         Reader rd = new BufferedReader(new InputStreamReader(raw));
         Gson gson = new Gson();
-        Fleet fleet = gson.fromJson(rd, Fleet.class);
+        mFleet = gson.fromJson(rd, Fleet.class);
 
-        mWorkingWithAdapter = new WorkingWithAdapter(mContext, fleet);
+        Map<String,Boolean> allproperties = new HashMap<>();
+
+        mWorkingWithAdapter = new WorkingWithAdapter(mContext, mFleet);
+        Map<String, Map<String,Boolean>> data = new HashMap<>();
+
+        for(int i=0; i < mFleet.getTrucks().size(); i++) {
+                    Truck truck = mFleet.getTrucks().get(i);
+            allproperties.clear();
+            data.clear();
+            for(int j=0; j < truck.getTruckProperties().size() ; j++) {
+                TruckProperty truckProperty = truck.getTruckProperties().get(j);
+                allproperties.putAll(truckProperty.getProperties());
+            }
+            data.put(truck.getTruckType(), allproperties);
+            Log.v(truck.getTruckType(), data.toString());
+            mUserDocRef.set(data, SetOptions.merge());
+        }
+
+        Log.v("Fleet", data.toString());
+
+//        mUserDocRef.set(data, SetOptions.merge());
     }
 
     @Override
@@ -169,9 +197,7 @@ public class FleetFormFragment extends BaseFragment {
 
     public void fetchUserData() {
         //get the updated partner pojo and set all fields if not null
-        auth = FirebaseAuth.getInstance();
-        mUserDocRef = FirebaseFirestore.getInstance()
-                .collection("partners").document(auth.getUid());
+
         Logger.v("Fetching Data");
         //mLoadingDataLin.setVisibility(View.VISIBLE);
         mUserDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -347,13 +373,14 @@ public class FleetFormFragment extends BaseFragment {
 
     public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
         private  Fleet mDataValues;
-
+        private Context mContext;
         private int getDataValuesSize() {
             return mDataValues.getTrucks().size();
         }
 
         // data is passed into the constructor
         public WorkingWithAdapter(Context context,Fleet fleet) {
+            mContext = context;
             this.mDataValues = fleet;
         }
 
@@ -372,9 +399,25 @@ public class FleetFormFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
-            String key = mDataValues.getTrucks().get(position).getTruckType();
+            String truckType = mDataValues.getTrucks().get(position).getTruckType();
 //            boolean value = mDataValues.get(key);
-            holder.setDataValue(key);
+            PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(mContext, mDataValues.getTrucks().get(position).getTruckProperties());
+            holder.propertyList.setLayoutManager(new LinearLayoutManager(this.mContext));
+            holder.propertyList.setAdapter(propertiesAdaptor);
+            holder.propertyList.addItemDecoration(new DividerItemDecoration(getActivity(),
+                    DividerItemDecoration.VERTICAL));
+            holder.mVehicleType.setText(truckType);
+//            holder.setDataValue(key);
+            holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked) {
+                        holder.propertyList.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.propertyList.setVisibility(View.GONE);
+                    }
+                }
+            });
 //            holder.onBind(mContext, holder);
         }
 
@@ -382,10 +425,96 @@ public class FleetFormFragment extends BaseFragment {
         @Override
         public int getItemCount() {
             return mDataValues.getTrucks().size();
+        }
+    }
+
+    ///************************************PRoperties Adaptor
+    public class PropertiesAdaptor extends RecyclerView.Adapter<TruckPropertiesViewHolder> {
+        private  List<TruckProperty> truckProperties;
+        private Context mContext;
+        private int getDataValuesSize() {
+            return truckProperties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesAdaptor(Context context, List<TruckProperty> truckProperties ) {
+            this.truckProperties = truckProperties;
+            mContext = context;
+        }
+
+        private void setDataValues(List<TruckProperty> truckProperties) {
+            this.truckProperties = truckProperties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property, parent, false);
+            TruckPropertiesViewHolder viewHolder = new TruckPropertiesViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesViewHolder holder, final int position) {
+            String key = truckProperties.get(position).getTitle();
+            holder.mPropertyTitle.setText(key);
+
+            PropertiesValuesAdaptor propertiesValueAdaptor = new PropertiesValuesAdaptor(mContext, truckProperties.get(position).getProperties());
+            holder.mPropertiesValues.setLayoutManager(new GridLayoutManager(this.mContext, 3));
+            holder.mPropertiesValues.setAdapter(propertiesValueAdaptor);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return truckProperties.size();
 
         }
     }
-//**************************************
+//************************************** PropertiesValueAdaptor
+
+    public class PropertiesValuesAdaptor extends RecyclerView.Adapter<TruckPropertiesValueViewHolder> {
+        private   Map<String,Boolean> properties;
+
+        private int getDataValuesSize() {
+            return properties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesValuesAdaptor(Context context, Map<String,Boolean> properties ) {
+            this.properties = properties;
+        }
+
+        private void setDataValues( Map<String,Boolean> properties) {
+            this.properties = properties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesValueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property_value, parent, false);
+            TruckPropertiesValueViewHolder viewHolder = new TruckPropertiesValueViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesValueViewHolder holder, final int position) {
+            String  key = new ArrayList<>( properties.keySet()).get(position);
+            holder.mPropertyTitle.setText(key);
+            holder.mPropertyOnOff.setChecked(false);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return this.properties.size();
+
+        }
+    }
+
+//***************************************
     public class FleetAdapter extends RecyclerView.Adapter<FleetViewHolder> {
         private List<Vehicle> mDataValues;
 

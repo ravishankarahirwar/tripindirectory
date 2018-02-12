@@ -1020,7 +1020,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (FilterPojo f : mFiltersList) {
             switch (f.getmFilterType()) {
                 case 1: {
-                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+//                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                    query = query.whereEqualTo("Trailers.40" , true).whereEqualTo("Trailers.Platform" , false);
+//                    query = query.whereEqualTo("Trailers.Platform" , false);
                     break;
                 }
                 case 2: {

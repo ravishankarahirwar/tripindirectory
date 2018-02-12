@@ -1,28 +1,181 @@
 {
-  "trucks": [{
-    "truckType": "LCV",
-    "truckBodyType": {
-      "title": "Body Type",
-      "properties": {
-        "Full Body": false
-      }
+  "trucks": [
+    {
+      "truckType": "LCV",
+      "truckProperties": [
+        {
+          "title": "Truck Make",
+          "properties": {
+            "Tata Ace": false,
+            "Mahindra Pick Up": false,
+            "Chota Haati": false
+          }
+        },
+        {
+          "title": "Body Type",
+          "properties": {
+            "Full Body": false
+          }
+        },
+        {
+          "title": "Length",
+          "properties": {
+            "14": false,
+            "17": false,
+            "19": false
+          }
+        },
+        {
+          "title": "Model No",
+          "properties": {
+            "407": false,
+            "709": false,
+            "907": false,
+            "1109": false
+          }
+        }
+      ]
     },
-    "truckLength": {
-      "title": "Length",
-      "properties": {
-        "Full": false,
-        "17": false,
-        "19": false
-      }
+
+    {
+      "truckType": "Truck",
+      "truckProperties": [
+        {
+          "title": "Body Type",
+          "properties": {
+            "Full Body": false,
+            "Half Body": false
+          }
+        },
+        {
+          "title": "Length",
+          "properties": {
+            "18": false,
+            "19": false,
+            "20": false
+          }
+        },
+        {
+          "title": "Payload in MT",
+          "properties": {
+            "9": false
+          }
+        }
+      ]
     },
-    "truckModelNo": {
-      "title": "Model No",
-      "properties": {
-        "407": false,
-        "709": false,
-        "907": false,
-        "1109": false
-      }
+
+    {
+      "truckType": "Tusker",
+      "truckProperties": [
+        {
+          "title": "Body Type",
+          "properties": {
+            "Open Body": false
+          }
+        },
+        {
+          "title": "Length",
+          "properties": {
+            "20": false
+          }
+        }
+      ]
+    },
+
+    {
+      "truckType": "Taurus",
+      "truckProperties": [
+        {
+          "title": "Body Type",
+          "properties": {
+            "Full Body": false,
+            "Half Body": false,
+            "Open Body": false
+          }
+        },
+        {
+          "title": "Length",
+          "properties": {
+            "22": false,
+            "24": false
+          }
+        },
+        {
+          "title": "Payload in MT",
+          "properties": {
+            "16": false,
+            "21": false,
+            "25": false
+          }
+        },
+        {
+          "title": "No. of Tyres",
+          "properties": {
+            "10": false,
+            "12": false,
+            "14": false
+          }
+        }
+      ]
+    },
+
+    {
+      "truckType": "Trailers",
+      "truckProperties": [
+        {
+          "title": "Body Type",
+          "properties": {
+            "Skeleton": false,
+            "Platform": true,
+            "Semi-low": false,
+            "Low": false,
+            "Trolla/Body Trailer": false,
+            "Refer": false
+          }
+        },
+        {
+          "title": "Length",
+          "properties": {
+            "20": false,
+            "24": false,
+            "26": false,
+            "28": false,
+            "32": false,
+            "40": true,
+            "50": false,
+            "60": false,
+            "70": false,
+            "80": false
+          }
+        },
+        {
+          "title": "Payload in MT",
+          "properties": {
+            "22": false,
+            "26": false,
+            "32": false
+          }
+        },
+        {
+          "title": "No of Tyres",
+          "properties": {
+            "2 Axle": false,
+            "3 Axle": false,
+            "2 Crown": false
+          }
+        },
+        {
+          "title": "Model No",
+          "properties": {
+            "3516": false,
+            "3518": false,
+            "4016": false,
+            "4018": false,
+            "4921": false,
+            "4923": false
+          }
+        }
+      ]
     }
-  }]
+  ]
 }

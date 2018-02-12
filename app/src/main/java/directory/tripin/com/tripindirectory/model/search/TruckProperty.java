@@ -11,4 +11,20 @@ import java.util.Map;
 public class TruckProperty {
     private String title;
     private Map<String,Boolean> properties;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Map<String, Boolean> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Boolean> properties) {
+        this.properties = properties;
+    }
 }

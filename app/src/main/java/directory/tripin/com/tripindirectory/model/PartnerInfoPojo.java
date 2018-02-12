@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
 
 /**
  * Created by Shubham on 12/12/2017.
@@ -24,9 +26,6 @@ public class PartnerInfoPojo {
     private String mCompanyEmail;
     private String mCompanyWebsite;
 
-
-
-
     private boolean isVerified = true;
 
     private List<String> mCompanyLandLineNumbers;
@@ -43,10 +42,7 @@ public class PartnerInfoPojo {
     private Map<String,Boolean> mNatureOfBusiness;
     private Map<String,Boolean> mTypesOfServices;
 
-
-
-
-
+    private List<Truck> trucks;
     public PartnerInfoPojo() {
     }
 
@@ -59,6 +55,14 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public List<Truck> getTrucks() {
+        return trucks;
+    }
+
+    public void setTrucks(List<Truck> trucks) {
+        this.trucks = trucks;
     }
 
     public String getmCompanyEmail() {
