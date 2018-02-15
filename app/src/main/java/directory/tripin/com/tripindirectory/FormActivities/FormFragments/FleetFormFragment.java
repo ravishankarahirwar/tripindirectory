@@ -143,20 +143,42 @@ public class FleetFormFragment extends BaseFragment {
         Map<String,Boolean> allproperties = new HashMap<>();
 
         mWorkingWithAdapter = new WorkingWithAdapter(mContext, mFleet);
-        Map<String, Map<String,Boolean>> data = new HashMap<>();
 
-        for(int i=0; i < mFleet.getTrucks().size(); i++) {
-                    Truck truck = mFleet.getTrucks().get(i);
-            allproperties.clear();
-            data.clear();
-            for(int j=0; j < truck.getTruckProperties().size() ; j++) {
-                TruckProperty truckProperty = truck.getTruckProperties().get(j);
-                allproperties.putAll(truckProperty.getProperties());
-            }
-            data.put(truck.getTruckType(), allproperties);
-            Log.v(truck.getTruckType(), data.toString());
-            mUserDocRef.set(data, SetOptions.merge());
-        }
+
+//        for(int i=0; i < mFleet.getTrucks().size(); i++) {
+//                    Truck truck = mFleet.getTrucks().get(i);
+//            allproperties.clear();
+//            data.clear();
+//            for(int j=0; j < truck.getTruckProperties().size() ; j++) {
+//                TruckProperty truckProperty = truck.getTruckProperties().get(j);
+//                allproperties.putAll(truckProperty.getProperties());
+//            }
+//            data.put(truck.getTruckType(), allproperties);
+//            Log.v(truck.getTruckType(), data.toString());
+//            mUserDocRef.set(data, SetOptions.merge());
+//        }
+
+        Map<String, Map<String,Map<String,Map<String,Boolean>>>> data = new HashMap<>();
+        Map<String, Map<String,Map<String,Boolean>>> truck = new HashMap<>();
+        Map<String,Map<String,Boolean>> property = new HashMap<>();
+
+        Map<String,Boolean> lengthvalue = new HashMap<>();
+        lengthvalue.put("14",false);
+        lengthvalue.put("17",false);
+        lengthvalue.put("19",false);
+
+        Map<String,Boolean> truckMaker = new HashMap<>();
+        truckMaker.put("TataAce",false);
+        truckMaker.put("Mahindra",false);
+        truckMaker.put("ChotaHaati",false);
+
+        property.put("length", lengthvalue);
+        property.put("truckMaker", truckMaker);
+
+        truck.put("LCV" , property);
+
+        data.put("Fleet", truck);
+        mUserDocRef.set(truck, SetOptions.merge());
 
         Log.v("Fleet", data.toString());
 
@@ -371,6 +393,14 @@ public class FleetFormFragment extends BaseFragment {
 
     }
 
+    public interface OnTruckPropertyValueChange {
+        public void onPropertyChange(Map<String,Boolean> properties);
+    }
+
+    public interface OnTruckValueChange {
+        public void onTruckPropertiesChange(List<TruckProperty> truckProperties);
+    }
+
     public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
         private  Fleet mDataValues;
         private Context mContext;
@@ -389,6 +419,10 @@ public class FleetFormFragment extends BaseFragment {
             this.notifyDataSetChanged();
         }
 
+        private Fleet getDataValues() {
+            return  this.mDataValues;
+        }
+
         // inflates the row layout from xml when needed
         @Override
         public WorkingWithHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -401,12 +435,17 @@ public class FleetFormFragment extends BaseFragment {
         public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
             String truckType = mDataValues.getTrucks().get(position).getTruckType();
 //            boolean value = mDataValues.get(key);
-            PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(mContext, mDataValues.getTrucks().get(position).getTruckProperties());
+            PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(mContext, mDataValues.getTrucks().get(position).getTruckProperties(), new OnTruckValueChange() {
+                @Override
+                public void onTruckPropertiesChange(List<TruckProperty> truckProperties) {
+                    mDataValues.getTrucks().get(position).setTruckProperties(truckProperties);
+                }
+            });
             holder.propertyList.setLayoutManager(new LinearLayoutManager(this.mContext));
             holder.propertyList.setAdapter(propertiesAdaptor);
             holder.propertyList.addItemDecoration(new DividerItemDecoration(getActivity(),
                     DividerItemDecoration.VERTICAL));
-            holder.mVehicleType.setText(truckType);
+            holder.mIHave.setText(truckType);
 //            holder.setDataValue(key);
             holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -432,13 +471,15 @@ public class FleetFormFragment extends BaseFragment {
     public class PropertiesAdaptor extends RecyclerView.Adapter<TruckPropertiesViewHolder> {
         private  List<TruckProperty> truckProperties;
         private Context mContext;
+        private OnTruckValueChange  onTruckValueChange;
         private int getDataValuesSize() {
             return truckProperties.size();
         }
 
         // data is passed into the constructor
-        public PropertiesAdaptor(Context context, List<TruckProperty> truckProperties ) {
+        public PropertiesAdaptor(Context context, List<TruckProperty> truckProperties, OnTruckValueChange  onTruckValueChange) {
             this.truckProperties = truckProperties;
+            this.onTruckValueChange = onTruckValueChange;
             mContext = context;
         }
 
@@ -460,7 +501,13 @@ public class FleetFormFragment extends BaseFragment {
             String key = truckProperties.get(position).getTitle();
             holder.mPropertyTitle.setText(key);
 
-            PropertiesValuesAdaptor propertiesValueAdaptor = new PropertiesValuesAdaptor(mContext, truckProperties.get(position).getProperties());
+            PropertiesValuesAdaptor propertiesValueAdaptor = new PropertiesValuesAdaptor(mContext, truckProperties.get(position).getProperties(), new OnTruckPropertyValueChange() {
+                @Override
+                public void onPropertyChange(Map<String, Boolean> properties) {
+                    truckProperties.get(position).setProperties(properties);
+                    onTruckValueChange.onTruckPropertiesChange(truckProperties);
+                }
+            });
             holder.mPropertiesValues.setLayoutManager(new GridLayoutManager(this.mContext, 3));
             holder.mPropertiesValues.setAdapter(propertiesValueAdaptor);
         }
@@ -476,14 +523,15 @@ public class FleetFormFragment extends BaseFragment {
 
     public class PropertiesValuesAdaptor extends RecyclerView.Adapter<TruckPropertiesValueViewHolder> {
         private   Map<String,Boolean> properties;
-
+        private OnTruckPropertyValueChange onTruckPropertyValueChange;
         private int getDataValuesSize() {
             return properties.size();
         }
 
         // data is passed into the constructor
-        public PropertiesValuesAdaptor(Context context, Map<String,Boolean> properties ) {
+        public PropertiesValuesAdaptor(Context context, Map<String,Boolean> properties, OnTruckPropertyValueChange onTruckPropertyValueChange) {
             this.properties = properties;
+            this.onTruckPropertyValueChange = onTruckPropertyValueChange;
         }
 
         private void setDataValues( Map<String,Boolean> properties) {
@@ -501,9 +549,16 @@ public class FleetFormFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(final TruckPropertiesValueViewHolder holder, final int position) {
-            String  key = new ArrayList<>( properties.keySet()).get(position);
-            holder.mPropertyTitle.setText(key);
+            final String  key = new ArrayList<>( properties.keySet()).get(position);
+            holder.mPropertyOnOff.setText(key);
             holder.mPropertyOnOff.setChecked(false);
+            holder.mPropertyOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
+                    properties.put(key.trim(), value);
+                    onTruckPropertyValueChange.onPropertyChange(properties);
+                }
+            });
         }
 
         // total number of rows

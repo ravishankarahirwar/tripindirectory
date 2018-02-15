@@ -12,13 +12,11 @@ import directory.tripin.com.tripindirectory.R;
  */
 
 public class TruckPropertiesValueViewHolder extends RecyclerView.ViewHolder {
-    public TextView mPropertyTitle;
     public CheckBox mPropertyOnOff;
 
 
     public TruckPropertiesValueViewHolder(View itemView) {
         super(itemView);
-        mPropertyTitle = itemView.findViewById(R.id.property_title);
         mPropertyOnOff  = itemView.findViewById(R.id.property_on_off);
     }
 }

@@ -42,7 +42,16 @@ public class PartnerInfoPojo {
     private Map<String,Boolean> mNatureOfBusiness;
     private Map<String,Boolean> mTypesOfServices;
 
-    private List<Truck> trucks;
+//    private Fleet Fleet = new Fleet();
+
+//    Map<String, Boolean> LCV = new HashMap<>();
+//    Map<String,Map<String,Boolean>> property = new HashMap<>();
+//    Map<String,Boolean><String,Boolean> lengthvalue = new HashMap<>();
+//    private Map<String,Map<String,Boolean>> Fleet = new HashMap<>();
+//      private Map<String, Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
+//    private Map<Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
+
+//    private List<Truck> trucks;
     public PartnerInfoPojo() {
     }
 
@@ -57,13 +66,28 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
-    public List<Truck> getTrucks() {
-        return trucks;
+//    public class Fleet {
+//        public TruckS LCV;
+//    }
+
+    public class LCV {
+        Length length = new Length();
+        Length truckMaker =  new Length();
     }
 
-    public void setTrucks(List<Truck> trucks) {
-        this.trucks = trucks;
+    public class Length {
+        Map<String,Boolean> length = new HashMap<>();
     }
+
+
+
+//    public List<Truck> getTrucks() {
+//        return trucks;
+//    }
+//
+//    public void setTrucks(List<Truck> trucks) {
+//        this.trucks = trucks;
+//    }
 
     public String getmCompanyEmail() {
         return mCompanyEmail;

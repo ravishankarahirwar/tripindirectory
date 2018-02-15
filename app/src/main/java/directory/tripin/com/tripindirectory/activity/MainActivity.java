@@ -1014,14 +1014,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //base query
         query = FirebaseFirestore.getInstance()
-                .collection("partners");
+                .collection("partners").limit(5L);
 
         //apply filters
         for (FilterPojo f : mFiltersList) {
             switch (f.getmFilterType()) {
                 case 1: {
 //                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
-                    query = query.whereEqualTo("Trailers.40" , true).whereEqualTo("Trailers.Platform" , false);
+//////                    query = query.whereEqualTo("Trailers.40" , true).whereEqualTo("Trailers.Platform" , true);
+                    query = query.whereEqualTo("LCV.length.14" , false);
+
 //                    query = query.whereEqualTo("Trailers.Platform" , false);
                     break;
                 }
@@ -1115,7 +1117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 query = query.whereGreaterThan("mCompanyName", "");
         }
 
-
+        query.limit(10);
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
                 .build();

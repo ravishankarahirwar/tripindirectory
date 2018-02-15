@@ -16,19 +16,17 @@ import directory.tripin.com.tripindirectory.model.response.Vehicle;
 
 public class WorkingWithHolderNew extends RecyclerView.ViewHolder {
     public CheckBox mIHave;
-    public TextView mVehicleType;
     private String dataValue;
     public RecyclerView propertyList;
 
     public WorkingWithHolderNew(View itemView) {
         super(itemView);
-        mVehicleType = itemView.findViewById(R.id.truck_type);
         mIHave = itemView.findViewById(R.id.i_have);
         propertyList = itemView.findViewById(R.id.truck_properties_list);
 
     }
     public void onBind(Context context, WorkingWithHolderNew placesViewHolder) {
-        placesViewHolder.mVehicleType.setText(placesViewHolder.getDataValue());
+        placesViewHolder.mIHave.setText(placesViewHolder.getDataValue());
     }
     public void setDataValue(String dataValue) {
         this.dataValue = dataValue;
