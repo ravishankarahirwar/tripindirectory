@@ -71,8 +71,6 @@
                     android:layout_below="@id/vehicletype_title"
                     android:layout_margin="10dp"
                     android:visibility="gone" />
-
-
             </RelativeLayout>
 
 

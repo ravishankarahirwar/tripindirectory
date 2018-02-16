@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Truck {
     private String truckType;
+    private boolean isTruckHave = false;
     private List<TruckProperty> truckProperties;
 
     public String getTruckType() {
@@ -26,6 +27,14 @@ public class Truck {
 
     public void setTruckProperties(List<TruckProperty> truckProperties) {
         this.truckProperties = truckProperties;
+    }
+
+    public boolean isTruckHave() {
+        return isTruckHave;
+    }
+
+    public void setTruckHave(boolean truckHave) {
+        isTruckHave = truckHave;
     }
 
     //    private TruckProperty truckBodyType;

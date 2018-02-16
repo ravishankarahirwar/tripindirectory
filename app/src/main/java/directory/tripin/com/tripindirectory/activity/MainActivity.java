@@ -22,6 +22,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.CharacterStyle;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -89,12 +92,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.FormActivities.FormFragments.FleetFormFragment;
+import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
@@ -111,6 +120,8 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
+import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
@@ -216,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
+    private WorkingWithAdapter mWorkingWithAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -265,8 +277,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
         toggletoslist = findViewById(R.id.nobup2);
 
+        InputStream raw =  getResources().openRawResource(R.raw.fleet);
+        Reader rd = new BufferedReader(new InputStreamReader(raw));
+        Gson gson = new Gson();
+        Fleet fleet = gson.fromJson(rd, Fleet.class);
+        mWorkingWithAdapter = new WorkingWithAdapter(mContext, fleet);
+
         mTypesofVehiclesRecyclarView = findViewById(R.id.rv_tov);
-        mTypesofVehiclesRecyclarView.setAdapter(checkBoxRecyclarAdapter3);
+//        mTypesofVehiclesRecyclarView.setAdapter(checkBoxRecyclarAdapter3);
+        mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
         mTypesofVehiclesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofVehiclesRecyclarView.setNestedScrollingEnabled(false);
         tbtov = findViewById(R.id.tovup);
@@ -774,9 +793,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 mFiltersList.clear();
+                Fleet filledFleet = mWorkingWithAdapter.getDataValues();
+                for (int i = 0; i < filledFleet.getTrucks().size(); i++) {
+                    Truck trucks = filledFleet.getTrucks().get(i);
+                    for (int j = 0; j < trucks.getTruckProperties().size(); j++) {
+                        TruckProperty truckProperty = trucks.getTruckProperties().get(j);
+                            for (Map.Entry<String, Boolean> entry : truckProperty.getProperties().entrySet()) {
+                                boolean propertyValue =  entry.getValue();
+                                if(propertyValue) {
+                                    String newFilter = "Fleet." + trucks.getTruckType() + "." + truckProperty.getTitle() + "." + entry.getKey();
+                                    FilterPojo filterPojo = new FilterPojo(newFilter, 11, 1);
+                                    mFiltersList.add(filterPojo);
+                                    Log.v("FilterAdded", newFilter);
+                                }
+                            }
+//                        }
+                    }
+                }
+
+
                 for (String f : checkBoxRecyclarAdapter1.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter1.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 6, 1);
+                        FilterPojo filterPojo = new FilterPojo(f, 11, 1);
                         mFiltersList.add(filterPojo);
                     }
                 }
@@ -1019,10 +1057,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //apply filters
         for (FilterPojo f : mFiltersList) {
             switch (f.getmFilterType()) {
-                case 1: {
+                case 11: {
 //                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
 //////                    query = query.whereEqualTo("Trailers.40" , true).whereEqualTo("Trailers.Platform" , true);
-                    query = query.whereEqualTo("LCV.length.14" , false);
+                    String filterName = f.getmFilterName();
+                    query = query.whereEqualTo(filterName , true);
 
 //                    query = query.whereEqualTo("Trailers.Platform" , false);
                     break;
@@ -2125,4 +2164,183 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(context, "No application found for send Email" , Toast.LENGTH_LONG).show();
         }
     }
+
+    //****************************Filter NEW******************
+    public interface OnTruckPropertyValueChange {
+        public void onPropertyChange(Map<String,Boolean> properties);
+    }
+
+    public interface OnTruckValueChange {
+        public void onTruckPropertiesChange(List<TruckProperty> truckProperties);
+    }
+    public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
+        private  Fleet mDataValues;
+        private Context mContext;
+        private int getDataValuesSize() {
+            return mDataValues.getTrucks().size();
+        }
+
+        // data is passed into the constructor
+        public WorkingWithAdapter(Context context,Fleet fleet) {
+            mContext = context;
+            this.mDataValues = fleet;
+        }
+
+        private void setDataValues(Fleet dataValues) {
+            mDataValues = dataValues;
+            this.notifyDataSetChanged();
+        }
+
+        private Fleet getDataValues() {
+            return  this.mDataValues;
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public WorkingWithHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_working_with_vehicle, parent, false);
+            WorkingWithHolderNew viewHolder = new WorkingWithHolderNew(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
+            String truckType = mDataValues.getTrucks().get(position).getTruckType();
+//            boolean value = mDataValues.get(key);
+            PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(MainActivity.this, mDataValues.getTrucks().get(position).getTruckProperties(), new OnTruckValueChange() {
+                @Override
+                public void onTruckPropertiesChange(List<TruckProperty> truckProperties) {
+                    mDataValues.getTrucks().get(position).setTruckProperties(truckProperties);
+                }
+            });
+            holder.propertyList.setLayoutManager(new LinearLayoutManager(this.mContext));
+            holder.propertyList.setAdapter(propertiesAdaptor);
+            holder.propertyList.addItemDecoration(new DividerItemDecoration(MainActivity.this,
+                    DividerItemDecoration.VERTICAL));
+            holder.mIHave.setText(truckType);
+//            holder.setDataValue(key);
+            holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mDataValues.getTrucks().get(position).setTruckHave(isChecked);
+                    if(isChecked) {
+                        holder.propertyList.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.propertyList.setVisibility(View.GONE);
+                    }
+                }
+            });
+//            holder.onBind(mContext, holder);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return mDataValues.getTrucks().size();
+        }
+    }
+
+    ///************************************PRoperties Adaptor
+    public class PropertiesAdaptor extends RecyclerView.Adapter<TruckPropertiesViewHolder> {
+        private  List<TruckProperty> truckProperties;
+        private Context mContext;
+        private OnTruckValueChange onTruckValueChange;
+        private int getDataValuesSize() {
+            return truckProperties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesAdaptor(Context context, List<TruckProperty> truckProperties, OnTruckValueChange onTruckValueChange) {
+            this.truckProperties = truckProperties;
+            this.onTruckValueChange = onTruckValueChange;
+            mContext = context;
+        }
+
+        private void setDataValues(List<TruckProperty> truckProperties) {
+            this.truckProperties = truckProperties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property, parent, false);
+            TruckPropertiesViewHolder viewHolder = new TruckPropertiesViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesViewHolder holder, final int position) {
+            String key = truckProperties.get(position).getTitle();
+            holder.mPropertyTitle.setText(key);
+
+            PropertiesValuesAdaptor propertiesValueAdaptor = new PropertiesValuesAdaptor(mContext, truckProperties.get(position).getProperties(), new OnTruckPropertyValueChange() {
+                @Override
+                public void onPropertyChange(Map<String, Boolean> properties) {
+                    truckProperties.get(position).setProperties(properties);
+                    onTruckValueChange.onTruckPropertiesChange(truckProperties);
+                }
+            });
+            holder.mPropertiesValues.setLayoutManager(new GridLayoutManager(this.mContext, 3));
+            holder.mPropertiesValues.setAdapter(propertiesValueAdaptor);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return truckProperties.size();
+
+        }
+    }
+//************************************** PropertiesValueAdaptor
+
+    public class PropertiesValuesAdaptor extends RecyclerView.Adapter<TruckPropertiesValueViewHolder> {
+        private   Map<String,Boolean> properties;
+        private OnTruckPropertyValueChange onTruckPropertyValueChange;
+        private int getDataValuesSize() {
+            return properties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesValuesAdaptor(Context context, Map<String,Boolean> properties, OnTruckPropertyValueChange onTruckPropertyValueChange) {
+            this.properties = properties;
+            this.onTruckPropertyValueChange = onTruckPropertyValueChange;
+        }
+
+        private void setDataValues( Map<String,Boolean> properties) {
+            this.properties = properties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesValueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property_value, parent, false);
+            TruckPropertiesValueViewHolder viewHolder = new TruckPropertiesValueViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesValueViewHolder holder, final int position) {
+            final String  key = new ArrayList<>( properties.keySet()).get(position);
+            holder.mPropertyOnOff.setText(key);
+            holder.mPropertyOnOff.setChecked(false);
+            holder.mPropertyOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
+                    properties.put(key.trim(), value);
+                    onTruckPropertyValueChange.onPropertyChange(properties);
+                }
+            });
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return this.properties.size();
+
+        }
+    }
+
+//***************************************
 }

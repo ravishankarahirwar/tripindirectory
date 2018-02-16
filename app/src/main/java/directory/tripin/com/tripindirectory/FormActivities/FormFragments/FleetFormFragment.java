@@ -141,7 +141,6 @@ public class FleetFormFragment extends BaseFragment {
         mFleet = gson.fromJson(rd, Fleet.class);
 
         Map<String,Boolean> allproperties = new HashMap<>();
-
         mWorkingWithAdapter = new WorkingWithAdapter(mContext, mFleet);
 
 
@@ -158,29 +157,7 @@ public class FleetFormFragment extends BaseFragment {
 //            mUserDocRef.set(data, SetOptions.merge());
 //        }
 
-        Map<String, Map<String,Map<String,Map<String,Boolean>>>> data = new HashMap<>();
-        Map<String, Map<String,Map<String,Boolean>>> truck = new HashMap<>();
-        Map<String,Map<String,Boolean>> property = new HashMap<>();
 
-        Map<String,Boolean> lengthvalue = new HashMap<>();
-        lengthvalue.put("14",false);
-        lengthvalue.put("17",false);
-        lengthvalue.put("19",false);
-
-        Map<String,Boolean> truckMaker = new HashMap<>();
-        truckMaker.put("TataAce",false);
-        truckMaker.put("Mahindra",false);
-        truckMaker.put("ChotaHaati",false);
-
-        property.put("length", lengthvalue);
-        property.put("truckMaker", truckMaker);
-
-        truck.put("LCV" , property);
-
-        data.put("Fleet", truck);
-        mUserDocRef.set(truck, SetOptions.merge());
-
-        Log.v("Fleet", data.toString());
 
 //        mUserDocRef.set(data, SetOptions.merge());
     }
@@ -292,6 +269,59 @@ public class FleetFormFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
+        Map<String, Map<String,Map<String,Map<String,Boolean>>>> data = new HashMap<>();
+        Map<String, Map<String,Map<String,Boolean>>> truck = new HashMap<>();
+
+        Fleet filledFleet = mWorkingWithAdapter.getDataValues();
+
+        for (int i = 0; i < filledFleet.getTrucks().size(); i++) {
+            Map<String,Map<String,Boolean>> property = new HashMap<>();
+            Truck trucks = filledFleet.getTrucks().get(i);
+            for (int j = 0; j < trucks.getTruckProperties().size(); j++) {
+//                Map<String,Boolean> allproperties = new HashMap<>();
+                TruckProperty truckProperty = trucks.getTruckProperties().get(j);
+//                allproperties.putAll(truckProperty.getProperties());
+                property.put(truckProperty.getTitle(), truckProperty.getProperties());
+
+            }
+            truck.put(trucks.getTruckType(), property);
+//            allproperties.clear();
+//            property.clear();
+
+//            mUserDocRef.set(data, SetOptions.merge());
+        }
+
+        data.put("Fleet", truck);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(filledFleet);
+        Fleet jsonFleet = gson.fromJson(json,Fleet.class);
+
+        Log.v("FleetData", json.toString());
+        Log.v("FleetData", "JSON : " + json);
+
+//        Map<String,Boolean> lengthvalue = new HashMap<>();
+//        lengthvalue.put("14",false);
+//        lengthvalue.put("17",false);
+//        lengthvalue.put("19",false);
+//
+//        Map<String,Boolean> truckMaker = new HashMap<>();
+//        truckMaker.put("TataAce",false);
+//        truckMaker.put("Mahindra",false);
+//        truckMaker.put("ChotaHaati",false);
+//
+//        property.put("length", lengthvalue);
+//        property.put("truckMaker", truckMaker);
+//
+//        truck.put("LCV" , property);
+//
+//        data.put("Fleet", truck);
+//        mUserDocRef.set(truck, SetOptions.merge());
+//
+//        Log.v("Fleet", data.toString());
+
+
+
 //        if(partnerInfoPojo != null && isDataFatched) {
 ////            mVehicles.clear();
 //            //send the modified data to parent activity
@@ -450,6 +480,7 @@ public class FleetFormFragment extends BaseFragment {
             holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mDataValues.getTrucks().get(position).setTruckHave(isChecked);
                     if(isChecked) {
                         holder.propertyList.setVisibility(View.VISIBLE);
                     } else {
