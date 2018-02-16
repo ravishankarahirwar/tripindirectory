@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.model.search;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,6 +10,12 @@ import java.util.List;
  */
 
 public class Truck {
+
+    public Truck() {
+        this.truckProperties = new ArrayList<>();
+    }
+
+
     private String truckType;
     private boolean isTruckHave = false;
     private List<TruckProperty> truckProperties;

@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.model.search;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -9,6 +10,11 @@ import java.util.Map;
  */
 
 public class TruckProperty {
+
+    public TruckProperty() {
+        this.properties = new HashMap<>();
+    }
+
     private String title;
     private Map<String,Boolean> properties;
 

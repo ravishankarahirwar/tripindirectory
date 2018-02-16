@@ -135,12 +135,11 @@ public class FleetFormFragment extends BaseFragment {
         auth = FirebaseAuth.getInstance();
         mUserDocRef = FirebaseFirestore.getInstance()
                 .collection("partners").document(auth.getUid());
+
         InputStream raw =  getResources().openRawResource(R.raw.fleet);
         Reader rd = new BufferedReader(new InputStreamReader(raw));
         Gson gson = new Gson();
         mFleet = gson.fromJson(rd, Fleet.class);
-
-        Map<String,Boolean> allproperties = new HashMap<>();
         mWorkingWithAdapter = new WorkingWithAdapter(mContext, mFleet);
 
 
@@ -156,9 +155,6 @@ public class FleetFormFragment extends BaseFragment {
 //            Log.v(truck.getTruckType(), data.toString());
 //            mUserDocRef.set(data, SetOptions.merge());
 //        }
-
-
-
 //        mUserDocRef.set(data, SetOptions.merge());
     }
 
@@ -205,12 +201,19 @@ public class FleetFormFragment extends BaseFragment {
                 isDataFatched = true;
                 if (task.isSuccessful() && task.getResult().exists()) {
                     partnerInfoPojo = task.getResult().toObject(PartnerInfoPojo.class);
+
+                    Gson gson = new Gson();
+                    String fj = partnerInfoPojo.getFleetJson();
+                    mFleet = gson.fromJson(fj, Fleet.class);
+                    if(mFleet != null && mFleet.getTrucks().size() > 0) {
+                        mWorkingWithAdapter.setDataValues(mFleet);
+                    }
+
                     if(partnerInfoPojo.getVehicles()!=null){
                         mVehicles.clear();
                         mVehicles.addAll(partnerInfoPojo.getVehicles());
                         adapterp.setDataValues(mVehicles);
                         Logger.v("Fetch and Set Fleet");
-
                     }
                    Logger.v("On Data Fetch and set Company Data");
                 }
@@ -272,11 +275,15 @@ public class FleetFormFragment extends BaseFragment {
         Map<String, Map<String,Map<String,Map<String,Boolean>>>> data = new HashMap<>();
         Map<String, Map<String,Map<String,Boolean>>> truck = new HashMap<>();
 
+        Map<String, Map<String,Boolean> > fleetVehicleForPush = new HashMap<>();
+        Map<String,Boolean> fleetVehicle = new HashMap<>();
+
         Fleet filledFleet = mWorkingWithAdapter.getDataValues();
 
         for (int i = 0; i < filledFleet.getTrucks().size(); i++) {
             Map<String,Map<String,Boolean>> property = new HashMap<>();
             Truck trucks = filledFleet.getTrucks().get(i);
+            fleetVehicle.put(trucks.getTruckType(), trucks.isTruckHave());
             for (int j = 0; j < trucks.getTruckProperties().size(); j++) {
 //                Map<String,Boolean> allproperties = new HashMap<>();
                 TruckProperty truckProperty = trucks.getTruckProperties().get(j);
@@ -291,14 +298,24 @@ public class FleetFormFragment extends BaseFragment {
 //            mUserDocRef.set(data, SetOptions.merge());
         }
 
+        fleetVehicleForPush.put("fleetVehicle",fleetVehicle );
+        mUserDocRef.set(fleetVehicleForPush, SetOptions.merge());
+
         data.put("Fleet", truck);
+        mUserDocRef.set(data, SetOptions.merge());
 
         Gson gson = new Gson();
-        String json = gson.toJson(filledFleet);
-        Fleet jsonFleet = gson.fromJson(json,Fleet.class);
+        String fleetjson = gson.toJson(filledFleet);
+        Map<String,String> fleetFilledJson = new HashMap<>();
+        fleetFilledJson.put("fleetJson", fleetjson);
+        mUserDocRef.set(fleetFilledJson, SetOptions.merge());
 
-        Log.v("FleetData", json.toString());
-        Log.v("FleetData", "JSON : " + json);
+
+
+//        Fleet jsonFleet = gson.fromJson(json,Fleet.class);
+//
+//        Log.v("FleetData", json.toString());
+//        Log.v("FleetData", "JSON : " + json);
 
 //        Map<String,Boolean> lengthvalue = new HashMap<>();
 //        lengthvalue.put("14",false);
@@ -322,104 +339,104 @@ public class FleetFormFragment extends BaseFragment {
 
 
 
-//        if(partnerInfoPojo != null && isDataFatched) {
-////            mVehicles.clear();
-//            //send the modified data to parent activity
-//             List<Vehicle> mVehiclesSend = new ArrayList<>();
-//
-//            for(int i=0; i < mVehicles.size(); i++){
-//
-//                View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
-//                if(itemView != null) {
-//                    Switch turckAva = itemView.findViewById(R.id.is_available);
-//
-//                    Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
-//                    Spinner bodyType = itemView.findViewById(R.id.body_type);
-//
-//                    TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
-//                    TextInputEditText payload = itemView.findViewById(R.id.input_payload);
-//                    TextInputEditText length = itemView.findViewById(R.id.input_length);
-//                    TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
-//                    TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
-//
-//                    boolean isAvailable = turckAva.isChecked();
-//                    String vehicleTypeString = vehicleType.getSelectedItem().toString();
-//                    String bodyTypeString = bodyType.getSelectedItem().toString();
-//
-//                    String vechileNo = vechcleNumber.getText().toString();
-//                    String truckPayload = payload.getText().toString();
-//                    String truckLength = length.getText().toString();
-//                    String driverNameString = driverName.getText().toString();
-//                    String driverNo = driverNumber.getText().toString();
-//
-//                    Vehicle vehicle = new Vehicle();
-//                    vehicle.setAvailable(isAvailable);
-//                    vehicle.setType(vehicleTypeString);
-//                    vehicle.setBodyType(bodyTypeString);
-//                    vehicle.setNumber(vechileNo);
-//                    vehicle.setPayload(truckPayload);
-//                    vehicle.setLength(truckLength);
-//                    Driver driver = new Driver();
-//                    driver.setName(driverNameString);
-//                    driver.setNumber(driverNo);
-//                    vehicle.setDriver(driver);
-//                    vehicle.setNumber(vechileNo);
-//                    mVehiclesSend.add(vehicle);
-//                    Logger.v("Fetch Set Fleet");
-//                }
-//            }
-//
+        if(partnerInfoPojo != null && isDataFatched) {
+//            mVehicles.clear();
+            //send the modified data to parent activity
+             List<Vehicle> mVehiclesSend = new ArrayList<>();
+
+            for(int i=0; i < mVehicles.size(); i++){
+
+                View itemView = mVechileList.getLayoutManager().findViewByPosition(i);
+                if(itemView != null) {
+                    Switch turckAva = itemView.findViewById(R.id.is_available);
+
+                    Spinner vehicleType = itemView.findViewById(R.id.vehicle_type);
+                    Spinner bodyType = itemView.findViewById(R.id.body_type);
+
+                    TextInputEditText vechcleNumber = itemView.findViewById(R.id.input_vechicle_number);
+                    TextInputEditText payload = itemView.findViewById(R.id.input_payload);
+                    TextInputEditText length = itemView.findViewById(R.id.input_length);
+                    TextInputEditText driverName = itemView.findViewById(R.id.input_driver_name);
+                    TextInputEditText driverNumber = itemView.findViewById(R.id.input_driver_number);
+
+                    boolean isAvailable = turckAva.isChecked();
+                    String vehicleTypeString = vehicleType.getSelectedItem().toString();
+                    String bodyTypeString = bodyType.getSelectedItem().toString();
+
+                    String vechileNo = vechcleNumber.getText().toString();
+                    String truckPayload = payload.getText().toString();
+                    String truckLength = length.getText().toString();
+                    String driverNameString = driverName.getText().toString();
+                    String driverNo = driverNumber.getText().toString();
+
+                    Vehicle vehicle = new Vehicle();
+                    vehicle.setAvailable(isAvailable);
+                    vehicle.setType(vehicleTypeString);
+                    vehicle.setBodyType(bodyTypeString);
+                    vehicle.setNumber(vechileNo);
+                    vehicle.setPayload(truckPayload);
+                    vehicle.setLength(truckLength);
+                    Driver driver = new Driver();
+                    driver.setName(driverNameString);
+                    driver.setNumber(driverNo);
+                    vehicle.setDriver(driver);
+                    vehicle.setNumber(vechileNo);
+                    mVehiclesSend.add(vehicle);
+                    Logger.v("Fetch Set Fleet");
+                }
+            }
+
+            HashMap<String,Boolean> mFilters = new HashMap<>();
+            for(int i=0; i < mWorkingWithVehicle.size(); i++){
+                View itemView = mVechilWorkingWithList.getLayoutManager().findViewByPosition(i);
+                if(itemView != null) {
+                    CheckBox turckAva = itemView.findViewById(R.id.i_have);
+                    TextView vehicleType = itemView.findViewById(R.id.truck_type);
+
+                    if(turckAva != null && vehicleType != null) {
+                        boolean value = turckAva.isChecked();
+                        String key = vehicleType.getText().toString().trim();
+                        mFilters.put(key, value);
+                    }
+                }
+            }
+
+            Map<String, List<Vehicle>> dataVehicle = new HashMap<>();
+            dataVehicle.put("vehicles", mVehiclesSend);
+            mUserDocRef.set(dataVehicle, SetOptions.merge());
+
 //            HashMap<String,Boolean> mFilters = new HashMap<>();
-//            for(int i=0; i < mWorkingWithVehicle.size(); i++){
-//                View itemView = mVechilWorkingWithList.getLayoutManager().findViewByPosition(i);
-//                if(itemView != null) {
-//                    CheckBox turckAva = itemView.findViewById(R.id.i_have);
-//                    TextView vehicleType = itemView.findViewById(R.id.truck_type);
-//
-//                    if(turckAva != null && vehicleType != null) {
-//                        boolean value = turckAva.isChecked();
-//                        String key = vehicleType.getText().toString().trim();
-//                        mFilters.put(key, value);
-//                    }
-//                }
-//            }
-//
-//            Map<String, List<Vehicle>> data = new HashMap<>();
-//            data.put("vehicles", mVehiclesSend);
-//            mUserDocRef.set(data, SetOptions.merge());
-//
-////            HashMap<String,Boolean> mFilters = new HashMap<>();
-//            for(Vehicle v : mVehiclesSend){
-//                mFilters.put(v.getBodyType().toUpperCase(),true);
-//                mFilters.put(v.getType().toUpperCase(),true);
-//
-//                if(!v.getLength().isEmpty()){
-//                    if(Integer.parseInt(v.getLength())>=0&&Integer.parseInt(v.getLength())<10){
-//                        mFilters.put("Between 0-10 Ft".toUpperCase(),true);
-//                    }else if(Integer.parseInt(v.getLength())>=10&&Integer.parseInt(v.getLength())<20){
-//                        mFilters.put("Between 10-20 Ft".toUpperCase(),true);
-//                    }else if(Integer.parseInt(v.getLength())>=20&&Integer.parseInt(v.getLength())<30){
-//                        mFilters.put("Between 20-30 Ft".toUpperCase(),true);
-//                    }else {
-//                        mFilters.put("Above 30 Ft".toUpperCase(),true);
-//                    }
-//                }
-//
-//                if(!v.getPayload().isEmpty()){
-//                    if(Integer.parseInt(v.getPayload())>=0&&Integer.parseInt(v.getPayload())<10){
-//                        mFilters.put("Between 0-10 MT".toUpperCase(),true);
-//                    }else if(Integer.parseInt(v.getPayload())>=10&&Integer.parseInt(v.getPayload())<20){
-//                        mFilters.put("Between 10-20 MT".toUpperCase(),true);
-//                    }else if(Integer.parseInt(v.getPayload())>=20&&Integer.parseInt(v.getPayload())<30){
-//                        mFilters.put("Between 20-30 MT".toUpperCase(),true);
-//                    }else {
-//                        mFilters.put("Above 30 MT".toUpperCase(),true);
-//                    }
-//                }
-//            }
-//
-//            mUserDocRef.update("mFiltersVehicle",mFilters);
-//        }
+            for(Vehicle v : mVehiclesSend){
+                mFilters.put(v.getBodyType().toUpperCase(),true);
+                mFilters.put(v.getType().toUpperCase(),true);
+
+                if(!v.getLength().isEmpty()){
+                    if(Integer.parseInt(v.getLength())>=0&&Integer.parseInt(v.getLength())<10){
+                        mFilters.put("Between 0-10 Ft".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getLength())>=10&&Integer.parseInt(v.getLength())<20){
+                        mFilters.put("Between 10-20 Ft".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getLength())>=20&&Integer.parseInt(v.getLength())<30){
+                        mFilters.put("Between 20-30 Ft".toUpperCase(),true);
+                    }else {
+                        mFilters.put("Above 30 Ft".toUpperCase(),true);
+                    }
+                }
+
+                if(!v.getPayload().isEmpty()){
+                    if(Integer.parseInt(v.getPayload())>=0&&Integer.parseInt(v.getPayload())<10){
+                        mFilters.put("Between 0-10 MT".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getPayload())>=10&&Integer.parseInt(v.getPayload())<20){
+                        mFilters.put("Between 10-20 MT".toUpperCase(),true);
+                    }else if(Integer.parseInt(v.getPayload())>=20&&Integer.parseInt(v.getPayload())<30){
+                        mFilters.put("Between 20-30 MT".toUpperCase(),true);
+                    }else {
+                        mFilters.put("Above 30 MT".toUpperCase(),true);
+                    }
+                }
+            }
+
+            mUserDocRef.update("mFiltersVehicle",mFilters);
+        }
 
     }
 
@@ -464,7 +481,7 @@ public class FleetFormFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
             String truckType = mDataValues.getTrucks().get(position).getTruckType();
-//            boolean value = mDataValues.get(key);
+            boolean value = mDataValues.getTrucks().get(position).isTruckHave();
             PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(mContext, mDataValues.getTrucks().get(position).getTruckProperties(), new OnTruckValueChange() {
                 @Override
                 public void onTruckPropertiesChange(List<TruckProperty> truckProperties) {
@@ -476,7 +493,12 @@ public class FleetFormFragment extends BaseFragment {
             holder.propertyList.addItemDecoration(new DividerItemDecoration(getActivity(),
                     DividerItemDecoration.VERTICAL));
             holder.mIHave.setText(truckType);
-//            holder.setDataValue(key);
+            holder.mIHave.setChecked(value);
+
+            if(value) {
+                holder.propertyList.setVisibility(View.VISIBLE);
+            }
+
             holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -582,7 +604,7 @@ public class FleetFormFragment extends BaseFragment {
         public void onBindViewHolder(final TruckPropertiesValueViewHolder holder, final int position) {
             final String  key = new ArrayList<>( properties.keySet()).get(position);
             holder.mPropertyOnOff.setText(key);
-            holder.mPropertyOnOff.setChecked(false);
+            holder.mPropertyOnOff.setChecked(properties.get(key));
             holder.mPropertyOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean value) {

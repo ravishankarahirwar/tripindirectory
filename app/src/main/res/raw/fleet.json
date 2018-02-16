@@ -126,7 +126,7 @@
           "title": "Body Type",
           "properties": {
             "Skeleton": false,
-            "Platform": true,
+            "Platform": false,
             "Semi-low": false,
             "Low": false,
             "Trolla/Body Trailer": false,
@@ -141,7 +141,7 @@
             "26": false,
             "28": false,
             "32": false,
-            "40": true,
+            "40": false,
             "50": false,
             "60": false,
             "70": false,

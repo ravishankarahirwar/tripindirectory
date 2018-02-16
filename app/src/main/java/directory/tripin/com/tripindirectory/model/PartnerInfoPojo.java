@@ -41,7 +41,7 @@ public class PartnerInfoPojo {
     private Map<String,Boolean> mDestinationCities;
     private Map<String,Boolean> mNatureOfBusiness;
     private Map<String,Boolean> mTypesOfServices;
-
+    private String fleetJson;
 //    private Fleet Fleet = new Fleet();
 
 //    Map<String, Boolean> LCV = new HashMap<>();
@@ -66,7 +66,16 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
-//    public class Fleet {
+    public String getFleetJson() {
+        return fleetJson;
+    }
+
+    public void setFleetJson(String fleetJson) {
+        this.fleetJson = fleetJson;
+    }
+
+
+    //    public class Fleet {
 //        public TruckS LCV;
 //    }
 

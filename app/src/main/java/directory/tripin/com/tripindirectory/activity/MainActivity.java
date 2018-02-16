@@ -796,6 +796,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Fleet filledFleet = mWorkingWithAdapter.getDataValues();
                 for (int i = 0; i < filledFleet.getTrucks().size(); i++) {
                     Truck trucks = filledFleet.getTrucks().get(i);
+                    boolean ihave =  filledFleet.getTrucks().get(i).isTruckHave();
+                    if(ihave) {
+                        String newFilter = trucks.getTruckType();
+                        FilterPojo filterPojo = new FilterPojo(newFilter, 12, 1);
+                        mFiltersList.add(filterPojo);
+                    }
                     for (int j = 0; j < trucks.getTruckProperties().size(); j++) {
                         TruckProperty truckProperty = trucks.getTruckProperties().get(j);
                             for (Map.Entry<String, Boolean> entry : truckProperty.getProperties().entrySet()) {
@@ -814,7 +820,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 for (String f : checkBoxRecyclarAdapter1.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter1.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 11, 1);
+                        FilterPojo filterPojo = new FilterPojo(f, 1, 1);
                         mFiltersList.add(filterPojo);
                     }
                 }
@@ -1052,18 +1058,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //base query
         query = FirebaseFirestore.getInstance()
-                .collection("partners").limit(5L);
+                .collection("partners").limit(100L);
 
         //apply filters
         for (FilterPojo f : mFiltersList) {
             switch (f.getmFilterType()) {
                 case 11: {
-//                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
-//////                    query = query.whereEqualTo("Trailers.40" , true).whereEqualTo("Trailers.Platform" , true);
                     String filterName = f.getmFilterName();
                     query = query.whereEqualTo(filterName , true);
-
-//                    query = query.whereEqualTo("Trailers.Platform" , false);
+                    break;
+                }
+                case 12: {
+                    query = query.whereEqualTo("fleetVehicle." + f.getmFilterName(), true);
                     break;
                 }
                 case 2: {
@@ -1156,7 +1162,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 query = query.whereGreaterThan("mCompanyName", "");
         }
 
-        query.limit(10);
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
                 .build();

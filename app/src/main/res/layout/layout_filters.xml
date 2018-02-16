@@ -86,7 +86,7 @@
                 android:background="@drawable/roundedcornerbg"
                 android:elevation="@dimen/button_elevation"
                 android:padding="5dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/bodytype_title"
@@ -116,7 +116,6 @@
                     android:layout_margin="10dp"
                     android:visibility="gone" />
 
-
             </RelativeLayout>
 
 
@@ -132,7 +131,7 @@
                 android:background="@drawable/roundedcornerbg"
                 android:elevation="@dimen/button_elevation"
                 android:padding="5dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/weight_title"
@@ -177,7 +176,7 @@
                 android:background="@drawable/roundedcornerbg"
                 android:elevation="@dimen/button_elevation"
                 android:padding="5dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/length_title"
