@@ -40,12 +40,12 @@
     <string name="action_voice_rec">Voice Search</string>
 
 
-    <string name="truck_type_prompt">Vehicle</string>
+    <string name="truck_type_prompt">Vehicle Types</string>
 
 
     <string-array name="truck_type">
+        <item>Select Type of Vehicle</item>
         <item>None</item>
-        <item>Vehicle</item>
         <item>LCV</item>
         <item>Truck</item>
         <item>Tusker</item>
@@ -61,12 +61,11 @@
         <item>Hydraulic Axles</item>
     </string-array>
 
-    <string name="body_type_prompt">Body</string>
+    <string name="body_type_prompt">Body Types</string>
 
     <string-array name="body_type">
+        <item>Select Type of Body</item>
         <item>None</item>
-
-        <item>Body</item>
         <item>Normal</item>
         <item>Full Body</item>
         <item>Half Body</item>

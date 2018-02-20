@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="directory.tripin.com.tripindirectory.TripinDirectoryApp"
+        android:name=".TripinDirectoryApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -124,31 +124,34 @@
             </intent-filter>
         </activity>
 
-        <!--Forum Activities-->
+        <!-- Forum Activities -->
         <activity
             android:name=".forum.MainActivity"
             android:label="ILN Loadboard"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="http://tripin.co.in/" android:scheme="http"></data>
+
+                <data
+                    android:host="http://tripin.co.in/"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity
             android:name=".forum.NewPostActivity"
             android:label="Now Post"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".forum.MainActivity" />
         </activity>
-
         <activity
             android:name=".activity.LandingActivity"
             android:label="@string/title_activity_landing"
@@ -171,30 +174,29 @@
             android:name=".LoadBoardActivities.LoadBoardActivity"
             android:label="@string/title_activity_load_board"
             android:parentActivityName=".activity.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
         </activity>
-
         <activity
             android:name=".forum.PostDetailActivity"
             android:label="Post Detail"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".forum.MainActivity" />
         </activity>
-
-        <activity android:name=".activity.ProfileHelpActivity"
+        <activity
+            android:name=".activity.ProfileHelpActivity"
             android:label="Company Profile Help"
-            android:parentActivityName=".FormActivities.CompanyInfoActivity"
-            ></activity>
+            android:parentActivityName=".FormActivities.CompanyInfoActivity" />
 
-
-        <!-- Used for Google Play Store Campaign Measurement-->
-        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+        <!-- Used for Google Play Store Campaign Measurement -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -202,6 +204,17 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".LoadBoardActivities.PostLoadActivity"
+            android:label="Post Load ..."
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".LoadBoardActivities.PostFleetActivity"
+            android:label="Post Fleet ..."
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"></activity>
     </application>
 
 </manifest>

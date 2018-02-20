@@ -15,6 +15,12 @@
     <color name="shadow">#66000000</color>
     <color name="varify">#1BB2AC</color>
     <color name="water">#76c0e6</color>
+    <color name="loadyellow">#ffce84</color>
+    <color name="fleetvoilet">#d56fff</color>
+    <color name="loadyellow2">#fff9f1</color>
+    <color name="fleetvoilet2">#fdf6ff</color>
+
+
 
 
     <color name="list_divider">#eeeeee</color>

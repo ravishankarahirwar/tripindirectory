@@ -43,6 +43,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.github.clans.fab.FloatingActionMenu
+        android:visibility="invisible"
         android:id="@+id/menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,10 +83,11 @@
         fab:menu_shadowRadius="4dp"
         fab:menu_shadowXOffset="1dp"
         fab:menu_shadowYOffset="3dp"
-        fab:menu_showShadow="true">
+        fab:menu_showShadow="true"
+        app:layout_behavior="directory.tripin.com.tripindirectory.helper.ScrollingFABBehavior">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_fleet"
+            android:id="@+id/menu_load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_widgets_black_24dp"
@@ -93,7 +95,7 @@
             fab:fab_size="normal" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_load"
+            android:id="@+id/menu_fleet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_rv_hookup_black_24dp"
