@@ -59,8 +59,6 @@ public class LandingActivity extends AppCompatActivity
     private RecyclerViewAnimator mAnimator;
     NotificationBadge notificationBadgeInbox;
 
-
-
     private FirestoreRecyclerOptions<UpdateInfoPojo> options;
     private FirestoreRecyclerAdapter adapter;
 
@@ -69,9 +67,6 @@ public class LandingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
-
-
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         floatingSearchView= findViewById(R.id.floating_search_view);

@@ -97,17 +97,17 @@
     <string name="transporter">TRANSPORTER</string>
     <string name="company_contacts">Company Contacts</string>
     <string name="area_of_operation">Area of operation</string>
-    <string name="source_cities">Source Cities:</string>
-    <string name="destination_cities">Destination Cities:</string>
-    <string name="types_of_services">Types of services :</string>
-    <string name="nature_of_business">Nature of Business :</string>
+    <string name="source_cities">Source Cities</string>
+    <string name="destination_cities">Destination Cities</string>
+    <string name="types_of_services">Types of services</string>
+    <string name="nature_of_business">Nature of Business</string>
     <string name="fleet_owned">Fleet Owned :</string>
     <string name="call">CALL</string>
     <string name="fetching_your_data">Fetching Your Data ...</string>
     <string name="contact_persons">Contact Persons :</string>
     <string name="add">Add</string>
     <string name="import_from_your_contacts">Import from your Contacts</string>
-    <string name="company_landline_numbers">Company Landline Numbers :</string>
+    <string name="company_landline_numbers">Company Landline Numbers</string>
     <string name="locate_your_business_on_map">Locate Your Business On Map</string>
     <string name="fleet">Your Fleets :</string>
     <string name="working_with">Working With :</string>
@@ -171,7 +171,7 @@
         from your clients. All the best!</string>
     <string name="alert_sent_verfication_req">Make sure you have filled all the important fields in the form,
         incomplete or inappropriate form can be rejected. Rejection can harm your company reputation or can also lead to termination of your account. You may receive a call on your registered mobile number from ILN in the process for verification</string>
-    <string name="rmn_title">Registered Mobile Number :</string>
+    <string name="rmn_title">Registered Mobile Number</string>
     <string name="action_help">Get Help</string>
     <string name="fetching">Fetching...</string>
     <string name="unverified">Unverified</string>

@@ -323,23 +323,23 @@ public class CompanyInfoActivity extends AppCompatActivity {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabOne.setText("Company");
-        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_contact_phone_black_24dp, 0, 0);
+        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.office, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabTwo.setText("Route");
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_directions_black_24dp, 0, 0);
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.route, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
 
         TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabThree.setText("Fleets");
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_rv_hookup_black_24dp, 0, 0);
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.fleet, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabFour.setText("Image");
-        tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_image_black_24dp, 0, 0);
+        tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.picture, 0, 0);
         tabLayout.getTabAt(3).setCustomView(tabFour);
     }
 

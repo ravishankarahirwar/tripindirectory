@@ -23,6 +23,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 
@@ -67,6 +69,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
     private ImageButton mCommentButton;
     private RecyclerView mCommentsRecycler;
     private Toolbar toolbar;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
         if (mPostKey == null) {
             throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
         }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mPostReference = FirebaseDatabase.getInstance().getReference()
                 .child("posts").child(mPostKey);
@@ -215,6 +219,11 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
 
                         // Clear the field
                         mCommentField.setText(null);
+                        DatabaseReference userPostRef = mDatabase.child("user-posts").child(uid).child(mPostKey);
+
+                        // Run two transactions
+                        onCommentCountPlus(mPostReference);
+                        onCommentCountPlus(userPostRef);
                     }
 
                     @Override
@@ -222,6 +231,33 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
 
                     }
                 });
+    }
+
+    // [START post_stars_transaction]
+    private void onCommentCountPlus(DatabaseReference postRef) {
+        postRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Post p = mutableData.getValue(Post.class);
+                if (p == null) {
+                    return Transaction.success(mutableData);
+                }
+
+                p.commentCount = p.commentCount + 1;
+
+
+                // Set value and report transaction success
+                mutableData.setValue(p);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d(TAG, "postTransaction:onComplete:" + databaseError);
+            }
+        });
     }
 
     private static class CommentViewHolder extends RecyclerView.ViewHolder {

@@ -39,12 +39,14 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.stepstone.apprating.listener.RatingDialogListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter;
@@ -54,6 +56,9 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
+import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class PartnerDetailScrollingActivity extends AppCompatActivity implements OnMapReadyCallback,RatingDialogListener {
@@ -73,15 +78,17 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
     TextView mAddress;
     TextUtils textUtils;
 
-    TextView mServiceTypes;
-    TextView mNatureOfBusiness;
-    TextView mTitleRating;
-    TextView mImagesUploadedInst;
+    private TextView mFleetWorkingWith;
+    private TextView mServiceTypes;
+    private TextView mNatureOfBusiness;
+    private TextView mTitleRating;
+    private TextView mImagesUploadedInst;
     private List<ContactPersonPojo> mContactPersonsList;
     private List<Vehicle> fleetlist;
 
 
     private RecyclerView mCompanyContacts;
+
     RecyclerView mFleetRecycler;
     RecyclerView mSourceCitiesRecycler;
     RecyclerView mDestCitiesRecycler;
@@ -145,7 +152,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
                 if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
                     for (int i = 0; i < contactPersonPojos.size(); i++) {
-                        if (partnerInfoPojo.getmContactPersonsList().get(i) != null) {
+                        if (partnerInfoPojo.getmContactPersonsList() != null && partnerInfoPojo.getmContactPersonsList().get(i) != null) {
                             String number = partnerInfoPojo.getmContactPersonsList().get(i).getGetmContactPersonMobile();
                             phoneNumbers.add(number);
                         }
@@ -202,6 +209,7 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
         mAddress = findViewById(R.id.textAddress);
 
+        mFleetWorkingWith = findViewById(R.id.fleet_working_with);
         mServiceTypes = findViewById(R.id.typesofservicetv);
         mTitleRating = findViewById(R.id.titleratingtext);
         mImagesUploadedInst = findViewById(R.id.imagesinstruction);
@@ -298,43 +306,6 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
 
                         Logger.v("got images url");
 
-//                        Picasso.with(PartnerDetailScrollingActivity.this)
-//                                .load(partnerInfoPojo.getmImagesUrl().get(1))
-//                                .into(new Target() {
-//                                    @Override
-//                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//
-//                                        Palette.from(bitmap)
-//                                                .generate(new Palette.PaletteAsyncListener() {
-//                                                    @Override
-//                                                    public void onGenerated(Palette palette) {
-//                                                        Palette.Swatch textSwatch = palette.getDominantSwatch();
-//                                                        if (textSwatch == null) {
-//                                                            Toast.makeText(PartnerDetailScrollingActivity.this, "Null swatch :(", Toast.LENGTH_SHORT).show();
-//                                                            return;
-//                                                        }
-//                                                        Logger.v("swatch" + textSwatch.toString());
-//                                                        toolbarLayout.setExpandedTitleColor(textSwatch.getTitleTextColor());
-//                                                        fabCall.setBackgroundColor(textSwatch.getBodyTextColor());
-//                                                        fabCall.setBackgroundTintList(ColorStateList.valueOf(textSwatch.getTitleTextColor()));
-//
-//
-//                                                    }
-//                                                });
-//                                    }
-//
-//                                    @Override
-//                                    public void onBitmapFailed(Drawable errorDrawable) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-//
-//                                    }
-//                                });
-//
-
                         for (String url : partnerInfoPojo.getmImagesUrl()) {
                             if(!url.isEmpty()){
                                 DefaultSliderView defaultSliderView = new DefaultSliderView(PartnerDetailScrollingActivity.this);
@@ -404,42 +375,39 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     }
                     //set source cities
                     mSourceList.clear();
-                    if(partnerInfoPojo.getmSourceCities()!=null){
-                        for(String s : partnerInfoPojo.getmSourceCities().keySet()){
-                            mSourceList.add(s);
-                        }
+                    if(partnerInfoPojo.getmSourceCities() != null && partnerInfoPojo.getmSourceCities().keySet() != null) {
+
+                        mSourceList.addAll(partnerInfoPojo.getmSourceCities().keySet());
                     }
                     capsulsRecyclarAdapter.notifyDataSetChanged();
+
+
                     //set destination cities
                     mDestList.clear();
-                    if(partnerInfoPojo.getmDestinationCities()!=null){
-                        for(String s : partnerInfoPojo.getmDestinationCities().keySet()){
-                            mDestList.add(s);
-                        }
+                    if(partnerInfoPojo.getmDestinationCities() != null &&  partnerInfoPojo.getmDestinationCities().keySet() != null) {
+                        mDestList.addAll(partnerInfoPojo.getmDestinationCities().keySet());
                     }
                     capsulsRecyclarAdapter2.notifyDataSetChanged();
 
 
-
                     //set types of service
                     String servicetype = "";
-                    if(partnerInfoPojo.getmTypesOfServices()!=null){
+                    if(partnerInfoPojo.getmTypesOfServices() != null && partnerInfoPojo.getmTypesOfServices().keySet() != null){
                         for(String s : partnerInfoPojo.getmTypesOfServices().keySet()){
                             if(partnerInfoPojo.getmTypesOfServices().get(s))
-                                servicetype = servicetype + s +", ";
+                                servicetype += "\u25CF  " + s +"\n";
                         }
                     }
                     if(!servicetype.isEmpty()){
-                        servicetype = servicetype.substring(0, servicetype.length() - 2);
+                        mServiceTypes.setText(servicetype);
                     }
-                    mServiceTypes.setText(servicetype);
 
                     //set types of service
                     String natureofbusiness = "";
                     if(partnerInfoPojo.getmNatureOfBusiness()!=null){
                         for(String s : partnerInfoPojo.getmNatureOfBusiness().keySet()){
                             if( partnerInfoPojo.getmNatureOfBusiness().get(s))
-                                natureofbusiness = natureofbusiness + s +", ";
+                                natureofbusiness += "\u25CF  " +  s +"\n";
                         }
                     }
 
@@ -448,7 +416,33 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     }
                     mNatureOfBusiness.setText(natureofbusiness);
 
+                    String fj = partnerInfoPojo.getFleetJson();
+                    if(fj != null && fj.length() > 0 ) {
+                        Gson gson = new Gson();
+                        Fleet fleetWorkingWith = gson.fromJson(fj, Fleet.class);
+                        String fleetList = "";
+                        for (int i = 0; i < fleetWorkingWith.getTrucks().size(); i++) {
+                            Truck truck = fleetWorkingWith.getTrucks().get(i);
+                            if(truck.isTruckHave()) {
+                                fleetList += "\u25CF "+truck.getTruckType() + "\n";
+                            }
+                            for (int j = 0; j < truck.getTruckProperties().size(); j++) {
+                                TruckProperty truckProperty = truck.getTruckProperties().get(j);
+                                    Map<String, Boolean> property = truckProperty.getProperties();
+                                    for (Map.Entry<String, Boolean> entry : property.entrySet()) {
+                                        if (entry.getValue()) {
+                                            fleetList += "    \u25CB  " + truckProperty.getTitle() + " : " + entry.getKey() + "\n";
+                                        }
+                                    }
+                            }
 
+                            fleetList += "\n";
+                        }
+
+                        if(fleetList.length() > 0 ) {
+                            mFleetWorkingWith.setText(fleetList);
+                        }
+                    }
 
                     //set fleet
                     if(partnerInfoPojo.getVehicles()!= null){
@@ -462,11 +456,8 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         mContactPersonsList.addAll(partnerInfoPojo.getmContactPersonsList());
                         mContactPersonsAdapter.notifyDataSetChanged();
                     }
-
                 } else {
-
                 }
-
             }
         });
     }

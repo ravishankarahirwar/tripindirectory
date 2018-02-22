@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         //Add to Activity
         FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
@@ -1058,7 +1058,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //base query
         query = FirebaseFirestore.getInstance()
-                .collection("partners").limit(100L);
+                .collection("partners");
 
         //apply filters
         for (FilterPojo f : mFiltersList) {
@@ -1169,8 +1169,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAnimator = new RecyclerViewAnimator(mPartnerList);
 
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, RecyclerView.ViewHolder>(options) {
-
-
             @SuppressLint("SetTextI18n")
             @Override
             public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position, final PartnerInfoPojo model) {
@@ -1224,7 +1222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             partnersViewHolder.mCompany
                                     .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                                     .getDrawable(getApplicationContext(),
-                                                            R.drawable.ic_fiber_smart_record_bllue_24dp),
+                                                            R.drawable.checkmark),
                                             null,
                                             null,
                                             null);
