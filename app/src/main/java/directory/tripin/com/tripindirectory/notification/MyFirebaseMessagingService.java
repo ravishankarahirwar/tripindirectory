@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +34,7 @@ import java.util.Date;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
+import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 
 
@@ -41,6 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     DocumentReference mUpdateDocRef;
     NotificationCompat.Builder generalUpdatesNotificationBuilder;
+    private FirebaseAuth mAuth;
 
 
     /**
@@ -51,6 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        mAuth = FirebaseAuth.getInstance();
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
         // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -97,8 +101,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (type.equals("5")) {
                 String body = remoteMessage.getNotification().getBody();
                 String title = remoteMessage.getNotification().getTitle();
+                String postId = remoteMessage.getData().get("postId");
 
-                sendLoadboardNotification(title, body);
+                sendLoadboardNotification(title, body, postId);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
@@ -112,7 +117,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
             String messageTitle = remoteMessage.getNotification().getTitle();
-
             Log.d(TAG, "Message Notification Body: " + messageBody);
             sendNotification(messageBody, messageTitle);
         }
@@ -128,8 +132,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                PendingIntent.FLAG_ONE_SHOT);
 //    }
 
-    private void sendLoadboardNotification (String messageBody, String messageTitle) {
-            Intent intent = new Intent(this,MainActivity.class);
+    private void sendLoadboardNotification (String messageBody, String messageTitle, String postId) {
+        Intent intent;
+        if (mAuth.getCurrentUser() != null && postId != null) {
+            //if user signed in
+            intent = new Intent(this,PostDetailActivity.class);
+            intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+        } else {
+            // not signed in
+            intent = new Intent(this,MainActivity.class);
+        }
+
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                     PendingIntent.FLAG_ONE_SHOT);

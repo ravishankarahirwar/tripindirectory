@@ -111,3 +111,32 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
 	  }
     });
 
+    	exports.loadboardNotification = functions.database.ref('/posts/{pushId}')
+        .onCreate(event => {
+          // Grab the current value of what was written to the Realtime Database.
+          var newValue = event.data.val();
+          console.log('LoadBoardPost', event.params.pushId);
+
+    		   // Create a notification
+                   const payload = {
+
+                    data: {
+                               type: "5",
+                               postId: event.params.pushId
+                          },
+
+                       notification: {
+                           title: "Load Posted by " + newValue.mAuthor,
+                           body: newValue.mSource + " To " + newValue.mDestination,
+                           sound: "default"
+                       }
+                   };
+
+        const options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+         return admin.messaging().sendToTopic("loadboardNotification", payload, options);
+        });
+
