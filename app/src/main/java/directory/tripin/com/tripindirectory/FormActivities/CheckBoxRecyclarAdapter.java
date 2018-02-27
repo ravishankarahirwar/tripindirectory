@@ -42,7 +42,6 @@ public class CheckBoxRecyclarAdapter extends RecyclerView.Adapter<CheckBoxRecycl
     @Override
     public void onBindViewHolder(final CheckBoxRecyclarAdapter.ViewHolder holder, int position) {
         final String name = new ArrayList<>(mDataMap.keySet()).get(position);
-        Logger.v("onBind Check Adapter"+position);
         holder.checkBox.setText(name);
         if (mDataMap.get(name)) {
             holder.checkBox.setChecked(true);
@@ -53,11 +52,8 @@ public class CheckBoxRecyclarAdapter extends RecyclerView.Adapter<CheckBoxRecycl
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 mDataMap.put(name,holder.checkBox.isChecked());
-                Logger.v("hashmap in adapter "+mDataMap.toString());
                 notifyDataSetChanged();
-
             }
         });
     }

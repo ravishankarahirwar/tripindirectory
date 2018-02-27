@@ -134,16 +134,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_COMPANY = 1;
     private static final int SEARCHTAG_CITY = 2;
-    private static final int SEARCHTAG_TRANSPORTER = 3;
 
     private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
-    private static final int SIGN_IN_FOR_BOOKMARK = 124;
 
     private static final int SIGN_IN_FOR_FORUM = 222;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
-    private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
@@ -166,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String mSourceCity = "";
     private String mDestinationCity = "";
     boolean isBookmarkSaved = false;
-    int signinginfor = 0;
-    QueryBookmarkPojo queryBookmarkPojo;
+    private int signinginfor = 0;
+    private  QueryBookmarkPojo queryBookmarkPojo;
 
 
     private RadioButton radioButton2;
@@ -187,38 +184,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LottieAnimationView mBookmarkPanelToggle;
 
     private DatabaseReference mDatabase;
-    private DatabaseReference myRef;
     private FirebaseAuth mAuth;
 
     private HashMap<String, Boolean> mNatureofBusinessHashMap;
     private HashMap<String, Boolean> mTypesofServicesHashMap;
-    private HashMap<String, Boolean> mTypesofVehiclesHashMap;
-    private HashMap<String, Boolean> mTypesofBodyHashMap;
-    private HashMap<String, Boolean> mTypesofWeightsHashMap;
-    private HashMap<String, Boolean> mTypesofLengthsHashMap;
     private List<FilterPojo> mFiltersList;
 
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter3;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter4;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter5;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter6;
+
 
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
     private RecyclerView mTypesofVehiclesRecyclarView;
-    private RecyclerView mTypesofBodyRecyclarView;
-    private RecyclerView mTypesofWeightsRecyclarView;
-    private RecyclerView mTypesofLengthsRecyclarView;
 
-    private ImageView togglenoblist, toggletoslist, tbtov, tbtob, tbwc, tblov;
     private TextView mTextCount;
     private Dialog dialog;
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
-    private RadioButton radioButtonAlphabetically, radioButtonRatings, radioButtonFavourite, radioButtonCrediblity;
+    private RadioButton radioButtonAlphabetically;
+    private RadioButton radioButtonRatings;
+    private RadioButton radioButtonFavourite;
+    private RadioButton radioButtonCrediblity;
+
     private RadioGroup mSortRadioGroup;
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
@@ -250,32 +240,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mNatureofBusinessHashMap = new HashMap<>();
         mTypesofServicesHashMap = new HashMap<>();
-        mTypesofVehiclesHashMap = new HashMap<>();
-        mTypesofBodyHashMap = new HashMap<>();
-        mTypesofWeightsHashMap = new HashMap<>();
-        mTypesofLengthsHashMap = new HashMap<>();
 
         initiateFiltersHashmaps();
 
         checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
         checkBoxRecyclarAdapter2 = new CheckBoxRecyclarAdapter(mTypesofServicesHashMap);
-        checkBoxRecyclarAdapter3 = new CheckBoxRecyclarAdapter(mTypesofVehiclesHashMap);
-        checkBoxRecyclarAdapter4 = new CheckBoxRecyclarAdapter(mTypesofBodyHashMap);
-        checkBoxRecyclarAdapter5 = new CheckBoxRecyclarAdapter(mTypesofWeightsHashMap);
-        checkBoxRecyclarAdapter6 = new CheckBoxRecyclarAdapter(mTypesofLengthsHashMap);
-
 
         mNatureOfBusinessRecyclarView = findViewById(R.id.rv_natureofbusiness);
         mNatureOfBusinessRecyclarView.setAdapter(checkBoxRecyclarAdapter1);
         mNatureOfBusinessRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mNatureOfBusinessRecyclarView.setNestedScrollingEnabled(false);
-        togglenoblist = findViewById(R.id.nobup);
 
         mTypesOfServicesRecyclarView = findViewById(R.id.rv_typesofservices);
         mTypesOfServicesRecyclarView.setAdapter(checkBoxRecyclarAdapter2);
         mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
-        toggletoslist = findViewById(R.id.nobup2);
 
         InputStream raw =  getResources().openRawResource(R.raw.fleet);
         Reader rd = new BufferedReader(new InputStreamReader(raw));
@@ -284,38 +263,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mWorkingWithAdapter = new WorkingWithAdapter(mContext, fleet);
 
         mTypesofVehiclesRecyclarView = findViewById(R.id.rv_tov);
-//        mTypesofVehiclesRecyclarView.setAdapter(checkBoxRecyclarAdapter3);
-        mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
         mTypesofVehiclesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofVehiclesRecyclarView.setNestedScrollingEnabled(false);
-        tbtov = findViewById(R.id.tovup);
-
-        mTypesofBodyRecyclarView = findViewById(R.id.rv_tob);
-        mTypesofBodyRecyclarView.setAdapter(checkBoxRecyclarAdapter4);
-        mTypesofBodyRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofBodyRecyclarView.setNestedScrollingEnabled(false);
-        tbtob = findViewById(R.id.tobup);
-
-        mTypesofWeightsRecyclarView = findViewById(R.id.rv_wc);
-        mTypesofWeightsRecyclarView.setAdapter(checkBoxRecyclarAdapter5);
-        mTypesofWeightsRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofWeightsRecyclarView.setNestedScrollingEnabled(false);
-        tbwc = findViewById(R.id.wcup);
-
-        mTypesofLengthsRecyclarView = findViewById(R.id.rv_lov);
-        mTypesofLengthsRecyclarView.setAdapter(checkBoxRecyclarAdapter6);
-        mTypesofLengthsRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofLengthsRecyclarView.setNestedScrollingEnabled(false);
-        tblov = findViewById(R.id.lovup);
+        mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
 
         init();
-
+        /**
+         * if User coming first time in our portal
+         */
         if (mPreferenceManager.isFirstTime()) {
-            Logger.v("First Time app opened");
             mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
-        } else {
-            Logger.v("Multiple times app opened");
         }
         setAdapter("");
         setBookmarkListAdapter();
@@ -518,43 +476,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
-
-        mTypesofVehiclesHashMap.put("LCV".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Truck".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tusker".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Taurus".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Trailers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Container Body".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Refrigerated Vans".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tankers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tippers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Bulkers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Car Carriers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Scooter Body".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Hydraulic Axles".toUpperCase(), false);
-
-        mTypesofBodyHashMap.put("Normal".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Full Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Half Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Open Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Platform".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Skeleton".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Semi-low".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Low".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Trolla/Body Trailer".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Refer".toUpperCase(), false);
-        mTypesofBodyHashMap.put("High Cube (HC)".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Normal".toUpperCase(), false);
-
-        mTypesofWeightsHashMap.put("Between 0-10 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Between 10-20 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Between 20-30 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Above 30 MT".toUpperCase(), false);
-
-        mTypesofLengthsHashMap.put("Between 0-10 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Between 10-20 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Between 20-30 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Above 30 Ft".toUpperCase(), false);
     }
 
     private void init() {
@@ -711,82 +632,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        toggletoslist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesOfServicesRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesOfServicesRecyclarView.setVisibility(View.GONE);
-                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesOfServicesRecyclarView.setVisibility(View.VISIBLE);
-                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-
-                }
-            }
-        });
-        togglenoblist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mNatureOfBusinessRecyclarView.getVisibility() == View.VISIBLE) {
-                    mNatureOfBusinessRecyclarView.setVisibility(View.GONE);
-                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mNatureOfBusinessRecyclarView.setVisibility(View.VISIBLE);
-                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
-        tblov.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofLengthsRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofLengthsRecyclarView.setVisibility(View.GONE);
-                    tblov.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofLengthsRecyclarView.setVisibility(View.VISIBLE);
-                    tblov.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-        tbtov.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofVehiclesRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofVehiclesRecyclarView.setVisibility(View.GONE);
-                    tbtov.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofVehiclesRecyclarView.setVisibility(View.VISIBLE);
-                    tbtov.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
-        tbwc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofWeightsRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofWeightsRecyclarView.setVisibility(View.GONE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofWeightsRecyclarView.setVisibility(View.VISIBLE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-        tbtob.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofBodyRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofBodyRecyclarView.setVisibility(View.GONE);
-                    tbtob.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofBodyRecyclarView.setVisibility(View.VISIBLE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
         mFiltersList = new ArrayList<>();
 
         mBtnApplyFilters.setOnClickListener(new View.OnClickListener() {
@@ -836,24 +681,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mFiltersList.add(filterPojo);
                     }
                 }
-                for (String f : checkBoxRecyclarAdapter4.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter4.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 2, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-                for (String f : checkBoxRecyclarAdapter5.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter5.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 3, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-                for (String f : checkBoxRecyclarAdapter6.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter6.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 4, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
+
 
                 if (mFiltersList.size() != 0) {
                     isApplyFilterPressed = true;
@@ -887,9 +715,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 checkBoxRecyclarAdapter1.notifyDataSetChanged();
                 checkBoxRecyclarAdapter2.notifyDataSetChanged();
                 checkBoxRecyclarAdapter3.notifyDataSetChanged();
-                checkBoxRecyclarAdapter4.notifyDataSetChanged();
-                checkBoxRecyclarAdapter5.notifyDataSetChanged();
-                checkBoxRecyclarAdapter6.notifyDataSetChanged();
                 if (mFiltersList.size() != 0) {
                     mFiltersList.clear();
                     mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
@@ -1183,10 +1008,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         PartnersViewHolder partnersViewHolder = (PartnersViewHolder) holder;
 
                         //set address
-                        String addresstoset
-                                = model.getmCompanyAdderss().getAddress()
-                                + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
-                                + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+
+                        String addresstoset = "";
+                                if(model != null && model.getmCompanyAdderss() != null) {
+                                    addresstoset = model.getmCompanyAdderss().getAddress()
+                                            + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
+                                            + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+                                }
                         if (model.getmCompanyAdderss().getPincode() != null) {
                             addresstoset = addresstoset + ", " + model.getmCompanyAdderss().getPincode();
                         }
