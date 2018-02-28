@@ -18,6 +18,11 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,10 +36,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
+import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
+import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetDetailsActivity;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadDetailsActivity;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
+import directory.tripin.com.tripindirectory.forum.models.Comment;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 
 
@@ -111,6 +123,43 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 sendNotification(messageBody, messageTitle);
             }
 
+            //OneToOneChat New Message Notification
+            if (type.equals("6")) {
+                String docId = remoteMessage.getData().get("docId");
+                String chatroomId = remoteMessage.getData().get("chatroomId");
+                Log.d(TAG, "new one to one msg");
+
+                if(chatroomId!=null&&docId!=null){
+                    sendNewChatMsgNotification(chatroomId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+            //New comment on loadpost
+            if (type.equals("7")) {
+                String docId = remoteMessage.getData().get("docId");
+                String loadId = remoteMessage.getData().get("loadId");
+                if(loadId!=null&&docId!=null){
+                    sendNewLoadCommentNotification(loadId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+
+            //New comment on fleetpost
+            if (type.equals("8")) {
+                String docId = remoteMessage.getData().get("docId");
+                String loadId = remoteMessage.getData().get("fleetId");
+                if(loadId!=null&&docId!=null){
+                    sendNewFleetCommentNotification(loadId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
@@ -128,6 +177,163 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendNewFleetCommentNotification(final String loadId, final String docId) {
+        FirebaseFirestore.getInstance().collection("fleets")
+                .document(loadId)
+                .collection("mCommentsCollection")
+                .document(docId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            CommentPojo commentPojo = documentSnapshot.toObject(CommentPojo.class);
+
+                            if(!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())){
+                                Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
+                                intent.putExtra("docId",loadId);
+                                String title = "New Comment on fleetpost :";
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                        PendingIntent.FLAG_ONE_SHOT);
+
+                                String channelId = "ILN notification";
+                                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                NotificationCompat.Builder notificationBuilder =
+                                        new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setContentTitle(title)
+                                                .setContentText(commentPojo.getmCommentText())
+                                                .setAutoCancel(true)
+                                                .setSound(defaultSoundUri)
+                                                .setContentIntent(pendingIntent);
+
+                                NotificationManager notificationManager =
+                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                            }
+
+                        }
+                    }
+                });
+    }
+
+    private void sendNewLoadCommentNotification(final String loadId, final String docId) {
+        FirebaseFirestore.getInstance().collection("loads")
+                .document(loadId)
+                .collection("mCommentsCollection")
+                .document(docId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    CommentPojo commentPojo = documentSnapshot.toObject(CommentPojo.class);
+
+                    if(!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())){
+                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        intent.putExtra("docId",loadId);
+                        String title = "New Comment on loadpost:";
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                PendingIntent.FLAG_ONE_SHOT);
+
+                        String channelId = "ILN notification";
+                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setContentTitle(title)
+                                        .setContentText(commentPojo.getmCommentText())
+                                        .setAutoCancel(true)
+                                        .setSound(defaultSoundUri)
+                                        .setContentIntent(pendingIntent);
+
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                    }
+
+
+                }
+            }
+        });
+    }
+
+    private void sendNewChatMsgNotification(final String chatroomId, String docId) {
+
+
+        FirebaseFirestore.getInstance().collection("chats").document("chatrooms").collection(chatroomId).document(docId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+
+                    final ChatItemPojo chatItemPojo = documentSnapshot.toObject(ChatItemPojo.class);
+
+                    FirebaseDatabase.getInstance().getReference().child("chatpresence").child("users").child(chatItemPojo.getmReciversUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
+                                if(userPresensePojo!=null){
+                                    if(userPresensePojo.getmChatroomId()!=null){
+                                        if(userPresensePojo.getmChatroomId().equals(chatroomId)&&userPresensePojo.getActive()){
+                                            return;
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
+                            intent.putExtra("ouid",chatItemPojo.getmSendersUid());
+                            intent.putExtra("ormn",chatItemPojo.getmRMN());
+                            String title = "";
+                            if(chatItemPojo.getmDisplayName().isEmpty()){
+                                title = chatItemPojo.getmRMN()+" :";
+                            }else {
+                                title = chatItemPojo.getmDisplayName()+" :";
+                            }
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                    PendingIntent.FLAG_ONE_SHOT);
+
+                            String channelId = "ILN notification";
+                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            NotificationCompat.Builder notificationBuilder =
+                                    new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setContentTitle(title)
+                                            .setContentText(chatItemPojo.getmChatMesssage())
+                                            .setAutoCancel(true)
+                                            .setSound(defaultSoundUri)
+                                            .setContentIntent(pendingIntent);
+
+                            NotificationManager notificationManager =
+                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+                }else {
+                    Log.d(TAG, "new one to one msg doc dont exist1");
+                }
+
+
+
+            }
+        });
     }
 
 //    private void sendVerificationRejectedNotification() {

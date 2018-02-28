@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -24,7 +23,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.airbnb.lottie.L;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -34,7 +32,6 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -47,12 +44,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.w3c.dom.Text;
-
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,6 +56,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.customviews.CustomMapView;
@@ -264,7 +259,7 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
 
                     //set up map
                     drawRouteOnMap(new LatLng(loadPostPojo.getmSourceCityLatLang().getLatitude(),
-                            loadPostPojo.getmSourceCityLatLang().getLongitude()),new LatLng(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
+                            loadPostPojo.getmSourceCityLatLang().getLongitude()), new LatLng(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
                             loadPostPojo.getmDestinationCityLatLang().getLongitude()));
                     //get pojo ready
 
@@ -276,15 +271,15 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                         FirebaseFirestore.getInstance().collection("partners").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if(documentSnapshot.exists()){
+                                if (documentSnapshot.exists()) {
                                     PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                    if(partnerInfoPojo.getmCompanyName()!=null){
+                                    if (partnerInfoPojo.getmCompanyName() != null) {
                                         loadPostPojo.setmCompanyName(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()));
                                     }
-                                    if(partnerInfoPojo.getmFcmToken()!=null){
+                                    if (partnerInfoPojo.getmFcmToken() != null) {
                                         loadPostPojo.setmFcmToken(partnerInfoPojo.getmFcmToken());
                                     }
-                                    if(partnerInfoPojo.getmImagesUrl()!=null){
+                                    if (partnerInfoPojo.getmImagesUrl() != null) {
                                         loadPostPojo.setmImagesUrl(partnerInfoPojo.getmImagesUrl());
                                     }
                                 }
@@ -292,36 +287,36 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                                 String myFormat = "dd/MM/yyyy"; //In which you need put here
                                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
                                 String DisplayDate = sdf.format(loadPostPojo.getmPickUpTimeStamp());
-                                mScheduledDate.setText("Scheduled Date : "+DisplayDate+" ("+gettimeDiff(loadPostPojo.getmPickUpTimeStamp())+" days left)");
+                                mScheduledDate.setText("Scheduled Date : " + DisplayDate + " (" + gettimeDiff(loadPostPojo.getmPickUpTimeStamp()) + " days left)");
 
-                                if(!loadPostPojo.getmCompanyName().isEmpty()){
+                                if (!loadPostPojo.getmCompanyName().isEmpty()) {
                                     mPostTitle.setText(loadPostPojo.getmCompanyName());
-                                }else {
+                                } else {
                                     mPostTitle.setText(loadPostPojo.getmRMN());
                                 }
 
                                 mSource.setText(loadPostPojo.getmSourceCity());
                                 mDestination.setText(loadPostPojo.getmDestinationCity());
-                                mDistance.setText(loadPostPojo.getmEstimatedDistance()+"\nkm");
+                                mDistance.setText(loadPostPojo.getmEstimatedDistance() + "\nkm");
 
                                 String loadProperties = textUtils.toTitleCase(loadPostPojo.getmLoadMaterial())
-                                        +", "+textUtils.toTitleCase(loadPostPojo.getmLoadWeight())+ "MT";
+                                        + ", " + textUtils.toTitleCase(loadPostPojo.getmLoadWeight()) + "MT";
                                 mLoadProperties.setText(loadProperties);
-                                if(loadProperties.length()>20){
+                                if (loadProperties.length() > 20) {
                                     mLoadProperties.setSelected(true);
                                 }
 
                                 String fleetProperties = textUtils.toTitleCase(loadPostPojo.getmVehicleTypeRequired())
-                                        +", "+textUtils.toTitleCase(loadPostPojo.getmBodyTypeRequired())
-                                        +", "+textUtils.toTitleCase(loadPostPojo.getmFleetPayLoadRequired())+"MT, "
-                                        +textUtils.toTitleCase(loadPostPojo.getmFleetLengthRequired())+"Ft";
+                                        + ", " + textUtils.toTitleCase(loadPostPojo.getmBodyTypeRequired())
+                                        + ", " + textUtils.toTitleCase(loadPostPojo.getmFleetPayLoadRequired()) + "MT, "
+                                        + textUtils.toTitleCase(loadPostPojo.getmFleetLengthRequired()) + "Ft";
                                 mFleetProperties.setText(fleetProperties);
-                                if(fleetProperties.length()>20){
+                                if (fleetProperties.length() > 20) {
                                     mFleetProperties.setSelected(true);
                                 }
 
-                                if(!loadPostPojo.getmPersonalNote().isEmpty())
-                                mPersonalNote.setText("\""+loadPostPojo.getmPersonalNote()+"\"");
+                                if (!loadPostPojo.getmPersonalNote().isEmpty())
+                                    mPersonalNote.setText("\"" + loadPostPojo.getmPersonalNote() + "\"");
 
                                 //caluclate ananlytics
                                 sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
@@ -372,13 +367,38 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
             @Override
             public void onClick(View view) {
                 upload.setText("Uploading...");
-                FirebaseFirestore.getInstance().collection("loads").add(loadPostPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                final CommentPojo commentPojo;
+
+                commentPojo = new CommentPojo(loadPostPojo.getmPersonalNote() + ". Initial Comment!",
+                        loadPostPojo.getmCompanyName(),
+                        loadPostPojo.getmRMN(),
+                        loadPostPojo.getmFcmToken(), loadPostPojo.getmDocId(), loadPostPojo.getmPostersUid());
+                commentPojo.setmImagesUrl(loadPostPojo.getmImagesUrl());
+
+                DocumentReference rf = FirebaseFirestore.getInstance().collection("loads").document();
+                loadPostPojo.setmDocId(rf.getId());
+                rf.set(loadPostPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(),"Load Posted Successfully!",Toast.LENGTH_LONG).show();
-                        finish();
+                    public void onSuccess(Void aVoid) {
+                        FirebaseFirestore.getInstance()
+                                .collection("loads")
+                                .document(loadPostPojo.getmDocId())
+                                .collection("mCommentsCollection")
+                                .add(commentPojo)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        //comment added
+                                        //subscribe to topic
+                                        FirebaseMessaging.getInstance().subscribeToTopic(loadPostPojo.getmDocId());
+                                        Toast.makeText(getApplicationContext(), "Load Posted Successfully!", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    }
+                                });
+
                     }
                 });
+
             }
         });
     }
@@ -425,7 +445,7 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                     addPickUpCity.setText("Add More");
                     addPickUpCity.setVisibility(View.GONE);
                     loadPostPojo.setmSourceCity(place.getName().toString().toUpperCase());
-                    loadPostPojo.setmSourceCityLatLang(new GeoPoint(place.getLatLng().latitude,place.getLatLng().longitude));
+                    loadPostPojo.setmSourceCityLatLang(new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
                     //updateSourceHubs(place.getName().toString(), 1);
 
                     adapterp.notifyDataSetChanged();
@@ -438,12 +458,12 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                     addDropOffCity.setText("Add More");
                     addDropOffCity.setVisibility(View.GONE);
                     loadPostPojo.setmDestinationCity(place.getName().toString().toUpperCase());
-                    loadPostPojo.setmDestinationCityLatLang(new GeoPoint(place.getLatLng().latitude,place.getLatLng().longitude));
+                    loadPostPojo.setmDestinationCityLatLang(new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
                     loadPostPojo.setmEstimatedDistance(getDistance(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
                             loadPostPojo.getmDestinationCityLatLang().getLongitude(),
                             loadPostPojo.getmSourceCityLatLang().getLatitude(),
-                            loadPostPojo.getmSourceCityLatLang().getLongitude())+"");
-                   // updateDestinationHubs(place.getName().toString(), 1);
+                            loadPostPojo.getmSourceCityLatLang().getLongitude()) + "");
+                    // updateDestinationHubs(place.getName().toString(), 1);
                     adapterd.notifyDataSetChanged();
                 }
 
@@ -685,36 +705,36 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
         return (rad * 180.0 / Math.PI);
     }
 
-    public String gettimeDiff(Date startDate){
+    public String gettimeDiff(Date startDate) {
 
-        String diff = "" ;
+        String diff = "";
 
-        if(startDate!=null){
+        if (startDate != null) {
 
             Date endDate = new Date();
 
-            long duration  = endDate.getTime() - startDate.getTime();
-            if(duration<0){
-                return Math.abs(duration) / (1000 * 60 * 60 * 24)+"";
+            long duration = endDate.getTime() - startDate.getTime();
+            if (duration < 0) {
+                return Math.abs(duration) / (1000 * 60 * 60 * 24) + "";
             }
             long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
             long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
             long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
 
-            if(diffInSeconds==0){
+            if (diffInSeconds == 0) {
                 return "Realtime!";
             }
 
-            if(diffInSeconds<60){
-                diff = ""+diffInSeconds+" sec ago";
-            }else if(diffInMinutes<60){
-                diff = ""+diffInMinutes+" min ago";
-            }else if(diffInHours<24){
-                diff = ""+diffInHours+" hrs ago";
-            }else {
+            if (diffInSeconds < 60) {
+                diff = "" + diffInSeconds + " sec ago";
+            } else if (diffInMinutes < 60) {
+                diff = "" + diffInMinutes + " min ago";
+            } else if (diffInHours < 24) {
+                diff = "" + diffInHours + " hrs ago";
+            } else {
 
                 long daysago = duration / (1000 * 60 * 60 * 24);
-                diff = ""+daysago+" days ago";
+                diff = "" + daysago + " days ago";
             }
 
         }

@@ -3,6 +3,7 @@ package directory.tripin.com.tripindirectory.LoadBoardActivities.models;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ public class FleetPostPojo {
     private String mCompanyName = "";
     private String mRMN = "";
     private String mPostersUid = "";
+    private String mDocId;
     private String mFcmToken = "";
     private List<String> mImagesUrl;
 
@@ -52,8 +54,26 @@ public class FleetPostPojo {
     private HashMap<String,Boolean> mSharedPeopleList;
     private HashMap<String,Boolean> mInboxedPeopleList;
     private HashMap<String,Boolean> mCalledPeopleList;
+    private HashMap<String,Boolean> mQuotedPeopleList;
+
 
     public FleetPostPojo() {
+    }
+
+    public HashMap<String, Boolean> getmQuotedPeopleList() {
+        return mQuotedPeopleList;
+    }
+
+    public void setmQuotedPeopleList(HashMap<String, Boolean> mQuotedPeopleList) {
+        this.mQuotedPeopleList = mQuotedPeopleList;
+    }
+
+    public String getmDocId() {
+        return mDocId;
+    }
+
+    public void setmDocId(String mDocId) {
+        this.mDocId = mDocId;
     }
 
     public String getmVehicleNumber() {
@@ -277,5 +297,31 @@ public class FleetPostPojo {
         } else {
             return true;
         }
+    }
+
+    public String getTextToShare(){
+
+        return  ">>Source = " + mSourceCity + ",\n" +
+                ">>Destination = " + mDestinationCity + ",\n" +
+                ">>Date = " + DateFormat.getDateInstance().format(getmPickUpTimeStamp()) + ",\n" +
+                ">>TruckType = " + mVehicleType + ",\n" +
+                ">>TruckBodyType = " + mBodyType + ",\n" +
+                ">>TruckLength = " + mFleetLength + ",\n" +
+                ">>Payload = " + mFleetPayLoad + ",\n" +
+                ">>Remark = " + mPersonalNote + ",\n"  +
+                " Share By : Indian Logistics Network \n" + "http://bit.ly/ILNAPPS";
+    }
+
+    public String getTextToInitateChat(){
+
+        return  "Texting From Your Load Requirement Post:\n"+
+                ">>Source = " + mSourceCity + ",\n" +
+                ">>Destination = " + mDestinationCity + ",\n" +
+                ">>Date = " + DateFormat.getDateInstance().format(getmPickUpTimeStamp()) + ",\n" +
+                ">>TruckType = " + mVehicleType + ",\n" +
+                ">>TruckBodyType = " + mBodyType + ",\n" +
+                ">>TruckLength = " + mFleetLength + ",\n" +
+                ">>Payload = " + mFleetPayLoad + ",\n" +
+                ">>Remark = " + mPersonalNote ;
     }
 }

@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ public class LoadPostPojo {
     private String mCompanyName;
     private String mRMN;
     private String mPostersUid;
+    private String mDocId;
     private String mFcmToken;
     private List<String> mImagesUrl;
 
@@ -55,10 +57,27 @@ public class LoadPostPojo {
     private HashMap<String,Boolean> mSharedPeopleList;
     private HashMap<String,Boolean> mInboxedPeopleList;
     private HashMap<String,Boolean> mCalledPeopleList;
+    private HashMap<String,Boolean> mQuotedPeopleList;
 
 
 
     public LoadPostPojo() {
+    }
+
+    public HashMap<String, Boolean> getmQuotedPeopleList() {
+        return mQuotedPeopleList;
+    }
+
+    public void setmQuotedPeopleList(HashMap<String, Boolean> mQuotedPeopleList) {
+        this.mQuotedPeopleList = mQuotedPeopleList;
+    }
+
+    public String getmDocId() {
+        return mDocId;
+    }
+
+    public void setmDocId(String mDocId) {
+        this.mDocId = mDocId;
     }
 
     public String getmPersonalNote() {
@@ -297,5 +316,31 @@ public class LoadPostPojo {
         } else {
             return true;
         }
+    }
+
+    public String getTextToShare(){
+        return  ">>Source = " + mSourceCity + ",\n" +
+                ">>Destination = " + mDestinationCity + ",\n" +
+                ">>Material = " + mLoadMaterial + ",\n" +
+                ">>Date = " + DateFormat.getDateInstance().format(getmPickUpTimeStamp()) + ",\n" +
+                ">>TruckType = " + mVehicleTypeRequired + ",\n" +
+                ">>TruckBodyType = " + mBodyTypeRequired + ",\n" +
+                ">>TruckLength = " + mFleetLengthRequired + ",\n" +
+                ">>Payload = " + mFleetPayLoadRequired + ",\n" +
+                ">>Remark = " + mPersonalNote + ",\n"  +
+                " Share By : Indian Logistics Network \n" + "http://bit.ly/ILNAPPS";
+    }
+
+    public String getTextToInitateChat(){
+        return  "Texting From Your Fleet Requirement Post:\n"+
+                ">>Source = " + mSourceCity + ",\n" +
+                ">>Destination = " + mDestinationCity + ",\n" +
+                ">>Material = " + mLoadMaterial + ",\n" +
+                ">>Date = " + DateFormat.getDateInstance().format(getmPickUpTimeStamp()) + ",\n" +
+                ">>TruckType = " + mVehicleTypeRequired + ",\n" +
+                ">>TruckBodyType = " + mBodyTypeRequired + ",\n" +
+                ">>TruckLength = " + mFleetLengthRequired + ",\n" +
+                ">>Payload = " + mFleetPayLoadRequired + ",\n" +
+                ">>Remark = " + mPersonalNote ;
     }
 }

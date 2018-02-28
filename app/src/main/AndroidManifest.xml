@@ -210,11 +210,42 @@
             android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".LoadBoardActivities.PostFleetActivity"
+        <activity
+            android:name=".LoadBoardActivities.PostFleetActivity"
             android:label="Post Fleet ..."
             android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".LoadBoardActivities.LoadDetailsActivity"
+            android:label="LoadDetails..."
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".LoadBoardActivities.FleetDetailsActivity"
+            android:label="FleetDetails..."
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ChatingActivities.ChatRoomActivity"
+            android:label="ChatRoom..."
+            android:parentActivityName=".ChatingActivities.ChatHeadsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ChatingActivities.ChatHeadsActivity"
+            android:label="ILN Chats"
+            android:parentActivityName=".activity.MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".LoadBoardActivities.LoadPostsActivity"
+            android:label="LoadPosts..."
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

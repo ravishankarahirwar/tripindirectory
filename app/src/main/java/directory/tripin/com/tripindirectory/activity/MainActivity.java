@@ -101,6 +101,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
@@ -254,8 +255,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+
         textUtils = new TextUtils();
-//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         //Add to Activity
         FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
@@ -1424,7 +1425,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
 
-        } else if (id == R.id.nav_logout) {
+
+        } else if (id == R.id.nav_inbox) {
+            startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+
+        }else if (id == R.id.nav_logout) {
             params = new Bundle();
             params.putString("logout", "Click");
             mFirebaseAnalytics.logEvent("ClickOnLogout", params);

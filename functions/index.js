@@ -110,6 +110,77 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
 		  		   console.log('Sending No Rejected Notification', event.params.pushId, newValue);
 	  }
     });
+	
+	
+	//one to one message notification
+exports.onetoonechat = functions.firestore
+  .document('chats/chatrooms/{chatroomId}/{messageId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "6",
+		chatroomId: event.params.chatroomId,
+        docId: event.params.messageId
+      }
+    };
+	
+	 console.log('Sending chat notification', event.params.chatroomId, newValue);
+   
+    return admin.messaging().sendToDevice(newValue.mReciversFcmToken, payload);
+});
+
+	
+	//Comment on load post
+exports.commentonloadnotif = functions.firestore
+  .document('loads/{loadId}/mCommentsCollection/{commentId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "7",
+		loadId: event.params.loadId,
+        docId: event.params.commentId
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToTopic(event.params.loadId, payload, options);
+});
+
+//Comment on fleet post
+exports.commentonfleetnotif = functions.firestore
+  .document('fleets/{fleetId}/mCommentsCollection/{commentId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "8",
+		fleetId: event.params.fleetId,
+        docId: event.params.commentId
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToTopic(event.params.fleetId, payload, options);
+});
+
 
     	exports.loadboardNotification = functions.database.ref('/posts/{pushId}')
         .onCreate(event => {

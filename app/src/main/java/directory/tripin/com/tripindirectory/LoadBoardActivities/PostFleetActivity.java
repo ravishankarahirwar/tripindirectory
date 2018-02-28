@@ -44,6 +44,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +56,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
 import directory.tripin.com.tripindirectory.R;
@@ -303,8 +305,8 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
                                 mDestination.setText(fleetPostPojo.getmDestinationCity());
                                 mDistance.setText(fleetPostPojo.getmEstimatedDistance()+"\nkm");
 
-                                String loadProperties = textUtils.toTitleCase(fleetPostPojo.getmVehicleNumber());
-                                mLoadProperties.setText(loadProperties);
+                                String loadProperties = fleetPostPojo.getmVehicleNumber();
+                                mLoadProperties.setText(" "+loadProperties);
                                 if(loadProperties.length()>20){
                                     mLoadProperties.setSelected(true);
                                 }
@@ -370,11 +372,35 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
             @Override
             public void onClick(View view) {
                 upload.setText("Uploading...");
-                FirebaseFirestore.getInstance().collection("fleets").add(fleetPostPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                final CommentPojo commentPojo;
+
+                commentPojo = new CommentPojo(fleetPostPojo.getmPersonalNote()+". Initial Comment!",
+                        fleetPostPojo.getmCompanyName(),
+                        fleetPostPojo.getmRMN(),
+                        fleetPostPojo.getmFcmToken(), fleetPostPojo.getmDocId(),fleetPostPojo.getmPostersUid());
+                commentPojo.setmImagesUrl(fleetPostPojo.getmImagesUrl());
+
+                DocumentReference rf = FirebaseFirestore.getInstance().collection("fleets").document();
+                fleetPostPojo.setmDocId(rf.getId());
+                rf.set(fleetPostPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(),"Fleet Posted Successfully!",Toast.LENGTH_LONG).show();
-                        finish();
+                    public void onSuccess(Void aVoid) {
+                        FirebaseFirestore.getInstance()
+                                .collection("fleets")
+                                .document(fleetPostPojo.getmDocId())
+                                .collection("mCommentsCollection")
+                                .add(commentPojo)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        //comment added
+                                        //subscribe to topic
+                                        FirebaseMessaging.getInstance().subscribeToTopic(fleetPostPojo.getmDocId());
+                                        Toast.makeText(getApplicationContext(), "Fleet Posted Successfully!", Toast.LENGTH_LONG).show();
+                                        finish();
+                                    }
+                                });
+
                     }
                 });
             }
