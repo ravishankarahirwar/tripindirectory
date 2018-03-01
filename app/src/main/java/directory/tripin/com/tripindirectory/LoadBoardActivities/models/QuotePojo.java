@@ -22,16 +22,27 @@ public class QuotePojo {
     private String mCompanyName = "";
     private String mImageUrl;
 
+    private String mFcmToken;
 
-    public QuotePojo(String mQuoteAmount, String mComment, String mUid, String mDocId, String mRMN) {
+
+    public QuotePojo(String mQuoteAmount, String mComment, String mUid, String mDocId, String mRMN, String mFcmToken) {
         this.mQuoteAmount = mQuoteAmount;
         this.mComment = mComment;
         this.mUid = mUid;
         this.mDocId = mDocId;
         this.mRMN = mRMN;
+        this.mFcmToken = mFcmToken;
     }
 
     public QuotePojo() {
+    }
+
+    public String getmFcmToken() {
+        return mFcmToken;
+    }
+
+    public void setmFcmToken(String mFcmToken) {
+        this.mFcmToken = mFcmToken;
     }
 
     public String getmImageUrl() {

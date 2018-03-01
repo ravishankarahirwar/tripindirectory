@@ -91,6 +91,15 @@ public class LoadBoardActivity extends AppCompatActivity {
             }
         });
 
+        if(getIntent().getExtras()!=null){
+            if(getIntent().getExtras().getString("frag")!=null){
+                if(getIntent().getExtras().getString("frag").equals("3")){
+                    viewPager.setCurrentItem(3);
+                }
+            }
+
+        }
+
 
     }
 

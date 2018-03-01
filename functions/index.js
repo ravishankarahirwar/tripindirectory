@@ -181,6 +181,55 @@ exports.commentonfleetnotif = functions.firestore
     return admin.messaging().sendToTopic(event.params.fleetId, payload, options);
 });
 
+//Quote on load post
+exports.quoteonloadnotif = functions.firestore
+  .document('loads/{loadId}/mQuotesCollection/{quoteId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "9",
+		loadId: event.params.loadId,
+        docId: event.params.quoteId
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToDevice(newValue.mFcmToken, payload)
+});
+
+//Quote on fleet post
+exports.quoteonfleetnotif = functions.firestore
+  .document('fleets/{fleetId}/mQuotesCollection/{quoteId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "10",
+		fleetId: event.params.fleetId,
+        docId: event.params.quoteId
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToDevice(newValue.mFcmToken, payload)
+});
+
+
 
     	exports.loadboardNotification = functions.database.ref('/posts/{pushId}')
         .onCreate(event => {

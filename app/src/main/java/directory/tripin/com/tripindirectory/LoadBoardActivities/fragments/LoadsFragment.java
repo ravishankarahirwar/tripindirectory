@@ -173,7 +173,7 @@ public class LoadsFragment extends Fragment {
                     holder.mLoadProperties.setSelected(true);
                 }
 
-                String fleetProperties = textUtils.toTitleCase(loadPostPojo.getmVehicleTypeRequired())
+                final String fleetProperties = textUtils.toTitleCase(loadPostPojo.getmVehicleTypeRequired())
                         + ", " + textUtils.toTitleCase(loadPostPojo.getmBodyTypeRequired())
                         + ", " + textUtils.toTitleCase(loadPostPojo.getmFleetPayLoadRequired()) + "MT, "
                         + textUtils.toTitleCase(loadPostPojo.getmFleetLengthRequired()) + "Ft";
@@ -473,7 +473,7 @@ public class LoadsFragment extends Fragment {
                                     Logger.v(firebaseAuth.getCurrentUser().getPhoneNumber()+" RMN");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
                                             comment.getText().toString().trim()+"",
-                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber());
+                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),loadPostPojo.getmFcmToken());
                                     FirebaseFirestore.getInstance()
                                             .collection("loads")
                                             .document(docId)

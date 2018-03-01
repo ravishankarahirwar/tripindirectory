@@ -491,7 +491,7 @@ public class IntrestedInFragment extends Fragment {
                                     quote.setText("Sending...");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
                                             comment.getText().toString().trim()+"",
-                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber());
+                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),loadPostPojo.getmFcmToken());
                                     FirebaseFirestore.getInstance()
                                             .collection("loads")
                                             .document(docId)
@@ -930,7 +930,7 @@ public class IntrestedInFragment extends Fragment {
                                     quote.setText("Sending...");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
                                             comment.getText().toString().trim()+"",
-                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber());
+                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),fleetPostPojo.getmFcmToken());
                                     FirebaseFirestore.getInstance()
                                             .collection("fleets")
                                             .document(docId)

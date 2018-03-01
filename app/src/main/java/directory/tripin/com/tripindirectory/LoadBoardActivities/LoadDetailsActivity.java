@@ -719,6 +719,64 @@ public class LoadDetailsActivity extends AppCompatActivity {
                             }
                         });
 
+                        amount.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                quote.setText("Quote "+charSequence.toString().trim()+"₹");
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+
+                            }
+                        });
+
+                        quote.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(!amount.getText().toString().isEmpty()){
+
+                                    quote.setText("Sending...");
+                                    Logger.v(firebaseAuth.getCurrentUser().getPhoneNumber()+" RMN");
+                                    final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
+                                            comment.getText().toString().trim()+"",
+                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),loadPostPojo.getmFcmToken());
+                                    FirebaseFirestore.getInstance()
+                                            .collection("loads")
+                                            .document(docId)
+                                            .update("mQuotedPeopleList." + mUid, true)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    //add to collection
+                                                    FirebaseFirestore.getInstance()
+                                                            .collection("loads")
+                                                            .document(docId).collection("mQuotesCollection")
+                                                            .document(mUid).set(quotePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+
+                                                            dialog.dismiss();
+                                                            Logger.v("QuoteAdded");
+                                                            Toast.makeText(activity,"Quoted Successfully!",Toast.LENGTH_LONG).show();
+
+                                                        }
+                                                    });
+
+                                                }
+                                            });
+
+                                }else {
+                                    Toast.makeText(activity,"No Amount Added!",Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
 
                         cancel.setOnClickListener(new View.OnClickListener() {
                             @Override

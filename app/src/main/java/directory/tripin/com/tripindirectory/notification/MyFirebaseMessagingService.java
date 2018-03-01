@@ -41,8 +41,10 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetDetailsActivity;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadDetailsActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
@@ -160,6 +162,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             }
 
+            //New quote on loadpost
+            if (type.equals("9")) {
+                String docId = remoteMessage.getData().get("docId");
+                String loadId = remoteMessage.getData().get("loadId");
+                if(loadId!=null&&docId!=null){
+                    sendNewLoadQuoteNotification(loadId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+
+            //New comment on fleetpost
+            if (type.equals("10")) {
+                String docId = remoteMessage.getData().get("docId");
+                String loadId = remoteMessage.getData().get("fleetId");
+                if(loadId!=null&&docId!=null){
+                    sendNewFleetQuoteNotification(loadId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
@@ -177,6 +203,90 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendNewFleetQuoteNotification(String loadId, String docId) {
+        FirebaseFirestore.getInstance().collection("fleets")
+                .document(loadId)
+                .collection("mQuotesCollection")
+                .document(docId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            QuotePojo quotePojo = documentSnapshot.toObject(QuotePojo.class);
+
+                            Intent intent = new Intent(getApplicationContext(), LoadBoardActivity.class);
+                            intent.putExtra("frag","3");
+                            String title = "New Quote on your Fleetpost";
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                    PendingIntent.FLAG_ONE_SHOT);
+
+                            String channelId = "ILN notification";
+                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            NotificationCompat.Builder notificationBuilder =
+                                    new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setContentTitle(title)
+                                            .setContentText(quotePojo.getmQuoteAmount()+"₹ by : "+quotePojo.getmRMN())
+                                            .setAutoCancel(true)
+                                            .setSound(defaultSoundUri)
+                                            .setContentIntent(pendingIntent);
+
+                            NotificationManager notificationManager =
+                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                        }
+
+
+
+                    }
+                });
+    }
+
+    private void sendNewLoadQuoteNotification(final String loadId, String docId) {
+        FirebaseFirestore.getInstance().collection("loads")
+                .document(loadId)
+                .collection("mQuotesCollection")
+                .document(docId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            QuotePojo quotePojo = documentSnapshot.toObject(QuotePojo.class);
+
+                                Intent intent = new Intent(getApplicationContext(), LoadBoardActivity.class);
+                                intent.putExtra("frag","3");
+                                String title = "New Quote on your Loadpost";
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                        PendingIntent.FLAG_ONE_SHOT);
+
+                                String channelId = "ILN notification";
+                                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                NotificationCompat.Builder notificationBuilder =
+                                        new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setContentTitle(title)
+                                                .setContentText(quotePojo.getmQuoteAmount()+"₹ by : "+quotePojo.getmRMN())
+                                                .setAutoCancel(true)
+                                                .setSound(defaultSoundUri)
+                                                .setContentIntent(pendingIntent);
+
+                                NotificationManager notificationManager =
+                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                            }
+
+
+
+                    }
+                });
     }
 
     private void sendNewFleetCommentNotification(final String loadId, final String docId) {
