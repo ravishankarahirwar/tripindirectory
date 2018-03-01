@@ -15,8 +15,7 @@
         android:gravity="center"
         android:text="Sort"
         android:textColor="@color/background"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="18sp"/>
 
     <ScrollView
         android:id="@+id/scroll_sort"
@@ -42,40 +41,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@drawable/border_stroke_bg"
                     android:padding="10dp"
-                    android:text="Alphabetically"
-                    android:textSize="18sp" />
+                    android:text="Alphabetically(A - Z)"/>
 
                 <RadioButton
                     android:id="@+id/radioButton2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@drawable/border_stroke_bg"
                     android:padding="10dp"
-                    android:text="User Ratings"
-                    android:textSize="18sp" />
-
-                <RadioButton
-                    android:id="@+id/radioButton3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_stroke_bg"
-                    android:padding="10dp"
-                    android:text="Favourite"
-                    android:textSize="18sp" />
+                    android:text="Alphabetically(Z - A)"
+                     />
 
                 <RadioButton
                     android:id="@+id/radioButton4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@drawable/border_stroke_bg"
                     android:padding="10dp"
-                    android:text="Account Status"
-                    android:textSize="18sp" />
+                    android:text="Account Status"/>
             </RadioGroup>
 
 

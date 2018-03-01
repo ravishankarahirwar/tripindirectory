@@ -5,6 +5,9 @@ package directory.tripin.com.tripindirectory.utils;
  */
 
 public interface ShortingType {
-
+    int DEFAULT = 0;
+    int ALPHA_ASSENDING = 1;
+    int ALPHA_DECENDING = 2;
+    int ACCOUNT_TYPE = 3;
 
 }

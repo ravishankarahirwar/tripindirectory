@@ -93,14 +93,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.FleetFormFragment;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
 import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
 import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
@@ -123,6 +121,7 @@ import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.utils.SearchData;
+import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
@@ -175,12 +174,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LottieAnimationView lottieAnimationView,animationBookmark;
     TextUtils textUtils;
     SlidingUpPanelLayout sliderLayout;
-    private Button mBtnApplyFilters;
-    private Button mBtnClearFilters;
+    private TextView mBtnApplyFilters;
+    private TextView mBtnClearFilters;
 
     //bottom status bar
     private TextView mFilterPanelToggle;
     private TextView mSortPanelToggle;
+    private TextView mNoOfFilterApply;
     private LottieAnimationView mBookmarkPanelToggle;
 
     private DatabaseReference mDatabase;
@@ -192,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter3;
 
 
     private RecyclerView mNatureOfBusinessRecyclarView;
@@ -205,8 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View mFilterView, mSortView, mBookmarkView;
 
     private RadioButton radioButtonAlphabetically;
-    private RadioButton radioButtonRatings;
-    private RadioButton radioButtonFavourite;
+    private RadioButton mSortAlphDecending;
     private RadioButton radioButtonCrediblity;
 
     private RadioGroup mSortRadioGroup;
@@ -248,12 +246,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mNatureOfBusinessRecyclarView = findViewById(R.id.rv_natureofbusiness);
         mNatureOfBusinessRecyclarView.setAdapter(checkBoxRecyclarAdapter1);
-        mNatureOfBusinessRecyclarView.setLayoutManager(new LinearLayoutManager(this));
+        mNatureOfBusinessRecyclarView.setLayoutManager(new GridLayoutManager(this, 2));
         mNatureOfBusinessRecyclarView.setNestedScrollingEnabled(false);
 
         mTypesOfServicesRecyclarView = findViewById(R.id.rv_typesofservices);
         mTypesOfServicesRecyclarView.setAdapter(checkBoxRecyclarAdapter2);
-        mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
+        mTypesOfServicesRecyclarView.setLayoutManager(new GridLayoutManager(this, 2));
         mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
 
         InputStream raw =  getResources().openRawResource(R.raw.fleet);
@@ -335,14 +333,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
 
                             if(model.getmFiltersList().size()!=0){
-                                mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                                .getDrawable(getApplicationContext(),
-                                                        R.drawable.ic_sort_black_24dp),
-                                        null,
-                                        ContextCompat
-                                                .getDrawable(getApplicationContext(),
-                                                        R.drawable.ic_bubble_chart_white_24dp),
-                                        null);
+                                int noOfFilterApply = model.getmFiltersList().size();
+                                mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                                mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
+                            } else {
+                                mNoOfFilterApply.setVisibility(TextView.GONE);
                             }
 
 
@@ -476,6 +471,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Packers & Movers".toUpperCase(), false);
     }
 
     private void init() {
@@ -487,6 +483,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+
+        mNoOfFilterApply = findViewById(R.id.no_of_filters);
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
@@ -535,8 +533,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextCount = findViewById(R.id.textViewResCount);
 
         radioButtonAlphabetically = findViewById(R.id.radioButton1);
-        radioButtonRatings = findViewById(R.id.radioButton2);
-        radioButtonFavourite = findViewById(R.id.radioButton3);
+        mSortAlphDecending = findViewById(R.id.radioButton2);
         radioButtonCrediblity = findViewById(R.id.radioButton4);
         mSortRadioGroup = findViewById(R.id.radioGroupSort);
         mBtnApplySorts = findViewById(R.id.buttonApplySort);
@@ -675,33 +672,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mFiltersList.add(filterPojo);
                     }
                 }
-                for (String f : checkBoxRecyclarAdapter3.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter3.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 1, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-
 
                 if (mFiltersList.size() != 0) {
                     isApplyFilterPressed = true;
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_filter_list_white_24dp),
-                            null,
-                            ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_bubble_chart_white_24dp),
-                            null);
+                    mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                    mNoOfFilterApply.setText(String.valueOf(mFiltersList.size()));
                 } else {
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_filter_list_white_24dp),
-                            null,
-                            null,
-                            null);
+                    mNoOfFilterApply.setVisibility(TextView.GONE);
                 }
-
                 sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
             }
@@ -714,8 +692,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 initiateFiltersHashmaps();
                 checkBoxRecyclarAdapter1.notifyDataSetChanged();
                 checkBoxRecyclarAdapter2.notifyDataSetChanged();
-                checkBoxRecyclarAdapter3.notifyDataSetChanged();
                 if (mFiltersList.size() != 0) {
+                    mNoOfFilterApply.setVisibility(TextView.GONE);
                     mFiltersList.clear();
                     mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
@@ -725,6 +703,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             null);
                     setAdapter(mSearchView.getQuery());
                 }
+                sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
 
@@ -753,24 +732,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 switch (mSortRadioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioButton1: {
-                        mSortIndex = 1;
+                        mSortIndex = ShortingType.ALPHA_ASSENDING;
                         break;
                     }
                     case R.id.radioButton2: {
-                        mSortIndex = 2;
-                        break;
-                    }
-                    case R.id.radioButton3: {
-                        mSortIndex = 3;
+                        mSortIndex = ShortingType.ALPHA_DECENDING;
                         break;
                     }
                     case R.id.radioButton4: {
-
-                        mSortIndex = 4;
+                        mSortIndex = ShortingType.ACCOUNT_TYPE;
                         break;
                     }
                     default: {
-                        mSortIndex = 0;
+                        mSortIndex = ShortingType.DEFAULT;
                         break;
                     }
                 }
@@ -925,27 +899,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //apply sorting
         switch (mSortIndex) {
-            case 1: {
-                // a to z by comp name
-                query = query.orderBy("mCompanyName");
+            case ShortingType.ALPHA_ASSENDING : {// a to z by comp name
+                query = query.orderBy("mCompanyName", Query.Direction.ASCENDING);
                 break;
             }
-            case 2: {
-                //User Ratings
-                query = query.orderBy("mCompanyName");
+            case ShortingType.ALPHA_DECENDING : { //User Ratings
+                query = query.orderBy("mCompanyName", Query.Direction.DESCENDING);
                 break;
             }
-            case 3: {
-                //Favourites
-                query = query.orderBy("mCompanyName");
-                break;
-            }
-            case 4: {
-                // account status
+            case ShortingType.ACCOUNT_TYPE : {// account status
                 query = query.orderBy("mAccountStatus", Query.Direction.DESCENDING);
                 break;
             }
-            case 0: {
+            default : {
                 query = query.orderBy("mCompanyName");
                 break;
             }
