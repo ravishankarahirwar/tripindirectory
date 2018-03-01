@@ -120,6 +120,7 @@ import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
+import directory.tripin.com.tripindirectory.utils.DBFields;
 import directory.tripin.com.tripindirectory.utils.SearchData;
 import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
@@ -166,9 +167,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private  QueryBookmarkPojo queryBookmarkPojo;
 
 
-    private RadioButton radioButton2;
-    private RadioButton radioButton1;
-    private RadioButton radioButton4;
+    private RadioButton mSerachByCompany;
+    private RadioButton mSerachByRoute;
+    private RadioButton mSerachByCity;
+
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
     LottieAnimationView lottieAnimationView,animationBookmark;
@@ -401,19 +403,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             holder.sorting.setVisibility(View.GONE);
                             break;
                         }
-                        case 1: {
-                            holder.sorting.setText("Sorted Alphabetically");
+                        case ShortingType.ALPHA_ASSENDING : {
+                            holder.sorting.setText("Sorted Alphabetically A-Z");
                             break;
                         }
-                        case 2: {
-                            holder.sorting.setText("Sorted By User Ratings");
+                        case ShortingType.ALPHA_DECENDING : {
+                            holder.sorting.setText("Sorted Alphabetically Z-A");
                             break;
                         }
-                        case 3: {
-                            holder.sorting.setText("Sorted By Favourites");
-                            break;
-                        }
-                        case 4: {
+                        case  ShortingType.ACCOUNT_TYPE: {
                             holder.sorting.setText("Sorted By Crediblity");
                             break;
                         }
@@ -516,9 +514,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        radioButton2 = findViewById(R.id.search_by_company);
-        radioButton1 = findViewById(R.id.search_by_route);
-        radioButton4 = findViewById(R.id.search_by_city);
+        mSerachByCompany = findViewById(R.id.search_by_company);
+        mSerachByRoute = findViewById(R.id.search_by_route);
+        mSerachByCity = findViewById(R.id.search_by_city);
 
         lottieAnimationView = findViewById(R.id.animation_view);
         animationBookmark = findViewById(R.id.animation_bookmark);
@@ -549,10 +547,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mFirebaseAnalytics.logEvent("SearchBy", params);
 
                     searchTag = SEARCHTAG_ROUTE;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByRoute.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
@@ -560,10 +558,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     params.putString("search_by", "ByCompanyName");
                     mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_COMPANY;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByCompany.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_city) {
@@ -571,10 +569,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     params.putString("search_by", "ByCity");
                     mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_CITY;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByCity.setTypeface(Typeface.DEFAULT_BOLD);
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search in city");
                 }
@@ -722,8 +720,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             null);
                     setAdapter(mSearchView.getQuery());
                 }
-
-
+                sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
 
@@ -899,20 +896,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //apply sorting
         switch (mSortIndex) {
-            case ShortingType.ALPHA_ASSENDING : {// a to z by comp name
-                query = query.orderBy("mCompanyName", Query.Direction.ASCENDING);
+            case ShortingType.ALPHA_ASSENDING : {
+                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
-            case ShortingType.ALPHA_DECENDING : { //User Ratings
-                query = query.orderBy("mCompanyName", Query.Direction.DESCENDING);
+            case ShortingType.ALPHA_DECENDING : {
+                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
-            case ShortingType.ACCOUNT_TYPE : {// account status
-                query = query.orderBy("mAccountStatus", Query.Direction.DESCENDING);
+            case ShortingType.ACCOUNT_TYPE : {
+                query = query.orderBy(DBFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
                 break;
             }
             default : {
-                query = query.orderBy("mCompanyName");
+                query = query.orderBy(DBFields.COMPANY_NAME);
                 break;
             }
         }
@@ -936,9 +933,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case SEARCHTAG_COMPANY: {
 
                     if (isCompanySuggestionClicked) {
-                        query = query.whereEqualTo("mCompanyName", s.trim());
+                        query = query.whereEqualTo(DBFields.COMPANY_NAME, s.trim());
                     } else {
-                        query = query.whereGreaterThanOrEqualTo("mCompanyName", s.trim().toUpperCase());
+                        query = query.whereGreaterThanOrEqualTo(DBFields.COMPANY_NAME, s.trim().toUpperCase());
                     }
                     isCompanySuggestionClicked = false;
                     break;
@@ -949,8 +946,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         } else {
-            if (mSortIndex != 4)
-                query = query.whereGreaterThan("mCompanyName", "");
+            if (mSortIndex != ShortingType.ACCOUNT_TYPE) {
+                query = query.whereGreaterThan(DBFields.COMPANY_NAME, "");
+            }
         }
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()

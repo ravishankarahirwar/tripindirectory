@@ -7,5 +7,6 @@ package directory.tripin.com.tripindirectory.utils;
  */
 
 public interface DBFields {
-    String ACCOUNT_STATUS = "";
+    String COMPANY_NAME = "mCompanyName";
+    String ACCOUNT_STATUS = "mAccountStatus";
 }
