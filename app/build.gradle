@@ -110,6 +110,10 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    // event bus
+    compile 'org.greenrobot:eventbus:3.0.0'
 }
 apply plugin: 'com.google.gms.google-services'
 repositories {

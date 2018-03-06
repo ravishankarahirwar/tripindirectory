@@ -111,6 +111,7 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
 import directory.tripin.com.tripindirectory.adapters.QueryBookmarkViewHolder;
+import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -836,15 +837,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void onAuthSuccess(FirebaseUser user) {
+        PreferenceManager preferenceManager =  PreferenceManager.getInstance(getApplicationContext());
+       String fcmTocken = preferenceManager.getFcmToken();
+       if(fcmTocken != null) {
+           FirebaseDatabase.getInstance()
+                   .getReference()
+                   .child(Constants.ARG_USERS)
+                   .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                   .child(Constants.ARG_FIREBASE_TOKEN)
+                   .setValue(fcmTocken);
+       }
+
         String userPhoneNo = user.getPhoneNumber();
         // Write new user
-        writeNewUser(user.getUid(), userPhoneNo, userPhoneNo);
+        writeNewUser(user.getUid(), userPhoneNo, userPhoneNo, fcmTocken);
         // Go to MainActivity
         startActivity(new Intent(MainActivity.this, directory.tripin.com.tripindirectory.forum.MainActivity.class));
     }
 
-    private void writeNewUser(String userId, String name, String userPhoneNo) {
-        User user = new User(name, userPhoneNo);
+    private void writeNewUser(String userId, String name, String userPhoneNo, String fcmtoken) {
+        User user = new User(name, userPhoneNo, fcmtoken);
         mDatabase.child("users").child(userId).setValue(user);
     }
 
@@ -868,7 +880,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 companySuggestions.add(suggestionCompanyName);
                             }
                             mSearchView.swapSuggestions(companySuggestions);
-
                         } else {
                             Log.d("onComplete", "Error getting comp suggestion documents: ", task.getException());
                         }
