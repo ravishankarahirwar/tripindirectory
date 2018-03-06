@@ -131,6 +131,7 @@ public class CompanyFromFragment extends BaseFragment {
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Packer and Movers".toUpperCase(), false);
 
 
         //creat adapters and set adapters

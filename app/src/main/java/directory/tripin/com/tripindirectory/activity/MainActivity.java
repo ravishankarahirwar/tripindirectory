@@ -46,6 +46,8 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -86,9 +88,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
     private WorkingWithAdapter mWorkingWithAdapter;
+    private AppEventsLogger logger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,6 +232,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .snackbar();
         //Add to Activity
         //For Production
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        logger = AppEventsLogger.newLogger(this);
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
 
         //For Testing
@@ -277,6 +284,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         setAdapter("");
         setBookmarkListAdapter();
+    }
+
+    // Add to each long-lived activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+        logger.logPurchase(BigDecimal.valueOf(4.32), Currency.getInstance("USD"));
+        AppEventsLogger.activateApp(this,"");
+    }
+
+    // for Android, you should also log app deactivation
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
+    }
+
+    /**
+     * This function assumes logger is an instance of AppEventsLogger and has been
+     * created using AppEventsLogger.newLogger() call.
+     */
+    public void logAppstartEvent (double valToSum) {
+        logger.logEvent("appstart", valToSum);
     }
 
     private void setBookmarkListAdapter() {
@@ -469,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
-        mTypesofServicesHashMap.put("Packers & Movers".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Packer and Movers".toUpperCase(), false);
     }
 
     private void init() {

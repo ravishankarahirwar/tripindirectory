@@ -3,6 +3,7 @@
 
     <string name="facebook_app_id">227091151168633</string>
     <string name="fb_login_protocol_scheme">fb227091151168633</string>
+
     <string name="ga_trackingId" translatable="false">UA-113067263-1</string>
 
     <string name="invitation_title">Grow your Logistic Network by INL</string>
