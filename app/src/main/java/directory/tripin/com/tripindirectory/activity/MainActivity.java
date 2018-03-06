@@ -22,6 +22,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.CharacterStyle;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -43,6 +46,8 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -75,21 +80,32 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
+import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
@@ -105,7 +121,12 @@ import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
+import directory.tripin.com.tripindirectory.model.search.TruckProperty;
+import directory.tripin.com.tripindirectory.utils.DBFields;
 import directory.tripin.com.tripindirectory.utils.SearchData;
+import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
@@ -117,16 +138,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_COMPANY = 1;
     private static final int SEARCHTAG_CITY = 2;
-    private static final int SEARCHTAG_TRANSPORTER = 3;
 
     private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
-    private static final int SIGN_IN_FOR_BOOKMARK = 124;
 
     private static final int SIGN_IN_FOR_FORUM = 222;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
     private List<SuggestionCompanyName> companySuggestions = null;
-    private List<String> companynamesuggestions = null;
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
@@ -149,58 +167,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String mSourceCity = "";
     private String mDestinationCity = "";
     boolean isBookmarkSaved = false;
-    int signinginfor = 0;
-    QueryBookmarkPojo queryBookmarkPojo;
+    private int signinginfor = 0;
+    private  QueryBookmarkPojo queryBookmarkPojo;
 
 
-    private RadioButton radioButton2;
-    private RadioButton radioButton1;
-    private RadioButton radioButton4;
+    private RadioButton mSerachByCompany;
+    private RadioButton mSerachByRoute;
+    private RadioButton mSerachByCity;
+
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
     LottieAnimationView lottieAnimationView,animationBookmark;
     TextUtils textUtils;
     SlidingUpPanelLayout sliderLayout;
-    private Button mBtnApplyFilters;
-    private Button mBtnClearFilters;
+    private TextView mBtnApplyFilters;
+    private TextView mBtnClearFilters;
 
     //bottom status bar
     private TextView mFilterPanelToggle;
     private TextView mSortPanelToggle;
+    private TextView mNoOfFilterApply;
     private LottieAnimationView mBookmarkPanelToggle;
 
     private DatabaseReference mDatabase;
-    private DatabaseReference myRef;
     private FirebaseAuth mAuth;
 
     private HashMap<String, Boolean> mNatureofBusinessHashMap;
     private HashMap<String, Boolean> mTypesofServicesHashMap;
-    private HashMap<String, Boolean> mTypesofVehiclesHashMap;
-    private HashMap<String, Boolean> mTypesofBodyHashMap;
-    private HashMap<String, Boolean> mTypesofWeightsHashMap;
-    private HashMap<String, Boolean> mTypesofLengthsHashMap;
     private List<FilterPojo> mFiltersList;
+
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter1;
     private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter2;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter3;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter4;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter5;
-    private CheckBoxRecyclarAdapter checkBoxRecyclarAdapter6;
+
 
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
     private RecyclerView mTypesofVehiclesRecyclarView;
-    private RecyclerView mTypesofBodyRecyclarView;
-    private RecyclerView mTypesofWeightsRecyclarView;
-    private RecyclerView mTypesofLengthsRecyclarView;
 
-    private ImageView togglenoblist, toggletoslist, tbtov, tbtob, tbwc, tblov;
     private TextView mTextCount;
     private Dialog dialog;
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
-    private RadioButton radioButtonAlphabetically, radioButtonRatings, radioButtonFavourite, radioButtonCrediblity;
+    private RadioButton radioButtonAlphabetically;
+    private RadioButton mSortAlphDecending;
+    private RadioButton radioButtonCrediblity;
+
     private RadioGroup mSortRadioGroup;
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
@@ -209,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
+    private WorkingWithAdapter mWorkingWithAdapter;
+    private AppEventsLogger logger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,12 +232,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .snackbar();
         //Add to Activity
         //For Production
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        logger = AppEventsLogger.newLogger(this);
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
 
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         textUtils = new TextUtils();
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         //Add to Activity
         FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
@@ -231,73 +247,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mNatureofBusinessHashMap = new HashMap<>();
         mTypesofServicesHashMap = new HashMap<>();
-        mTypesofVehiclesHashMap = new HashMap<>();
-        mTypesofBodyHashMap = new HashMap<>();
-        mTypesofWeightsHashMap = new HashMap<>();
-        mTypesofLengthsHashMap = new HashMap<>();
 
         initiateFiltersHashmaps();
 
         checkBoxRecyclarAdapter1 = new CheckBoxRecyclarAdapter(mNatureofBusinessHashMap);
         checkBoxRecyclarAdapter2 = new CheckBoxRecyclarAdapter(mTypesofServicesHashMap);
-        checkBoxRecyclarAdapter3 = new CheckBoxRecyclarAdapter(mTypesofVehiclesHashMap);
-        checkBoxRecyclarAdapter4 = new CheckBoxRecyclarAdapter(mTypesofBodyHashMap);
-        checkBoxRecyclarAdapter5 = new CheckBoxRecyclarAdapter(mTypesofWeightsHashMap);
-        checkBoxRecyclarAdapter6 = new CheckBoxRecyclarAdapter(mTypesofLengthsHashMap);
-
 
         mNatureOfBusinessRecyclarView = findViewById(R.id.rv_natureofbusiness);
         mNatureOfBusinessRecyclarView.setAdapter(checkBoxRecyclarAdapter1);
-        mNatureOfBusinessRecyclarView.setLayoutManager(new LinearLayoutManager(this));
+        mNatureOfBusinessRecyclarView.setLayoutManager(new GridLayoutManager(this, 2));
         mNatureOfBusinessRecyclarView.setNestedScrollingEnabled(false);
-        togglenoblist = findViewById(R.id.nobup);
 
         mTypesOfServicesRecyclarView = findViewById(R.id.rv_typesofservices);
         mTypesOfServicesRecyclarView.setAdapter(checkBoxRecyclarAdapter2);
-        mTypesOfServicesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
+        mTypesOfServicesRecyclarView.setLayoutManager(new GridLayoutManager(this, 2));
         mTypesOfServicesRecyclarView.setNestedScrollingEnabled(false);
-        toggletoslist = findViewById(R.id.nobup2);
+
+        InputStream raw =  getResources().openRawResource(R.raw.fleet);
+        Reader rd = new BufferedReader(new InputStreamReader(raw));
+        Gson gson = new Gson();
+        Fleet fleet = gson.fromJson(rd, Fleet.class);
+        mWorkingWithAdapter = new WorkingWithAdapter(mContext, fleet);
 
         mTypesofVehiclesRecyclarView = findViewById(R.id.rv_tov);
-        mTypesofVehiclesRecyclarView.setAdapter(checkBoxRecyclarAdapter3);
         mTypesofVehiclesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofVehiclesRecyclarView.setNestedScrollingEnabled(false);
-        tbtov = findViewById(R.id.tovup);
-
-        mTypesofBodyRecyclarView = findViewById(R.id.rv_tob);
-        mTypesofBodyRecyclarView.setAdapter(checkBoxRecyclarAdapter4);
-        mTypesofBodyRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofBodyRecyclarView.setNestedScrollingEnabled(false);
-        tbtob = findViewById(R.id.tobup);
-
-        mTypesofWeightsRecyclarView = findViewById(R.id.rv_wc);
-        mTypesofWeightsRecyclarView.setAdapter(checkBoxRecyclarAdapter5);
-        mTypesofWeightsRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofWeightsRecyclarView.setNestedScrollingEnabled(false);
-        tbwc = findViewById(R.id.wcup);
-
-        mTypesofLengthsRecyclarView = findViewById(R.id.rv_lov);
-        mTypesofLengthsRecyclarView.setAdapter(checkBoxRecyclarAdapter6);
-        mTypesofLengthsRecyclarView.setLayoutManager(new LinearLayoutManager(this));
-        mTypesofLengthsRecyclarView.setNestedScrollingEnabled(false);
-        tblov = findViewById(R.id.lovup);
+        mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
 
         init();
-
+        /**
+         * if User coming first time in our portal
+         */
         if (mPreferenceManager.isFirstTime()) {
-            Logger.v("First Time app opened");
             mPreferenceManager.setFirstTime(false);
             startActivity(new Intent(mContext, TutorialScreensActivity.class));
-        } else {
-            Logger.v("Multiple times app opened");
         }
         setAdapter("");
         setBookmarkListAdapter();
     }
 
+    // Add to each long-lived activity
+    @Override
+    protected void onResume() {
+        super.onResume();
+        logger.logPurchase(BigDecimal.valueOf(4.32), Currency.getInstance("USD"));
+        AppEventsLogger.activateApp(this,"");
+    }
+
+    // for Android, you should also log app deactivation
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
+    }
+
+    /**
+     * This function assumes logger is an instance of AppEventsLogger and has been
+     * created using AppEventsLogger.newLogger() call.
+     */
+    public void logAppstartEvent (double valToSum) {
+        logger.logEvent("appstart", valToSum);
+    }
+
     private void setBookmarkListAdapter() {
-
-
         if (mAuth.getCurrentUser() != null) {
             Logger.v("setting bookmarks adapter " + mAuth.getUid());
 
@@ -353,14 +365,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
 
                             if(model.getmFiltersList().size()!=0){
-                                mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                                .getDrawable(getApplicationContext(),
-                                                        R.drawable.ic_sort_black_24dp),
-                                        null,
-                                        ContextCompat
-                                                .getDrawable(getApplicationContext(),
-                                                        R.drawable.ic_bubble_chart_white_24dp),
-                                        null);
+                                int noOfFilterApply = model.getmFiltersList().size();
+                                mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                                mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
+                            } else {
+                                mNoOfFilterApply.setVisibility(TextView.GONE);
                             }
 
 
@@ -424,19 +433,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             holder.sorting.setVisibility(View.GONE);
                             break;
                         }
-                        case 1: {
-                            holder.sorting.setText("Sorted Alphabetically");
+                        case ShortingType.ALPHA_ASSENDING : {
+                            holder.sorting.setText("Sorted Alphabetically A-Z");
                             break;
                         }
-                        case 2: {
-                            holder.sorting.setText("Sorted By User Ratings");
+                        case ShortingType.ALPHA_DECENDING : {
+                            holder.sorting.setText("Sorted Alphabetically Z-A");
                             break;
                         }
-                        case 3: {
-                            holder.sorting.setText("Sorted By Favourites");
-                            break;
-                        }
-                        case 4: {
+                        case  ShortingType.ACCOUNT_TYPE: {
                             holder.sorting.setText("Sorted By Crediblity");
                             break;
                         }
@@ -494,43 +499,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTypesofServicesHashMap.put("Petrol".toUpperCase(), false);
         mTypesofServicesHashMap.put("Diesel".toUpperCase(), false);
         mTypesofServicesHashMap.put("Oil".toUpperCase(), false);
-
-        mTypesofVehiclesHashMap.put("LCV".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Truck".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tusker".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Taurus".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Trailers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Container Body".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Refrigerated Vans".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tankers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Tippers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Bulkers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Car Carriers".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Scooter Body".toUpperCase(), false);
-        mTypesofVehiclesHashMap.put("Hydraulic Axles".toUpperCase(), false);
-
-        mTypesofBodyHashMap.put("Normal".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Full Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Half Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Open Body".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Platform".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Skeleton".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Semi-low".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Low".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Trolla/Body Trailer".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Refer".toUpperCase(), false);
-        mTypesofBodyHashMap.put("High Cube (HC)".toUpperCase(), false);
-        mTypesofBodyHashMap.put("Normal".toUpperCase(), false);
-
-        mTypesofWeightsHashMap.put("Between 0-10 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Between 10-20 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Between 20-30 MT".toUpperCase(), false);
-        mTypesofWeightsHashMap.put("Above 30 MT".toUpperCase(), false);
-
-        mTypesofLengthsHashMap.put("Between 0-10 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Between 10-20 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Between 20-30 Ft".toUpperCase(), false);
-        mTypesofLengthsHashMap.put("Above 30 Ft".toUpperCase(), false);
+        mTypesofServicesHashMap.put("Packer and Movers".toUpperCase(), false);
     }
 
     private void init() {
@@ -542,6 +511,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+
+        mNoOfFilterApply = findViewById(R.id.no_of_filters);
         mSearchView = findViewById(R.id.floating_search_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mPartnerList = findViewById(R.id.transporter_list);
@@ -573,9 +544,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
-        radioButton2 = findViewById(R.id.search_by_company);
-        radioButton1 = findViewById(R.id.search_by_route);
-        radioButton4 = findViewById(R.id.search_by_city);
+        mSerachByCompany = findViewById(R.id.search_by_company);
+        mSerachByRoute = findViewById(R.id.search_by_route);
+        mSerachByCity = findViewById(R.id.search_by_city);
 
         lottieAnimationView = findViewById(R.id.animation_view);
         animationBookmark = findViewById(R.id.animation_bookmark);
@@ -590,8 +561,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextCount = findViewById(R.id.textViewResCount);
 
         radioButtonAlphabetically = findViewById(R.id.radioButton1);
-        radioButtonRatings = findViewById(R.id.radioButton2);
-        radioButtonFavourite = findViewById(R.id.radioButton3);
+        mSortAlphDecending = findViewById(R.id.radioButton2);
         radioButtonCrediblity = findViewById(R.id.radioButton4);
         mSortRadioGroup = findViewById(R.id.radioGroupSort);
         mBtnApplySorts = findViewById(R.id.buttonApplySort);
@@ -607,10 +577,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mFirebaseAnalytics.logEvent("SearchBy", params);
 
                     searchTag = SEARCHTAG_ROUTE;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton1.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByRoute.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Source To Destination");
                 } else if (radioButtonID == R.id.search_by_company) {
@@ -618,10 +588,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     params.putString("search_by", "ByCompanyName");
                     mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_COMPANY;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton2.setTypeface(Typeface.DEFAULT_BOLD);
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByCompany.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search by company name");
                 } else if (radioButtonID == R.id.search_by_city) {
@@ -629,10 +599,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     params.putString("search_by", "ByCity");
                     mFirebaseAnalytics.logEvent("SearchBy", params);
                     searchTag = SEARCHTAG_CITY;
-                    radioButton1.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton2.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
-                    radioButton4.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
-                    //radioButton4.setTypeface(Typeface.DEFAULT_BOLD);
+                    mSerachByRoute.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCompany.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_grey));
+                    mSerachByCity.setTextColor(ContextCompat.getColorStateList(getApplicationContext(), R.color.arrow_white));
+                    //mSerachByCity.setTypeface(Typeface.DEFAULT_BOLD);
                     mSearchView.clearQuery();
                     mSearchView.setSearchHint("Search in city");
                 }
@@ -687,91 +657,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        toggletoslist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesOfServicesRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesOfServicesRecyclarView.setVisibility(View.GONE);
-                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesOfServicesRecyclarView.setVisibility(View.VISIBLE);
-                    toggletoslist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-
-                }
-            }
-        });
-        togglenoblist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mNatureOfBusinessRecyclarView.getVisibility() == View.VISIBLE) {
-                    mNatureOfBusinessRecyclarView.setVisibility(View.GONE);
-                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mNatureOfBusinessRecyclarView.setVisibility(View.VISIBLE);
-                    togglenoblist.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
-        tblov.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofLengthsRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofLengthsRecyclarView.setVisibility(View.GONE);
-                    tblov.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofLengthsRecyclarView.setVisibility(View.VISIBLE);
-                    tblov.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-        tbtov.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofVehiclesRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofVehiclesRecyclarView.setVisibility(View.GONE);
-                    tbtov.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofVehiclesRecyclarView.setVisibility(View.VISIBLE);
-                    tbtov.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
-        tbwc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofWeightsRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofWeightsRecyclarView.setVisibility(View.GONE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofWeightsRecyclarView.setVisibility(View.VISIBLE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-        tbtob.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mTypesofBodyRecyclarView.getVisibility() == View.VISIBLE) {
-                    mTypesofBodyRecyclarView.setVisibility(View.GONE);
-                    tbtob.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                } else {
-                    mTypesofBodyRecyclarView.setVisibility(View.VISIBLE);
-                    tbwc.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                }
-            }
-        });
-
         mFiltersList = new ArrayList<>();
 
         mBtnApplyFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mFiltersList.clear();
+                Fleet filledFleet = mWorkingWithAdapter.getDataValues();
+                for (int i = 0; i < filledFleet.getTrucks().size(); i++) {
+                    Truck trucks = filledFleet.getTrucks().get(i);
+                    boolean ihave =  filledFleet.getTrucks().get(i).isTruckHave();
+                    if(ihave) {
+                        String newFilter = trucks.getTruckType();
+                        FilterPojo filterPojo = new FilterPojo(newFilter, 12, 1);
+                        mFiltersList.add(filterPojo);
+                    }
+                    for (int j = 0; j < trucks.getTruckProperties().size(); j++) {
+                        TruckProperty truckProperty = trucks.getTruckProperties().get(j);
+                            for (Map.Entry<String, Boolean> entry : truckProperty.getProperties().entrySet()) {
+                                boolean propertyValue =  entry.getValue();
+                                if(propertyValue) {
+                                    String newFilter = "Fleet." + trucks.getTruckType() + "." + truckProperty.getTitle() + "." + entry.getKey();
+                                    FilterPojo filterPojo = new FilterPojo(newFilter, 11, 1);
+                                    mFiltersList.add(filterPojo);
+                                    Log.v("FilterAdded", newFilter);
+                                }
+                            }
+//                        }
+                    }
+                }
+
+
                 for (String f : checkBoxRecyclarAdapter1.getmDataMap().keySet()) {
                     if (checkBoxRecyclarAdapter1.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 6, 1);
+                        FilterPojo filterPojo = new FilterPojo(f, 1, 1);
                         mFiltersList.add(filterPojo);
                     }
                 }
@@ -781,50 +700,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mFiltersList.add(filterPojo);
                     }
                 }
-                for (String f : checkBoxRecyclarAdapter3.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter3.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 1, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-                for (String f : checkBoxRecyclarAdapter4.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter4.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 2, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-                for (String f : checkBoxRecyclarAdapter5.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter5.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 3, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
-                for (String f : checkBoxRecyclarAdapter6.getmDataMap().keySet()) {
-                    if (checkBoxRecyclarAdapter6.getmDataMap().get(f)) {
-                        FilterPojo filterPojo = new FilterPojo(f, 4, 1);
-                        mFiltersList.add(filterPojo);
-                    }
-                }
 
                 if (mFiltersList.size() != 0) {
                     isApplyFilterPressed = true;
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_filter_list_white_24dp),
-                            null,
-                            ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_bubble_chart_white_24dp),
-                            null);
+                    mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                    mNoOfFilterApply.setText(String.valueOf(mFiltersList.size()));
                 } else {
-                    mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-                                    .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_filter_list_white_24dp),
-                            null,
-                            null,
-                            null);
+                    mNoOfFilterApply.setVisibility(TextView.GONE);
                 }
-
                 sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
             }
@@ -837,11 +720,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 initiateFiltersHashmaps();
                 checkBoxRecyclarAdapter1.notifyDataSetChanged();
                 checkBoxRecyclarAdapter2.notifyDataSetChanged();
-                checkBoxRecyclarAdapter3.notifyDataSetChanged();
-                checkBoxRecyclarAdapter4.notifyDataSetChanged();
-                checkBoxRecyclarAdapter5.notifyDataSetChanged();
-                checkBoxRecyclarAdapter6.notifyDataSetChanged();
                 if (mFiltersList.size() != 0) {
+                    mNoOfFilterApply.setVisibility(TextView.GONE);
                     mFiltersList.clear();
                     mFilterPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                     .getDrawable(getApplicationContext(),
@@ -851,6 +731,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             null);
                     setAdapter(mSearchView.getQuery());
                 }
+                sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
 
@@ -869,8 +750,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             null);
                     setAdapter(mSearchView.getQuery());
                 }
-
-
+                sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
 
@@ -879,24 +759,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 switch (mSortRadioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioButton1: {
-                        mSortIndex = 1;
+                        mSortIndex = ShortingType.ALPHA_ASSENDING;
                         break;
                     }
                     case R.id.radioButton2: {
-                        mSortIndex = 2;
-                        break;
-                    }
-                    case R.id.radioButton3: {
-                        mSortIndex = 3;
+                        mSortIndex = ShortingType.ALPHA_DECENDING;
                         break;
                     }
                     case R.id.radioButton4: {
-
-                        mSortIndex = 4;
+                        mSortIndex = ShortingType.ACCOUNT_TYPE;
                         break;
                     }
                     default: {
-                        mSortIndex = 0;
+                        mSortIndex = ShortingType.DEFAULT;
                         break;
                     }
                 }
@@ -1014,8 +889,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //apply filters
         for (FilterPojo f : mFiltersList) {
             switch (f.getmFilterType()) {
-                case 1: {
-                    query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
+                case 11: {
+                    String filterName = f.getmFilterName();
+                    query = query.whereEqualTo(filterName , true);
+                    break;
+                }
+                case 12: {
+                    query = query.whereEqualTo("fleetVehicle." + f.getmFilterName(), true);
                     break;
                 }
                 case 2: {
@@ -1046,28 +926,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //apply sorting
         switch (mSortIndex) {
-            case 1: {
-                // a to z by comp name
-                query = query.orderBy("mCompanyName");
+            case ShortingType.ALPHA_ASSENDING : {
+                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
-            case 2: {
-                //User Ratings
-                query = query.orderBy("mCompanyName");
+            case ShortingType.ALPHA_DECENDING : {
+                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
-            case 3: {
-                //Favourites
-                query = query.orderBy("mCompanyName");
+            case ShortingType.ACCOUNT_TYPE : {
+                query = query.orderBy(DBFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
                 break;
             }
-            case 4: {
-                // account status
-                query = query.orderBy("mAccountStatus", Query.Direction.DESCENDING);
-                break;
-            }
-            case 0: {
-                query = query.orderBy("mCompanyName");
+            default : {
+                query = query.orderBy(DBFields.COMPANY_NAME);
                 break;
             }
         }
@@ -1091,9 +963,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case SEARCHTAG_COMPANY: {
 
                     if (isCompanySuggestionClicked) {
-                        query = query.whereEqualTo("mCompanyName", s.trim());
+                        query = query.whereEqualTo(DBFields.COMPANY_NAME, s.trim());
                     } else {
-                        query = query.whereGreaterThanOrEqualTo("mCompanyName", s.trim().toUpperCase());
+                        query = query.whereGreaterThanOrEqualTo(DBFields.COMPANY_NAME, s.trim().toUpperCase());
                     }
                     isCompanySuggestionClicked = false;
                     break;
@@ -1104,10 +976,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         } else {
-            if (mSortIndex != 4)
-                query = query.whereGreaterThan("mCompanyName", "");
+            if (mSortIndex != ShortingType.ACCOUNT_TYPE) {
+                query = query.whereGreaterThan(DBFields.COMPANY_NAME, "");
+            }
         }
-
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
                 .setQuery(query, PartnerInfoPojo.class)
@@ -1116,8 +988,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAnimator = new RecyclerViewAnimator(mPartnerList);
 
         adapter = new FirestoreRecyclerAdapter<PartnerInfoPojo, RecyclerView.ViewHolder>(options) {
-
-
             @SuppressLint("SetTextI18n")
             @Override
             public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position, final PartnerInfoPojo model) {
@@ -1132,10 +1002,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         PartnersViewHolder partnersViewHolder = (PartnersViewHolder) holder;
 
                         //set address
-                        String addresstoset
-                                = model.getmCompanyAdderss().getAddress()
-                                + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
-                                + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+
+                        String addresstoset = "";
+                                if(model != null && model.getmCompanyAdderss() != null) {
+                                    addresstoset = model.getmCompanyAdderss().getAddress()
+                                            + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getCity())
+                                            + ", " + textUtils.toTitleCase(model.getmCompanyAdderss().getState());
+                                }
                         if (model.getmCompanyAdderss().getPincode() != null) {
                             addresstoset = addresstoset + ", " + model.getmCompanyAdderss().getPincode();
                         }
@@ -1171,7 +1044,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             partnersViewHolder.mCompany
                                     .setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                                     .getDrawable(getApplicationContext(),
-                                                            R.drawable.ic_fiber_smart_record_bllue_24dp),
+                                                            R.drawable.checkmark),
                                             null,
                                             null,
                                             null);
@@ -2116,4 +1989,183 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(context, "No application found for send Email" , Toast.LENGTH_LONG).show();
         }
     }
+
+    //****************************Filter NEW******************
+    public interface OnTruckPropertyValueChange {
+        public void onPropertyChange(Map<String,Boolean> properties);
+    }
+
+    public interface OnTruckValueChange {
+        public void onTruckPropertiesChange(List<TruckProperty> truckProperties);
+    }
+    public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {
+        private  Fleet mDataValues;
+        private Context mContext;
+        private int getDataValuesSize() {
+            return mDataValues.getTrucks().size();
+        }
+
+        // data is passed into the constructor
+        public WorkingWithAdapter(Context context,Fleet fleet) {
+            mContext = context;
+            this.mDataValues = fleet;
+        }
+
+        private void setDataValues(Fleet dataValues) {
+            mDataValues = dataValues;
+            this.notifyDataSetChanged();
+        }
+
+        private Fleet getDataValues() {
+            return  this.mDataValues;
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public WorkingWithHolderNew onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_working_with_vehicle, parent, false);
+            WorkingWithHolderNew viewHolder = new WorkingWithHolderNew(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final WorkingWithHolderNew holder, final int position) {
+            String truckType = mDataValues.getTrucks().get(position).getTruckType();
+//            boolean value = mDataValues.get(key);
+            PropertiesAdaptor propertiesAdaptor = new PropertiesAdaptor(MainActivity.this, mDataValues.getTrucks().get(position).getTruckProperties(), new OnTruckValueChange() {
+                @Override
+                public void onTruckPropertiesChange(List<TruckProperty> truckProperties) {
+                    mDataValues.getTrucks().get(position).setTruckProperties(truckProperties);
+                }
+            });
+            holder.propertyList.setLayoutManager(new LinearLayoutManager(this.mContext));
+            holder.propertyList.setAdapter(propertiesAdaptor);
+            holder.propertyList.addItemDecoration(new DividerItemDecoration(MainActivity.this,
+                    DividerItemDecoration.VERTICAL));
+            holder.mIHave.setText(truckType);
+//            holder.setDataValue(key);
+            holder.mIHave.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mDataValues.getTrucks().get(position).setTruckHave(isChecked);
+                    if(isChecked) {
+                        holder.propertyList.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.propertyList.setVisibility(View.GONE);
+                    }
+                }
+            });
+//            holder.onBind(mContext, holder);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return mDataValues.getTrucks().size();
+        }
+    }
+
+    ///************************************PRoperties Adaptor
+    public class PropertiesAdaptor extends RecyclerView.Adapter<TruckPropertiesViewHolder> {
+        private  List<TruckProperty> truckProperties;
+        private Context mContext;
+        private OnTruckValueChange onTruckValueChange;
+        private int getDataValuesSize() {
+            return truckProperties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesAdaptor(Context context, List<TruckProperty> truckProperties, OnTruckValueChange onTruckValueChange) {
+            this.truckProperties = truckProperties;
+            this.onTruckValueChange = onTruckValueChange;
+            mContext = context;
+        }
+
+        private void setDataValues(List<TruckProperty> truckProperties) {
+            this.truckProperties = truckProperties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property, parent, false);
+            TruckPropertiesViewHolder viewHolder = new TruckPropertiesViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesViewHolder holder, final int position) {
+            String key = truckProperties.get(position).getTitle();
+            holder.mPropertyTitle.setText(key);
+
+            PropertiesValuesAdaptor propertiesValueAdaptor = new PropertiesValuesAdaptor(mContext, truckProperties.get(position).getProperties(), new OnTruckPropertyValueChange() {
+                @Override
+                public void onPropertyChange(Map<String, Boolean> properties) {
+                    truckProperties.get(position).setProperties(properties);
+                    onTruckValueChange.onTruckPropertiesChange(truckProperties);
+                }
+            });
+            holder.mPropertiesValues.setLayoutManager(new GridLayoutManager(this.mContext, 3));
+            holder.mPropertiesValues.setAdapter(propertiesValueAdaptor);
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return truckProperties.size();
+
+        }
+    }
+//************************************** PropertiesValueAdaptor
+
+    public class PropertiesValuesAdaptor extends RecyclerView.Adapter<TruckPropertiesValueViewHolder> {
+        private   Map<String,Boolean> properties;
+        private OnTruckPropertyValueChange onTruckPropertyValueChange;
+        private int getDataValuesSize() {
+            return properties.size();
+        }
+
+        // data is passed into the constructor
+        public PropertiesValuesAdaptor(Context context, Map<String,Boolean> properties, OnTruckPropertyValueChange onTruckPropertyValueChange) {
+            this.properties = properties;
+            this.onTruckPropertyValueChange = onTruckPropertyValueChange;
+        }
+
+        private void setDataValues( Map<String,Boolean> properties) {
+            this.properties = properties;
+            this.notifyDataSetChanged();
+        }
+
+        // inflates the row layout from xml when needed
+        @Override
+        public TruckPropertiesValueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_truck_property_value, parent, false);
+            TruckPropertiesValueViewHolder viewHolder = new TruckPropertiesValueViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final TruckPropertiesValueViewHolder holder, final int position) {
+            final String  key = new ArrayList<>( properties.keySet()).get(position);
+            holder.mPropertyOnOff.setText(key);
+            holder.mPropertyOnOff.setChecked(false);
+            holder.mPropertyOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
+                    properties.put(key.trim(), value);
+                    onTruckPropertyValueChange.onPropertyChange(properties);
+                }
+            });
+        }
+
+        // total number of rows
+        @Override
+        public int getItemCount() {
+            return this.properties.size();
+
+        }
+    }
+
+//***************************************
 }

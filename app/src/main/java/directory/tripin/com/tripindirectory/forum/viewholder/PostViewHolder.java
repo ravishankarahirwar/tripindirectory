@@ -33,7 +33,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public ImageView call;
     public ImageView starView;
     public TextView numStarsView;
-    public ImageButton comments;
+    public TextView numCommentCount;
+    public ImageView comments;
     public ImageView sharePost;
     public LinearLayout postTextContainer;
     public PostViewHolder(View itemView) {
@@ -55,6 +56,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         postRequirementCaption = itemView.findViewById(R.id.post_requirement_caption);
 
         starView =  itemView.findViewById(R.id.star);
+        numCommentCount  = itemView.findViewById(R.id.comment_count);
         numStarsView = itemView.findViewById(R.id.post_num_stars);
         comments =  itemView.findViewById(R.id.comment);
         sharePost =  itemView.findViewById(R.id.share);
@@ -93,6 +95,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         }
 
         numStarsView.setText(String.valueOf(post.starCount));
+        numCommentCount.setText(String.valueOf(post.commentCount));
         starView.setOnClickListener(starClickListener);
     }
 }

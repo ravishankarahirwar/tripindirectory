@@ -23,6 +23,11 @@ public class CapsulsRecyclarAdapter extends RecyclerView.Adapter<CapsulsRecyclar
         this.datalist = datalist;
     }
 
+    public void setDataValues(List<String> datalist){
+        this.datalist = datalist;
+        notifyDataSetChanged();
+    }
+
     public CapsulsRecyclarAdapter() {
     }
 

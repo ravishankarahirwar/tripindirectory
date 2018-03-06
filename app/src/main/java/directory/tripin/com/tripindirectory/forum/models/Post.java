@@ -27,6 +27,8 @@ public class Post {
     public String mContactNo;
     public String mRemark;
 
+    public int commentCount = 0;
+
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
 
@@ -184,6 +186,15 @@ public class Post {
         this.mContactNo = mContactNo;
     }
 
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
     // [START post_to_map]
     @Exclude
     public Map<String, Object> toMap() {
@@ -203,6 +214,7 @@ public class Post {
         result.put("mContactNo", mContactNo);
         result.put("mRemark", mRemark);
 
+        result.put("commentCount", commentCount);
         result.put("starCount", starCount);
         result.put("stars", stars);
 

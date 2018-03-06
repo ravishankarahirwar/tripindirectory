@@ -117,6 +117,50 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510392713431:android:c8fc23ba2dbd2033",
+        "android_client_info": {
+          "package_name": "in.co.tripin.ilnadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510392713431-v7q50gf8benkg13rot38lm6ivjog5afa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.co.tripin.ilnadmin",
+            "certificate_hash": "1a6ad4cc4156b072b5188d76981b8fe119e3fb69"
+          }
+        },
+        {
+          "client_id": "510392713431-snqobk4gsg2t2leojtv5e33c7fhte7cf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBlqKhFE2v6WKukjKtdA2ZJxW2shMw6So"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510392713431-snqobk4gsg2t2leojtv5e33c7fhte7cf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"

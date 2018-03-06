@@ -2,6 +2,9 @@ package directory.tripin.com.tripindirectory;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
+import com.facebook.LoggingBehavior;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -20,6 +23,10 @@ public class TripinDirectoryApp extends Application {
         super.onCreate();
 
         sAnalytics = GoogleAnalytics.getInstance(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+        FacebookSdk.setIsDebugEnabled(true);
+        FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS);
     }
 
     /**

@@ -1,12 +1,14 @@
 package directory.tripin.com.tripindirectory.notification;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,10 +29,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
+import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 
 
@@ -38,6 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     DocumentReference mUpdateDocRef;
     NotificationCompat.Builder generalUpdatesNotificationBuilder;
+    private FirebaseAuth mAuth;
 
 
     /**
@@ -48,6 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        mAuth = FirebaseAuth.getInstance();
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
         // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -94,8 +101,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (type.equals("5")) {
                 String body = remoteMessage.getNotification().getBody();
                 String title = remoteMessage.getNotification().getTitle();
+                String postId = remoteMessage.getData().get("postId");
 
-                sendLoadboardNotification(title, body);
+                sendLoadboardNotification(title, body, postId);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
@@ -109,7 +117,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
             String messageTitle = remoteMessage.getNotification().getTitle();
-
             Log.d(TAG, "Message Notification Body: " + messageBody);
             sendNotification(messageBody, messageTitle);
         }
@@ -125,8 +132,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                PendingIntent.FLAG_ONE_SHOT);
 //    }
 
-    private void sendLoadboardNotification (String messageBody, String messageTitle) {
-            Intent intent = new Intent(this,MainActivity.class);
+    private void sendLoadboardNotification (String messageBody, String messageTitle, String postId) {
+        Intent intent;
+        if (mAuth.getCurrentUser() != null && postId != null) {
+            //if user signed in
+            intent = new Intent(this,PostDetailActivity.class);
+            intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+        } else {
+            // not signed in
+            intent = new Intent(this,MainActivity.class);
+        }
+
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                     PendingIntent.FLAG_ONE_SHOT);
@@ -329,7 +345,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(String messageBody, String messageTitle) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//        int random = (int)System.currentTimeMillis();
+        int random = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, random /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = "ILN notification ";
@@ -338,15 +356,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(messageTitle)
+                        .setLights(Color.RED, 500, 500)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
 
+        Notification notification = notificationBuilder.build();
+        // Clear the notification when it is pressed
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(random, notification);
     }
 
     public class generatePictureStyleNotification extends AsyncTask<String, Void, Bitmap> {

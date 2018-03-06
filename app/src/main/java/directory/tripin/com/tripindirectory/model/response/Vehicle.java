@@ -18,6 +18,13 @@ public class Vehicle {
     private Driver driver;
     private boolean isAvailable;
 
+    public Vehicle() {
+    }
+
+    public Vehicle(String type) {
+        this.type = type;
+    }
+
     public String getType() {
         return type;
     }

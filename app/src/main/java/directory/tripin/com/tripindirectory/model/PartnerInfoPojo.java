@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
+import directory.tripin.com.tripindirectory.model.search.Fleet;
+import directory.tripin.com.tripindirectory.model.search.Truck;
 
 /**
  * Created by Shubham on 12/12/2017.
@@ -24,9 +26,6 @@ public class PartnerInfoPojo {
     private String mCompanyEmail;
     private String mCompanyWebsite;
 
-
-
-
     private boolean isVerified = true;
 
     private List<String> mCompanyLandLineNumbers;
@@ -42,11 +41,17 @@ public class PartnerInfoPojo {
     private Map<String,Boolean> mDestinationCities;
     private Map<String,Boolean> mNatureOfBusiness;
     private Map<String,Boolean> mTypesOfServices;
+    private String fleetJson;
+//    private Fleet Fleet = new Fleet();
 
+//    Map<String, Boolean> LCV = new HashMap<>();
+//    Map<String,Map<String,Boolean>> property = new HashMap<>();
+//    Map<String,Boolean><String,Boolean> lengthvalue = new HashMap<>();
+//    private Map<String,Map<String,Boolean>> Fleet = new HashMap<>();
+//      private Map<String, Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
+//    private Map<Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
 
-
-
-
+//    private List<Truck> trucks;
     public PartnerInfoPojo() {
     }
 
@@ -60,6 +65,38 @@ public class PartnerInfoPojo {
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
     }
+
+    public String getFleetJson() {
+        return fleetJson;
+    }
+
+    public void setFleetJson(String fleetJson) {
+        this.fleetJson = fleetJson;
+    }
+
+
+    //    public class Fleet {
+//        public TruckS LCV;
+//    }
+
+    public class LCV {
+        Length length = new Length();
+        Length truckMaker =  new Length();
+    }
+
+    public class Length {
+        Map<String,Boolean> length = new HashMap<>();
+    }
+
+
+
+//    public List<Truck> getTrucks() {
+//        return trucks;
+//    }
+//
+//    public void setTrucks(List<Truck> trucks) {
+//        this.trucks = trucks;
+//    }
 
     public String getmCompanyEmail() {
         return mCompanyEmail;

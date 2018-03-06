@@ -1,27 +1,25 @@
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/light_gray"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:animateLayoutChanges="true"
     tools:context=".FormActivities.CompanyInfoActivity">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto"
-                  xmlns:tools="http://schemas.android.com/tools"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:layout_margin="6dp"
-                  android:animateLayoutChanges="true"
-                  android:focusable="true"
-                  android:focusableInTouchMode="true"
-                  android:orientation="vertical"
-                  android:paddingBottom="10dp"
-                  tools:context=".FormActivities.CompanyInfoActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        tools:context=".FormActivities.CompanyInfoActivity">
 
         <LinearLayout
             android:id="@+id/ll_loading"
@@ -52,71 +50,95 @@
             android:visibility="invisible">
 
 
-            <RelativeLayout
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_mobile_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/roundedcornerbg2"
-                android:elevation="3dp"
-                android:padding="5dp">
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
-                <TextView
-                    android:id="@+id/yourrmn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:drawableStart="@drawable/ic_phone_iphone_black_24dp"
-                    android:text="@string/rmn_title"
-                    android:textStyle="bold" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/mrmn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/yourrmn"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="false"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="20dp"
-                    android:drawableLeft="@drawable/ic_fiber_manual_record_black_24dp"
-                    android:text="Fetching..."
-                    android:textAlignment="center"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/your_reg_rmn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/primaryColor"
+                        android:padding="8dp"
+                        android:text="@string/rmn_title"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/change_rmn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/mrmn"
-                    android:layout_margin="8dp"
-                    android:drawableLeft="@drawable/ic_edit_black_24dp"
-                    android:gravity="center_vertical"
-                    android:text="Change"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/mrmn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_below="@id/your_reg_rmn"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="false"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="20dp"
+                        android:drawableLeft="@drawable/ic_phone_iphone_black_24dp"
+                        android:text="Fetching..."
+                        android:textAlignment="center"
+                        android:textSize="18sp" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/change_rmn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/mrmn"
+                        android:layout_margin="8dp"
+                        android:drawableLeft="@drawable/ic_edit_black_24dp"
+                        android:gravity="center_vertical"
+                        android:text="Change"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_fleet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/comapany_name_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/primaryColor"
+                    android:padding="8dp"
+                    android:text="Company Name"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/input_layout_company_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/comapany_name_title"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
                     android:hint="@string/company_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -129,29 +151,35 @@
                         android:gravity="center_vertical"
                         android:inputType="textCapCharacters|textMultiLine"
                         android:textColor="@color/default_textview_color"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="16sp" />
 
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_contact_person"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/contact_person"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:drawableLeft="@drawable/ic_perm_contact_calendar_black_24dp"
+                    android:padding="8dp"
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
                     android:text="@string/contact_persons"
                     android:textStyle="bold" />
 
@@ -189,24 +217,30 @@
                     android:text="@string/import_from_your_contacts"
                     android:textStyle="bold" />
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_company_landline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/pickup_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:drawableLeft="@drawable/ic_call_landline_24dp"
-
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
+                    android:padding="8dp"
                     android:text="@string/company_landline_numbers"
                     android:textStyle="bold" />
 
@@ -240,22 +274,30 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_company_web"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/email_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:drawableStart="@drawable/ic_contact_mail_black_24dp"
+                    android:padding="8dp"
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
                     android:text=" Company Email and Website"
                     android:textStyle="bold" />
 
@@ -279,7 +321,7 @@
                         android:gravity="center_vertical"
                         android:inputType="textEmailAddress"
                         android:textSize="14sp"
-                        android:textStyle="bold" />
+                         />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -304,17 +346,26 @@
                         android:gravity="center_vertical"
                         android:inputType="textWebEditText"
                         android:textSize="14sp"
-                        android:textStyle="bold" />
+                         />
 
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_company_adddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/locate"
@@ -329,13 +380,12 @@
 
                 <TextView
                     android:id="@+id/address_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:drawableStart="@drawable/ic_location_on_black_24dp"
+                    android:padding="8dp"
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
                     android:text="@string/company_address"
                     android:textStyle="bold" />
 
@@ -416,22 +466,30 @@
                         android:textSize="14sp" />
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_business_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/natureofbusiness_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
+                    android:padding="8dp"
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
                     android:text="@string/nature_of_business"
                     android:textStyle="bold" />
 
@@ -454,14 +512,22 @@
 
 
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_company_type_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardPreventCornerOverlap="false"
+                card_view:cardUseCompatPadding="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/roundedcornerbg"
-                android:padding="5dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/nobup2"
@@ -474,12 +540,11 @@
 
                 <TextView
                     android:id="@+id/typesofbusiness_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/rv_typesofservices"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignStart="@+id/rv_typesofservices"
-                    android:layout_marginTop="11dp"
+                    android:padding="8dp"
+                    android:background="@color/primaryColor"
+                    android:textColor="@android:color/white"
                     android:text="@string/types_of_services"
                     android:textStyle="bold" />
 
@@ -492,6 +557,7 @@
 
 
             </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animation_view"
@@ -507,9 +573,6 @@
 
 
         </LinearLayout>
-
-
-
 
 
     </FrameLayout>
