@@ -1,16 +1,12 @@
 package directory.tripin.com.tripindirectory.ChatingActivities;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -50,9 +46,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +56,6 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemVie
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -88,9 +80,6 @@ public class ChatRoomActivity extends AppCompatActivity {
     ConstraintLayout mTypingView;
     ImageView mTypingThumnail;
     ImageButton mCancelImsg;
-
-
-
 
 
     private String mChatRoomId;
@@ -121,7 +110,6 @@ public class ChatRoomActivity extends AppCompatActivity {
     String mSubTitleText = "";
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +135,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() == null) {
             finish();
-            Toast.makeText(getApplicationContext(),"Sign In First!",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Sign In First!", Toast.LENGTH_LONG).show();
         }
         //get Intent
         Bundle bundle = getIntent().getExtras();
@@ -198,19 +186,18 @@ public class ChatRoomActivity extends AppCompatActivity {
     private void setPresenceListners() {
 
 
-
         userpresencelistner = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
-                    if(userPresensePojo!=null){
-                        if(userPresensePojo.getActive()){
+                    if (userPresensePojo != null) {
+                        if (userPresensePojo.getActive()) {
                             mSubTitleText = "Active Now";
                             getSupportActionBar().setSubtitle(mSubTitleText);
-                        }else {
-                            Date date  = new Date(userPresensePojo.getmTimeStamp());
-                            mSubTitleText = "Active "+gettimeDiff(date);
+                        } else {
+                            Date date = new Date(userPresensePojo.getmTimeStamp());
+                            mSubTitleText = "Active " + gettimeDiff(date);
                             getSupportActionBar().setSubtitle(mSubTitleText);
                         }
                     }
@@ -230,14 +217,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     UserActivityPojo userActivityPojo = dataSnapshot.getValue(UserActivityPojo.class);
-                    if(userActivityPojo!=null){
-                        if(userActivityPojo.getTyping()){
+                    if (userActivityPojo != null) {
+                        if (userActivityPojo.getTyping()) {
                             //set typing visible
                             // mTypingView.setVisibility(View.VISIBLE);
                             getSupportActionBar().setSubtitle("Typing...");
-                        }else {
+                        } else {
                             //set typing invisible
                             //mTypingView.setVisibility(View.GONE);
                             getSupportActionBar().setSubtitle(mSubTitleText);
@@ -295,16 +282,16 @@ public class ChatRoomActivity extends AppCompatActivity {
                             FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if(documentSnapshot.exists()){
+                                    if (documentSnapshot.exists()) {
                                         ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
                                         mChatRoomId = chatHeadPojo.getmChatRoomId();
-                                    }else {
-                                        mChatRoomId = mAuth.getUid()+mOUID;
+                                    } else {
+                                        mChatRoomId = mAuth.getUid() + mOUID;
                                     }
 
                                     buildAdapter(mChatRoomId);
                                     setPresenceListners();
-                                    UserPresensePojo userPresensePojo = new UserPresensePojo(true,new Date().getTime(),mChatRoomId);
+                                    UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
                                     databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -339,7 +326,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         mChatEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(!b){
+                if (!b) {
                     updateTypingStatus(false);
                 }
             }
@@ -356,7 +343,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         mChatEditText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                if(isEtTapped){
+                if (isEtTapped) {
                     mLayoutManagerChats.scrollToPosition(0);
                     isEtTapped = false;
                     Logger.v("onLayout change has focus");
@@ -426,8 +413,8 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 mOpponentFcm,
                                 mAuth.getCurrentUser().getPhoneNumber(),
                                 mMyCompName,
-                                iMsg,mChatRoomId,
-                                0,2);
+                                iMsg, mChatRoomId,
+                                0, 2);
 
                         FirebaseFirestore.getInstance().collection("chats").document("chatrooms").collection(mChatRoomId).add(chatItemPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
@@ -442,7 +429,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                         mMyCompName,
                                         mChatEditText.getText().toString().trim(),
                                         mChatRoomId,
-                                        0,mMsgType);
+                                        0, mMsgType);
 
                                 final String lastmsg = mChatEditText.getText().toString().trim();
                                 mChatEditText.setText("");
@@ -457,7 +444,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                 mAuth.getUid(),
                                                 lastmsg,
                                                 mMyImageUrl
-                                                ,mMyCompName);
+                                                , mMyCompName);
                                         FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mOUID).document(mAuth.getUid()).set(chatHeadPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
@@ -466,7 +453,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                         mOUID,
                                                         lastmsg,
                                                         mOpponentImageUrl
-                                                        ,mOpponentCompName);
+                                                        , mOpponentCompName);
 
                                                 FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).set(chatHeadPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -483,7 +470,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                         });
 
 
-
                     } else {
                         //only msg
                         mSendAction.setClickable(false);
@@ -495,7 +481,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 mMyCompName,
                                 mChatEditText.getText().toString().trim(),
                                 mChatRoomId,
-                                0,mMsgType);
+                                0, mMsgType);
 
                         final String lastmsg = mChatEditText.getText().toString().trim();
                         mChatEditText.setText("");
@@ -510,7 +496,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                         mAuth.getUid(),
                                         lastmsg,
                                         mMyImageUrl
-                                        ,mMyCompName);
+                                        , mMyCompName);
                                 FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mOUID).document(mAuth.getUid()).set(chatHeadPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -519,7 +505,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                 mOUID,
                                                 lastmsg,
                                                 mOpponentImageUrl
-                                                ,mOpponentCompName);
+                                                , mOpponentCompName);
 
                                         FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).set(chatHeadPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
@@ -544,7 +530,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mAuth.getUid()).setValue(userActivityPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Logger.v("typing status updated : "+isTyping);
+                Logger.v("typing status updated : " + isTyping);
             }
         });
 
@@ -599,7 +585,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final ChatItemViewHolder holder, final int position, final ChatItemPojo model) {
 
-                Logger.v("onBind "+position+" "+model.getmChatMesssage());
+                Logger.v("onBind " + position + " " + model.getmChatMesssage());
 
                 DocumentSnapshot snapshot = getSnapshots().getSnapshot(holder.getAdapterPosition());
                 final String docId = snapshot.getId();
@@ -613,7 +599,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 if (model.getmSendersUid().equals(mAuth.getUid())) {
                     //my message
                     if (model.getmMessageStatus() == 1) {
-                        Logger.v(model.getmChatMesssage()+" : is seen............... ");
+                        Logger.v(model.getmChatMesssage() + " : is seen............... ");
                         holder.seenEye
                                 .setImageDrawable(ContextCompat
                                         .getDrawable(getApplicationContext(),
@@ -632,7 +618,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                     if (model.getmMessageType() == 1) {
                         holder.thumbnail.setVisibility(View.INVISIBLE);
-                    }else {
+                    } else {
                         Picasso.with(holder.thumbnail.getContext())
                                 .load(mOpponentImageUrl)
                                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
@@ -688,7 +674,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
 
 
-
                 }
             }
 
@@ -698,14 +683,14 @@ public class ChatRoomActivity extends AppCompatActivity {
                 loading.setVisibility(View.GONE);
                 super.onDataChanged();
 
-                if(adapter.getItemCount()>0){
-                    if(getItem(0) !=null){
-                        Logger.v("onDataChanged "+getItem(0).getmChatMesssage());
-                        if(getItem(0).getmSendersUid().equals(mAuth.getUid())){
+                if (adapter.getItemCount() > 0) {
+                    if (getItem(0) != null) {
+                        Logger.v("onDataChanged " + getItem(0).getmChatMesssage());
+                        if (getItem(0).getmSendersUid().equals(mAuth.getUid())) {
                             //my msg at last
                             mTypingThumnail.setVisibility(View.VISIBLE);
                             mMsgType = 1;
-                        }else {
+                        } else {
                             mTypingThumnail.setVisibility(View.INVISIBLE);
                             //opponents msg at last
                             mMsgType = 0;
@@ -724,26 +709,27 @@ public class ChatRoomActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(!mChatRoomId.isEmpty()){
-            UserPresensePojo userPresensePojo = new UserPresensePojo(false,new Date().getTime(),mChatRoomId);
-            databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Logger.v("onPause userpresence updated");
-                }
-            });
-            updateTypingStatus(false);
-            removeuserpresencelistners();
+        if (mChatRoomId != null) {
+            if (!mChatRoomId.isEmpty()) {
+                UserPresensePojo userPresensePojo = new UserPresensePojo(false, new Date().getTime(), mChatRoomId);
+                databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Logger.v("onPause userpresence updated");
+                    }
+                });
+                updateTypingStatus(false);
+                removeuserpresencelistners();
+            }
         }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(adapter!=null){
+        if (adapter != null) {
             adapter.startListening();
-            UserPresensePojo userPresensePojo = new UserPresensePojo(true,new Date().getTime(),mChatRoomId);
+            UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
             databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -786,16 +772,14 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setActionbarImage(String mOpponentImageUrl){
+    public void setActionbarImage(String mOpponentImageUrl) {
         final ActionBar ab = getSupportActionBar();
         Picasso.with(this)
                 .load(mOpponentImageUrl)
                 .transform(new CircleTransform())
-                .into(new Target()
-                {
+                .into(new Target() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
-                    {
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         Drawable d = new BitmapDrawable(getResources(), bitmap);
                         ab.setIcon(d);
                         ab.setDisplayShowHomeEnabled(true);
@@ -803,13 +787,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable)
-                    {
+                    public void onBitmapFailed(Drawable errorDrawable) {
                     }
 
                     @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable)
-                    {
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
                     }
                 });
     }
@@ -869,13 +851,13 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     }
 
-    public void removeuserpresencelistners(){
+    public void removeuserpresencelistners() {
         databaseReference.child("chatpresence").child("users").child(mOUID).removeEventListener(userpresencelistner);
         databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).removeEventListener(useractivity);
 
     }
 
-    public void setTypingThumbnail(String mOpponentImageUrl){
+    public void setTypingThumbnail(String mOpponentImageUrl) {
         Picasso.with(getApplicationContext())
                 .load(mOpponentImageUrl)
                 .placeholder(ContextCompat.getDrawable(getApplicationContext()

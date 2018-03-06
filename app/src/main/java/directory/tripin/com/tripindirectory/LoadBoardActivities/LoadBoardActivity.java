@@ -150,6 +150,8 @@ public class LoadBoardActivity extends AppCompatActivity {
             alert = builder.create();
             alert.show();
             return true;
+        }else if(id == R.id.action_map){
+            startActivity(new Intent(LoadBoardActivity.this,LoadBoardMapViewActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

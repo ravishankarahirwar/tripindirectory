@@ -246,6 +246,12 @@
             android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".LoadBoardActivities.LoadBoardMapViewActivity"
+            android:label="LoadBoard MapView"
+            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

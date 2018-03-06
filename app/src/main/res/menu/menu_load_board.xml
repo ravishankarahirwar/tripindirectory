@@ -24,7 +24,7 @@
     <item
         android:id="@+id/action_map"
         android:orderInCategory="80"
-        android:title="@string/action_notifications"
+        android:title="Map View"
         android:icon="@drawable/ic_map_white_24dp"
         app:showAsAction="always" />
 

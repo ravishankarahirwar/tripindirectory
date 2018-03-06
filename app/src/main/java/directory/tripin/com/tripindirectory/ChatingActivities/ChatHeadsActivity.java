@@ -39,9 +39,9 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
     private RecyclerView mChatHeadsList;
     private FirebaseAuth mAuth;
-    TextUtils textUtils;
-    FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
-    LottieAnimationView lottieAnimationView;
+    private TextUtils textUtils;
+    private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
+    private LottieAnimationView lottieAnimationView;
 
 
     @Override
@@ -90,9 +90,9 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(ChatHeadsActivity.this,ChatRoomActivity.class);
-                        intent.putExtra("ormn",model.getmORMN());
-                        intent.putExtra("ouid",model.getmOUID());
+                        Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
+                        intent.putExtra("ormn", model.getmORMN());
+                        intent.putExtra("ouid", model.getmOUID());
                         startActivity(intent);
                     }
                 });
@@ -154,7 +154,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                         .document("chatrooms")
                         .collection(model.getmChatRoomId())
                         .whereEqualTo("mMessageStatus", 0)
-                        .whereEqualTo("mReciversUid",mAuth.getUid())
+                        .whereEqualTo("mReciversUid", mAuth.getUid())
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override

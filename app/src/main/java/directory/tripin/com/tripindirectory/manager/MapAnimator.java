@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.SquareCap;
 
 import java.util.List;
 
@@ -27,8 +28,6 @@ import directory.tripin.com.tripindirectory.helper.RouteEvaluator;
 
 
 public class MapAnimator {
-
-    private static MapAnimator mapAnimator;
 
     private Polyline backgroundPolyline;
 
@@ -44,13 +43,7 @@ public class MapAnimator {
     static final int GREY = Color.parseColor("#FFA7A6A6");
 
 
-    private MapAnimator() {
-
-    }
-
-    public static MapAnimator getInstance() {
-        if (mapAnimator == null) mapAnimator = new MapAnimator();
-        return mapAnimator;
+    public MapAnimator() {
     }
 
 
@@ -79,10 +72,18 @@ public class MapAnimator {
 
         this.mGoogleMap = googleMap;
 
-        PolylineOptions optionsBackground = new PolylineOptions().add(bangaloreRoute.get(0)).color(GREY).width(5);
+        PolylineOptions optionsBackground = new PolylineOptions().add(bangaloreRoute.get(0))
+                .color(GREY)
+                .width(5)
+                .startCap(new SquareCap())
+                .endCap(new SquareCap());
         backgroundPolyline = googleMap.addPolyline(optionsBackground);
 
-        optionsForeground = new PolylineOptions().add(bangaloreRoute.get(0)).color(Color.BLACK).width(5);
+        optionsForeground = new PolylineOptions().add(bangaloreRoute.get(0))
+                .color(Color.YELLOW)
+                .width(5)
+                .startCap(new SquareCap())
+                .endCap(new SquareCap());
         foregroundPolyline = googleMap.addPolyline(optionsForeground);
 
         final ValueAnimator percentageCompletion = ValueAnimator.ofInt(0, 100);
@@ -138,7 +139,7 @@ public class MapAnimator {
 
         });
 
-        ObjectAnimator foregroundRouteAnimator = ObjectAnimator.ofObject(this, "routeIncreaseForward",new RouteEvaluator(), bangaloreRoute.toArray());
+        ObjectAnimator foregroundRouteAnimator = ObjectAnimator.ofObject(this, "routeIncreaseForward", new RouteEvaluator(), bangaloreRoute.toArray());
         foregroundRouteAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         foregroundRouteAnimator.addListener(new Animator.AnimatorListener() {
             @Override

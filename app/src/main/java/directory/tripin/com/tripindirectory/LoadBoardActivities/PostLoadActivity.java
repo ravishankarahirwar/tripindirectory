@@ -665,7 +665,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
     private void startAnim(ArrayList<LatLng> points) {
         if (map != null) {
             if (points != null && points.size() > 1) {
-                MapAnimator.getInstance().animateRoute(map, points);
+                MapAnimator mapAnimator = new MapAnimator();
+                mapAnimator.animateRoute(map, points);
             }
         } else {
             Toast.makeText(getApplicationContext(), "Map not ready", Toast.LENGTH_LONG).show();

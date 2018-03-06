@@ -640,12 +640,12 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
                                 fleetPostPojo.getmDestinationCityLatLang().getLongitude()));
                         map.clear();
 
-                        Marker pickUpMarker = map.addMarker(new MarkerOptions()
-                                .position(new LatLng(fleetPostPojo.getmSourceCityLatLang().getLatitude(),
-                                        fleetPostPojo.getmSourceCityLatLang().getLongitude())));
-                        Marker dropMarker = map.addMarker(new MarkerOptions()
-                                .position(new LatLng(fleetPostPojo.getmDestinationCityLatLang().getLatitude(),
-                                        fleetPostPojo.getmDestinationCityLatLang().getLongitude())));
+//                        Marker pickUpMarker = map.addMarker(new MarkerOptions()
+//                                .position(new LatLng(fleetPostPojo.getmSourceCityLatLang().getLatitude(),
+//                                        fleetPostPojo.getmSourceCityLatLang().getLongitude())));
+//                        Marker dropMarker = map.addMarker(new MarkerOptions()
+//                                .position(new LatLng(fleetPostPojo.getmDestinationCityLatLang().getLatitude(),
+//                                        fleetPostPojo.getmDestinationCityLatLang().getLongitude())));
 
                         /**create the bounds from latlngBuilder to set into map camera*/
                         LatLngBounds bounds = mLatLngBounds.build();
@@ -669,7 +669,8 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
     private void startAnim(ArrayList<LatLng> points) {
         if (map != null) {
             if (points != null && points.size() > 1) {
-                MapAnimator.getInstance().animateRoute(map, points);
+                MapAnimator mapAnimator = new MapAnimator();
+                mapAnimator.animateRoute(map, points);
             }
         } else {
             Toast.makeText(getApplicationContext(), "Map not ready", Toast.LENGTH_LONG).show();
