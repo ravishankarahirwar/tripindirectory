@@ -98,57 +98,60 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 });
 
                 holder.lastmsg.setText(model.getmLastMessage());
-                Picasso.with(getApplicationContext())
-                        .load(model.getmOpponentImageUrl())
-                        .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                , R.drawable.ic_email_black_24dp))
-                        .transform(new CircleTransform())
-                        .fit()
-                        .into(holder.thumbnail, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                Logger.v("image set: " + position);
-                            }
+                if(!model.getmOpponentImageUrl().isEmpty()){
+                    Picasso.with(getApplicationContext())
+                            .load(model.getmOpponentImageUrl())
+                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                    , R.drawable.ic_email_black_24dp))
+                            .transform(new CircleTransform())
+                            .fit()
+                            .into(holder.thumbnail, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    Logger.v("image set: " + position);
+                                }
 
-                            @Override
-                            public void onError() {
-                                Logger.v("image error: " + position);
-                                if (model.getmOUID() != null) {
-                                    FirebaseFirestore.getInstance().collection("partners").document(model.getmOUID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            if (documentSnapshot.exists()) {
-                                                PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                                if (partnerInfoPojo.getmImagesUrl() != null) {
-                                                    if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                        Picasso.with(getApplicationContext())
-                                                                .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                        , R.drawable.ic_insert_comment_black_24dp))
-                                                                .transform(new CircleTransform())
-                                                                .fit()
-                                                                .into(holder.thumbnail, new Callback() {
-                                                                    @Override
-                                                                    public void onSuccess() {
-                                                                        Logger.v("Feched from original doc");
-                                                                    }
+                                @Override
+                                public void onError() {
+                                    Logger.v("image error: " + position);
+                                    if (model.getmOUID() != null) {
+                                        FirebaseFirestore.getInstance().collection("partners").document(model.getmOUID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                if (documentSnapshot.exists()) {
+                                                    PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                                                    if (partnerInfoPojo.getmImagesUrl() != null) {
+                                                        if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
+                                                            Picasso.with(getApplicationContext())
+                                                                    .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                                                            , R.drawable.ic_insert_comment_black_24dp))
+                                                                    .transform(new CircleTransform())
+                                                                    .fit()
+                                                                    .into(holder.thumbnail, new Callback() {
+                                                                        @Override
+                                                                        public void onSuccess() {
+                                                                            Logger.v("Feched from original doc");
+                                                                        }
 
-                                                                    @Override
-                                                                    public void onError() {
-                                                                        Logger.v("user have no image");
-                                                                    }
-                                                                });
+                                                                        @Override
+                                                                        public void onError() {
+                                                                            Logger.v("user have no image");
+                                                                        }
+                                                                    });
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    });
+                                        });
 
 
+                                    }
                                 }
-                            }
 
-                        });
+                            });
+                }
+
 
                 FirebaseFirestore.getInstance().collection("chats")
                         .document("chatrooms")

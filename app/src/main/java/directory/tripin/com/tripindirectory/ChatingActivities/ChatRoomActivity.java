@@ -258,7 +258,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                     if (mOpppontInfo.getmImagesUrl() != null) {
                         mOpponentImageUrl = mOpppontInfo.getmImagesUrl().get(2);
-                        setTypingThumbnail(mOpponentImageUrl);
+                        //setTypingThumbnail(mOpponentImageUrl);
                         //setActionbarImage(mOpponentImageUrl);
                     }
 
