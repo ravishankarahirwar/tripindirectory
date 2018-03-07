@@ -84,8 +84,7 @@ public class LoadPostsActivity extends AppCompatActivity {
                 .collection("loads")
 //                .orderBy("mPickUpTimeStamp")
 //                .whereGreaterThanOrEqualTo("mPickUpTimeStamp",new Date())
-                .orderBy("mTimeStamp", Query.Direction.DESCENDING)
-                .limit(10);
+                .orderBy("mTimeStamp", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<LoadPostPojo> options = new FirestoreRecyclerOptions.Builder<LoadPostPojo>()
                 .setQuery(query, LoadPostPojo.class)
                 .build();

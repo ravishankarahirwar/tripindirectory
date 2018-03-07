@@ -1,6 +1,6 @@
-package directory.tripin.com.tripindirectory.LoadBoardActivities.fragments;
+package directory.tripin.com.tripindirectory.LoadBoardActivities;
 
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -8,23 +8,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -35,18 +33,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetDetailsActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetPostsActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadDetailsActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostViewHolder;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
@@ -55,83 +46,46 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.helper.Logger;
-import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class FleetsFragment extends Fragment {
-
+public class FleetPostsActivity extends AppCompatActivity {
 
     public RecyclerView mFleetsList;
     public TextUtils textUtils;
     FirestoreRecyclerAdapter adapter;
-    private RecyclerViewAnimator mAnimator;
-    private FirebaseAuth firebaseAuth;
-    private String mUid = "";
+    FirebaseAuth mAuth;
     private LottieAnimationView lottieAnimationViewLoading;
-    private TextView mResultDescription;
-    private TextView mSeeAll;
-    private TextView mSeeAllBottom;
+    private Activity activity;
+    private FirebaseAuth firebaseAuth;
 
+    private String mUid = "";
 
-
-    public FleetsFragment() {
-        // Required empty public constructor
-    }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_fleets, container, false);
-        mFleetsList = v.findViewById(R.id.rv_fleets);
-        mAnimator = new RecyclerViewAnimator(mFleetsList);
-        lottieAnimationViewLoading = v.findViewById(R.id.loadingfleets);
-        mResultDescription = v.findViewById(R.id.textViewResultNumber);
-        mSeeAll = v.findViewById(R.id.textViewShowAllFleet);
-        mSeeAllBottom = v.findViewById(R.id.textViewShowAllBottom);
-
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        //mLayoutManager.setStackFromEnd(true);
-        mFleetsList.setLayoutManager(mLayoutManager);
-
-        mFleetsList.setAdapter(adapter);
-        mSeeAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // details Activity
-                startActivity(new Intent(getActivity(), FleetPostsActivity.class));
-            }
-        });
-
-        mSeeAllBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getActivity(), FleetPostsActivity.class));
-            }
-        });
-
-
-        return v;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fleet_posts);
+        lottieAnimationViewLoading = findViewById(R.id.loadingloads);
+        mFleetsList = findViewById(R.id.rv_fleets);
+        mFleetsList.setLayoutManager(new LinearLayoutManager(this));
+        activity = this;
         textUtils = new TextUtils();
         firebaseAuth = FirebaseAuth.getInstance();
         mUid = firebaseAuth.getUid();
 
-        final Query query = FirebaseFirestore.getInstance()
+        setAdapter();
+        mFleetsList.setAdapter(adapter);
+
+    }
+
+    private void setAdapter() {
+
+
+        Query query = FirebaseFirestore.getInstance()
                 .collection("fleets")
-//                .orderBy("mPickUpTimeStamp")
-//                .whereGreaterThanOrEqualTo("mPickUpTimeStamp",new Date())
-                .orderBy("mTimeStamp", Query.Direction.DESCENDING)
-                .limit(10);
+                .orderBy("mTimeStamp", Query.Direction.DESCENDING);
+        ;
         FirestoreRecyclerOptions<FleetPostPojo> options = new FirestoreRecyclerOptions.Builder<FleetPostPojo>()
                 .setQuery(query, FleetPostPojo.class)
                 .build();
@@ -195,7 +149,7 @@ public class FleetsFragment extends Fragment {
 
                 Date postingDate = fleetPostPojo.getmTimeStamp();
 
-                holder.mPostSubTitle.setText("Posted " + gettimeDiff(postingDate) + " . Need Load");
+                holder.mPostSubTitle.setText("Posted " + gettimeDiff(postingDate) + " . Need Fleet");
 
                 if (position == 0) {
                     holder.expand();
@@ -216,7 +170,7 @@ public class FleetsFragment extends Fragment {
                         };
 
                         final AlertDialog alert;
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                         if (!fleetPostPojo.getmCompanyName().isEmpty()) {
                             builder.setTitle(fleetPostPojo.getmCompanyName());
                         } else {
@@ -227,7 +181,7 @@ public class FleetsFragment extends Fragment {
                                 // Do something with the selection
                                 switch (item) {
                                     case 0: {
-                                        Intent intent = new Intent(getActivity(), PartnerDetailScrollingActivity.class);
+                                        Intent intent = new Intent(FleetPostsActivity.this, PartnerDetailScrollingActivity.class);
                                         if(fleetPostPojo.getmCompanyName().isEmpty()){
                                             intent.putExtra("cname",fleetPostPojo.getmRMN());
                                         }else {
@@ -274,12 +228,12 @@ public class FleetsFragment extends Fragment {
 
                     if (fleetPostPojo.getmIntrestedPeopleList().get(mUid) != null) {
                         if (fleetPostPojo.getmIntrestedPeopleList().get(mUid)) {
-                            holder.like.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite));
+                            holder.like.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite));
                             isIntrested = true;
                             Logger.v("heart full");
 
                         }else {
-                            holder.like.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_border_black_24dp));
+                            holder.like.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite_border_black_24dp));
                             isIntrested = false;
                             Logger.v("heart empty");
                         }
@@ -308,7 +262,7 @@ public class FleetsFragment extends Fragment {
                 if (fleetPostPojo.getmQuotedPeopleList() != null) {
                     holder.badgeQuote.setNumber(fleetPostPojo.getmQuotedPeopleList().size());
                     if(fleetPostPojo.getmQuotedPeopleList().get(mUid)!=null){
-                        holder.quote.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_rupee_red));
+                        holder.quote.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_rupee_red));
                     }
                 } else {
                     holder.badgeQuote.setText("0");
@@ -351,7 +305,7 @@ public class FleetsFragment extends Fragment {
                 holder.comment.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), FleetDetailsActivity.class);
+                        Intent intent = new Intent(FleetPostsActivity.this, FleetDetailsActivity.class);
                         intent.putExtra("docId",docId);
                         startActivity(intent);
                     }
@@ -373,7 +327,7 @@ public class FleetsFragment extends Fragment {
                 holder.share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        shareMesssages(getActivity(),"LOAD REQUIRED",fleetPostPojo.getTextToShare());
+                        shareMesssages(activity,"LOAD REQUIRED",fleetPostPojo.getTextToShare());
                         FirebaseFirestore.getInstance()
                                 .collection("fleets")
                                 .document(docId)
@@ -407,7 +361,7 @@ public class FleetsFragment extends Fragment {
                                         }
                                     });
                         } else {
-                            Toast.makeText(getContext(), "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -418,7 +372,7 @@ public class FleetsFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
-                        final Dialog dialog = new Dialog(getActivity());
+                        final Dialog dialog = new Dialog(activity);
                         dialog.setContentView(R.layout.dialog_add_quotation);
                         final String title = textUtils.toTitleCase(fleetPostPojo.getmSourceCity())+" To "+textUtils.toTitleCase(fleetPostPojo.getmDestinationCity());
                         dialog.setTitle(title+ " ...");
@@ -448,28 +402,11 @@ public class FleetsFragment extends Fragment {
                             }
                         });
 
-                        amount.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                quote.setText("Quote "+charSequence.toString().trim()+"₹");
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable editable) {
-
-                            }
-                        });
-
                         quote.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if(!amount.getText().toString().isEmpty()){
 
-                                    hideSoftKey();
                                     quote.setText("Sending...");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
                                             comment.getText().toString().trim()+"",
@@ -491,7 +428,7 @@ public class FleetsFragment extends Fragment {
 
                                                             dialog.dismiss();
                                                             Logger.v("QuoteAdded");
-                                                            Toast.makeText(getActivity(),"Quoted Successfully!",Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(activity,"Quoted Successfully!",Toast.LENGTH_LONG).show();
 
                                                         }
                                                     });
@@ -500,7 +437,7 @@ public class FleetsFragment extends Fragment {
                                             });
 
                                 }else {
-                                    Toast.makeText(getActivity(),"No Amount Added!",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(activity,"No Amount Added!",Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -522,7 +459,7 @@ public class FleetsFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         FirebaseFirestore.getInstance()
-                                .collection("fleets")
+                                .collection("loads")
                                 .document(docId)
                                 .update("mInboxedPeopleList." + mUid, true)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -532,7 +469,7 @@ public class FleetsFragment extends Fragment {
                                         Logger.v("mInboxedPeopleList Modified");
                                     }
                                 });
-                        Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                        Intent intent = new Intent(FleetPostsActivity.this, ChatRoomActivity.class);
                         intent.putExtra("imsg",fleetPostPojo.getTextToInitateChat());
                         intent.putExtra("ormn",fleetPostPojo.getmRMN());
                         intent.putExtra("ouid",fleetPostPojo.getmPostersUid());
@@ -553,7 +490,7 @@ public class FleetsFragment extends Fragment {
                 // layout called R.layout.message for each item
                 View view = LayoutInflater.from(group.getContext())
                         .inflate(R.layout.item_posted_fleet, group, false);
-                mAnimator.onCreateViewHolder(view);
+                //mAnimator.onCreateViewHolder(view);
                 Logger.v("onCreateViewHolder:" + i);
 
                 return new FleetPostViewHolder(view);
@@ -562,28 +499,31 @@ public class FleetsFragment extends Fragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                mSeeAllBottom.setVisibility(View.VISIBLE);
                 lottieAnimationViewLoading.setVisibility(View.GONE);
-                mResultDescription.setText("Showing Top "+adapter.getItemCount()+ " Recently Available Fleets");
 
             }
         };
-
-
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chatheads, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        Logger.v("Stop Listnining Loads");
-        adapter.stopListening();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_notifications: {
+                break;
+            }
+            case R.id.action_comments: {
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
+
 
     public String gettimeDiff(Date startDate) {
 
@@ -601,26 +541,27 @@ public class FleetsFragment extends Fragment {
             long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
             long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
 
-            if (diffInSeconds == 0) {
-                return "Realtime!";
+            if (diffInSeconds <= 0) {
+                return "just now!";
             }
 
             if (diffInSeconds < 60) {
-                diff = "" + diffInSeconds + " sec ago";
+                diff = "" + diffInSeconds + " sec";
             } else if (diffInMinutes < 60) {
-                diff = "" + diffInMinutes + " min ago";
+                diff = "" + diffInMinutes + " min";
             } else if (diffInHours < 24) {
-                diff = "" + diffInHours + " hrs ago";
+                diff = "" + diffInHours + " hrs";
             } else {
 
                 long daysago = duration / (1000 * 60 * 60 * 24);
-                diff = "" + daysago + " days ago";
+                diff = "" + daysago + " days";
             }
 
         }
         return diff;
 
     }
+
     private void shareMesssages(Context context, String subject, String body) {
         try {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -628,9 +569,8 @@ public class FleetsFragment extends Fragment {
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
             shareIntent.putExtra(Intent.EXTRA_TEXT, body);
             context.startActivity(Intent.createChooser(shareIntent, "Share via"));
-        }
-        catch (ActivityNotFoundException exception) {
-            Toast.makeText(context, "No application found for send Email" , Toast.LENGTH_LONG).show();
+        } catch (ActivityNotFoundException exception) {
+            Toast.makeText(context, "No application found for send Email", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -640,11 +580,16 @@ public class FleetsFragment extends Fragment {
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(callIntent);
     }
-    private void hideSoftKey() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 }

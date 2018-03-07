@@ -229,6 +229,74 @@ exports.quoteonfleetnotif = functions.firestore
     return admin.messaging().sendToDevice(newValue.mFcmToken, payload)
 });
 
+	//New load post
+exports.commentonloadnotif = functions.firestore
+  .document('loads/{loadId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "11",
+		loadId: event.params.loadId,
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToTopic("NewLoadPost", payload, options);
+});
+
+//New load post
+exports.newloadnotif = functions.firestore
+  .document('loads/{loadId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "11",
+		loadId: event.params.loadId,
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToTopic("NewLoadPost", payload, options);
+});
+
+//New load post
+exports.newfleetnotif = functions.firestore
+  .document('fleets/{fleetId}')
+  .onCreate(event => {
+    var newValue = event.data.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: "12",
+		loadId: event.params.fleetId,
+      }
+    };
+	
+	 const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+
+
+    return admin.messaging().sendToTopic("NewFleetPost", payload, options);
+});
 
 
     	exports.loadboardNotification = functions.database.ref('/posts/{pushId}')

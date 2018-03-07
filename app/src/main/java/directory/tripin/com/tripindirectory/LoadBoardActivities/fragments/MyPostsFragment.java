@@ -492,24 +492,27 @@ public class MyPostsFragment extends Fragment {
 
                                             if (partnerInfoPojo.getmImagesUrl() != null) {
                                                 if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                    Picasso.with(getActivity())
-                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                            .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                    , R.drawable.ic_rupee_black))
-                                                            .transform(new CircleTransform())
-                                                            .fit()
-                                                            .into(holder.thumb, new Callback() {
-                                                                @Override
-                                                                public void onSuccess() {
-                                                                    Logger.v("image set: " + position);
-                                                                }
+                                                    if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                        Picasso.with(getActivity())
+                                                                .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                        , R.drawable.ic_rupee_black))
+                                                                .transform(new CircleTransform())
+                                                                .fit()
+                                                                .into(holder.thumb, new Callback() {
+                                                                    @Override
+                                                                    public void onSuccess() {
+                                                                        Logger.v("image set: " + position);
+                                                                    }
 
-                                                                @Override
-                                                                public void onError() {
+                                                                    @Override
+                                                                    public void onError() {
 
-                                                                }
+                                                                    }
 
-                                                            });
+                                                                });
+                                                    }
+
                                                 }
                                             }
 
@@ -624,24 +627,27 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_favorite))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_favorite))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }
@@ -743,24 +749,27 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_share_blackk_24dp))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_share_blackk_24dp))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }
@@ -862,24 +871,27 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_call_black))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_call_black))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }
@@ -970,24 +982,27 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_email_black_24dp))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_email_black_24dp))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }
@@ -1391,24 +1406,27 @@ public class MyPostsFragment extends Fragment {
 
                                             if (partnerInfoPojo.getmImagesUrl() != null) {
                                                 if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                    Picasso.with(getActivity())
-                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                            .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                    , R.drawable.ic_rupee_black))
-                                                            .transform(new CircleTransform())
-                                                            .fit()
-                                                            .into(holder.thumb, new Callback() {
-                                                                @Override
-                                                                public void onSuccess() {
-                                                                    Logger.v("image set: " + position);
-                                                                }
+                                                    if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                        Picasso.with(getActivity())
+                                                                .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                        , R.drawable.ic_rupee_black))
+                                                                .transform(new CircleTransform())
+                                                                .fit()
+                                                                .into(holder.thumb, new Callback() {
+                                                                    @Override
+                                                                    public void onSuccess() {
+                                                                        Logger.v("image set: " + position);
+                                                                    }
 
-                                                                @Override
-                                                                public void onError() {
+                                                                    @Override
+                                                                    public void onError() {
 
-                                                                }
+                                                                    }
 
-                                                            });
+                                                                });
+                                                    }
+
                                                 }
                                             }
 
@@ -1510,24 +1528,28 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_favorite))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_favorite))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
+
                                             }
                                         }
                                     }
@@ -1618,24 +1640,28 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_share_blackk_24dp))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_share_blackk_24dp))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            @Override
-                                                            public void onError() {
+                                                                @Override
+                                                                public void onError() {
 
-                                                            }
+                                                                }
 
-                                                        });
+                                                            });
+                                                }
+
+
                                             }
                                         }
                                     }
@@ -1726,24 +1752,28 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_call_black))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
 
-                                                            @Override
-                                                            public void onError() {
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_call_black))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            }
+                                                                @Override
+                                                                public void onError() {
 
-                                                        });
+                                                                }
+
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }
@@ -1834,24 +1864,28 @@ public class MyPostsFragment extends Fragment {
 
                                         if (partnerInfoPojo.getmImagesUrl() != null) {
                                             if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getActivity())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getActivity()
-                                                                , R.drawable.ic_email_black_24dp))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(holder.thumb, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: " + position);
-                                                            }
+                                                if(!partnerInfoPojo.getmImagesUrl().get(2).isEmpty()){
 
-                                                            @Override
-                                                            public void onError() {
+                                                    Picasso.with(getActivity())
+                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                            .placeholder(ContextCompat.getDrawable(getActivity()
+                                                                    , R.drawable.ic_email_black_24dp))
+                                                            .transform(new CircleTransform())
+                                                            .fit()
+                                                            .into(holder.thumb, new Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    Logger.v("image set: " + position);
+                                                                }
 
-                                                            }
+                                                                @Override
+                                                                public void onError() {
 
-                                                        });
+                                                                }
+
+                                                            });
+                                                }
+
                                             }
                                         }
                                     }

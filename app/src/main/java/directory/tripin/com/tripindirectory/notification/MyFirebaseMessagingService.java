@@ -44,6 +44,8 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetDetailsActi
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadDetailsActivity;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostPojo;
+import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
@@ -174,12 +176,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             }
 
-            //New comment on fleetpost
+            //New quote on fleetpost
             if (type.equals("10")) {
                 String docId = remoteMessage.getData().get("docId");
                 String loadId = remoteMessage.getData().get("fleetId");
                 if(loadId!=null&&docId!=null){
                     sendNewFleetQuoteNotification(loadId,docId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+
+            //New loadpost
+            if (type.equals("11")) {
+                String loadId = remoteMessage.getData().get("loadId");
+                if(loadId!=null){
+                    sendNewLoadPostNotification(loadId);
+
+                }else {
+                    Log.d(TAG, "ids null");
+                }
+            }
+            //New fleetpost
+            if (type.equals("12")) {
+                String fleetId = remoteMessage.getData().get("fleetId");
+                if(fleetId!=null){
+                    sendNewFleetPostNotification(fleetId);
 
                 }else {
                     Log.d(TAG, "ids null");
@@ -203,6 +226,127 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendNewFleetPostNotification(final String fleetId) {
+        FirebaseFirestore.getInstance().collection("fleets").document(fleetId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    FleetPostPojo fleetPostPojo = documentSnapshot.toObject(FleetPostPojo.class);
+
+                    if(!fleetPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())){
+                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        intent.putExtra("docId",fleetId);
+                        String title = "New Fleet Posted";
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                PendingIntent.FLAG_ONE_SHOT);
+
+                        String channelId = "ILN notification";
+                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setContentTitle(title)
+                                        .setContentText(fleetPostPojo.getmSourceCity()+" to "+fleetPostPojo.getmDestinationCity())
+                                        .setAutoCancel(true)
+                                        .setSound(defaultSoundUri)
+                                        .setContentIntent(pendingIntent);
+
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                    }else {
+                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        intent.putExtra("docId",fleetId);
+                        String title = "Hi ILN User";
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                PendingIntent.FLAG_ONE_SHOT);
+
+                        String channelId = "ILN notification";
+                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setContentTitle(title)
+                                        .setContentText("Your Fleet is successfully posted on LoadBoard!")
+                                        .setAutoCancel(true)
+                                        .setSound(defaultSoundUri)
+                                        .setContentIntent(pendingIntent);
+
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void sendNewLoadPostNotification(final String loadId) {
+        FirebaseFirestore.getInstance().collection("loads").document(loadId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    LoadPostPojo loadPostPojo = documentSnapshot.toObject(LoadPostPojo.class);
+
+                    if(!loadPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())){
+                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        intent.putExtra("docId",loadId);
+                        String title = "New Load Posted";
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                PendingIntent.FLAG_ONE_SHOT);
+
+                        String channelId = "ILN notification";
+                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setContentTitle(title)
+                                        .setContentText(loadPostPojo.getmSourceCity()+" to "+loadPostPojo.getmDestinationCity())
+                                        .setAutoCancel(true)
+                                        .setSound(defaultSoundUri)
+                                        .setContentIntent(pendingIntent);
+
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                    }else {
+                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        intent.putExtra("docId",loadId);
+                        String title = "Hi ILN User";
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                PendingIntent.FLAG_ONE_SHOT);
+
+                        String channelId = "ILN notification";
+                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setContentTitle(title)
+                                        .setContentText("Your Load is posted successfully on Loadboard")
+                                        .setAutoCancel(true)
+                                        .setSound(defaultSoundUri)
+                                        .setContentIntent(pendingIntent);
+
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                    }
+
+                }
+            }
+        });
+
     }
 
     private void sendNewFleetQuoteNotification(String loadId, String docId) {

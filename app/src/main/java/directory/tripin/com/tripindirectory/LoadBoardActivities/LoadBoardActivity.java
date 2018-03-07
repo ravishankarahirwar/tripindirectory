@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,9 @@ public class LoadBoardActivity extends AppCompatActivity {
         //toolbar.setSubtitle("501 Active Posts");
         toolbar.setTitle("LoadBoard");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        FirebaseMessaging.getInstance().subscribeToTopic("NewFleetPost");
+        FirebaseMessaging.getInstance().subscribeToTopic("NewLoadPost");
+
 
 
         ViewPager viewPager = findViewById(R.id.container);

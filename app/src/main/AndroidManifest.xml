@@ -252,6 +252,11 @@
             android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".LoadBoardActivities.FleetPostsActivity"
+            android:label="FleetPosts..."
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>
