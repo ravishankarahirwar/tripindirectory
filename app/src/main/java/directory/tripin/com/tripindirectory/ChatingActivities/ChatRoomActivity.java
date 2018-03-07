@@ -619,59 +619,62 @@ public class ChatRoomActivity extends AppCompatActivity {
                     if (model.getmMessageType() == 1) {
                         holder.thumbnail.setVisibility(View.INVISIBLE);
                     } else {
-                        Picasso.with(holder.thumbnail.getContext())
-                                .load(mOpponentImageUrl)
-                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                        , R.drawable.ic_insert_comment_black_24dp))
-                                .transform(new CircleTransform())
-                                .fit()
-                                .into(holder.thumbnail, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        Logger.v("image set: " + position);
-                                    }
+                        if(!mOpponentImageUrl.isEmpty()){
+                            Picasso.with(holder.thumbnail.getContext())
+                                    .load(mOpponentImageUrl)
+                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                            , R.drawable.ic_insert_comment_black_24dp))
+                                    .transform(new CircleTransform())
+                                    .fit()
+                                    .into(holder.thumbnail, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Logger.v("image set: " + position);
+                                        }
 
-                                    @Override
-                                    public void onError() {
-                                        Logger.v("image error: " + position);
-                                        if (mOUID != null) {
-                                            FirebaseFirestore.getInstance().collection("partners").document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                    if (documentSnapshot.exists()) {
-                                                        PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                                        if (partnerInfoPojo.getmImagesUrl() != null) {
-                                                            if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                                Picasso.with(holder.thumbnail.getContext())
-                                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                                        .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                                , R.drawable.ic_insert_comment_black_24dp))
-                                                                        .transform(new CircleTransform())
-                                                                        .fit()
-                                                                        .into(holder.thumbnail, new Callback() {
-                                                                            @Override
-                                                                            public void onSuccess() {
-                                                                                Logger.v("Feched from original doc");
-                                                                            }
+                                        @Override
+                                        public void onError() {
+                                            Logger.v("image error: " + position);
+                                            if (mOUID != null) {
+                                                FirebaseFirestore.getInstance().collection("partners").document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                        if (documentSnapshot.exists()) {
+                                                            PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                                                            if (partnerInfoPojo.getmImagesUrl() != null) {
+                                                                if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
+                                                                    Picasso.with(holder.thumbnail.getContext())
+                                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                                                                    , R.drawable.ic_insert_comment_black_24dp))
+                                                                            .transform(new CircleTransform())
+                                                                            .fit()
+                                                                            .into(holder.thumbnail, new Callback() {
+                                                                                @Override
+                                                                                public void onSuccess() {
+                                                                                    Logger.v("Feched from original doc");
+                                                                                }
 
-                                                                            @Override
-                                                                            public void onError() {
-                                                                                Logger.v("user have no image");
-                                                                            }
-                                                                        });
+                                                                                @Override
+                                                                                public void onError() {
+                                                                                    Logger.v("user have no image");
+                                                                                }
+                                                                            });
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                }
-                                            });
+                                                });
 
 
+                                            }
                                         }
-                                    }
 
-                                });
+                                    });
 
-                    }
+                        }
+                        }
+
 
 
                 }
