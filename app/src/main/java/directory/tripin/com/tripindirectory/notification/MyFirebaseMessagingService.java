@@ -74,36 +74,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             String type = remoteMessage.getData().get("type");
             Log.d(TAG, "type" + type);
-            if (type.equals("0")) {
-                String docId = remoteMessage.getData().get("docId");
-                Log.d(TAG, "docId" + docId);
-                sendAppUpdateNotification(docId);
-            }
+            if(type != null) {
+                if (type.equals("0")) {
+                    String docId = remoteMessage.getData().get("docId");
+                    Log.d(TAG, "docId" + docId);
+                    sendAppUpdateNotification(docId);
+                } else if (type.equals("1")) {
+                    String docId = remoteMessage.getData().get("docId");
+                    Log.d(TAG, "docId" + docId);
+                    sendNewsUpdateNotification(docId);
+                } else if (type.equals("2")) {
+                    //verification request approved notification
+                    String mCompName = remoteMessage.getData().get("mCompanyName");
+                    sendVerificationApprovedNotification(mCompName);
 
-            if (type.equals("1")) {
-                String docId = remoteMessage.getData().get("docId");
-                Log.d(TAG, "docId" + docId);
-                sendNewsUpdateNotification(docId);
-            }
+                } else if (type.equals("3")) {
+                    //verification request rejected notification
+                    sendVerificationRejectedNotification();
 
-            if(type.equals("2")){
-                //verification request approved notification
-                String mCompName = remoteMessage.getData().get("mCompanyName");
-                sendVerificationApprovedNotification(mCompName);
+                } else if (type.equals("5")) {
+                    String body = remoteMessage.getNotification().getBody();
+                    String title = remoteMessage.getNotification().getTitle();
+                    String postId = remoteMessage.getData().get("postId");
 
-            }
-            if(type.equals("3")) {
-                //verification request rejected notification
-                sendVerificationRejectedNotification();
-
-            }
-            //Loadboard Notification
-            if (type.equals("5")) {
-                String body = remoteMessage.getNotification().getBody();
-                String title = remoteMessage.getNotification().getTitle();
-                String postId = remoteMessage.getData().get("postId");
-
-                sendLoadboardNotification(title, body, postId);
+                    sendLoadboardNotification(title, body, postId);
+                } else if (type.equals("6")) {
+                    String title = remoteMessage.getData().get("title");
+                    String text = remoteMessage.getData().get("text");
+//                    Log.d(TAG, "Message Notification Body: " + messageBody);
+                    sendNotification(title, text);
+                }
+            } else {
+                String messageBody = remoteMessage.getNotification().getBody();
+                String messageTitle = remoteMessage.getNotification().getTitle();
+                Log.d(TAG, "Message Notification Body: " + messageBody);
+                sendNotification(messageBody, messageTitle);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {

@@ -18,7 +18,7 @@ import okhttp3.Response;
 public class FcmNotificationBuilder {
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     private static final String TAG = "FcmNotificationBuilder";
-    private static final String SERVER_API_KEY = "AAAAKlOr2pE:APA91bGtOmkS4g8n6KLLhEDp4zvBXgQOYNR3L_ag9vzQ-k3pe05k_iLt4w6NF9D5aWm_w6AajbiDKlHZb6G2M6-Nhik01sMq8vjKBeQhoRFDTf3x7LlwEE4YPOrBD3ZX34J7lvrZ7noe";
+    private static final String SERVER_API_KEY = "AAAAdtXGwNc:APA91bGtR0Nyrr8BBpcBADx7wT6dqBfJss7KZG0O0sL-YjUjr3vsbw0JjRhEwZV84_JfnzkkF3GgaYuZeeJJsjxwNGWATgLqzKrgsOen-A6hyEmfgaYq2WJniQ3pXjmuaocF_zn7jidZ";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String AUTHORIZATION = "Authorization";
@@ -115,6 +115,7 @@ public class FcmNotificationBuilder {
         JSONObject jsonObjectData = new JSONObject();
         jsonObjectData.put(KEY_TITLE, mTitle);
         jsonObjectData.put(KEY_TEXT, mMessage);
+        jsonObjectData.put("type", "6");
         jsonObjectData.put(KEY_USERNAME, mUsername);
         jsonObjectData.put(KEY_UID, mUid);
         jsonObjectData.put(KEY_FCM_TOKEN, mFirebaseToken);
