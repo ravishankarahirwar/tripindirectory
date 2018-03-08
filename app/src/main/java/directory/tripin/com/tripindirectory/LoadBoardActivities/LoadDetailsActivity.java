@@ -260,59 +260,62 @@ public class LoadDetailsActivity extends AppCompatActivity {
                     holder.mTitle.setText(textUtils.toTitleCase(model.getmCompanyName()));
                 }
                 holder.mTimeAgo.setText(gettimeDiff(model.getmTimeStamp()));
-                if(model.getmImagesUrl()!=null){
-                    Picasso.with(getApplicationContext())
-                            .load(model.getmImagesUrl().get(2))
-                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                    , R.drawable.ic_insert_comment_black_24dp))
-                            .transform(new CircleTransform())
-                            .fit()
-                            .into(holder.mThumbNail, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Logger.v("image set: " + position);
-                                }
+                if (model.getmImagesUrl() != null) {
+                    if (!model.getmImagesUrl().get(2).isEmpty()) {
+                        Picasso.with(getApplicationContext())
+                                .load(model.getmImagesUrl().get(2))
+                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                        , R.drawable.ic_insert_comment_black_24dp))
+                                .transform(new CircleTransform())
+                                .fit()
+                                .into(holder.mThumbNail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Logger.v("image set: " + position);
+                                    }
 
-                                @Override
-                                public void onError() {
-                                    Logger.v("image error: " + position);
-                                    Logger.v("image error: " + position);
-                                    if (model.getmUid() != null) {
-                                        FirebaseFirestore.getInstance().collection("partners").document(model.getmUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                if (documentSnapshot.exists()) {
-                                                    PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                                    if (partnerInfoPojo.getmImagesUrl() != null) {
-                                                        if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                            Picasso.with(getApplicationContext())
-                                                                    .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                            , R.drawable.ic_insert_comment_black_24dp))
-                                                                    .transform(new CircleTransform())
-                                                                    .fit()
-                                                                    .into(holder.mThumbNail, new Callback() {
-                                                                        @Override
-                                                                        public void onSuccess() {
-                                                                            Logger.v("Feched from original doc");
-                                                                        }
+                                    @Override
+                                    public void onError() {
+                                        Logger.v("image error: " + position);
+                                        Logger.v("image error: " + position);
+                                        if (model.getmUid() != null) {
+                                            FirebaseFirestore.getInstance().collection("partners").document(model.getmUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    if (documentSnapshot.exists()) {
+                                                        PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                                                        if (partnerInfoPojo.getmImagesUrl() != null) {
+                                                            if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
+                                                                Picasso.with(getApplicationContext())
+                                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                        .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                                                                , R.drawable.ic_insert_comment_black_24dp))
+                                                                        .transform(new CircleTransform())
+                                                                        .fit()
+                                                                        .into(holder.mThumbNail, new Callback() {
+                                                                            @Override
+                                                                            public void onSuccess() {
+                                                                                Logger.v("Feched from original doc");
+                                                                            }
 
-                                                                        @Override
-                                                                        public void onError() {
-                                                                            Logger.v("user have no image");
-                                                                        }
-                                                                    });
+                                                                            @Override
+                                                                            public void onError() {
+                                                                                Logger.v("user have no image");
+                                                                            }
+                                                                        });
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
-                                        });
+                                            });
 
 
+                                        }
                                     }
-                                }
 
-                            });
+                                });
+                    }
+
 
                 }
 
@@ -339,10 +342,10 @@ public class LoadDetailsActivity extends AppCompatActivity {
                                 switch (item) {
                                     case 0: {
                                         Intent intent = new Intent(LoadDetailsActivity.this, ChatRoomActivity.class);
-                                        intent.putExtra("imsg","Texting after watching your comment :\n"+
-                                                ">>Comment: "+model.getmCommentText());
-                                        intent.putExtra("ormn",model.getmRMN());
-                                        intent.putExtra("ouid",model.getmUid());
+                                        intent.putExtra("imsg", "Texting after watching your comment :\n" +
+                                                ">>Comment: " + model.getmCommentText());
+                                        intent.putExtra("ormn", model.getmRMN());
+                                        intent.putExtra("ouid", model.getmUid());
                                         startActivity(intent);
                                         break;
                                     }
@@ -502,12 +505,12 @@ public class LoadDetailsActivity extends AppCompatActivity {
                                 switch (item) {
                                     case 0: {
                                         Intent intent = new Intent(LoadDetailsActivity.this, PartnerDetailScrollingActivity.class);
-                                        if(loadPostPojo.getmCompanyName().isEmpty()){
-                                            intent.putExtra("cname",loadPostPojo.getmRMN());
-                                        }else {
-                                            intent.putExtra("cname",loadPostPojo.getmCompanyName());
+                                        if (loadPostPojo.getmCompanyName().isEmpty()) {
+                                            intent.putExtra("cname", loadPostPojo.getmRMN());
+                                        } else {
+                                            intent.putExtra("cname", loadPostPojo.getmCompanyName());
                                         }
-                                        intent.putExtra("uid",loadPostPojo.getmPostersUid());
+                                        intent.putExtra("uid", loadPostPojo.getmPostersUid());
                                         startActivity(intent);
                                         break;
                                     }
@@ -581,7 +584,7 @@ public class LoadDetailsActivity extends AppCompatActivity {
 
                 if (loadPostPojo.getmQuotedPeopleList() != null) {
                     holder.badgeQuote.setNumber(loadPostPojo.getmQuotedPeopleList().size());
-                    if (loadPostPojo.getmQuotedPeopleList().get(mUid)!=null) {
+                    if (loadPostPojo.getmQuotedPeopleList().get(mUid) != null) {
                         holder.quote.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_rupee_red));
                     }
                 } else {
@@ -729,7 +732,7 @@ public class LoadDetailsActivity extends AppCompatActivity {
 
                             @Override
                             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                quote.setText("Quote "+charSequence.toString().trim()+"₹");
+                                quote.setText("Quote " + charSequence.toString().trim() + "₹");
 
                             }
 
@@ -742,13 +745,13 @@ public class LoadDetailsActivity extends AppCompatActivity {
                         quote.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if(!amount.getText().toString().isEmpty()){
+                                if (!amount.getText().toString().isEmpty()) {
 
                                     quote.setText("Sending...");
-                                    Logger.v(firebaseAuth.getCurrentUser().getPhoneNumber()+" RMN");
+                                    Logger.v(firebaseAuth.getCurrentUser().getPhoneNumber() + " RMN");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
-                                            comment.getText().toString().trim()+"",
-                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),loadPostPojo.getmFcmToken());
+                                            comment.getText().toString().trim() + "",
+                                            mUid, docId, firebaseAuth.getCurrentUser().getPhoneNumber(), loadPostPojo.getmFcmToken());
                                     FirebaseFirestore.getInstance()
                                             .collection("loads")
                                             .document(docId)
@@ -766,7 +769,7 @@ public class LoadDetailsActivity extends AppCompatActivity {
 
                                                             dialog.dismiss();
                                                             Logger.v("QuoteAdded");
-                                                            Toast.makeText(activity,"Quoted Successfully!",Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(activity, "Quoted Successfully!", Toast.LENGTH_LONG).show();
 
                                                         }
                                                     });
@@ -774,8 +777,8 @@ public class LoadDetailsActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                }else {
-                                    Toast.makeText(activity,"No Amount Added!",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(activity, "No Amount Added!", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -809,9 +812,9 @@ public class LoadDetailsActivity extends AppCompatActivity {
                                     }
                                 });
                         Intent intent = new Intent(LoadDetailsActivity.this, ChatRoomActivity.class);
-                        intent.putExtra("imsg",loadPostPojo.getTextToInitateChat());
-                        intent.putExtra("ormn",loadPostPojo.getmRMN());
-                        intent.putExtra("ouid",loadPostPojo.getmPostersUid());
+                        intent.putExtra("imsg", loadPostPojo.getTextToInitateChat());
+                        intent.putExtra("ormn", loadPostPojo.getmRMN());
+                        intent.putExtra("ouid", loadPostPojo.getmPostersUid());
                         startActivity(intent);
                     }
                 });
@@ -880,7 +883,7 @@ public class LoadDetailsActivity extends AppCompatActivity {
                             case 0: {
 
                                 FirebaseMessaging.getInstance().unsubscribeFromTopic(docId);
-                                Toast.makeText(getApplicationContext(),"Unsubscribed!",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Unsubscribed!", Toast.LENGTH_LONG).show();
                                 //turn off
 
                                 break;
@@ -888,7 +891,7 @@ public class LoadDetailsActivity extends AppCompatActivity {
                             case 1: {
 
                                 FirebaseMessaging.getInstance().subscribeToTopic(docId);
-                                Toast.makeText(getApplicationContext(),"Subscribed!",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Subscribed!", Toast.LENGTH_LONG).show();
                                 // turn on
 
                                 break;

@@ -54,13 +54,10 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPo
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentsViewHolder;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostViewHolder;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostViewHolder;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
-import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
@@ -139,10 +136,10 @@ public class FleetDetailsActivity extends AppCompatActivity {
         mComment.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                Logger.v("on layout change: "+i+i1+i2+i3+i4+i5+i6+i7);
+                Logger.v("on layout change: " + i + i1 + i2 + i3 + i4 + i5 + i6 + i7);
                 nestedScrollView.post(new Runnable() {
                     public void run() {
-                        if(isScrolledDown){
+                        if (isScrolledDown) {
                             nestedScrollView.fullScroll(View.FOCUS_DOWN);
                             Logger.v("scroll down lc");
                         }
@@ -195,7 +192,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                         commentPojo = new CommentPojo(mComment.getText().toString().trim(),
                                 partnerInfoPojo.getmCompanyName(),
                                 mAuth.getCurrentUser().getPhoneNumber(),
-                                partnerInfoPojo.getmFcmToken(), docId,mUid);
+                                partnerInfoPojo.getmFcmToken(), docId, mUid);
                         if (partnerInfoPojo.getmImagesUrl() != null) {
                             commentPojo.setmImagesUrl(partnerInfoPojo.getmImagesUrl());
                         }
@@ -265,58 +262,61 @@ public class FleetDetailsActivity extends AppCompatActivity {
                     holder.mTitle.setText(textUtils.toTitleCase(model.getmCompanyName()));
                 }
                 holder.mTimeAgo.setText(gettimeDiff(model.getmTimeStamp()));
-                if(model.getmImagesUrl()!=null){
-                    Picasso.with(getApplicationContext())
-                            .load(model.getmImagesUrl().get(2))
-                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                    ,R.drawable.ic_insert_comment_black_24dp))
-                            .transform(new CircleTransform())
-                            .fit()
-                            .into(holder.mThumbNail, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Logger.v("image set: " + position);
-                                }
+                if (model.getmImagesUrl() != null) {
+                    if (!model.getmImagesUrl().get(2).isEmpty()) {
+                        Picasso.with(getApplicationContext())
+                                .load(model.getmImagesUrl().get(2))
+                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                        , R.drawable.ic_insert_comment_black_24dp))
+                                .transform(new CircleTransform())
+                                .fit()
+                                .into(holder.mThumbNail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Logger.v("image set: " + position);
+                                    }
 
-                                @Override
-                                public void onError() {
-                                    Logger.v("image error: " + position);
-                                    if(model.getmUid()!=null){
-                                        FirebaseFirestore.getInstance().collection("partners").document(model.getmUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                if(documentSnapshot.exists()){
-                                                    PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                                    if(partnerInfoPojo.getmImagesUrl()!=null){
-                                                        if(partnerInfoPojo.getmImagesUrl().get(2)!=null){
-                                                            Picasso.with(getApplicationContext())
-                                                                    .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                            ,R.drawable.ic_insert_comment_black_24dp))
-                                                                    .transform(new CircleTransform())
-                                                                    .fit()
-                                                                    .into(holder.mThumbNail, new Callback() {
-                                                                        @Override
-                                                                        public void onSuccess() {
-                                                                            Logger.v("Feched from original doc");
-                                                                        }
+                                    @Override
+                                    public void onError() {
+                                        Logger.v("image error: " + position);
+                                        if (model.getmUid() != null) {
+                                            FirebaseFirestore.getInstance().collection("partners").document(model.getmUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    if (documentSnapshot.exists()) {
+                                                        PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
+                                                        if (partnerInfoPojo.getmImagesUrl() != null) {
+                                                            if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
+                                                                Picasso.with(getApplicationContext())
+                                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
+                                                                        .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                                                                , R.drawable.ic_insert_comment_black_24dp))
+                                                                        .transform(new CircleTransform())
+                                                                        .fit()
+                                                                        .into(holder.mThumbNail, new Callback() {
+                                                                            @Override
+                                                                            public void onSuccess() {
+                                                                                Logger.v("Feched from original doc");
+                                                                            }
 
-                                                                        @Override
-                                                                        public void onError() {
-                                                                            Logger.v("user have no image");
-                                                                        }
-                                                                    });
+                                                                            @Override
+                                                                            public void onError() {
+                                                                                Logger.v("user have no image");
+                                                                            }
+                                                                        });
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
-                                        });
+                                            });
 
 
+                                        }
                                     }
-                                }
 
-                            });
+                                });
+                    }
+
 
                 }
 
@@ -340,10 +340,10 @@ public class FleetDetailsActivity extends AppCompatActivity {
                                 switch (item) {
                                     case 0: {
                                         Intent intent = new Intent(FleetDetailsActivity.this, ChatRoomActivity.class);
-                                        intent.putExtra("imsg","Texting after watching your comment :\n"+
-                                                ">>Comment: "+model.getmCommentText());
-                                        intent.putExtra("ormn",model.getmRMN());
-                                        intent.putExtra("ouid",model.getmUid());
+                                        intent.putExtra("imsg", "Texting after watching your comment :\n" +
+                                                ">>Comment: " + model.getmCommentText());
+                                        intent.putExtra("ormn", model.getmRMN());
+                                        intent.putExtra("ouid", model.getmUid());
                                         startActivity(intent);
                                         break;
                                     }
@@ -367,7 +367,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onDataChanged() {
-                if(adapterComments.getItemCount()==10){
+                if (adapterComments.getItemCount() == 10) {
                     mLinCommentsInfo.setVisibility(View.VISIBLE);
                 }
                 final Handler handler = new Handler();
@@ -417,16 +417,16 @@ public class FleetDetailsActivity extends AppCompatActivity {
 
 
                 String DisplayDate = DateFormat.getDateInstance().format(fleetPostPojo.getmPickUpTimeStamp());
-                String d =  gettimeDiff(fleetPostPojo.getmPickUpTimeStamp());
+                String d = gettimeDiff(fleetPostPojo.getmPickUpTimeStamp());
                 String dd = "";
-                if(d.equals("0")){
+                if (d.equals("0")) {
                     dd = " (today)";
-                }else if(d.equals("1")){
+                } else if (d.equals("1")) {
                     dd = " (tomorrow)";
-                }else if(d.length()>5){
+                } else if (d.length() > 5) {
                     dd = " (expired!)";
-                }else {
-                    dd = " ("+d+" days left)";
+                } else {
+                    dd = " (" + d + " days left)";
                 }
 
                 holder.mScheduledDate.setText("Scheduled Date : " + DisplayDate + dd);
@@ -500,12 +500,12 @@ public class FleetDetailsActivity extends AppCompatActivity {
                                 switch (item) {
                                     case 0: {
                                         Intent intent = new Intent(FleetDetailsActivity.this, PartnerDetailScrollingActivity.class);
-                                        if(fleetPostPojo.getmCompanyName().isEmpty()){
-                                            intent.putExtra("cname",fleetPostPojo.getmRMN());
-                                        }else {
-                                            intent.putExtra("cname",fleetPostPojo.getmCompanyName());
+                                        if (fleetPostPojo.getmCompanyName().isEmpty()) {
+                                            intent.putExtra("cname", fleetPostPojo.getmRMN());
+                                        } else {
+                                            intent.putExtra("cname", fleetPostPojo.getmCompanyName());
                                         }
-                                        intent.putExtra("uid",fleetPostPojo.getmPostersUid());
+                                        intent.putExtra("uid", fleetPostPojo.getmPostersUid());
                                         startActivity(intent);
                                         break;
                                     }
@@ -550,7 +550,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                             isIntrested = true;
                             Logger.v("heart full");
 
-                        }else {
+                        } else {
                             holder.like.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite_border_black_24dp));
                             isIntrested = false;
                             Logger.v("heart empty");
@@ -579,7 +579,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
 
                 if (fleetPostPojo.getmQuotedPeopleList() != null) {
                     holder.badgeQuote.setNumber(fleetPostPojo.getmQuotedPeopleList().size());
-                    if(fleetPostPojo.getmQuotedPeopleList().get(mUid)!=null){
+                    if (fleetPostPojo.getmQuotedPeopleList().get(mUid) != null) {
                         holder.quote.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_rupee_red));
                     }
                 } else {
@@ -623,7 +623,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                 holder.comment.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       nestedScrollView.fullScroll(NestedScrollView.FOCUS_DOWN);
+                        nestedScrollView.fullScroll(NestedScrollView.FOCUS_DOWN);
                     }
                 });
                 holder.badgeComment.setText("..");
@@ -631,10 +631,10 @@ public class FleetDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         Logger.v("onSuccess Comment Collection: " + position);
-                        if (documentSnapshots.isEmpty()){
+                        if (documentSnapshots.isEmpty()) {
                             holder.badgeComment.setText("0");
-                        }else {
-                            holder.badgeComment.setText(documentSnapshots.size()+"");
+                        } else {
+                            holder.badgeComment.setText(documentSnapshots.size() + "");
 
                         }
                     }
@@ -643,7 +643,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                 holder.share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        shareMesssages(activity,"LOAD REQUIRED",fleetPostPojo.getTextToShare());
+                        shareMesssages(activity, "LOAD REQUIRED", fleetPostPojo.getTextToShare());
                         FirebaseFirestore.getInstance()
                                 .collection("fleets")
                                 .document(docId)
@@ -663,7 +663,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         String phoneNO = fleetPostPojo.getmRMN();
-                        if(phoneNO != null && phoneNO.length() > 0) {
+                        if (phoneNO != null && phoneNO.length() > 0) {
                             callNumber(phoneNO);
                             FirebaseFirestore.getInstance()
                                     .collection("fleets")
@@ -683,15 +683,14 @@ public class FleetDetailsActivity extends AppCompatActivity {
                 });
 
 
-
                 holder.quote.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         final Dialog dialog = new Dialog(activity);
                         dialog.setContentView(R.layout.dialog_add_quotation);
-                        final String title = textUtils.toTitleCase(fleetPostPojo.getmSourceCity())+" To "+textUtils.toTitleCase(fleetPostPojo.getmDestinationCity());
-                        dialog.setTitle(title+ " ...");
+                        final String title = textUtils.toTitleCase(fleetPostPojo.getmSourceCity()) + " To " + textUtils.toTitleCase(fleetPostPojo.getmDestinationCity());
+                        dialog.setTitle(title + " ...");
 
 
                         final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
@@ -705,15 +704,15 @@ public class FleetDetailsActivity extends AppCompatActivity {
                                 .document(mUid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if(documentSnapshot.exists()){
-                                    dialog.setTitle(title+".");
+                                if (documentSnapshot.exists()) {
+                                    dialog.setTitle(title + ".");
                                     QuotePojo quotePojo = documentSnapshot.toObject(QuotePojo.class);
                                     amount.setText(quotePojo.getmQuoteAmount());
-                                    if(!quotePojo.getmComment().isEmpty()){
+                                    if (!quotePojo.getmComment().isEmpty()) {
                                         comment.setText(quotePojo.getmComment());
                                     }
-                                }else {
-                                    dialog.setTitle(title+ " :");
+                                } else {
+                                    dialog.setTitle(title + " :");
                                 }
                             }
                         });
@@ -721,13 +720,13 @@ public class FleetDetailsActivity extends AppCompatActivity {
                         quote.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if(!amount.getText().toString().isEmpty()){
+                                if (!amount.getText().toString().isEmpty()) {
 
                                     hideSoftKey();
                                     quote.setText("Sending...");
                                     final QuotePojo quotePojo = new QuotePojo(amount.getText().toString().trim(),
-                                            comment.getText().toString().trim()+"",
-                                            mUid,docId,firebaseAuth.getCurrentUser().getPhoneNumber(),fleetPostPojo.getmFcmToken());
+                                            comment.getText().toString().trim() + "",
+                                            mUid, docId, firebaseAuth.getCurrentUser().getPhoneNumber(), fleetPostPojo.getmFcmToken());
                                     FirebaseFirestore.getInstance()
                                             .collection("fleets")
                                             .document(docId)
@@ -745,7 +744,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
 
                                                             dialog.dismiss();
                                                             Logger.v("QuoteAdded");
-                                                            Toast.makeText(activity,"Quoted Successfully!",Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(activity, "Quoted Successfully!", Toast.LENGTH_LONG).show();
 
                                                         }
                                                     });
@@ -753,8 +752,8 @@ public class FleetDetailsActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                }else {
-                                    Toast.makeText(activity,"No Amount Added!",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(activity, "No Amount Added!", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -787,9 +786,9 @@ public class FleetDetailsActivity extends AppCompatActivity {
                                     }
                                 });
                         Intent intent = new Intent(FleetDetailsActivity.this, ChatRoomActivity.class);
-                        intent.putExtra("imsg",fleetPostPojo.getTextToInitateChat());
-                        intent.putExtra("ormn",fleetPostPojo.getmRMN());
-                        intent.putExtra("ouid",fleetPostPojo.getmPostersUid());
+                        intent.putExtra("imsg", fleetPostPojo.getTextToInitateChat());
+                        intent.putExtra("ormn", fleetPostPojo.getmRMN());
+                        intent.putExtra("ouid", fleetPostPojo.getmPostersUid());
                         startActivity(intent);
                     }
                 });
@@ -847,7 +846,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_notifications:{
+            case R.id.action_notifications: {
                 final CharSequence[] items = {
                         "Turn Off Notifications", "Turn On Notifications", "Cancel"
                 };
@@ -883,7 +882,7 @@ public class FleetDetailsActivity extends AppCompatActivity {
                 alert.show();
                 break;
             }
-            case R.id.action_comments:{
+            case R.id.action_comments: {
                 break;
             }
         }
@@ -962,9 +961,8 @@ public class FleetDetailsActivity extends AppCompatActivity {
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
             shareIntent.putExtra(Intent.EXTRA_TEXT, body);
             context.startActivity(Intent.createChooser(shareIntent, "Share via"));
-        }
-        catch (ActivityNotFoundException exception) {
-            Toast.makeText(context, "No application found for send Email" , Toast.LENGTH_LONG).show();
+        } catch (ActivityNotFoundException exception) {
+            Toast.makeText(context, "No application found for send Email", Toast.LENGTH_LONG).show();
         }
     }
 
