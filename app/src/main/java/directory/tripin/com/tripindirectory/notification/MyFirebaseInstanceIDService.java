@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -12,6 +13,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import java.util.HashMap;
 
+import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 
 
@@ -64,6 +66,13 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                     Log.d(TAG, "Refreshed token: " + "Updated to Firestore");
                 }
             });
+
+            FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child(Constants.ARG_USERS)
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child(Constants.ARG_FIREBASE_TOKEN)
+                    .setValue(token);
         }else {
             //save to shared pref
             PreferenceManager preferenceManager =  PreferenceManager.getInstance(getApplicationContext());

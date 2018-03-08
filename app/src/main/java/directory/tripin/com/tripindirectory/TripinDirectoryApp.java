@@ -17,6 +17,7 @@ import com.google.android.gms.analytics.Tracker;
 public class TripinDirectoryApp extends Application {
     private static GoogleAnalytics sAnalytics;
     private static Tracker sTracker;
+    private static boolean sIsChatActivityOpen = false;
 
     @Override
     public void onCreate() {
@@ -40,5 +41,13 @@ public class TripinDirectoryApp extends Application {
         }
 
         return sTracker;
+    }
+
+    public static boolean isChatActivityOpen() {
+        return sIsChatActivityOpen;
+    }
+
+    public static void setChatActivityOpen(boolean isChatActivityOpen) {
+        TripinDirectoryApp.sIsChatActivityOpen = isChatActivityOpen;
     }
 }
