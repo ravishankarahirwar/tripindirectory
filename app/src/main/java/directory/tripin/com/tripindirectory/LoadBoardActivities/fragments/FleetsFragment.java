@@ -581,7 +581,7 @@ public class FleetsFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        Logger.v("Stop Listnining Loads");
+        Logger.v("onStop Fleets");
         adapter.stopListening();
     }
 

@@ -1032,6 +1032,7 @@ public class IntrestedInFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        Logger.v("onStop Intrested In");
         adapterFleet.stopListening();
         adapterLoad.stopListening();
 

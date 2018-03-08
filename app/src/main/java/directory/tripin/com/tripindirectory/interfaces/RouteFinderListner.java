@@ -12,4 +12,6 @@ import java.util.ArrayList;
 public interface RouteFinderListner {
     void onRouteFind(ArrayList<LatLng> points);
     void onNoRouteFind();
+    void onDistanceFind(String distance);
+    void onEstimatedTimeFind(String time);
 }

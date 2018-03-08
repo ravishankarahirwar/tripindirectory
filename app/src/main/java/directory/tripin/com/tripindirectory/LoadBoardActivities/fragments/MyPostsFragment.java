@@ -1950,6 +1950,7 @@ public class MyPostsFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        Logger.v("onStop MyPosts");
         adapterFleet.stopListening();
         adapterLoad.stopListening();
 

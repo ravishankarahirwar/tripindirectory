@@ -236,7 +236,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     FleetPostPojo fleetPostPojo = documentSnapshot.toObject(FleetPostPojo.class);
 
                     if(!fleetPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())){
-                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
                         intent.putExtra("docId",fleetId);
                         String title = "New Fleet Posted";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -259,7 +259,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
                     }else {
-                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
                         intent.putExtra("docId",fleetId);
                         String title = "Hi ILN User";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

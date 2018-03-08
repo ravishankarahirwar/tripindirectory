@@ -89,6 +89,7 @@ public class RuteFindingTask {
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
+                mRouteFinderListner.onDistanceFind(parser.getDistance(jObject));
                 Log.d("ParserTask", "Executing routes");
                 Log.d("ParserTask", routes.toString());
 

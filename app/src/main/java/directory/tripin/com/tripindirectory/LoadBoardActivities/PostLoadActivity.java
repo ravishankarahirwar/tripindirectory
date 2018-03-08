@@ -459,10 +459,10 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                     addDropOffCity.setVisibility(View.GONE);
                     loadPostPojo.setmDestinationCity(place.getName().toString().toUpperCase());
                     loadPostPojo.setmDestinationCityLatLang(new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
-                    loadPostPojo.setmEstimatedDistance(getDistance(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
-                            loadPostPojo.getmDestinationCityLatLang().getLongitude(),
-                            loadPostPojo.getmSourceCityLatLang().getLatitude(),
-                            loadPostPojo.getmSourceCityLatLang().getLongitude()) + "");
+//                    loadPostPojo.setmEstimatedDistance(getDistance(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
+//                            loadPostPojo.getmDestinationCityLatLang().getLongitude(),
+//                            loadPostPojo.getmSourceCityLatLang().getLatitude(),
+//                            loadPostPojo.getmSourceCityLatLang().getLongitude()) + "");
                     // updateDestinationHubs(place.getName().toString(), 1);
                     adapterd.notifyDataSetChanged();
                 }
@@ -657,6 +657,19 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                 @Override
                 public void onNoRouteFind() {
                     Toast.makeText(getApplicationContext(), "No route found", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onDistanceFind(String distance) {
+                    loadPostPojo.setmEstimatedDistance(distance);
+                    Logger.v("Estimated Distance: "+distance);
+                    mDistance.setText(distance + "\nkm");
+
+                }
+
+                @Override
+                public void onEstimatedTimeFind(String time) {
+
                 }
             });
         }

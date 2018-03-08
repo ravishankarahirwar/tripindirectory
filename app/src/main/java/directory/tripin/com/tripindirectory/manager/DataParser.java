@@ -98,5 +98,16 @@ public class DataParser {
 
         return poly;
     }
+
+    public String getDistance(JSONObject jsonObject) throws JSONException {
+        String parsedDistance = "";
+        JSONArray array = jsonObject.getJSONArray("routes");
+        JSONObject routes = array.getJSONObject(0);
+        JSONArray legs = routes.getJSONArray("legs");
+        JSONObject steps = legs.getJSONObject(0);
+        JSONObject distance = steps.getJSONObject("distance");
+        parsedDistance=distance.getString("text");
+        return parsedDistance.substring(0, parsedDistance.length() - 2).trim();
+    }
 }
 

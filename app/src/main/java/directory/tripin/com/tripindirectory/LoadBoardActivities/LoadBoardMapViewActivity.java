@@ -156,6 +156,16 @@ public class LoadBoardMapViewActivity extends AppCompatActivity implements OnMap
                 public void onNoRouteFind() {
                     Toast.makeText(getApplicationContext(), "No route found", Toast.LENGTH_SHORT).show();
                 }
+
+                @Override
+                public void onDistanceFind(String distance) {
+
+                }
+
+                @Override
+                public void onEstimatedTimeFind(String time) {
+
+                }
             });
         }
     }
