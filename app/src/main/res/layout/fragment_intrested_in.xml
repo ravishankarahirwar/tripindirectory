@@ -30,7 +30,7 @@
                android:checked="true"
                android:elevation="2dp"
                android:padding="12dp"
-               android:text="Loads"
+               android:text="Loads(..)"
                android:textColor="@color/arrow_white"
                android:textStyle="bold" />
 
@@ -43,7 +43,7 @@
                android:button="@null"
                android:elevation="2dp"
                android:padding="12dp"
-               android:text="Fleets"
+               android:text="Fleets(..)"
                android:textColor="@color/arrow_grey"
                android:textStyle="bold" />
        </RadioGroup>
