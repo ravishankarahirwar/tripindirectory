@@ -271,7 +271,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                            if(documentSnapshot.exists()){
+                            if (documentSnapshot.exists()) {
                                 PartnerInfoPojo mInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
 
                                 if (!mInfo.getmCompanyName().isEmpty()) {
@@ -282,7 +282,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     mMyImageUrl = mInfo.getmImagesUrl().get(2);
                                 }
                                 mMyFcm = mInfo.getmFcmToken();
-
 
                                 FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
@@ -306,8 +305,8 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                     }
                                 });
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Add Your Company Info First",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Add Your Company Info First", Toast.LENGTH_LONG).show();
                                 startActivity(new Intent(ChatRoomActivity.this, CompanyInfoActivity.class));
                             }
 
@@ -629,7 +628,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     if (model.getmMessageType() == 1) {
                         holder.thumbnail.setVisibility(View.INVISIBLE);
                     } else {
-                        if(!mOpponentImageUrl.isEmpty()){
+                        if (!mOpponentImageUrl.isEmpty()) {
                             Picasso.with(holder.thumbnail.getContext())
                                     .load(mOpponentImageUrl)
                                     .placeholder(ContextCompat.getDrawable(getApplicationContext()
@@ -683,8 +682,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     });
 
                         }
-                        }
-
+                    }
 
 
                 }
@@ -759,7 +757,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(adapter!=null){
+        if (adapter != null) {
             adapter.stopListening();
         }
     }
