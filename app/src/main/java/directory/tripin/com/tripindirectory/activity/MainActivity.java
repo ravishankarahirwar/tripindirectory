@@ -1280,7 +1280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             }
                                             switch (signinginfor) {
                                                 case 1: {
-                                                    //for loadboard
+                                                    //for comp info
                                                     startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
                                                     break;
                                                 }
@@ -1299,7 +1299,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                     break;
                                                 }
                                                 case 3: {
-                                                    //for like
+                                                    //for loadboard
+                                                    startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+
+                                                    break;
+                                                }
+                                                case 4: {
+                                                    //for Inbox
+                                                    startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+
                                                     break;
                                                 }
                                                 case 0: {
@@ -1319,7 +1327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                             switch (signinginfor) {
                                 case 1: {
-                                    //for loadboard
+                                    //for comp info
                                     startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
                                     break;
                                 }
@@ -1338,7 +1346,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     break;
                                 }
                                 case 3: {
-                                    //for like
+                                    //for loadboard
+                                    startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+
+                                    break;
+                                }
+                                case 4: {
+                                    //for Inbox
+                                    startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+
                                     break;
                                 }
                                 case 0: {
@@ -1423,11 +1439,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_loadboard) {
 
-            startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+            if (mAuth.getCurrentUser() != null) {
+                // already signed in
+                startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+            } else {
+                // not signed in
+                signinginfor = 3;
+                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+//                startActivityForResult(
+//                        // Get an instance of AuthUI based on the default app
+//                        AuthUI.getInstance().createSignInIntentBuilder()
+//                                .setAvailableProviders(
+//                                        Collections.singletonList(
+//                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                .build(),
+//                        SIGN_IN_FOR_CREATE_COMPANY);
+            }
+
 
 
         } else if (id == R.id.nav_inbox) {
-            startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+            if (mAuth.getCurrentUser() != null) {
+                // already signed in
+                startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+            } else {
+                // not signed in
+                signinginfor = 4;
+                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+//                startActivityForResult(
+//                        // Get an instance of AuthUI based on the default app
+//                        AuthUI.getInstance().createSignInIntentBuilder()
+//                                .setAvailableProviders(
+//                                        Collections.singletonList(
+//                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                .build(),
+//                        SIGN_IN_FOR_CREATE_COMPANY);
+            }
 
         }else if (id == R.id.nav_logout) {
             params = new Bundle();

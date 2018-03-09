@@ -55,6 +55,7 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
+import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
@@ -265,42 +266,51 @@ public class ChatRoomActivity extends AppCompatActivity {
                     mOpponentFcm = mOpppontInfo.getmFcmToken();
 
                     FirebaseFirestore.getInstance().collection("partners").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            PartnerInfoPojo mInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
 
-                            if (!mInfo.getmCompanyName().isEmpty()) {
-                                mMyCompName = mInfo.getmCompanyName();
-                            }
+                            if(documentSnapshot.exists()){
+                                PartnerInfoPojo mInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
 
-                            if (mInfo.getmImagesUrl() != null) {
-                                mMyImageUrl = mInfo.getmImagesUrl().get(2);
-                            }
-                            mMyFcm = mInfo.getmFcmToken();
-
-
-                            FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
-                                        mChatRoomId = chatHeadPojo.getmChatRoomId();
-                                    } else {
-                                        mChatRoomId = mAuth.getUid() + mOUID;
-                                    }
-
-                                    buildAdapter(mChatRoomId);
-                                    setPresenceListners();
-                                    UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
-                                    databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Logger.v("onResume userpresence updated");
-                                        }
-                                    });
-
+                                if (!mInfo.getmCompanyName().isEmpty()) {
+                                    mMyCompName = mInfo.getmCompanyName();
                                 }
-                            });
+
+                                if (mInfo.getmImagesUrl() != null) {
+                                    mMyImageUrl = mInfo.getmImagesUrl().get(2);
+                                }
+                                mMyFcm = mInfo.getmFcmToken();
+
+
+                                FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        if (documentSnapshot.exists()) {
+                                            ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
+                                            mChatRoomId = chatHeadPojo.getmChatRoomId();
+                                        } else {
+                                            mChatRoomId = mAuth.getUid() + mOUID;
+                                        }
+
+                                        buildAdapter(mChatRoomId);
+                                        setPresenceListners();
+                                        UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
+                                        databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Logger.v("onResume userpresence updated");
+                                            }
+                                        });
+
+                                    }
+                                });
+                            }else {
+                                Toast.makeText(getApplicationContext(),"Add Your Company Info First",Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(ChatRoomActivity.this, CompanyInfoActivity.class));
+                            }
+
                         }
                     });
 
@@ -684,6 +694,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onDataChanged() {
                 mLayoutManagerChats.scrollToPosition(0);
                 loading.setVisibility(View.GONE);
+                mChatEditText.setVisibility(View.VISIBLE);
                 super.onDataChanged();
 
                 if (adapter.getItemCount() > 0) {
@@ -748,7 +759,9 @@ public class ChatRoomActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if(adapter!=null){
+            adapter.stopListening();
+        }
     }
 
     public void startVoiceRecognitionActivity() {
