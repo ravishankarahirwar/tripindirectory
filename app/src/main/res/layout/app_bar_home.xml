@@ -116,7 +116,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="?attr/actionBarSize">
+                    android:layout_marginBottom="45dp">
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/animation_view"
@@ -152,7 +152,7 @@
                         android:elevation="8dp"
                         android:gravity="center"
                         android:text="101"
-                        android:textColor="@color/app_title"/>
+                        android:textColor="@color/app_title" />
 
                 </FrameLayout>
 
@@ -163,7 +163,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:layout_marginBottom="64dp"
+                android:layout_marginBottom="54dp"
                 android:layout_marginRight="8dp"
                 android:visibility="visible"
                 app:backgroundTint="@color/primaryColor"
@@ -234,15 +234,17 @@
                     android:layout_weight="1"
                     android:layout_marginRight="8dp"
                     >
+
                     <TextView
                         android:id="@+id/filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:drawableStart="@drawable/ic_filter_list_white_24dp"
+                        android:gravity="center_vertical"
                         android:text="Filter"
                         android:textAllCaps="false"
-                        android:textColor="@color/background"/>
+                        android:textColor="@color/background" />
 
                 <TextView
                     android:id="@+id/no_of_filters"
