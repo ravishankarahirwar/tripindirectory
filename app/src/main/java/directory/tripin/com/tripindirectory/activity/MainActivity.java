@@ -101,6 +101,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
@@ -119,8 +120,11 @@ import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
+import directory.tripin.com.tripindirectory.model.FoundHubPojo;
+import directory.tripin.com.tripindirectory.model.HubFetchedCallback;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
+import directory.tripin.com.tripindirectory.model.RouteCityPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
@@ -131,7 +135,7 @@ import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener ,HubFetchedCallback {
 
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
@@ -139,6 +143,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int SEARCHTAG_ROUTE = 0;
     private static final int SEARCHTAG_COMPANY = 1;
     private static final int SEARCHTAG_CITY = 2;
+
+    private static final int SEARCHTAG_TRANSPORTER = 3;
+    private static final int GIOQUERY_RADIUS = 50;
+
+
 
     private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
 
@@ -165,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GeoDataClient mGeoDataClient;
     private boolean isSourceSelected = false;
     private boolean isDestinationSelected = false;
-    private String mSourceCity = "";
-    private String mDestinationCity = "";
+    private RouteCityPojo mSourceCity;
+    private RouteCityPojo mDestinationCity;
     boolean isBookmarkSaved = false;
     private int signinginfor = 0;
     private  QueryBookmarkPojo queryBookmarkPojo;
@@ -178,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
-    LottieAnimationView lottieAnimationView,animationBookmark;
+    LottieAnimationView lottieAnimationView, animationBookmark;
     TextUtils textUtils;
     SlidingUpPanelLayout sliderLayout;
     private TextView mBtnApplyFilters;
@@ -224,6 +233,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirestoreRecyclerAdapter bookmarksAdapter;
     private WorkingWithAdapter mWorkingWithAdapter;
     private AppEventsLogger logger;
+    private LatLng mDestinationLatLang;
+    private LatLng mSourceLatLang;
+    private List<FoundHubPojo> mNearestHubsList = new ArrayList<>();
+    private String mSourceHub = "";
+    private int mRadiusMultiplier = 1;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,8 +255,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+
         textUtils = new TextUtils();
-//        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
         //Add to Activity
         FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
 
@@ -354,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             mFiltersList.clear();
                             mFiltersList.addAll(model.getmFiltersList());
 
-                            if(model.getmSortIndex()!=0){
+                            if (model.getmSortIndex() != 0) {
                                 mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
                                                 .getDrawable(getApplicationContext(),
                                                         R.drawable.ic_sort_black_24dp),
@@ -371,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
                             } else {
                                 mNoOfFilterApply.setVisibility(TextView.GONE);
+
                             }
 
 
@@ -505,12 +522,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void init() {
         mContext = MainActivity.this;
+        mSourceCity = new RouteCityPojo(mContext,1,1,this);
+        mDestinationCity = new RouteCityPojo(mContext,2,1,this);
         mSearchData = new SearchData();
         mGeoDataClient = Places.getGeoDataClient(this, null);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         FirebaseApp.initializeApp(getApplicationContext());
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mNearestHubsList = new ArrayList<>();
 
 
         mNoOfFilterApply = findViewById(R.id.no_of_filters);
@@ -917,15 +937,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
                     break;
                 }
-                case 4:{
+                case 4: {
                     query = query.whereEqualTo("mFiltersVehicle." + f.getmFilterName().toUpperCase().trim(), true);
                     break;
                 }
-                case 5:{
+                case 5: {
                     query = query.whereEqualTo("mTypesOfServices." + f.getmFilterName().toUpperCase().trim(), true);
                     break;
                 }
-                case 6:{
+                case 6: {
                     query = query.whereEqualTo("mNatureOfBusiness." + f.getmFilterName().toUpperCase().trim(), true);
 
                     break;
@@ -961,14 +981,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mSearchQuery = s;
             switch (searchTag) {
                 case SEARCHTAG_ROUTE: {
-                    if (s.contains("To") || s.contains("to")) {
-                        String sourceDestination[] = s.split("(?i:to)");
-                        String source = sourceDestination[0].trim();
-                        String destination = sourceDestination[1].trim();
-                        query = query.whereEqualTo("mSourceCities." + source.toUpperCase(), true).whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
-                    } else {
-                        Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
+                    if(s.equals("1")){
+                        if(mSourceCity.getmNearestHub() != null && mDestinationCity.getmNearestHub() !=null){
+                            Logger.v("HUBS: "+mSourceCity.getmNearestHub().getmHubName()+" , "+mDestinationCity.getmNearestHub().getmHubName());
+
+                            query = query
+                                    .whereEqualTo("mSourceHubs." + mSourceCity.getmNearestHub().getmHubName().toUpperCase(), true)
+                                    .whereEqualTo("mDestinationHubs." + mDestinationCity.getmNearestHub().getmHubName().toUpperCase(), true);
+                        }else {
+                            Logger.v("HUBS NULL "+mSourceCity.isFetchingHub()+" , "+mDestinationCity.isFetchingHub());
+                        }
+
+                    }else {
+                        if (s.contains("To") || s.contains("to")) {
+                            String sourceDestination[] = s.split("(?i:to)");
+                            String source = sourceDestination[0].trim();
+                            String destination = sourceDestination[1].trim();
+                            query = query
+                                    .whereEqualTo("mSourceCities." + source.toUpperCase(), true)
+                                    .whereEqualTo("mDestinationCities." + destination.toUpperCase(), true);
+                        } else {
+                            Toast.makeText(this, "Invalid Route Query", Toast.LENGTH_LONG).show();
+                        }
                     }
+
                     break;
                 }
                 case SEARCHTAG_COMPANY: {
@@ -1189,9 +1225,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         adapter.startListening();
-        if (bookmarksAdapter != null) {
-            bookmarksAdapter.startListening();
-        }
+
+
+        if(bookmarksAdapter!=null)
+        bookmarksAdapter.startListening();
+
     }
 
     @Override
@@ -1242,7 +1280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             }
                                             switch (signinginfor) {
                                                 case 1: {
-                                                    //for loadboard
+                                                    //for comp info
                                                     startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
                                                     break;
                                                 }
@@ -1261,7 +1299,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                                     break;
                                                 }
                                                 case 3: {
-                                                    //for like
+                                                    //for loadboard
+                                                    startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+
+                                                    break;
+                                                }
+                                                case 4: {
+                                                    //for Inbox
+                                                    startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+
                                                     break;
                                                 }
                                                 case 0: {
@@ -1281,7 +1327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                             switch (signinginfor) {
                                 case 1: {
-                                    //for loadboard
+                                    //for comp info
                                     startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
                                     break;
                                 }
@@ -1300,7 +1346,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     break;
                                 }
                                 case 3: {
-                                    //for like
+                                    //for loadboard
+                                    startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+
+                                    break;
+                                }
+                                case 4: {
+                                    //for Inbox
+                                    startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+
                                     break;
                                 }
                                 case 0: {
@@ -1385,9 +1439,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_loadboard) {
 
-            startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+            if (mAuth.getCurrentUser() != null) {
+                // already signed in
+                startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+            } else {
+                // not signed in
+                signinginfor = 3;
+                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+//                startActivityForResult(
+//                        // Get an instance of AuthUI based on the default app
+//                        AuthUI.getInstance().createSignInIntentBuilder()
+//                                .setAvailableProviders(
+//                                        Collections.singletonList(
+//                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                .build(),
+//                        SIGN_IN_FOR_CREATE_COMPANY);
+            }
 
-        } else if (id == R.id.nav_logout) {
+
+
+        } else if (id == R.id.nav_inbox) {
+            if (mAuth.getCurrentUser() != null) {
+                // already signed in
+                startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+            } else {
+                // not signed in
+                signinginfor = 4;
+                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+//                startActivityForResult(
+//                        // Get an instance of AuthUI based on the default app
+//                        AuthUI.getInstance().createSignInIntentBuilder()
+//                                .setAvailableProviders(
+//                                        Collections.singletonList(
+//                                                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
+//                                .build(),
+//                        SIGN_IN_FOR_CREATE_COMPANY);
+            }
+
+        }else if (id == R.id.nav_logout) {
             params = new Bundle();
             params.putString("logout", "Click");
             mFirebaseAnalytics.logEvent("ClickOnLogout", params);
@@ -1461,17 +1550,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mSearchView.clearSuggestions();
                     isSourceSelected = false;
                     isDestinationSelected = false;
-                    mSourceCity = "";
                 } else {
 
                     switch (searchTag) {
                         case SEARCHTAG_ROUTE:
                             if (Math.abs(newQuery.length() - oldQuery.length()) == 1) {
 
-                                if (newQuery.length() == mDestinationCity.length() + mSourceCity.length() - 1) {
+                                if (newQuery.length() == mDestinationCity.getmCityName().length() + mSourceCity.getmCityName().length() - 5) {
                                     isDestinationSelected = false;
                                 }
-                                if (newQuery.length() == mSourceCity.length() - 5) {
+                                if (newQuery.length() == mSourceCity.getmCityName().length() - 5) {
                                     isSourceSelected = false;
                                 }
                                 if (!isSourceSelected) {
@@ -1490,7 +1578,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         //set destination suggestions
                                         Logger.v("destination fetching......");
 
-                                        String queary = newQuery.replace(mSourceCity, "").toString().trim();
+                                        String queary = newQuery.replace(mSourceCity.getmCityName()+" To ", "").toString().trim();
                                         new GetCityFromGoogleTask(new OnFindSuggestionsListener() {
                                             @Override
                                             public void onResults(List<SuggestionCompanyName> results) {
@@ -1553,20 +1641,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switch (searchTag) {
                     case SEARCHTAG_ROUTE: {
                         String selectedCity = searchSuggestion.getBody();
+
                         if (isSourceSelected) {
                             //destination suggestion tapped
-                            mSearchView.setSearchText(mSourceCity + selectedCity);
+                            mSearchView.setSearchText(mSourceCity.getmCityName()+ " To " + selectedCity);
                             mSearchView.clearFocus();
                             mSearchView.clearSearchFocus();
                             mSearchView.clearSuggestions();
-                            setAdapter(mSourceCity + selectedCity);
+                            lottieAnimationView.setVisibility(View.VISIBLE);
+                            mTextCount.setVisibility(View.INVISIBLE);
+                            mDestinationCity.setmCityName(selectedCity);
                             isDestinationSelected = true;
-                            mDestinationCity = selectedCity;
+
+
                         } else {
                             //source suggestion tapped
                             mSearchView.setSearchText(selectedCity);
                             isSourceSelected = true;
-                            mSourceCity = selectedCity;
+
+                            mSourceCity.setmCityName(selectedCity.replace("To","").trim());
                         }
 
 
@@ -1702,6 +1795,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mSearchView.setSearchText(query);
             setAdapter(query);
         }
+    }
+
+    @Override
+    public void onDestinationHubFetched(String destinationhub, int o) {
+        setAdapter("1");
+    }
+
+    @Override
+    public void onSourceHubFetched(String sourcehub, int o) {
+
     }
 
 
@@ -1934,7 +2037,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             title,
                             mSortIndex,
                             searchTag,
-                            mSearchQuery,timestamp);
+                            mSearchQuery, timestamp);
 
                     if (mAuth.getCurrentUser() != null) {
                         //add bookmark to sub collection
@@ -2179,4 +2282,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 //***************************************
+
+
+    private double getDistance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1))
+                * Math.sin(deg2rad(lat2))
+                + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2))
+                * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
+    }
 }

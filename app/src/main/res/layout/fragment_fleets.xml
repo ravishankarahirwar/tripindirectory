@@ -1,13 +1,89 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="directory.tripin.com.tripindirectory.LoadBoardActivities.fragments.FleetsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:focusableInTouchMode="true"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        >
 
-</FrameLayout>
+        <LinearLayout
+            android:id="@+id/ll_resultdiscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:animateLayoutChanges="true"
+            android:visibility="visible">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loadingfleets"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="loadloading.json"
+                app:lottie_loop="true" />
+
+            <TextView
+                android:id="@+id/textViewShowAllFleet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/rounded_bg_voilet"
+                android:drawableLeft="@drawable/ic_play_arrow_white_24dp"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:text="Filter/Sort/All "
+                android:textColor="@color/background"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewResultNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fetching Top  Available Fleets..."
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:lottie_autoPlay="true"
+            android:visibility="gone"
+            app:lottie_fileName="loadloading.json"
+            app:lottie_loop="true" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_fleets"
+            android:layout_width="match_parent"
+            android:nestedScrollingEnabled="false"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textViewShowAllBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="15dp"
+            android:background="@drawable/border_stroke_bg"
+            android:drawableLeft="@drawable/ic_play_arrow_black_24dp"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:visibility="gone"
+            android:text="See All Fleets "
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

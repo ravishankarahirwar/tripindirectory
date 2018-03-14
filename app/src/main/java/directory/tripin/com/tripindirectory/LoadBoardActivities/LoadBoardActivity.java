@@ -1,6 +1,9 @@
 package directory.tripin.com.tripindirectory.LoadBoardActivities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +67,9 @@ public class LoadBoardActivity extends AppCompatActivity {
         //toolbar.setSubtitle("501 Active Posts");
         toolbar.setTitle("LoadBoard");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        FirebaseMessaging.getInstance().subscribeToTopic("NewFleetPost");
+        FirebaseMessaging.getInstance().subscribeToTopic("NewLoadPost");
+
 
 
         ViewPager viewPager = findViewById(R.id.container);
@@ -73,14 +81,30 @@ public class LoadBoardActivity extends AppCompatActivity {
 
 
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.menu);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        com.github.clans.fab.FloatingActionButton fabFleet = findViewById(R.id.menu_fleet);
+        fabFleet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        com.github.clans.fab.FloatingActionButton fabLoad = findViewById(R.id.menu_load);
+        fabLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               startActivity(new Intent(LoadBoardActivity.this,PostLoadActivity.class));
+            }
+        });
+
+        if(getIntent().getExtras()!=null){
+            if(getIntent().getExtras().getString("frag")!=null){
+                if(getIntent().getExtras().getString("frag").equals("3")){
+                    viewPager.setCurrentItem(3);
+                }
+            }
+
+        }
+
 
     }
 
@@ -100,8 +124,39 @@ public class LoadBoardActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_addpost) {
+            final CharSequence[] items = {
+                    "Post Load", "Post Fleet", "Cancel"
+            };
+
+            final AlertDialog alert;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Make your selection");
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int item) {
+                    // Do something with the selection
+                 switch (item){
+                     case 0:{
+                         startActivity(new Intent(LoadBoardActivity.this,PostLoadActivity.class));
+                         break;
+                     }
+                     case 1:{
+                         startActivity(new Intent(LoadBoardActivity.this,PostFleetActivity.class));
+
+                         break;
+                     }
+                     case 2:{
+                         break;
+                     }
+
+                 }
+                }
+            });
+            alert = builder.create();
+            alert.show();
             return true;
+        }else if(id == R.id.action_map){
+            startActivity(new Intent(LoadBoardActivity.this,LoadBoardMapViewActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -116,13 +171,13 @@ public class LoadBoardActivity extends AppCompatActivity {
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabTwo.setText("Fleets");
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_rv_hookup_black_24dp, 0, 0);
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.delivery_truck_white, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
 
         TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabThree.setText("Intrested");
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite_black_24dp, 0, 0);
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite_white_24dp, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);

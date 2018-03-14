@@ -18,7 +18,7 @@
     <string name="menu_Message_text">Message</string>
 
     <string name="company_name">Company Name</string>
-    <string name="company_name_caps">COMPANY NAME</string>
+    <string name="company_name_caps">COMPANY NAME </string>
     <string name="contact_person_name">Person name</string>
     <string name="contact_person_number">Person number</string>
 
@@ -40,12 +40,12 @@
     <string name="action_voice_rec">Voice Search</string>
 
 
-    <string name="truck_type_prompt">Vehicle</string>
+    <string name="truck_type_prompt">Vehicle Types</string>
 
 
     <string-array name="truck_type">
+        <item>Select Type of Vehicle</item>
         <item>None</item>
-        <item>Vehicle</item>
         <item>LCV</item>
         <item>Truck</item>
         <item>Tusker</item>
@@ -61,12 +61,11 @@
         <item>Hydraulic Axles</item>
     </string-array>
 
-    <string name="body_type_prompt">Body</string>
+    <string name="body_type_prompt">Body Types</string>
 
     <string-array name="body_type">
+        <item>Select Type of Body</item>
         <item>None</item>
-
-        <item>Body</item>
         <item>Normal</item>
         <item>Full Body</item>
         <item>Half Body</item>
@@ -93,8 +92,8 @@
     <string name="nev_invite_friends">Invite friends</string>
     <string name="no_images_uploaded_yet">No Images Uploaded Yet!</string>
     <string name="destination">Destination</string>
-    <string name="route">ROUTE</string>
-    <string name="search_tag_city">CITY</string>
+    <string name="route">ROUTE </string>
+    <string name="search_tag_city">CITY </string>
     <string name="transporter">TRANSPORTER</string>
     <string name="company_contacts">Company Contacts</string>
     <string name="area_of_operation">Area of operation</string>

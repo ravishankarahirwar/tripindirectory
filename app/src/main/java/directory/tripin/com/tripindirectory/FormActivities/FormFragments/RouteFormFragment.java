@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -44,7 +44,9 @@ import java.util.Map;
 import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.model.HubFetchedCallback;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
+import directory.tripin.com.tripindirectory.model.RouteCityPojo;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -53,7 +55,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RouteFormFragment extends BaseFragment {
+public class RouteFormFragment extends BaseFragment implements HubFetchedCallback {
 
     Query query;
     FirebaseAuth auth;
@@ -172,6 +174,54 @@ public class RouteFormFragment extends BaseFragment {
         });
     }
 
+    @Override
+    public void onDestinationHubFetched(String destinationhub, int operation) {
+        switch (operation){
+            case 0:{
+                break;
+            }
+            case 1:{
+                mUserDocRef.update("mDestinationHubs."+destinationhub.trim(),true);
+                break;
+            }
+            case 2:{
+                mUserDocRef.update("mDestinationHubs."+destinationhub.trim(),FieldValue.delete()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        for(String s: dropoffHM.keySet()){
+                            updateDestinationHubs(s,1);
+                        }
+                    }
+                });
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onSourceHubFetched(String sourcehub, int operation) {
+        switch (operation){
+            case 0:{
+                break;
+            }
+            case 1:{
+                mUserDocRef.update("mSourceHubs."+sourcehub.trim(),true);
+                break;
+            }
+            case 2:{
+                mUserDocRef.update("mSourceHubs."+sourcehub.trim(),FieldValue.delete()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        for(String s: pickupHM.keySet()){
+                            updateSourceHubs(s,1);
+                        }
+                    }
+                });
+                break;
+            }
+        }
+    }
+
 
     public class MyRecyclerViewAdapter extends RecyclerView.Adapter<PlacesViewHolder> {
 
@@ -204,7 +254,8 @@ public class RouteFormFragment extends BaseFragment {
                     //remove city
                     if (type == 1) {
                         //remove pickup
-                        //listpickup.remove(position);
+                        updateSourceHubs(mData.get(position),2);
+
                         mUserDocRef.update("mSourceCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -218,7 +269,8 @@ public class RouteFormFragment extends BaseFragment {
                     }
                     if (type == 2) {
                         //remove drop off
-                        //listdropoff.remove(position);
+                        updateDestinationHubs(mData.get(position),2);
+
                         mUserDocRef.update("mDestinationCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -267,7 +319,7 @@ public class RouteFormFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                final Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 Logger.v("Place::: " + place.getName());
                 if(mPlaceCode==1){
                     pickupHM.put(place.getName().toString().toUpperCase(),true);
@@ -276,6 +328,8 @@ public class RouteFormFragment extends BaseFragment {
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
                             addPickUpCity.setText("Add More");
+                            updateSourceHubs(place.getName().toString(),1);
+
 
                         }
                     });
@@ -291,7 +345,7 @@ public class RouteFormFragment extends BaseFragment {
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(),"Drop City Added",Toast.LENGTH_SHORT).show();
                             addDropOffCity.setText("Add More");
-
+                            updateDestinationHubs(place.getName().toString(),1);
                         }
                     });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
@@ -305,8 +359,26 @@ public class RouteFormFragment extends BaseFragment {
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
+                addPickUpCity.setText("Add");
+                addDropOffCity.setText("Add");
+
+
             }
         }
+    }
+
+    private void updateDestinationHubs(String city, int operation) {
+
+            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),2,operation,this);
+            routeCityPojo.setmCityName(city);
+
+    }
+
+    private void updateSourceHubs(String city, int operation) {
+
+            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),1,operation,this);
+            routeCityPojo.setmCityName(city);
+
     }
 
 
