@@ -86,8 +86,7 @@
                         android:hint="Enter Material Type eg. Bricks"
                         android:inputType="textCapWords|textPersonName"
                         android:padding="10dp"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textSize="14sp" />
 
                     <EditText
                         android:id="@+id/editTextWeight"

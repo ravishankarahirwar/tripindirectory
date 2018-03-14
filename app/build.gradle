@@ -9,8 +9,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 32
-        versionName "5.5"
+        versionCode 33
+        versionName "5.6"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

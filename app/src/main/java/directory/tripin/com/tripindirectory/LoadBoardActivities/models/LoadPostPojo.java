@@ -15,51 +15,43 @@ import java.util.List;
 
 public class LoadPostPojo {
 
-    private String mSourceCity = "";
-    private GeoPoint mSourceCityLatLang;
-    private String mDestinationCity = "";
-    private GeoPoint mDestinationCityLatLang;
-    private String mLoadMaterial = "";
-    private String mLoadWeight = "";
-
     private Date mPickUpTimeStamp;
 
+    private GeoPoint mDestinationCityLatLang;
+    private GeoPoint mSourceCityLatLang;
+
+    private String mDestinationCity = "";
+    private String mLoadMaterial = "";
+    private String mLoadWeight = "";
+    private String mSourceCity = "";
     private String mNumberOfTrucks = "";
     private String mVehicleTypeRequired = "";
     private String mBodyTypeRequired = "";
     private String mFleetLengthRequired = "";
     private String mFleetPayLoadRequired = "";
     private String mPersonalNote = "";
-
-
-
     private String mSourceHub;
     private String mDestinationHub;
     private String mEstimatedDistance;
     private String mEstimatedTime;
     private String mEstimatedCost;
 
-
     private String mCompanyName;
     private String mRMN;
     private String mPostersUid;
     private String mDocId;
     private String mFcmToken;
-    private List<String> mImagesUrl;
 
+    private List<String> mImagesUrl;
 
     @ServerTimestamp
     private Date mTimeStamp;
-
-
 
     private HashMap<String,Boolean> mIntrestedPeopleList;
     private HashMap<String,Boolean> mSharedPeopleList;
     private HashMap<String,Boolean> mInboxedPeopleList;
     private HashMap<String,Boolean> mCalledPeopleList;
     private HashMap<String,Boolean> mQuotedPeopleList;
-
-
 
     public LoadPostPojo() {
     }
