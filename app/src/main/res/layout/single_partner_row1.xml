@@ -11,12 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
         app:cardCornerRadius="4dp"
-        app:cardElevation="2dp">
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,27 +30,90 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_fiber_manual_record_black_24dp"
                 android:ellipsize="end"
-                android:lineSpacingExtra="5sp"
-
+                android:fontFamily="sans-serif-black"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
                 android:maxLines="1"
                 android:text="Trip In Transport"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:transitionName="compname" />
 
             <TextView
                 android:id="@+id/company_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_weight="0.90"
+                android:gravity="center_vertical"
+                android:drawablePadding="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:drawableLeft="@drawable/office_red"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:padding="10dp"
-                android:textColor="#b34a4a4a"
-                android:textSize="13sp" />
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/nature_of_business_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:drawableLeft="@drawable/agreement_red"
+                android:text="Nature of Business - info not available"
+                android:maxLines="1"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@android:color/black"
+                android:drawablePadding="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/type_of_service_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:drawableLeft="@drawable/delivery_cart_red"
+                android:text="Type Of Service : info not available"
+                android:maxLines="1"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@android:color/black"
+                android:drawablePadding="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/fleet_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:text="Fleet info not available"
+                android:drawableLeft="@drawable/fleet_red"
+                android:drawablePadding="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:maxLines="1"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/route_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:text="Route info not available"
+                android:drawableLeft="@drawable/route_red"
+                android:drawablePadding="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:maxLines="1"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@android:color/black" />
 
             <View
                 android:id="@+id/devider"

@@ -5,6 +5,6 @@ package directory.tripin.com.tripindirectory.model;
  */
 
 public interface HubFetchedCallback {
-    public void onDestinationHubFetched(String destinationhub, int operaion);
-    public void onSourceHubFetched(String sourcehub, int operation);
+    void onDestinationHubFetched(String destinationhub, int operaion);
+    void onSourceHubFetched(String sourcehub, int operation);
 }

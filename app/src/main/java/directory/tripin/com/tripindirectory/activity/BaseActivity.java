@@ -11,9 +11,12 @@ import android.support.v7.app.AppCompatActivity;
  * @since 14-03-2018
  */
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
     }
+
+    protected abstract void init();
+    protected abstract void viewSetup();
 }

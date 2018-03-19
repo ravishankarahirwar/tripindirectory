@@ -9,11 +9,6 @@
             android:icon="@drawable/agreement"
             android:title="@string/nev_add_your_business" />
         <item
-            android:id="@+id/nav_loadboard"
-            android:visible="true"
-            android:icon="@drawable/ic_widgets_black_24dp"
-            android:title="@string/nev_loadboard" />
-        <item
             android:id="@+id/nav_inbox"
             android:visible="true"
             android:icon="@drawable/fui_ic_mail_white_24dp"
@@ -33,7 +28,7 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_share_black_24dp"
                 android:title="@string/nev_share_app" />
             <item
                 android:id="@+id/nav_invite"

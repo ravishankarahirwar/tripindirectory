@@ -17,6 +17,11 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public CardView mCardView;
     public TextView mAddress;
     public ImageView mCall;
+    public TextView mNatureOfBusiness;
+    public TextView mTypeOfServices;
+    public TextView mFleetInfo;
+    public TextView mRouteInfo;
+
     public TextView mCompany;
 
     public ImageView mStarView;
@@ -30,6 +35,10 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
         mCall = itemView.findViewById(R.id.call);
         mAddress =  itemView.findViewById(R.id.company_address);
         mCompany = itemView.findViewById(R.id.company_name1);
+        mNatureOfBusiness = itemView.findViewById(R.id.nature_of_business_info);
+        mTypeOfServices = itemView.findViewById(R.id.type_of_service_info);
+        mFleetInfo = itemView.findViewById(R.id.fleet_info);
+        mRouteInfo = itemView.findViewById(R.id.route_info);
 
         mStarView =  itemView.findViewById(R.id.star);
         mNumStarsView = itemView.findViewById(R.id.post_num_stars);

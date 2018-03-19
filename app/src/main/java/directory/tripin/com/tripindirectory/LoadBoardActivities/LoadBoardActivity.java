@@ -42,17 +42,15 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.fragments.Intres
 import directory.tripin.com.tripindirectory.LoadBoardActivities.fragments.LoadsFragment;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.fragments.MyPostsFragment;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.activity.BaseActivity;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 
-public class LoadBoardActivity extends AppCompatActivity {
+public class LoadBoardActivity extends BaseActivity {
 
     private TabLayout tabLayout;
     private ViewPagerAdapter adapter;
-    private PartnerInfoPojo partnerInfoPojo;
-    private DocumentReference mUserDocRef;
-    CoordinatorLayout coordinatorLayout;
-    private PreferenceManager mPreferenceManager;
+    private CoordinatorLayout coordinatorLayout;
     private Context mContext;
 
 
@@ -70,16 +68,12 @@ public class LoadBoardActivity extends AppCompatActivity {
         FirebaseMessaging.getInstance().subscribeToTopic("NewFleetPost");
         FirebaseMessaging.getInstance().subscribeToTopic("NewLoadPost");
 
-
-
         ViewPager viewPager = findViewById(R.id.container);
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         createViewPager(viewPager);
         viewPager.setAdapter(adapter);
         createTabIcons();
-
-
 
         com.github.clans.fab.FloatingActionButton fabFleet = findViewById(R.id.menu_fleet);
         fabFleet.setOnClickListener(new View.OnClickListener() {
@@ -104,10 +98,18 @@ public class LoadBoardActivity extends AppCompatActivity {
             }
 
         }
+    }
 
+
+    @Override
+    protected void init() {
 
     }
 
+    @Override
+    protected void viewSetup() {
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,11 +139,11 @@ public class LoadBoardActivity extends AppCompatActivity {
                     // Do something with the selection
                  switch (item){
                      case 0:{
-                         startActivity(new Intent(LoadBoardActivity.this,PostLoadActivity.class));
+                         startActivity(new Intent(LoadBoardActivity.this, PostLoadActivity.class));
                          break;
                      }
                      case 1:{
-                         startActivity(new Intent(LoadBoardActivity.this,PostFleetActivity.class));
+                         startActivity(new Intent(LoadBoardActivity.this, PostFleetActivity.class));
 
                          break;
                      }
@@ -170,7 +172,7 @@ public class LoadBoardActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
-        tabTwo.setText("Fleets");
+        tabTwo.setText("Trucks");
         tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.delivery_truck_white, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
@@ -189,7 +191,7 @@ public class LoadBoardActivity extends AppCompatActivity {
     private void createViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new LoadsFragment(), "Tab Loads");
-        adapter.addFrag(new FleetsFragment(), "Tab Fleets");
+        adapter.addFrag(new FleetsFragment(), "Tab Trucks");
         adapter.addFrag(new IntrestedInFragment(), "Tab Intrested In");
         adapter.addFrag(new MyPostsFragment(), "Tab My Posts");
     }

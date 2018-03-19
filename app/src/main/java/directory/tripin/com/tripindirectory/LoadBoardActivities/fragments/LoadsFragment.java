@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,10 +61,9 @@ import directory.tripin.com.tripindirectory.utils.TextUtils;
  */
 public class LoadsFragment extends Fragment {
 
-
     public RecyclerView mLoadsList;
     public TextUtils textUtils;
-    FirestoreRecyclerAdapter adapter;
+    private FirestoreRecyclerAdapter adapter;
     private RecyclerViewAnimator mAnimator;
     private FirebaseAuth firebaseAuth;
     private String mUid = "";
@@ -72,12 +72,9 @@ public class LoadsFragment extends Fragment {
     private TextView mSeeAll;
     private TextView mSeeAllBottom;
 
-
-
     public LoadsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,7 +87,6 @@ public class LoadsFragment extends Fragment {
         mResultDescription = v.findViewById(R.id.textViewResultNumber);
         mSeeAll = v.findViewById(R.id.textViewShowAll);
         mSeeAllBottom = v.findViewById(R.id.textViewShowAllBottom);
-
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         //mLayoutManager.setStackFromEnd(true);
@@ -111,8 +107,6 @@ public class LoadsFragment extends Fragment {
 
             }
         });
-
-
         return v;
     }
 
@@ -148,13 +142,11 @@ public class LoadsFragment extends Fragment {
                     dd = " (today)";
                 }else if(d.equals("1")){
                     dd = " (tomorrow)";
-                }else if(d.length()>5){
-                    dd = " (expired!)";
-                }else {
+                } else {
                     dd = " ("+d+" days left)";
                 }
 
-                holder.mScheduledDate.setText("Scheduled Date : " + DisplayDate + dd);
+                holder.mScheduledDate.setText("Scheduled Date : " + DisplayDate );
 
                 if (!loadPostPojo.getmCompanyName().isEmpty()) {
                     holder.mPostTitle.setText(textUtils.toTitleCase(loadPostPojo.getmCompanyName()));
@@ -410,9 +402,6 @@ public class LoadsFragment extends Fragment {
                     }
                 });
 
-
-
-
                 holder.quote.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -447,22 +436,6 @@ public class LoadsFragment extends Fragment {
                             }
                         });
 
-                        amount.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                quote.setText("Quote "+charSequence.toString().trim()+"₹");
-
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable editable) {
-
-                            }
-                        });
 
                         quote.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -518,28 +491,33 @@ public class LoadsFragment extends Fragment {
                     }
                 });
 
+                if(!(loadPostPojo.getmPostersUid().equalsIgnoreCase(FirebaseAuth.getInstance().getUid()))) {
 
-                holder.inbox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FirebaseFirestore.getInstance()
-                                .collection("loads")
-                                .document(docId)
-                                .update("mInboxedPeopleList." + mUid, true)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        //done
-                                        Logger.v("mInboxedPeopleList Modified");
-                                    }
-                                });
-                        Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
-                        intent.putExtra("imsg",loadPostPojo.getTextToInitateChat());
-                        intent.putExtra("ormn",loadPostPojo.getmRMN());
-                        intent.putExtra("ouid",loadPostPojo.getmPostersUid());
-                        startActivity(intent);
-                    }
-                });
+                    holder.inbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            FirebaseFirestore.getInstance()
+                                    .collection("loads")
+                                    .document(docId)
+                                    .update("mInboxedPeopleList." + mUid, true)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            //done
+                                            Logger.v("mInboxedPeopleList Modified");
+                                        }
+                                    });
+                            Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                            intent.putExtra("imsg", loadPostPojo.getTextToInitateChat());
+                            intent.putExtra("ormn", loadPostPojo.getmRMN());
+                            intent.putExtra("ouid", loadPostPojo.getmPostersUid());
+                            startActivity(intent);
+                        }
+                    });
+
+                }else {
+                    holder.mInboxLayout.setVisibility(RelativeLayout.GONE);
+                }
 
                 Logger.v("onBind: " + position);
                 //mAnimator.onBindViewHolder(holder.itemView, position);

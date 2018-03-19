@@ -176,6 +176,16 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
     }
 
     @Override
+    protected void init() {
+        
+    }
+
+    @Override
+    protected void viewSetup() {
+
+    }
+
+    @Override
     public void onResume() {
         mapView.onResume();
         super.onResume();
@@ -368,35 +378,13 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
             @Override
             public void onClick(View view) {
                 upload.setText("Uploading...");
-                final CommentPojo commentPojo;
-
-                commentPojo = new CommentPojo(loadPostPojo.getmPersonalNote() + ". Initial Comment!",
-                        loadPostPojo.getmCompanyName(),
-                        loadPostPojo.getmRMN(),
-                        loadPostPojo.getmFcmToken(), loadPostPojo.getmDocId(), loadPostPojo.getmPostersUid());
-                commentPojo.setmImagesUrl(loadPostPojo.getmImagesUrl());
 
                 DocumentReference rf = FirebaseFirestore.getInstance().collection("loads").document();
                 loadPostPojo.setmDocId(rf.getId());
                 rf.set(loadPostPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        FirebaseFirestore.getInstance()
-                                .collection("loads")
-                                .document(loadPostPojo.getmDocId())
-                                .collection("mCommentsCollection")
-                                .add(commentPojo)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        //comment added
-                                        //subscribe to topic
-                                        FirebaseMessaging.getInstance().subscribeToTopic(loadPostPojo.getmDocId());
-                                        Toast.makeText(getApplicationContext(), "Load Posted Successfully!", Toast.LENGTH_LONG).show();
-                                        finish();
-                                    }
-                                });
-
+                        Toast.makeText(getApplicationContext(), "Load Posted Successfully!", Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -405,12 +393,10 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
     }
 
     private void updateDateLabel() {
-
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
         tvSchleduledDate.setText(sdf.format(myCalendar.getTime()));
         loadPostPojo.setmPickUpTimeStamp(myCalendar.getTime());
-
     }
 
 

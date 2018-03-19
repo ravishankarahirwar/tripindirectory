@@ -75,9 +75,7 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
     GeoDataClient mGeoDataClient;
 
     @Override
-    public void onUpdate(PartnerInfoPojo partnerInfoPojo) {
-
-    }
+    public void onUpdate(PartnerInfoPojo partnerInfoPojo) {}
 
     public RouteFormFragment() {
         // Required empty public constructor
@@ -88,7 +86,6 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
         adapterp = new MyRecyclerViewAdapter(listpickup, 1);
         adapterd = new MyRecyclerViewAdapter(listdropoff, 2);
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -323,14 +320,12 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
                 Logger.v("Place::: " + place.getName());
                 if(mPlaceCode==1){
                     pickupHM.put(place.getName().toString().toUpperCase(),true);
-                    mUserDocRef.update("mSourceCities",pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    mUserDocRef.update("mSourceCities", pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
                             addPickUpCity.setText("Add More");
                             updateSourceHubs(place.getName().toString(),1);
-
-
                         }
                     });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
@@ -368,18 +363,12 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
     }
 
     private void updateDestinationHubs(String city, int operation) {
-
-            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),2,operation,this);
-            routeCityPojo.setmCityName(city);
-
+           RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),2, operation,this);
+           routeCityPojo.setmCityName(city);
     }
 
     private void updateSourceHubs(String city, int operation) {
-
-            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),1,operation,this);
+            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),1, operation,this);
             routeCityPojo.setmCityName(city);
-
-    }
-
-
+   }
 }

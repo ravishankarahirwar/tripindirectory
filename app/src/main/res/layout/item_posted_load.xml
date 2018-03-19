@@ -52,8 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Posted 10min Ago . Need Fleet"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <ImageView
@@ -212,7 +211,6 @@
                     android:gravity="center"
                     android:text="804\nkm"
                     android:textSize="12sp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/textViewRequiredFleet"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textViewLoadProperties" />
@@ -249,12 +247,10 @@
                     android:freezesText="true"
                     android:gravity="center_vertical"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:padding="5dp"
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:text=" Gas Containers, 12MT"
                     android:textSize="12sp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/textViewDistance"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -278,7 +274,6 @@
                     android:singleLine="true"
                     android:text=" Trailer, Full Body, 32MT, 12Ft"
                     android:textSize="12sp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/textViewDistance"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewLoadProperties" />
@@ -416,6 +411,7 @@
                 android:id="@+id/rl_comment"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_weight="1">
 
                 <TextView

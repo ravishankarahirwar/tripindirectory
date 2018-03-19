@@ -42,17 +42,17 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostP
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostViewHolder;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.activity.BaseActivity;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
-public class LoadPostsActivity extends AppCompatActivity {
+public class LoadPostsActivity extends BaseActivity {
 
     public RecyclerView mLoadsList;
     public TextUtils textUtils;
-    FirestoreRecyclerAdapter adapter;
-    FirebaseAuth mAuth;
+    private FirestoreRecyclerAdapter adapter;
     private LottieAnimationView lottieAnimationViewLoading;
     private Activity activity;
     private FirebaseAuth firebaseAuth;
@@ -65,6 +65,7 @@ public class LoadPostsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_posts);
+
         lottieAnimationViewLoading = findViewById(R.id.loadingloads);
         mLoadsList = findViewById(R.id.rv_loads);
         mLoadsList.setLayoutManager(new LinearLayoutManager(this));
@@ -513,6 +514,16 @@ public class LoadPostsActivity extends AppCompatActivity {
 
         }
         return diff;
+
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
+    @Override
+    protected void viewSetup() {
 
     }
 
