@@ -12,6 +12,9 @@ public interface DB {
          String QUERYBOOKMARKS = "mQueryBookmarks";
     }
     interface PartnerFields {
+        String LASTACTIVETIME = "mLastActiveTime";
+        String COMPANY_NAME = "mCompanyName";
+        String ACCOUNT_STATUS = "mAccountStatus";
     }
 
     interface QueryBookmarkFields {

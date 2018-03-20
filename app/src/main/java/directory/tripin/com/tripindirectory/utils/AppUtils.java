@@ -20,7 +20,7 @@ public class AppUtils {
     private Context mContext;
 
     public AppUtils(Context context) {
-        this.mContext = mContext;
+        this.mContext = context;
     }
 
     public void shareApp() {

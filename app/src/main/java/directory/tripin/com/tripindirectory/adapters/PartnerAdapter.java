@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -21,12 +22,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -135,21 +138,25 @@ public class PartnerAdapter extends FirestoreRecyclerAdapter<PartnerInfoPojo, Re
                     }
                 });
 
-                String natureOfBusiness = "";
-                for(Map.Entry<String, Boolean> entry : model.getmNatureOfBusiness().entrySet()) {
-                    if(entry.getValue()) {
-                        natureOfBusiness += mTextUtils.toTitleCase(entry.getKey()) + ", ";
+                if(model.getmNatureOfBusiness() != null) {
+                    String natureOfBusiness = "";
+                    for (Map.Entry<String, Boolean> entry : model.getmNatureOfBusiness().entrySet()) {
+                        if (entry.getValue()) {
+                            natureOfBusiness += mTextUtils.toTitleCase(entry.getKey()) + ", ";
+                        }
                     }
+                    partnersViewHolder.mNatureOfBusiness.setText(natureOfBusiness);
                 }
-                partnersViewHolder.mNatureOfBusiness.setText(natureOfBusiness);
 
-                String typeOfServices = "";
-                for(Map.Entry<String, Boolean> entry : model.getmTypesOfServices().entrySet()) {
-                    if(entry.getValue()) {
-                        typeOfServices += mTextUtils.toTitleCase(entry.getKey()) + ", ";
+                if(model.getmTypesOfServices() != null) {
+                    String typeOfServices = "";
+                    for (Map.Entry<String, Boolean> entry : model.getmTypesOfServices().entrySet()) {
+                        if (entry.getValue()) {
+                            typeOfServices += mTextUtils.toTitleCase(entry.getKey()) + ", ";
+                        }
                     }
+                    partnersViewHolder.mTypeOfServices.setText(typeOfServices);
                 }
-                partnersViewHolder.mTypeOfServices.setText(typeOfServices);
 
                 if(model.getFleetVehicle() != null) {
                     String fleet = "";
@@ -190,8 +197,17 @@ public class PartnerAdapter extends FirestoreRecyclerAdapter<PartnerInfoPojo, Re
                 } else {
                     route = "Route Info Not available";
                 }
-
                 partnersViewHolder.mRouteInfo.setText(route);
+
+                if(model.getmLastActiveTime() != null) {
+                    SimpleDateFormat dt = new SimpleDateFormat("MM/dd hh:mm");
+                    Date date = model.getmLastActiveTime();
+
+                    String DisplayDate = dt.format(date);
+                    partnersViewHolder.mLastActiveTime.setText(DisplayDate);
+                } else {
+                    partnersViewHolder.mLastActiveTime.setVisibility(View.GONE);
+                }
 
                 partnersViewHolder.mCall.setOnClickListener(new View.OnClickListener() {
                     @Override

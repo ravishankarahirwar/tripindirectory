@@ -74,6 +74,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -139,7 +140,6 @@ import directory.tripin.com.tripindirectory.ui.adapters.PropertiesValuesAdaptor;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
-import directory.tripin.com.tripindirectory.utils.DBFields;
 import directory.tripin.com.tripindirectory.utils.FilterType;
 import directory.tripin.com.tripindirectory.utils.SearchBy;
 import directory.tripin.com.tripindirectory.utils.SearchData;
@@ -147,7 +147,7 @@ import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener ,HubFetchedCallback, OnDataLoadListner {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner {
 
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
@@ -159,13 +159,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+    //    private FirestoreRecyclerAdapter adapter;
+    boolean isCompanySuggestionClicked = false;
+    boolean isBookmarkSaved = false;
+    boolean isApplySortPressed;
     private List<SuggestionCompanyName> companySuggestions = null;
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
-
-    //    private FirestoreRecyclerAdapter adapter;
-    boolean isCompanySuggestionClicked = false;
     private Context mContext;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
@@ -181,39 +182,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean isDestinationSelected = false;
     private RouteCityPojo mSourceCity;
     private RouteCityPojo mDestinationCity;
-    boolean isBookmarkSaved = false;
     private int signinginfor = 0;
     private QueryBookmarkPojo queryBookmarkPojo;
-
     private FirebaseAnalytics mFirebaseAnalytics;
     private RecyclerViewAnimator mAnimator;
     private LottieAnimationView lottieAnimationView, animationBookmark;
     private TextUtils textUtils;
     private SlidingUpPanelLayout sliderLayout;
-
     private TextView mApplyFilters;
     private TextView mClearFilters;
-
     private TextView mFilterPanelToggle;
     private TextView mSortPanelToggle;
     private TextView mNoOfFilterApply;
-
     private LottieAnimationView mBookmarkPanelToggle;
-
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
-
     private HashMap<String, Boolean> mNatureofBusinessHashMap;
     private HashMap<String, Boolean> mTypesofServicesHashMap;
     private List<FilterPojo> mFiltersList;
-
     private CheckBoxRecyclarAdapter mNatureOfBusiness;
     private CheckBoxRecyclarAdapter mTypeOfService;
-
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
     private RecyclerView mTypesofVehiclesRecyclarView;
-
     private TextView mTextCount;
     private Dialog dialog;
     private boolean isApplyFilterPressed;
@@ -222,13 +213,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RadioButton radioButtonAlphabetically;
     private RadioButton mSortAlphDecending;
     private RadioButton radioButtonCrediblity;
-
+    private RadioButton mShortByLastActive;
     private RadioGroup mSortRadioGroup;
+
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
     private int mSortIndex;
-    boolean isApplySortPressed;
-
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
     private WorkingWithAdapter mWorkingWithAdapter;
@@ -237,6 +227,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private QueryManager mQueryManager;
     private PartnerAdapter mPartnerAdapter;
     private AppUtils mAppUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,6 +242,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         showAppIntro();
         setAdapter("");
         setBookmarkListAdapter();
+        setLastActiveTime();
     }
 
 
@@ -333,6 +325,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         radioButtonAlphabetically = findViewById(R.id.radioButton1);
         mSortAlphDecending = findViewById(R.id.radioButton2);
         radioButtonCrediblity = findViewById(R.id.radioButton4);
+        mShortByLastActive = findViewById(R.id.shortby_lastactive);
+
         mSortRadioGroup = findViewById(R.id.radioGroupSort);
         mBtnApplySorts = findViewById(R.id.buttonApplySort);
         mBtnClearSorts = findViewById(R.id.buttonClearSort);
@@ -434,16 +428,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 switch (mSortRadioGroup.getCheckedRadioButtonId()) {
-                    case R.id.radioButton1: {
+                    case R.id.radioButton1 : {
                         mSortIndex = ShortingType.ALPHA_ASSENDING;
                         break;
                     }
-                    case R.id.radioButton2: {
+                    case R.id.radioButton2 : {
                         mSortIndex = ShortingType.ALPHA_DECENDING;
                         break;
                     }
-                    case R.id.radioButton4: {
+                    case R.id.radioButton4 : {
                         mSortIndex = ShortingType.ACCOUNT_TYPE;
+                        break;
+                    }
+                    case R.id.shortby_lastactive : {
+                        mSortIndex = ShortingType.LAST_ACTIVE;
                         break;
                     }
                     default: {
@@ -462,7 +460,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             null,
                             ContextCompat
                                     .getDrawable(getApplicationContext(),
-                                            R.drawable.ic_bubble_chart_white_24dp),
+                                            R.drawable.ic_brightness_1_black_24dp),
                             null);
                 } else {
                     mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
@@ -732,20 +730,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //apply filters
         for (FilterPojo filter : mFiltersList) {
             switch (filter.getmFilterType()) {
-                case FilterType.TYPE_OF_VEHICLE_PROPERTY : {
+                case FilterType.TYPE_OF_VEHICLE_PROPERTY: {
                     String filterName = filter.getmFilterName();
                     query = query.whereEqualTo(filterName, true);
                     break;
                 }
-                case FilterType.TYPE_OF_VEHICLE : {
+                case FilterType.TYPE_OF_VEHICLE: {
                     query = query.whereEqualTo("fleetVehicle." + filter.getmFilterName(), true);
                     break;
                 }
-                case FilterType.TYPE_OF_SERVICE : {
+                case FilterType.TYPE_OF_SERVICE: {
                     query = query.whereEqualTo("mTypesOfServices." + filter.getmFilterName().toUpperCase().trim(), true);
                     break;
                 }
-                case FilterType.NATURE_OF_BUSINESS : {
+                case FilterType.NATURE_OF_BUSINESS: {
                     query = query.whereEqualTo("mNatureOfBusiness." + filter.getmFilterName().toUpperCase().trim(), true);
 
                     break;
@@ -757,20 +755,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //apply sorting
         switch (mSortIndex) {
-            case ShortingType.ALPHA_ASSENDING: {
-                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.ASCENDING);
+            case ShortingType.ALPHA_ASSENDING : {
+                query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
-            case ShortingType.ALPHA_DECENDING: {
-                query = query.orderBy(DBFields.COMPANY_NAME, Query.Direction.DESCENDING);
+            case ShortingType.ALPHA_DECENDING : {
+                query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
-            case ShortingType.ACCOUNT_TYPE: {
-                query = query.orderBy(DBFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
+            case ShortingType.ACCOUNT_TYPE : {
+                query = query.orderBy(DB.PartnerFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
+                break;
+            }
+            case ShortingType.LAST_ACTIVE : {
+                query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
                 break;
             }
             default: {
-                query = query.orderBy(DBFields.COMPANY_NAME);
+                query = query.orderBy(DB.PartnerFields.COMPANY_NAME);
                 break;
             }
         }
@@ -780,7 +782,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!searchQuery.isEmpty()) {
             mSearchQuery = searchQuery;
             switch (searchTag) {
-                case SearchBy.SEARCHTAG_ROUTE : {
+                case SearchBy.SEARCHTAG_ROUTE: {
                     if (searchQuery.equals("1")) {
                         if (mSourceCity.getmNearestHub() != null && mDestinationCity.getmNearestHub() != null) {
                             Logger.v("HUBS: " + mSourceCity.getmNearestHub().getmHubName() + " , " + mDestinationCity.getmNearestHub().getmHubName());
@@ -807,24 +809,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                     break;
                 }
-                case SearchBy.SEARCHTAG_COMPANY : {
+                case SearchBy.SEARCHTAG_COMPANY: {
 
                     if (isCompanySuggestionClicked) {
-                        query = query.whereEqualTo(DBFields.COMPANY_NAME, searchQuery.trim());
+                        query = query.whereEqualTo(DB.PartnerFields.COMPANY_NAME, searchQuery.trim());
                     } else {
-                        query = query.whereGreaterThanOrEqualTo(DBFields.COMPANY_NAME, searchQuery.trim().toUpperCase());
+                        query = query.whereGreaterThanOrEqualTo(DB.PartnerFields.COMPANY_NAME, searchQuery.trim().toUpperCase());
                     }
                     isCompanySuggestionClicked = false;
                     break;
                 }
-                case SearchBy.SEARCHTAG_CITY : {
+                case SearchBy.SEARCHTAG_CITY: {
                     query = query.whereEqualTo("mCompanyAdderss.city", searchQuery.toUpperCase());
                     break;
                 }
             }
         } else {
-            if (mSortIndex != ShortingType.ACCOUNT_TYPE) {
-                query = query.whereGreaterThan(DBFields.COMPANY_NAME, "");
+            if (mSortIndex != ShortingType.ACCOUNT_TYPE && mSortIndex != ShortingType.LAST_ACTIVE) {
+                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
             }
         }
 
@@ -1095,7 +1097,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
-               if (!oldQuery.equals("") && newQuery.equals("")) {
+                if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
                     isSourceSelected = false;
                     isDestinationSelected = false;
@@ -1328,84 +1330,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-
-    public interface OnFindSuggestionsListener {
-        void onResults(List<SuggestionCompanyName> results);
-    }
-
-    private class GetCityFromGoogleTask extends AsyncTask<String, Void, List<SuggestionCompanyName>> {
-        OnFindSuggestionsListener mOnFindSuggestionsListener;
-
-        GetCityFromGoogleTask(OnFindSuggestionsListener onFindSuggestionsListener) {
-            mOnFindSuggestionsListener = onFindSuggestionsListener;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(List<SuggestionCompanyName> suggestionCityName) {
-            super.onPostExecute(suggestionCityName);
-            mOnFindSuggestionsListener.onResults(suggestionCityName);
-        }
-
-        @Override
-        protected List<SuggestionCompanyName> doInBackground(String... place) {
-            List<SuggestionCompanyName> suggestionCompanyNames = new ArrayList<>();
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
-                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-                    .setCountry("IN")
-                    .build();
-
-
-            Task<AutocompletePredictionBufferResponse> results =
-                    mGeoDataClient.getAutocompletePredictions(place[0], BOUNDS_GREATER_SYDNEY, typeFilter);
-
-            // This method should have been called off the main UI thread. Block and wait for at most
-            // 60s for a result from the API.
-            try {
-                Tasks.await(results, 60, TimeUnit.SECONDS);
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                AutocompletePredictionBufferResponse autocompletePredictions = results.getResult();
-                ArrayList<AutocompletePrediction> autocompletePredictions1 = DataBufferUtils.freezeAndClose(autocompletePredictions);
-                CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
-
-                for (AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
-                    SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
-                    String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
-                    switch (searchTag) {
-                        case SearchBy.SEARCHTAG_ROUTE: {
-                            if (isSourceSelected) {
-                                suggestionCompanyName.setCompanyName(cityName);
-                            } else {
-                                suggestionCompanyName.setCompanyName(cityName + " To ");
-                            }
-                            break;
-                        }
-                        case SearchBy.SEARCHTAG_CITY: {
-                            suggestionCompanyName.setCompanyName(cityName);
-
-                            break;
-                        }
-                    }
-
-                    suggestionCompanyNames.add(suggestionCompanyName);
-                    Log.i("Directory", "City Prediction : " + cityName);
-                }
-
-            } catch (RuntimeExecutionException e) {
-
-            }
-            return suggestionCompanyNames;
-        }
-    }
-
     private void startSignInFor(int signInFor) {
         // not signed in
         startActivityForResult(
@@ -1600,6 +1524,99 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mSearchView.clearSuggestions();
         mTextCount.setVisibility(View.VISIBLE);
         startCountAnimation(itemLoaded);
+    }
+
+    private void setLastActiveTime() {
+        if (mAuth.getCurrentUser() != null) {
+            mUserDocRef = FirebaseFirestore.getInstance()
+                    .collection(DB.Collection.PARTNER).document(mAuth.getUid());
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put(DB.PartnerFields.LASTACTIVETIME, FieldValue.serverTimestamp());
+            mUserDocRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                }
+            });
+        }
+    }
+
+    public interface OnFindSuggestionsListener {
+        void onResults(List<SuggestionCompanyName> results);
+    }
+
+    private class GetCityFromGoogleTask extends AsyncTask<String, Void, List<SuggestionCompanyName>> {
+        OnFindSuggestionsListener mOnFindSuggestionsListener;
+
+        GetCityFromGoogleTask(OnFindSuggestionsListener onFindSuggestionsListener) {
+            mOnFindSuggestionsListener = onFindSuggestionsListener;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<SuggestionCompanyName> suggestionCityName) {
+            super.onPostExecute(suggestionCityName);
+            mOnFindSuggestionsListener.onResults(suggestionCityName);
+        }
+
+        @Override
+        protected List<SuggestionCompanyName> doInBackground(String... place) {
+            List<SuggestionCompanyName> suggestionCompanyNames = new ArrayList<>();
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setCountry("IN")
+                    .build();
+
+
+            Task<AutocompletePredictionBufferResponse> results =
+                    mGeoDataClient.getAutocompletePredictions(place[0], BOUNDS_GREATER_SYDNEY, typeFilter);
+
+            // This method should have been called off the main UI thread. Block and wait for at most
+            // 60s for a result from the API.
+            try {
+                Tasks.await(results, 60, TimeUnit.SECONDS);
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                AutocompletePredictionBufferResponse autocompletePredictions = results.getResult();
+                ArrayList<AutocompletePrediction> autocompletePredictions1 = DataBufferUtils.freezeAndClose(autocompletePredictions);
+                CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
+
+                for (AutocompletePrediction autocompletePrediction1 : autocompletePredictions1) {
+                    SuggestionCompanyName suggestionCompanyName = new SuggestionCompanyName();
+                    String cityName = autocompletePrediction1.getPrimaryText(STYLE_BOLD).toString();
+                    switch (searchTag) {
+                        case SearchBy.SEARCHTAG_ROUTE: {
+                            if (isSourceSelected) {
+                                suggestionCompanyName.setCompanyName(cityName);
+                            } else {
+                                suggestionCompanyName.setCompanyName(cityName + " To ");
+                            }
+                            break;
+                        }
+                        case SearchBy.SEARCHTAG_CITY: {
+                            suggestionCompanyName.setCompanyName(cityName);
+
+                            break;
+                        }
+                    }
+
+                    suggestionCompanyNames.add(suggestionCompanyName);
+                    Log.i("Directory", "City Prediction : " + cityName);
+                }
+
+            } catch (RuntimeExecutionException e) {
+
+            }
+            return suggestionCompanyNames;
+        }
     }
 }
 

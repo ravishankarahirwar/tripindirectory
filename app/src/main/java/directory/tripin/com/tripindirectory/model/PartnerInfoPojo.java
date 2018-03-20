@@ -61,6 +61,14 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
+    public Date getmLastActiveTime() {
+        return mLastActiveTime;
+    }
+
+    public void setmLastActiveTime(Date mLastActiveTime) {
+        this.mLastActiveTime = mLastActiveTime;
+    }
+
     public String getFleetJson() {
         return fleetJson;
     }

@@ -129,7 +129,7 @@ public class FleetsFragment extends Fragment {
 //                .orderBy("mPickUpTimeStamp")
 //                .whereGreaterThanOrEqualTo("mPickUpTimeStamp",new Date())
                 .orderBy("mTimeStamp", Query.Direction.DESCENDING)
-                .limit(10);
+                .limit(100);
         FirestoreRecyclerOptions<FleetPostPojo> options = new FirestoreRecyclerOptions.Builder<FleetPostPojo>()
                 .setQuery(query, FleetPostPojo.class)
                 .build();

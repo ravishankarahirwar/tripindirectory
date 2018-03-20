@@ -21,6 +21,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public TextView mTypeOfServices;
     public TextView mFleetInfo;
     public TextView mRouteInfo;
+    public TextView mLastActiveTime;
 
     public TextView mCompany;
 
@@ -39,6 +40,7 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
         mTypeOfServices = itemView.findViewById(R.id.type_of_service_info);
         mFleetInfo = itemView.findViewById(R.id.fleet_info);
         mRouteInfo = itemView.findViewById(R.id.route_info);
+        mLastActiveTime = itemView.findViewById(R.id.last_active);
 
         mStarView =  itemView.findViewById(R.id.star);
         mNumStarsView = itemView.findViewById(R.id.post_num_stars);
