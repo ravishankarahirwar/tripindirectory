@@ -59,6 +59,7 @@ import directory.tripin.com.tripindirectory.FormActivities.PlacesViewHolder;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.activity.BaseActivity;
 import directory.tripin.com.tripindirectory.customviews.CustomMapView;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.interfaces.RouteFinderListner;
@@ -69,43 +70,47 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.RouteCityPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
-public class PostLoadActivity extends AppCompatActivity implements HubFetchedCallback, OnMapReadyCallback {
-
-    private TextView addPickUpCity, addDropOffCity;
-    private RecyclerView mPickUpList, mDropList;
+public class PostLoadActivity extends BaseActivity implements HubFetchedCallback, OnMapReadyCallback {
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int MAP_PADDING = 50;
 
-    int mPlaceCode = 0;
-    MyRecyclerViewAdapter adapterp, adapterd;
-    List<String> listpickup, listdropoff;
-    List<String> listpickupHub, listdropoffHub;
-    SlidingUpPanelLayout sliderLayout;
-    TextView togglePanelText, togglePanelText2;
-    TextView upload;
-    CustomMapView mapView;
-    ScrollView mScrollViewInSUP;
-    GoogleMap map;
-    private LatLngBounds.Builder mLatLngBounds;
-    TextUtils textUtils;
+    private TextView mAddPickupCity;
+    private TextView mAddDropoffCity;
+    private RecyclerView mPickUpList;
+    private RecyclerView mDropList;
 
-    LoadPostPojo loadPostPojo;
-    EditText etMaterial;
-    EditText etMaterialWeight;
-    EditText etTruckLength;
-    EditText etTruckPayLoad;
-    EditText etPersonalNote;
-    Spinner truckType;
-    Spinner bodyType;
-    TextView tvSchleduledDate;
-    Calendar myCalendar;
+    int mPlaceCode = 0;
+    private MyRecyclerViewAdapter adapterp, adapterd;
+    private List<String> listpickup, listdropoff;
+    private SlidingUpPanelLayout sliderLayout;
+    private TextView togglePanelText, togglePanelText2;
+    private TextView upload;
+    private CustomMapView mapView;
+    private ScrollView mScrollViewInSUP;
+    private GoogleMap map;
+    private LatLngBounds.Builder mLatLngBounds;
+    private TextUtils textUtils;
+
+    private  LoadPostPojo loadPostPojo;
+
+    private EditText etMaterial;
+    private EditText etMaterialWeight;
+    private EditText etTruckLength;
+    private EditText etTruckPayLoad;
+    private EditText etPersonalNote;
+
+    private Spinner truckType;
+    private Spinner bodyType;
+
+    private Calendar myCalendar;
+
+    public ImageView mOptions;
 
     // Item Views
-
-    public ImageView mPublisherThumbnail;
+    private TextView tvSchleduledDate;
     public TextView mPostTitle;
     public TextView mPostSubTitle;
-    public ImageView mOptions;
+
     public TextView mScheduledDate;
     public TextView mSource;
     public TextView mDestination;
@@ -114,28 +119,24 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
     public TextView mDistance;
     public TextView mPersonalNote;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         listpickup = new ArrayList<>();
         listdropoff = new ArrayList<>();
-        listpickupHub = new ArrayList<>();
-        listdropoffHub = new ArrayList<>();
 
         adapterp = new MyRecyclerViewAdapter(listpickup, 1);
         adapterd = new MyRecyclerViewAdapter(listdropoff, 2);
         setContentView(R.layout.activity_post_load);
         sliderLayout = findViewById(R.id.sliding_layout);
         sliderLayout.setTouchEnabled(false);
-        addPickUpCity = findViewById(R.id.add_pickupcity);
-        addDropOffCity = findViewById(R.id.add_dropcity);
+        mAddPickupCity = findViewById(R.id.add_pickupcity);
+        mAddDropoffCity = findViewById(R.id.add_dropcity);
         mPickUpList = findViewById(R.id.pickup_list);
         mDropList = findViewById(R.id.drop_list);
         togglePanelText = findViewById(R.id.textViewtogglePanel);
         togglePanelText2 = findViewById(R.id.readytitle);
         upload = findViewById(R.id.uploadLoadPost);
-
 
         mPickUpList.setLayoutManager(new LinearLayoutManager(this));
         mDropList.setLayoutManager(new LinearLayoutManager(this));
@@ -172,6 +173,16 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
         textUtils = new TextUtils();
 
         setListners();
+    }
+
+    @Override
+    protected void init() {
+        
+    }
+
+    @Override
+    protected void viewSetup() {
+
     }
 
     @Override
@@ -213,20 +224,20 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
 
     private void setListners() {
 
-        addPickUpCity.setOnClickListener(new View.OnClickListener() {
+        mAddPickupCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mPlaceCode = 1;
-                addPickUpCity.setText("Loading...");
+                mAddPickupCity.setText("Loading...");
                 starttheplacesfragment();
             }
         });
 
-        addDropOffCity.setOnClickListener(new View.OnClickListener() {
+        mAddDropoffCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mPlaceCode = 2;
-                addDropOffCity.setText("Loading...");
+                mAddDropoffCity.setText("Loading...");
                 starttheplacesfragment();
             }
         });
@@ -367,35 +378,13 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
             @Override
             public void onClick(View view) {
                 upload.setText("Uploading...");
-                final CommentPojo commentPojo;
-
-                commentPojo = new CommentPojo(loadPostPojo.getmPersonalNote() + ". Initial Comment!",
-                        loadPostPojo.getmCompanyName(),
-                        loadPostPojo.getmRMN(),
-                        loadPostPojo.getmFcmToken(), loadPostPojo.getmDocId(), loadPostPojo.getmPostersUid());
-                commentPojo.setmImagesUrl(loadPostPojo.getmImagesUrl());
 
                 DocumentReference rf = FirebaseFirestore.getInstance().collection("loads").document();
                 loadPostPojo.setmDocId(rf.getId());
                 rf.set(loadPostPojo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        FirebaseFirestore.getInstance()
-                                .collection("loads")
-                                .document(loadPostPojo.getmDocId())
-                                .collection("mCommentsCollection")
-                                .add(commentPojo)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        //comment added
-                                        //subscribe to topic
-                                        FirebaseMessaging.getInstance().subscribeToTopic(loadPostPojo.getmDocId());
-                                        Toast.makeText(getApplicationContext(), "Load Posted Successfully!", Toast.LENGTH_LONG).show();
-                                        finish();
-                                    }
-                                });
-
+                        Toast.makeText(getApplicationContext(), "Load Posted Successfully!", Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -404,12 +393,10 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
     }
 
     private void updateDateLabel() {
-
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
         tvSchleduledDate.setText(sdf.format(myCalendar.getTime()));
         loadPostPojo.setmPickUpTimeStamp(myCalendar.getTime());
-
     }
 
 
@@ -442,8 +429,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                     listpickup.add(place.getName().toString().toUpperCase());
 
                     Toast.makeText(this, "Pick City Added", Toast.LENGTH_SHORT).show();
-                    addPickUpCity.setText("Add More");
-                    addPickUpCity.setVisibility(View.GONE);
+                    mAddPickupCity.setText("Add More");
+                    mAddPickupCity.setVisibility(View.GONE);
                     loadPostPojo.setmSourceCity(place.getName().toString().toUpperCase());
                     loadPostPojo.setmSourceCityLatLang(new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
                     //updateSourceHubs(place.getName().toString(), 1);
@@ -455,8 +442,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                     listdropoff.add(place.getName().toString().toUpperCase());
 
                     Toast.makeText(this, "Drop City Added", Toast.LENGTH_SHORT).show();
-                    addDropOffCity.setText("Add More");
-                    addDropOffCity.setVisibility(View.GONE);
+                    mAddDropoffCity.setText("Add More");
+                    mAddDropoffCity.setVisibility(View.GONE);
                     loadPostPojo.setmDestinationCity(place.getName().toString().toUpperCase());
                     loadPostPojo.setmDestinationCityLatLang(new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
 //                    loadPostPojo.setmEstimatedDistance(getDistance(loadPostPojo.getmDestinationCityLatLang().getLatitude(),
@@ -473,8 +460,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
-                addPickUpCity.setText("Add");
-                addDropOffCity.setText("Add");
+                mAddPickupCity.setText("Add");
+                mAddDropoffCity.setText("Add");
 
 
             }
@@ -588,8 +575,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                         loadPostPojo.setmSourceCity("");
                         loadPostPojo.setmSourceHub("");
                         notifyDataSetChanged();
-                        addPickUpCity.setVisibility(View.VISIBLE);
-                        addPickUpCity.setText("Add");
+                        mAddPickupCity.setVisibility(View.VISIBLE);
+                        mAddPickupCity.setText("Add");
 
                     }
                     if (type == 2) {
@@ -599,8 +586,8 @@ public class PostLoadActivity extends AppCompatActivity implements HubFetchedCal
                         loadPostPojo.setmDestinationHub("");
                         listdropoff.remove(position);
                         notifyDataSetChanged();
-                        addDropOffCity.setVisibility(View.VISIBLE);
-                        addDropOffCity.setText("Add");
+                        mAddDropoffCity.setVisibility(View.VISIBLE);
+                        mAddDropoffCity.setText("Add");
                     }
 
                 }

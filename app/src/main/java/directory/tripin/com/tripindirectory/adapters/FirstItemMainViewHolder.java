@@ -8,7 +8,6 @@ import android.view.View;
  */
 
 public class FirstItemMainViewHolder extends RecyclerView.ViewHolder {
-
     public FirstItemMainViewHolder(View itemView) {
         super(itemView);
     }

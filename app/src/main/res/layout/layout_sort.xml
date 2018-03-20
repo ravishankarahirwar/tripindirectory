@@ -33,23 +33,21 @@
                 android:id="@+id/radioGroupSort"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_margin="8dp"
                 android:orientation="vertical">
 
                 <RadioButton
                     android:id="@+id/radioButton1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
+                    android:layout_margin="8dp"
                     android:text="Alphabetically(A - Z)"/>
 
                 <RadioButton
                     android:id="@+id/radioButton2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
+                    android:layout_margin="8dp"
                     android:text="Alphabetically(Z - A)"
                      />
 
@@ -57,9 +55,15 @@
                     android:id="@+id/radioButton4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
+                    android:layout_margin="8dp"
                     android:text="Account Status"/>
+
+                <RadioButton
+                    android:id="@+id/shortby_lastactive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="Last Active"/>
             </RadioGroup>
 
 

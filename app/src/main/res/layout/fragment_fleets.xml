@@ -45,13 +45,15 @@
                 android:padding="8dp"
                 android:text="Filter/Sort/All "
                 android:textColor="@color/background"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/textViewResultNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fetching Top  Available Fleets..."
+                android:visibility="gone"
                 android:textSize="12sp"
                 android:textStyle="italic" />
 

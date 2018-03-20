@@ -42,7 +42,7 @@ public class RouteCityPojo {
         mContext = context;
         mNearestHubsList = new ArrayList<>();
     }
-    public RouteCityPojo(Context context,int mCityType,int mOperationTag,HubFetchedCallback hubFetchedCallback) {
+    public RouteCityPojo(Context context,int mCityType,int mOperationTag, HubFetchedCallback hubFetchedCallback) {
         mContext = context;
         mNearestHubsList = new ArrayList<>();
         this.hubFetchedCallback = hubFetchedCallback;

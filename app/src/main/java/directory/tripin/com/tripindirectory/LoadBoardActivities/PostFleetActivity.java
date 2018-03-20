@@ -758,6 +758,4 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
         return diff;
 
     }
-
-
 }

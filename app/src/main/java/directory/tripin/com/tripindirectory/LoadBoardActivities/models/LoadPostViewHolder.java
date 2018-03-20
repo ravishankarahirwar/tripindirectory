@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nex3z.notificationbadge.NotificationBadge;
@@ -36,10 +37,12 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
 
     public NotificationBadge badgeLike, badgeQuote, badgeShare, badgeComment, badgeInbox, badgeCall;
     public ImageView like,quote,share,comment,call,inbox;
+    public RelativeLayout mInboxLayout;
 
 
     public LoadPostViewHolder(View itemView) {
         super(itemView);
+        mInboxLayout = itemView.findViewById(R.id.rl_inbox);
 
         mDistance = itemView.findViewById(R.id.textViewDistance);
         mFleetProperties = itemView.findViewById(R.id.textViewRequiredFleet);

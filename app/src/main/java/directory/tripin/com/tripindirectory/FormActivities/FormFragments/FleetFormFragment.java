@@ -569,7 +569,6 @@ public class FleetFormFragment extends BaseFragment {
         @Override
         public int getItemCount() {
             return truckProperties.size();
-
         }
     }
 //************************************** PropertiesValueAdaptor

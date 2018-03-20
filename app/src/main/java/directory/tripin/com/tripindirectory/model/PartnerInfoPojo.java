@@ -1,14 +1,14 @@
 package directory.tripin.com.tripindirectory.model;
 
-import com.google.android.gms.maps.model.LatLng;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
-import directory.tripin.com.tripindirectory.model.search.Fleet;
-import directory.tripin.com.tripindirectory.model.search.Truck;
 
 /**
  * Created by Shubham on 12/12/2017.
@@ -41,17 +41,12 @@ public class PartnerInfoPojo {
     private Map<String,Boolean> mDestinationCities;
     private Map<String,Boolean> mNatureOfBusiness;
     private Map<String,Boolean> mTypesOfServices;
+    private Map<String,Boolean> fleetVehicle;
     private String fleetJson;
-//    private Fleet Fleet = new Fleet();
 
-//    Map<String, Boolean> LCV = new HashMap<>();
-//    Map<String,Map<String,Boolean>> property = new HashMap<>();
-//    Map<String,Boolean><String,Boolean> lengthvalue = new HashMap<>();
-//    private Map<String,Map<String,Boolean>> Fleet = new HashMap<>();
-//      private Map<String, Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
-//    private Map<Map<String,Map<String,Map<String,Boolean>>>> Fleet = new HashMap<>();
+    @ServerTimestamp
+    private Date mLastActiveTime;
 
-//    private List<Truck> trucks;
     public PartnerInfoPojo() {
     }
 
@@ -66,6 +61,14 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
+    public Date getmLastActiveTime() {
+        return mLastActiveTime;
+    }
+
+    public void setmLastActiveTime(Date mLastActiveTime) {
+        this.mLastActiveTime = mLastActiveTime;
+    }
+
     public String getFleetJson() {
         return fleetJson;
     }
@@ -74,10 +77,6 @@ public class PartnerInfoPojo {
         this.fleetJson = fleetJson;
     }
 
-
-    //    public class Fleet {
-//        public TruckS LCV;
-//    }
 
     public class LCV {
         Length length = new Length();
@@ -88,15 +87,13 @@ public class PartnerInfoPojo {
         Map<String,Boolean> length = new HashMap<>();
     }
 
+    public Map<String, Boolean> getFleetVehicle() {
+        return fleetVehicle;
+    }
 
-
-//    public List<Truck> getTrucks() {
-//        return trucks;
-//    }
-//
-//    public void setTrucks(List<Truck> trucks) {
-//        this.trucks = trucks;
-//    }
+    public void setFleetVehicle(Map<String, Boolean> fleetVehicle) {
+        this.fleetVehicle = fleetVehicle;
+    }
 
     public String getmCompanyEmail() {
         return mCompanyEmail;

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,12 +76,9 @@ public class FleetsFragment extends Fragment {
     private TextView mSeeAll;
     private TextView mSeeAllBottom;
 
-
-
     public FleetsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -131,7 +129,7 @@ public class FleetsFragment extends Fragment {
 //                .orderBy("mPickUpTimeStamp")
 //                .whereGreaterThanOrEqualTo("mPickUpTimeStamp",new Date())
                 .orderBy("mTimeStamp", Query.Direction.DESCENDING)
-                .limit(10);
+                .limit(100);
         FirestoreRecyclerOptions<FleetPostPojo> options = new FirestoreRecyclerOptions.Builder<FleetPostPojo>()
                 .setQuery(query, FleetPostPojo.class)
                 .build();
@@ -448,21 +446,6 @@ public class FleetsFragment extends Fragment {
                             }
                         });
 
-                        amount.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                quote.setText("Quote "+charSequence.toString().trim()+"₹");
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable editable) {
-
-                            }
-                        });
 
                         quote.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -517,29 +500,31 @@ public class FleetsFragment extends Fragment {
 
                     }
                 });
-
-                holder.inbox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FirebaseFirestore.getInstance()
-                                .collection("fleets")
-                                .document(docId)
-                                .update("mInboxedPeopleList." + mUid, true)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        //done
-                                        Logger.v("mInboxedPeopleList Modified");
-                                    }
-                                });
-                        Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
-                        intent.putExtra("imsg",fleetPostPojo.getTextToInitateChat());
-                        intent.putExtra("ormn",fleetPostPojo.getmRMN());
-                        intent.putExtra("ouid",fleetPostPojo.getmPostersUid());
-                        startActivity(intent);
-                    }
-                });
-
+                if(!(fleetPostPojo.getmPostersUid().equalsIgnoreCase(FirebaseAuth.getInstance().getUid()))) {
+                    holder.inbox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            FirebaseFirestore.getInstance()
+                                    .collection("fleets")
+                                    .document(docId)
+                                    .update("mInboxedPeopleList." + mUid, true)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            //done
+                                            Logger.v("mInboxedPeopleList Modified");
+                                        }
+                                    });
+                            Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                            intent.putExtra("imsg", fleetPostPojo.getTextToInitateChat());
+                            intent.putExtra("ormn", fleetPostPojo.getmRMN());
+                            intent.putExtra("ouid", fleetPostPojo.getmPostersUid());
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    holder.mInboxLayout.setVisibility(RelativeLayout.GONE);
+                }
 
                 Logger.v("onBind: " + position);
                 //mAnimator.onBindViewHolder(holder.itemView, position);

@@ -51,7 +51,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/categoriesbg"
-                    android:elevation="4dp"
                     android:scrollbars="none">
 
                     <RadioGroup
@@ -69,6 +68,7 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:background="@drawable/search_tag_selector"
                             android:button="@null"
                             android:checked="true"
@@ -77,7 +77,7 @@
                             android:elevation="4dp"
                             android:padding="4dp"
                             android:text="@string/route"
-                            android:textColor="@color/arrow_white" />
+                            android:textColor="@color/arrow_grey" />
 
                         <RadioButton
                             android:id="@+id/search_by_company"
@@ -91,6 +91,7 @@
                             android:button="@null"
                             android:drawableLeft="@drawable/ic_domain_black_24dp"
                             android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:padding="4dp"
                             android:text="@string/company_name_caps"
                             android:textColor="@color/arrow_grey"/>
@@ -99,6 +100,7 @@
                             android:id="@+id/search_by_city"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-condensed"
                             android:layout_marginBottom="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
@@ -139,6 +141,7 @@
                         app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
                         app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
                         app:layoutManager="LinearLayoutManager"
+                        tools:listitem="@layout/single_partner_row1"
                         tools:context="directory.tripin.com.tripindirectory.activity.MainActivity" />
 
                     <TextView

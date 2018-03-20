@@ -191,7 +191,7 @@ public class MyPostsFragment extends Fragment {
                 holder.mDistance.setText(loadPostPojo.getmEstimatedDistance() + "\nkm");
 
                 final String loadProperties = textUtils.toTitleCase(loadPostPojo.getmLoadMaterial())
-                        + ", " + textUtils.toTitleCase(loadPostPojo.getmLoadWeight()) + "MT";
+                        + ", " +loadPostPojo.getmLoadWeight() + "MT";
                 holder.mLoadProperties.setText(" " + loadProperties);
                 if (loadProperties.length() > 20) {
                     holder.mLoadProperties.setSelected(true);
@@ -199,8 +199,8 @@ public class MyPostsFragment extends Fragment {
 
                 String fleetProperties = textUtils.toTitleCase(loadPostPojo.getmVehicleTypeRequired())
                         + ", " + textUtils.toTitleCase(loadPostPojo.getmBodyTypeRequired())
-                        + ", " + textUtils.toTitleCase(loadPostPojo.getmFleetPayLoadRequired()) + "MT, "
-                        + textUtils.toTitleCase(loadPostPojo.getmFleetLengthRequired()) + "Ft";
+                        + ", " +loadPostPojo.getmFleetPayLoadRequired() + "MT, "
+                        + loadPostPojo.getmFleetLengthRequired() + "Ft";
                 holder.mFleetProperties.setText(" " + fleetProperties);
                 if (fleetProperties.length() > 20) {
                     holder.mFleetProperties.setSelected(true);

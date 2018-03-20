@@ -28,14 +28,11 @@ public class FleetPostPojo {
     private String mPersonalNote = "";
     private String mVehicleNumber = "";
 
-
-
     private String mSourceHub = "";
     private String mDestinationHub ="";
     private String mEstimatedDistance = "";
     private String mEstimatedTime;
     private String mEstimatedCost;
-
 
     private String mCompanyName = "";
     private String mRMN = "";
@@ -44,11 +41,8 @@ public class FleetPostPojo {
     private String mFcmToken = "";
     private List<String> mImagesUrl;
 
-
     @ServerTimestamp
     private Date mTimeStamp;
-
-
 
     private HashMap<String,Boolean> mIntrestedPeopleList;
     private HashMap<String,Boolean> mSharedPeopleList;
@@ -286,10 +280,7 @@ public class FleetPostPojo {
 
     public boolean isMinimumRequiredInputsSet() {
         if (mFleetLength.isEmpty()
-                || mFleetPayLoad.isEmpty()
-                ||mVehicleType.isEmpty()
-                ||mVehicleNumber.isEmpty()
-                ||mBodyType.isEmpty()
+                || mVehicleType.isEmpty()
                 || mSourceCity.isEmpty()
                 || mDestinationCity.isEmpty()
                 || mPickUpTimeStamp==null) {
@@ -300,7 +291,6 @@ public class FleetPostPojo {
     }
 
     public String getTextToShare(){
-
         return  ">>Source = " + mSourceCity + ",\n" +
                 ">>Destination = " + mDestinationCity + ",\n" +
                 ">>Date = " + DateFormat.getDateInstance().format(getmPickUpTimeStamp()) + ",\n" +
@@ -313,7 +303,6 @@ public class FleetPostPojo {
     }
 
     public String getTextToInitateChat(){
-
         return  "Texting From Your Load Requirement Post:\n"+
                 ">>Source = " + mSourceCity + ",\n" +
                 ">>Destination = " + mDestinationCity + ",\n" +

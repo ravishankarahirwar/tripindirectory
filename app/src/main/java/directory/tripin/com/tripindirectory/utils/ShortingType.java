@@ -9,5 +9,6 @@ public interface ShortingType {
     int ALPHA_ASSENDING = 1;
     int ALPHA_DECENDING = 2;
     int ACCOUNT_TYPE = 3;
+    int LAST_ACTIVE = 4;
 
 }
