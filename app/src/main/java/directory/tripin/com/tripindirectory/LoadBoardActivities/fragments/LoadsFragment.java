@@ -104,7 +104,8 @@ public class LoadsFragment extends Fragment {
         mSeeAllBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // details Activity
+                startActivity(new Intent(getActivity(), LoadPostsActivity.class));
             }
         });
         return v;
