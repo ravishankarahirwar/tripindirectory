@@ -68,13 +68,13 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
-                            android:fontFamily="sans-serif-condensed"
                             android:background="@drawable/search_tag_selector"
                             android:button="@null"
                             android:checked="true"
                             android:drawableLeft="@drawable/ic_directions_grey_24dp"
                             android:drawablePadding="2dp"
                             android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:padding="4dp"
                             android:text="@string/route"
                             android:textColor="@color/arrow_grey" />
@@ -86,21 +86,20 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
-                            android:drawablePadding="2dp"
                             android:background="@drawable/search_tag_selector"
                             android:button="@null"
                             android:drawableLeft="@drawable/ic_domain_black_24dp"
+                            android:drawablePadding="2dp"
                             android:elevation="4dp"
                             android:fontFamily="sans-serif-condensed"
                             android:padding="4dp"
                             android:text="@string/company_name_caps"
-                            android:textColor="@color/arrow_grey"/>
+                            android:textColor="@color/arrow_grey" />
 
                         <RadioButton
                             android:id="@+id/search_by_city"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed"
                             android:layout_marginBottom="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
@@ -108,9 +107,10 @@
                             android:button="@null"
                             android:drawableLeft="@drawable/ic_location_on_white_24dp"
                             android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:padding="4dp"
                             android:text="@string/search_tag_city"
-                            android:textColor="@color/arrow_grey"/>
+                            android:textColor="@color/arrow_grey" />
 
                     </RadioGroup>
                 </HorizontalScrollView>
@@ -182,14 +182,15 @@
                 android:layout_gravity="bottom"
                 android:background="@color/colorPrimary"
                 android:orientation="horizontal">
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/animation_bookmark"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        app:lottie_autoPlay="true"
-                        app:lottie_fileName="bookmark.json"
-                        app:lottie_loop="false" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animation_bookmark"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="bookmark.json"
+                    app:lottie_loop="false" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -206,16 +207,16 @@
                     />
                 </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/sort"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:layout_gravity="center"
-                        android:drawableStart="@drawable/ic_sort_black_24dp"
-                        android:text="Sort"
-                        android:textColor="@color/background"/>
+                <TextView
+                    android:id="@+id/sort"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_sort_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="Sort"
+                    android:textColor="@color/background" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

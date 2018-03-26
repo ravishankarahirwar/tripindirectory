@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.LoadBoardActivities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,8 +24,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -52,12 +56,21 @@ public class LoadBoardActivity extends BaseActivity {
     private ViewPagerAdapter adapter;
     private CoordinatorLayout coordinatorLayout;
     private Context mContext;
+    private ShowcaseView showcaseView;
+    private int mTutCounter = 0;
+    private Activity mActivity;
+    private TextView tabOne;
+    private TextView tabTwo;
+    private TextView tabThree;
+    private TextView tabFour;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_board);
+        mActivity = this;
         mContext = LoadBoardActivity.this;
         Toolbar toolbar = findViewById(R.id.toolbar);
         coordinatorLayout = findViewById(R.id.main_content);
@@ -98,6 +111,94 @@ public class LoadBoardActivity extends BaseActivity {
             }
 
         }
+
+        showUserTutorial();
+    }
+
+    private void showUserTutorial() {
+        int margin = ((Number) (getResources().getDisplayMetrics().density * 16)).intValue();
+
+        final RelativeLayout.LayoutParams lpsBottomLeft = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lpsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lpsBottomLeft.setMargins(margin, margin, margin, margin);
+
+        final RelativeLayout.LayoutParams lpsBottomRight = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lpsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpsBottomRight.setMargins(margin, margin, margin, margin);
+
+        RelativeLayout.LayoutParams lpsTopRight = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsTopRight.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lpsTopRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpsTopRight.setMargins(margin, margin, margin, margin);
+
+        final RelativeLayout.LayoutParams lpsTopLeft = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lpsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lpsTopLeft.setMargins(margin, margin, margin, margin);
+
+        ViewTarget target = new ViewTarget(tabOne.getId(), this);
+        showcaseView = new ShowcaseView.Builder(this)
+                .setStyle(R.style.CustomShowcaseTheme3)
+                .setTarget(target)
+                .setContentTitle("Loads Tab")
+                .singleShot(43)
+                .setContentText("See the list of recently posted loads. you can quote, mark interested, share, inbox, comment or call.")
+                .hideOnTouchOutside()
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        switch (mTutCounter){
+                            case 0:{
+                                showcaseView.setShowcase(new ViewTarget(tabTwo.getId(), mActivity), true);
+                                showcaseView .setContentTitle("Trucks Tab");
+                                showcaseView.setContentText("List of recently posted fleets. tap on see all for filtered search");
+
+                                break;
+                            }
+                            case 1:{
+                                showcaseView.setShowcase(new ViewTarget(tabThree.getId(),mActivity), true);
+                                showcaseView .setContentTitle("Interested In");
+                                showcaseView.setContentText("List of Loads and Fleets you marked interested");
+                                break;
+                            }
+                            case 2:{
+                                showcaseView.setShowcase(new ViewTarget(tabFour.getId(), mActivity), true);
+                                showcaseView .setContentTitle("Your Posts");
+                                showcaseView.setContentText("Manage you posts, see response and analytics.");
+                                break;
+                            }
+
+                            case 3:{
+
+                                showcaseView.setShowcase(new ViewTarget(R.id.action_addpost, mActivity), true);
+                                showcaseView .setContentTitle("Add Post");
+                                showcaseView.setContentText("Add new Load or Truck, Relevant transports will get notified");
+                                break;
+                            }
+                            case 4:{
+                                showcaseView.setShowcase(new ViewTarget(R.id.action_map, mActivity), true);
+                                showcaseView .setContentTitle("Loadboard Mapview");
+                                showcaseView.setButtonText("Done");
+                                showcaseView.setContentText("See the routes of loads to be transported to get an overall feel of the market");
+                                break;
+                            }
+
+                            case 5:{
+                                showcaseView.hide();
+                                break;
+                            }
+
+                        }
+                        mTutCounter++;
+
+                    }
+                })
+                .build();
+        showcaseView.setButtonPosition(lpsBottomRight);
+
     }
 
 
@@ -166,23 +267,24 @@ public class LoadBoardActivity extends BaseActivity {
 
     private void createTabIcons() {
 
-        TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
+        tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabOne.setText("Loads");
         tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_widgets_black_24dp, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
-        TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
+        tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabTwo.setText("Trucks");
         tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.delivery_truck_white, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
 
-        TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
+
+        tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabThree.setText("Intrested");
         tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite_white_24dp, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
-        TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
+        tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.customtab, null);
         tabFour.setText("My Posts");
         tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_assignment_ind_black_24dp, 0, 0);
         tabLayout.getTabAt(3).setCustomView(tabFour);

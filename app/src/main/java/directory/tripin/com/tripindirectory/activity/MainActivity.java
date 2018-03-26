@@ -2,14 +2,12 @@ package directory.tripin.com.tripindirectory.activity;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -20,25 +18,21 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +46,8 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -76,7 +71,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -105,16 +99,10 @@ import java.util.concurrent.TimeoutException;
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
-import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
-import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
-import directory.tripin.com.tripindirectory.adapters.QueryBookmarkViewHolder;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
@@ -124,7 +112,6 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.QueryManager;
-import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.FoundHubPojo;
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback;
@@ -135,8 +122,6 @@ import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesAdaptor;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesValuesAdaptor;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
@@ -168,6 +153,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
     private Context mContext;
+    private Activity mActivity;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
     private FloatingSearchView mSearchView;
@@ -227,6 +213,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private QueryManager mQueryManager;
     private PartnerAdapter mPartnerAdapter;
     private AppUtils mAppUtils;
+    private ShowcaseView showcaseView;
+    private int mTutCounter = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -243,12 +232,115 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
+        showUserTutorial();
+
+    }
+
+    private void showUserTutorial() {
+        int margin = ((Number) (getResources().getDisplayMetrics().density * 16)).intValue();
+
+        final RelativeLayout.LayoutParams lpsBottomLeft = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lpsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lpsBottomLeft.setMargins(margin, margin, margin, margin);
+
+        final RelativeLayout.LayoutParams lpsBottomRight = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lpsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpsBottomRight.setMargins(margin, margin, margin, margin);
+
+        RelativeLayout.LayoutParams lpsTopRight = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsTopRight.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lpsTopRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpsTopRight.setMargins(margin, margin, margin, margin);
+
+        final RelativeLayout.LayoutParams lpsTopLeft = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        lpsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lpsTopLeft.setMargins(margin, margin, margin, margin);
+
+        ViewTarget target = new ViewTarget(R.id.search_by_route, this);
+        showcaseView = new ShowcaseView.Builder(this)
+                .setStyle(R.style.CustomShowcaseTheme3)
+                .setTarget(target)
+                .setContentTitle("Search By Route")
+                .setContentText("Type and select source and destination city, get the list of transporters operating between.")
+                .hideOnTouchOutside()
+                .singleShot(42)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        switch (mTutCounter) {
+                            case 0: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.search_by_company, mActivity), true);
+                                showcaseView.setContentTitle("Search By Company Name");
+                                showcaseView.setContentText("Type Company name and get relevant list of Transporters");
+
+                                break;
+                            }
+                            case 1: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.search_by_city, mActivity), true);
+                                showcaseView.setContentTitle("Search By City");
+                                showcaseView.setContentText("Type and select a city, get the list of transporters around.");
+
+                                break;
+                            }
+                            case 2: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.textViewResCount, mActivity), true);
+                                showcaseView.setContentTitle("Result Count");
+                                showcaseView.setContentText("Tap the number to see details of the current list and save bookmarks of your query");
+                                break;
+                            }
+                            case 3: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.fab, mActivity), true);
+                                showcaseView.setContentTitle("ILN LoadBoard");
+                                showcaseView.setContentText("Post your requirement and get connected with relevant transporters");
+                                showcaseView.setButtonPosition(lpsBottomLeft);
+
+                                break;
+                            }
+                            case 4: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.filter, mActivity), true);
+                                showcaseView.setContentTitle("Add Filters");
+                                showcaseView.setContentText("Search more relevant result by adding provided filters.");
+                                showcaseView.setButtonPosition(lpsBottomLeft);
+                                break;
+                            }
+                            case 5: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.sort, mActivity), true);
+                                showcaseView.setContentTitle("Sort List");
+                                showcaseView.setContentText("Sort the list with provided options to scroll more meaningfully");
+                                showcaseView.setButtonPosition(lpsBottomLeft);
+                                break;
+                            }
+                            case 6: {
+                                showcaseView.setShowcase(new ViewTarget(R.id.animation_bookmark, mActivity), true);
+                                showcaseView.setContentTitle("Bookmarks");
+                                showcaseView.setButtonText("Done");
+                                showcaseView.setContentText("See the list of query bookmarks you have created, tap to search the same!");
+                                showcaseView.setButtonPosition(lpsBottomRight);
+                                break;
+                            }
+                            case 7: {
+                                showcaseView.hide();
+                                break;
+                            }
+
+                        }
+                        mTutCounter++;
+
+                    }
+                })
+                .build();
+        showcaseView.setButtonPosition(lpsBottomRight);
     }
 
 
     @Override
     protected void init() {
         mContext = MainActivity.this;
+        mActivity = this;
         textUtils = new TextUtils();
         mAppUtils = new AppUtils(mContext);
         logger = AppEventsLogger.newLogger(this);
@@ -428,19 +520,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 switch (mSortRadioGroup.getCheckedRadioButtonId()) {
-                    case R.id.radioButton1 : {
+                    case R.id.radioButton1: {
                         mSortIndex = ShortingType.ALPHA_ASSENDING;
                         break;
                     }
-                    case R.id.radioButton2 : {
+                    case R.id.radioButton2: {
                         mSortIndex = ShortingType.ALPHA_DECENDING;
                         break;
                     }
-                    case R.id.radioButton4 : {
+                    case R.id.radioButton4: {
                         mSortIndex = ShortingType.ACCOUNT_TYPE;
                         break;
                     }
-                    case R.id.shortby_lastactive : {
+                    case R.id.shortby_lastactive: {
                         mSortIndex = ShortingType.LAST_ACTIVE;
                         break;
                     }
@@ -755,19 +847,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //apply sorting
         switch (mSortIndex) {
-            case ShortingType.ALPHA_ASSENDING : {
+            case ShortingType.ALPHA_ASSENDING: {
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
-            case ShortingType.ALPHA_DECENDING : {
+            case ShortingType.ALPHA_DECENDING: {
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
-            case ShortingType.ACCOUNT_TYPE : {
+            case ShortingType.ACCOUNT_TYPE: {
                 query = query.orderBy(DB.PartnerFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
                 break;
             }
-            case ShortingType.LAST_ACTIVE : {
+            case ShortingType.LAST_ACTIVE: {
                 query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
                 break;
             }
