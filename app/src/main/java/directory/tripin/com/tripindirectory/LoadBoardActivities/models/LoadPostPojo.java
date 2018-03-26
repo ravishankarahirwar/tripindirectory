@@ -299,15 +299,11 @@ public class LoadPostPojo {
     }
 
     public boolean isMinimumRequiredInputsSet(){
-        if (mLoadMaterial.isEmpty()
+        return !(mLoadMaterial.isEmpty()
                 || mLoadWeight.isEmpty()
                 || mSourceCity.isEmpty()
                 || mDestinationCity.isEmpty()
-                || mPickUpTimeStamp==null) {
-            return false;
-        } else {
-            return true;
-        }
+                || mPickUpTimeStamp == null);
     }
 
     public String getTextToShare(){

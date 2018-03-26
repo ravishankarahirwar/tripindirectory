@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -80,6 +81,7 @@ public class MyPostsFragment extends Fragment {
 
     public TextUtils textUtils;
     public FirestoreRecyclerAdapter adapterLoad, adapterFleet;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public MyPostsFragment() {
         // Required empty public constructor
@@ -100,6 +102,10 @@ public class MyPostsFragment extends Fragment {
         mAnimatorFleet = new RecyclerViewAnimator(mFleetsList);
         mAnimatorLoad = new RecyclerViewAnimator(mLoadsList);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
+        Bundle params = new Bundle();
+        mFirebaseAnalytics.logEvent("at_my_postlist", params);
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

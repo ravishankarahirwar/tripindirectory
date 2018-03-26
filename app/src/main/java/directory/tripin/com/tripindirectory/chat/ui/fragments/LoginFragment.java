@@ -44,10 +44,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Log
     }
 
     private void bindViews(View view) {
-        mETxtEmail = (EditText) view.findViewById(R.id.edit_text_email_id);
-        mETxtPassword = (EditText) view.findViewById(R.id.edit_text_password);
-        mBtnLogin = (Button) view.findViewById(R.id.button_login);
-        mBtnRegister = (Button) view.findViewById(R.id.button_register);
+        mETxtEmail = view.findViewById(R.id.edit_text_email_id);
+        mETxtPassword = view.findViewById(R.id.edit_text_password);
+        mBtnLogin = view.findViewById(R.id.button_login);
+        mBtnRegister = view.findViewById(R.id.button_register);
     }
 
     @Override

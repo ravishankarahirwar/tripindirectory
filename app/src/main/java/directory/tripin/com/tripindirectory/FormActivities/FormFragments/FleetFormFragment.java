@@ -441,11 +441,11 @@ public class FleetFormFragment extends BaseFragment {
     }
 
     public interface OnTruckPropertyValueChange {
-        public void onPropertyChange(Map<String,Boolean> properties);
+        void onPropertyChange(Map<String, Boolean> properties);
     }
 
     public interface OnTruckValueChange {
-        public void onTruckPropertiesChange(List<TruckProperty> truckProperties);
+        void onTruckPropertiesChange(List<TruckProperty> truckProperties);
     }
 
     public class WorkingWithAdapter extends RecyclerView.Adapter<WorkingWithHolderNew> {

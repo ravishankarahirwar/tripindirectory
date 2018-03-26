@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -52,6 +53,7 @@ public class LoadBoardActivity extends BaseActivity {
     private ViewPagerAdapter adapter;
     private CoordinatorLayout coordinatorLayout;
     private Context mContext;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
     @Override
@@ -67,6 +69,8 @@ public class LoadBoardActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         FirebaseMessaging.getInstance().subscribeToTopic("NewFleetPost");
         FirebaseMessaging.getInstance().subscribeToTopic("NewLoadPost");
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         ViewPager viewPager = findViewById(R.id.container);
         tabLayout = findViewById(R.id.tabs);
@@ -139,15 +143,25 @@ public class LoadBoardActivity extends BaseActivity {
                     // Do something with the selection
                  switch (item){
                      case 0:{
+                                 Bundle params = new Bundle();
+                                 params.putString("loadboard_postload", "1");
+                                 mFirebaseAnalytics.logEvent("loadboard_postload", params);
+
                          startActivity(new Intent(LoadBoardActivity.this, PostLoadActivity.class));
                          break;
                      }
                      case 1:{
+                         Bundle params = new Bundle();
+                         params.putString("loadboard_postfleet", "1");
+                         mFirebaseAnalytics.logEvent("loadboard_postfleet", params);
                          startActivity(new Intent(LoadBoardActivity.this, PostFleetActivity.class));
 
                          break;
                      }
                      case 2:{
+                         Bundle params = new Bundle();
+                         params.putString("loadboard_postcancel", "1");
+                         mFirebaseAnalytics.logEvent("loadboard_postcancel", params);
                          break;
                      }
 

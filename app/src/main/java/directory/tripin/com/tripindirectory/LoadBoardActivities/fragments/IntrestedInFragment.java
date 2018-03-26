@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -74,6 +75,7 @@ public class IntrestedInFragment extends Fragment {
 
     public TextUtils textUtils;
     public FirestoreRecyclerAdapter adapterLoad, adapterFleet;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public IntrestedInFragment() {
         // Required empty public constructor
@@ -94,7 +96,9 @@ public class IntrestedInFragment extends Fragment {
         mAnimatorFleet = new RecyclerViewAnimator(mFleetsList);
         mAnimatorLoad= new RecyclerViewAnimator(mLoadsList);
 
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        Bundle params = new Bundle();
+        mFirebaseAnalytics.logEvent("at_IntrestedList", params);
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -390,6 +394,9 @@ public class IntrestedInFragment extends Fragment {
                 holder.share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("interested_postlist_share", params);
+
                         shareMesssages(getActivity(),"FLEET REQUIRED",loadPostPojo.getTextToShare());
                         FirebaseFirestore.getInstance()
                                 .collection("loads")
@@ -409,6 +416,9 @@ public class IntrestedInFragment extends Fragment {
                 holder.call.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("interested_postlist_call", params);
+
                         String phoneNO = loadPostPojo.getmRMN();
                         if(phoneNO != null && phoneNO.length() > 0) {
                             callNumber(phoneNO);
@@ -435,14 +445,17 @@ public class IntrestedInFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("interested_postlist_quote", params);
+
                         final Dialog dialog = new Dialog(getActivity());
                         dialog.setContentView(R.layout.dialog_add_quotation);
                         final String title = textUtils.toTitleCase(loadPostPojo.getmSourceCity())+" To "+textUtils.toTitleCase(loadPostPojo.getmDestinationCity());
                         dialog.setTitle(title+ " ...");
 
 
-                        final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
-                        TextView cancel = (TextView) dialog.findViewById(R.id.tv_cancelquote);
+                        final TextView quote = dialog.findViewById(R.id.tv_quote);
+                        TextView cancel = dialog.findViewById(R.id.tv_cancelquote);
                         final EditText amount = dialog.findViewById(R.id.editTextAmount);
                         final EditText comment = dialog.findViewById(R.id.editTextComment);
 
@@ -539,6 +552,10 @@ public class IntrestedInFragment extends Fragment {
                 holder.inbox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("interested_postlist_inbox", params);
+
                         FirebaseFirestore.getInstance()
                                 .collection("loads")
                                 .document(docId)
@@ -880,8 +897,8 @@ public class IntrestedInFragment extends Fragment {
                         dialog.setTitle(title+ " ...");
 
 
-                        final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
-                        TextView cancel = (TextView) dialog.findViewById(R.id.tv_cancelquote);
+                        final TextView quote = dialog.findViewById(R.id.tv_quote);
+                        TextView cancel = dialog.findViewById(R.id.tv_cancelquote);
                         final EditText amount = dialog.findViewById(R.id.editTextAmount);
                         final EditText comment = dialog.findViewById(R.id.editTextComment);
 

@@ -102,9 +102,9 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
         postRequirement = findViewById(R.id.post_requirement);
 
 
-        mCommentField = (EditText) findViewById(R.id.field_comment_text);
-        mCommentButton = (ImageButton) findViewById(R.id.button_post_comment);
-        mCommentsRecycler = (RecyclerView) findViewById(R.id.recycler_comments);
+        mCommentField = findViewById(R.id.field_comment_text);
+        mCommentButton = findViewById(R.id.button_post_comment);
+        mCommentsRecycler = findViewById(R.id.recycler_comments);
 
         mCommentButton.setOnClickListener(this);
         mCommentsRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -112,7 +112,7 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Post Detail");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -268,8 +268,8 @@ public class PostDetailActivity extends BaseActivity implements View.OnClickList
         public CommentViewHolder(View itemView) {
             super(itemView);
 
-            authorView = (TextView) itemView.findViewById(R.id.comment_author);
-            bodyView = (TextView)itemView.findViewById(R.id.comment_body);
+            authorView = itemView.findViewById(R.id.comment_author);
+            bodyView = itemView.findViewById(R.id.comment_body);
         }
     }
 

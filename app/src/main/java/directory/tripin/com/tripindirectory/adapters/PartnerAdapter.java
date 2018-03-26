@@ -82,7 +82,7 @@ public class PartnerAdapter extends FirestoreRecyclerAdapter<PartnerInfoPojo, Re
                             + ", " + mTextUtils.toTitleCase(model.getmCompanyAdderss().getCity())
                             + ", " + mTextUtils.toTitleCase(model.getmCompanyAdderss().getState());
                 }
-                if (model.getmCompanyAdderss().getPincode() != null) {
+                if (model.getmCompanyAdderss() != null && model.getmCompanyAdderss().getPincode() != null) {
                     addresstoset = addresstoset + ", " + model.getmCompanyAdderss().getPincode();
                 }
                 partnersViewHolder.mAddress.setText(addresstoset);
@@ -110,8 +110,9 @@ public class PartnerAdapter extends FirestoreRecyclerAdapter<PartnerInfoPojo, Re
                     }
                 });
 
-                partnersViewHolder.mCompany.setText(mTextUtils.toTitleCase(model.getmCompanyName()));
-                Logger.v("onBind : " + mTextUtils.toTitleCase(model.getmCompanyName()) + " " + model.getmAccountStatus());
+                if(model.getmCompanyName() != null) {
+                    partnersViewHolder.mCompany.setText(mTextUtils.toTitleCase(model.getmCompanyName()));
+                }
 
                 if (model.getmAccountStatus() >= 2) {
                     partnersViewHolder.mCompany

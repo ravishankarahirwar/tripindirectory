@@ -30,6 +30,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -71,6 +72,7 @@ public class LoadsFragment extends Fragment {
     private TextView mResultDescription;
     private TextView mSeeAll;
     private TextView mSeeAllBottom;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public LoadsFragment() {
         // Required empty public constructor
@@ -87,6 +89,11 @@ public class LoadsFragment extends Fragment {
         mResultDescription = v.findViewById(R.id.textViewResultNumber);
         mSeeAll = v.findViewById(R.id.textViewShowAll);
         mSeeAllBottom = v.findViewById(R.id.textViewShowAllBottom);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
+        Bundle params = new Bundle();
+        mFirebaseAnalytics.logEvent("at_loadlist", params);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         //mLayoutManager.setStackFromEnd(true);
@@ -363,6 +370,9 @@ public class LoadsFragment extends Fragment {
                 holder.share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("load_postlist_share", params);
+
                         shareMesssages(getActivity(),"FLEET REQUIRED",loadPostPojo.getTextToShare());
                         FirebaseFirestore.getInstance()
                                 .collection("loads")
@@ -382,6 +392,9 @@ public class LoadsFragment extends Fragment {
                 holder.call.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("load_postlist_call", params);
+
                         String phoneNO = loadPostPojo.getmRMN();
                         if(phoneNO != null && phoneNO.length() > 0) {
                             callNumber(phoneNO);
@@ -406,14 +419,17 @@ public class LoadsFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("load_postlist_quote", params);
+
                         final Dialog dialog = new Dialog(getActivity());
                         dialog.setContentView(R.layout.dialog_add_quotation);
                         final String title = textUtils.toTitleCase(loadPostPojo.getmSourceCity())+" To "+textUtils.toTitleCase(loadPostPojo.getmDestinationCity());
                         dialog.setTitle(title+ " ...");
 
 
-                        final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
-                        TextView cancel = (TextView) dialog.findViewById(R.id.tv_cancelquote);
+                        final TextView quote = dialog.findViewById(R.id.tv_quote);
+                        TextView cancel = dialog.findViewById(R.id.tv_cancelquote);
                         final EditText amount = dialog.findViewById(R.id.editTextAmount);
                         final EditText comment = dialog.findViewById(R.id.editTextComment);
 
@@ -496,6 +512,9 @@ public class LoadsFragment extends Fragment {
                     holder.inbox.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Bundle params = new Bundle();
+                            mFirebaseAnalytics.logEvent("load_postlist_inbox", params);
+
                             FirebaseFirestore.getInstance()
                                     .collection("loads")
                                     .document(docId)
@@ -543,7 +562,6 @@ public class LoadsFragment extends Fragment {
                 mSeeAllBottom.setVisibility(View.VISIBLE);
                 lottieAnimationViewLoading.setVisibility(View.GONE);
                 mResultDescription.setText("Showing Top "+adapter.getItemCount()+ " Recently Available Loads");
-
             }
         };
 

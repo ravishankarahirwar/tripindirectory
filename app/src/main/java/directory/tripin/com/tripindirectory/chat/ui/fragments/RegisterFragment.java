@@ -51,9 +51,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void bindViews(View view) {
-        mETxtEmail = (EditText) view.findViewById(R.id.edit_text_email_id);
-        mETxtPassword = (EditText) view.findViewById(R.id.edit_text_password);
-        mBtnRegister = (Button) view.findViewById(R.id.button_register);
+        mETxtEmail = view.findViewById(R.id.edit_text_email_id);
+        mETxtPassword = view.findViewById(R.id.edit_text_password);
+        mBtnRegister = view.findViewById(R.id.button_register);
     }
 
     @Override

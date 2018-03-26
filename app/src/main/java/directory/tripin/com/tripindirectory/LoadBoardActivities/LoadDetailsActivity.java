@@ -701,8 +701,8 @@ public class LoadDetailsActivity extends AppCompatActivity {
                         dialog.setTitle(title + " ...");
 
 
-                        final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
-                        TextView cancel = (TextView) dialog.findViewById(R.id.tv_cancelquote);
+                        final TextView quote = dialog.findViewById(R.id.tv_quote);
+                        TextView cancel = dialog.findViewById(R.id.tv_cancelquote);
                         final EditText amount = dialog.findViewById(R.id.editTextAmount);
                         final EditText comment = dialog.findViewById(R.id.editTextComment);
 

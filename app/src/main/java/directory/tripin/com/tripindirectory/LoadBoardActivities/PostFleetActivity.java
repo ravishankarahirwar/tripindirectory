@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -115,6 +116,7 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
     public TextView mFleetProperties;
     public TextView mDistance;
     public TextView mPersonalNote;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
     @Override
@@ -173,6 +175,8 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
         mPersonalNote = findViewById(R.id.textViewNote);
 
         textUtils = new TextUtils();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
 
         setListners();
     }
@@ -219,6 +223,8 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
         addPickUpCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent("fleet_pickup_city", params);
                 mPlaceCode = 1;
                 addPickUpCity.setText("Loading...");
                 starttheplacesfragment();
@@ -228,6 +234,9 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
         addDropOffCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent("fleet_dropoff_city", params);
+
                 mPlaceCode = 2;
                 addDropOffCity.setText("Loading...");
                 starttheplacesfragment();
@@ -395,12 +404,14 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
                                     public void onSuccess(DocumentReference documentReference) {
                                         //comment added
                                         //subscribe to topic
+                                        Bundle params = new Bundle();
+                                        mFirebaseAnalytics.logEvent("post_fleet", params);
+
                                         FirebaseMessaging.getInstance().subscribeToTopic(fleetPostPojo.getmDocId());
                                         Toast.makeText(getApplicationContext(), "Fleet Posted Successfully!", Toast.LENGTH_LONG).show();
                                         finish();
                                     }
                                 });
-
                     }
                 });
             }
@@ -408,6 +419,8 @@ public class PostFleetActivity extends AppCompatActivity implements HubFetchedCa
     }
 
     private void updateDateLabel() {
+        Bundle params = new Bundle();
+        mFirebaseAnalytics.logEvent("fleet_add_date", params);
 
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);

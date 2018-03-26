@@ -4,12 +4,9 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -20,21 +17,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -52,7 +43,6 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -76,7 +66,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -105,16 +94,10 @@ import java.util.concurrent.TimeoutException;
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
-import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
-import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
-import directory.tripin.com.tripindirectory.adapters.QueryBookmarkViewHolder;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
@@ -124,7 +107,6 @@ import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.QueryManager;
-import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.FoundHubPojo;
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback;
@@ -135,8 +117,6 @@ import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesAdaptor;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesValuesAdaptor;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
@@ -239,7 +219,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ratingDialogSetup();
         internetCheck();
         notificationSubscried();
-        showAppIntro();
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
@@ -530,6 +509,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
                 Bundle params = new Bundle();
                 mSearchView.clearQuery();
+                mSortIndex = ShortingType.DEFAULT;
                 if (radioButtonID == R.id.search_by_route) {
                     params.putString("search_by", "ByRoute");
                     searchTag = SearchBy.SEARCHTAG_ROUTE;
@@ -620,15 +600,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
     }
 
-    /**
-     * This method show app intro screen if user coming first time in the app
-     */
-    private void showAppIntro() {
-        if (mPreferenceManager.isFirstTime()) {
-            mPreferenceManager.setFirstTime(false);
-            startActivity(new Intent(mContext, TutorialScreensActivity.class));
-        }
-    }
+
 
     // Add to each long-lived activity
     @Override
@@ -730,7 +702,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //apply filters
         for (FilterPojo filter : mFiltersList) {
             switch (filter.getmFilterType()) {
-                case FilterType.TYPE_OF_VEHICLE_PROPERTY: {
+                case FilterType.TYPE_OF_VEHICLE_PROPERTY : {
                     String filterName = filter.getmFilterName();
                     query = query.whereEqualTo(filterName, true);
                     break;
@@ -756,23 +728,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //apply sorting
         switch (mSortIndex) {
             case ShortingType.ALPHA_ASSENDING : {
+                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
             case ShortingType.ALPHA_DECENDING : {
+                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
             case ShortingType.ACCOUNT_TYPE : {
+                searchTag = -1;
                 query = query.orderBy(DB.PartnerFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
                 break;
             }
             case ShortingType.LAST_ACTIVE : {
+                searchTag = -1;
                 query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
                 break;
             }
             default: {
-                query = query.orderBy(DB.PartnerFields.COMPANY_NAME);
                 break;
             }
         }
@@ -825,9 +800,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         } else {
-            if (mSortIndex != ShortingType.ACCOUNT_TYPE && mSortIndex != ShortingType.LAST_ACTIVE) {
-                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
-            }
+            query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
+
+//            query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
+//            if (mSortIndex != ShortingType.ACCOUNT_TYPE && mSortIndex != ShortingType.LAST_ACTIVE) {
+//                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
+//            }
         }
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
@@ -1536,7 +1514,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mUserDocRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-
                 }
             });
         }

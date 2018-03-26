@@ -279,15 +279,11 @@ public class FleetPostPojo {
     }
 
     public boolean isMinimumRequiredInputsSet() {
-        if (mFleetLength.isEmpty()
+        return !(mFleetLength.isEmpty()
                 || mVehicleType.isEmpty()
                 || mSourceCity.isEmpty()
                 || mDestinationCity.isEmpty()
-                || mPickUpTimeStamp==null) {
-            return false;
-        } else {
-            return true;
-        }
+                || mPickUpTimeStamp == null);
     }
 
     public String getTextToShare(){

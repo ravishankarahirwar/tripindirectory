@@ -28,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
     }
 
     private void init() {

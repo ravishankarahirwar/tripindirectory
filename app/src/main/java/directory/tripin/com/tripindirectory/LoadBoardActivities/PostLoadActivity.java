@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -118,6 +119,7 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
     public TextView mFleetProperties;
     public TextView mDistance;
     public TextView mPersonalNote;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +175,9 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
         textUtils = new TextUtils();
 
         setListners();
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
     }
 
     @Override
@@ -227,6 +232,10 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
         mAddPickupCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("pickup_city", "1");
+                mFirebaseAnalytics.logEvent("load_add_pickupcity", params);
+
                 mPlaceCode = 1;
                 mAddPickupCity.setText("Loading...");
                 starttheplacesfragment();
@@ -236,6 +245,10 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
         mAddDropoffCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("dropoff_city", "2");
+                mFirebaseAnalytics.logEvent("load_add_dropoffcity", params);
+
                 mPlaceCode = 2;
                 mAddDropoffCity.setText("Loading...");
                 starttheplacesfragment();
@@ -377,6 +390,9 @@ public class PostLoadActivity extends BaseActivity implements HubFetchedCallback
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("add_document", "loadadded");
+                mFirebaseAnalytics.logEvent("load_post", params);
                 upload.setText("Uploading...");
 
                 DocumentReference rf = FirebaseFirestore.getInstance().collection("loads").document();

@@ -30,6 +30,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -75,6 +76,7 @@ public class FleetsFragment extends Fragment {
     private TextView mResultDescription;
     private TextView mSeeAll;
     private TextView mSeeAllBottom;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public FleetsFragment() {
         // Required empty public constructor
@@ -92,6 +94,10 @@ public class FleetsFragment extends Fragment {
         mSeeAll = v.findViewById(R.id.textViewShowAllFleet);
         mSeeAllBottom = v.findViewById(R.id.textViewShowAllBottom);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
+        Bundle params = new Bundle();
+        mFirebaseAnalytics.logEvent("at_fleetlist", params);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         //mLayoutManager.setStackFromEnd(true);
@@ -371,6 +377,9 @@ public class FleetsFragment extends Fragment {
                 holder.share.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("fleet_postlist_share", params);
+
                         shareMesssages(getActivity(),"LOAD REQUIRED",fleetPostPojo.getTextToShare());
                         FirebaseFirestore.getInstance()
                                 .collection("fleets")
@@ -390,6 +399,9 @@ public class FleetsFragment extends Fragment {
                 holder.call.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("fleet_postlist_call", params);
+
                         String phoneNO = fleetPostPojo.getmRMN();
                         if(phoneNO != null && phoneNO.length() > 0) {
                             callNumber(phoneNO);
@@ -415,6 +427,8 @@ public class FleetsFragment extends Fragment {
                 holder.quote.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Bundle params = new Bundle();
+                        mFirebaseAnalytics.logEvent("fleet_postlist_quote", params);
 
                         final Dialog dialog = new Dialog(getActivity());
                         dialog.setContentView(R.layout.dialog_add_quotation);
@@ -422,8 +436,8 @@ public class FleetsFragment extends Fragment {
                         dialog.setTitle(title+ " ...");
 
 
-                        final TextView quote = (TextView) dialog.findViewById(R.id.tv_quote);
-                        TextView cancel = (TextView) dialog.findViewById(R.id.tv_cancelquote);
+                        final TextView quote = dialog.findViewById(R.id.tv_quote);
+                        TextView cancel = dialog.findViewById(R.id.tv_cancelquote);
                         final EditText amount = dialog.findViewById(R.id.editTextAmount);
                         final EditText comment = dialog.findViewById(R.id.editTextComment);
 
@@ -504,6 +518,9 @@ public class FleetsFragment extends Fragment {
                     holder.inbox.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Bundle params = new Bundle();
+                            mFirebaseAnalytics.logEvent("fleet_postlist_inbox", params);
+
                             FirebaseFirestore.getInstance()
                                     .collection("fleets")
                                     .document(docId)

@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.TutorialScreensActivity"
+            android:name=".activity.WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FormActivities.CompanyInfoActivity"

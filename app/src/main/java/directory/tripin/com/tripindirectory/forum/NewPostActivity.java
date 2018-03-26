@@ -105,7 +105,7 @@ public class NewPostActivity extends BaseActivity {
         mPostLoad = findViewById(R.id.post_load);
         mPostTruck = findViewById(R.id.post_truck);
 
-        mSubmitButton = (FloatingActionButton) findViewById(R.id.fab_submit_post);
+        mSubmitButton = findViewById(R.id.fab_submit_post);
 
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,7 +239,7 @@ public class NewPostActivity extends BaseActivity {
 
 
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Now Post");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
