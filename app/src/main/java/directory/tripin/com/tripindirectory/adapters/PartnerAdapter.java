@@ -110,8 +110,12 @@ public class PartnerAdapter extends FirestoreRecyclerAdapter<PartnerInfoPojo, Re
                     }
                 });
 
-                if(model.getmCompanyName() != null) {
+                if(model.getmCompanyName() != null && model.getmCompanyName().length() > 3) {
                     partnersViewHolder.mCompany.setText(mTextUtils.toTitleCase(model.getmCompanyName()));
+                } else {
+                    partnersViewHolder.mPartnerView.setVisibility(View.GONE);
+                    partnersViewHolder.mPartnerView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+
                 }
 
                 if (model.getmAccountStatus() >= 2) {

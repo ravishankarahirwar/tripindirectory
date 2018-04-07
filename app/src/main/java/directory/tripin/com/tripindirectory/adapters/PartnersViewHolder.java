@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import directory.tripin.com.tripindirectory.R;
@@ -14,6 +15,7 @@ import directory.tripin.com.tripindirectory.R;
  */
 
 public class PartnersViewHolder extends RecyclerView.ViewHolder {
+    public LinearLayout mPartnerView;
     public CardView mCardView;
     public TextView mAddress;
     public ImageView mCall;
@@ -32,6 +34,8 @@ public class PartnersViewHolder extends RecyclerView.ViewHolder {
 
     public PartnersViewHolder(View itemView) {
         super(itemView);
+        mPartnerView = itemView.findViewById(R.id.partner_main_view);
+
         mCardView = itemView.findViewById(R.id.partner_card_view);
         mCall = itemView.findViewById(R.id.call);
         mAddress =  itemView.findViewById(R.id.company_address);

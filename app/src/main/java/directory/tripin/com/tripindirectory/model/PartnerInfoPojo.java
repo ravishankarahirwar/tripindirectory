@@ -47,6 +47,12 @@ public class PartnerInfoPojo {
     @ServerTimestamp
     private Date mLastActiveTime;
 
+    @ServerTimestamp
+    private Date mMemberSince;
+
+    @ServerTimestamp
+    private Date mLastModifiedTime;
+
     public PartnerInfoPojo() {
     }
 

@@ -4,13 +4,13 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 27
     flavorDimensions "default"
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 41
-        versionName "6.4"
+        versionCode 44
+        versionName "6.7"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

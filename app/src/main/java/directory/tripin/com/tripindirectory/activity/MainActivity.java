@@ -6,7 +6,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -20,8 +23,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.CharacterStyle;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,8 +68,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -101,6 +113,8 @@ import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
+import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
+import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -147,6 +161,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
+    private DatabaseReference mPostReference;
+
     private Context mContext;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
@@ -177,15 +193,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private LottieAnimationView mBookmarkPanelToggle;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+
     private HashMap<String, Boolean> mNatureofBusinessHashMap;
     private HashMap<String, Boolean> mTypesofServicesHashMap;
+
     private List<FilterPojo> mFiltersList;
+
     private CheckBoxRecyclarAdapter mNatureOfBusiness;
     private CheckBoxRecyclarAdapter mTypeOfService;
+
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
     private RecyclerView mTypesofVehiclesRecyclarView;
+
     private TextView mTextCount;
+    private TextView mLoadBoardNews;
+
     private Dialog dialog;
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
@@ -198,6 +221,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
+
     private int mSortIndex;
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
@@ -207,6 +231,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private QueryManager mQueryManager;
     private PartnerAdapter mPartnerAdapter;
     private AppUtils mAppUtils;
+
+    private ImageView mNavFacebook;
+    private ImageView mNavYouTube;
+    private ImageView mNavWebsite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,6 +265,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mPostReference = FirebaseDatabase.getInstance().getReference()
+                .child("posts");
 
         mNatureOfBusinessRecyclarView = findViewById(R.id.rv_natureofbusiness);
         mTypesOfServicesRecyclarView = findViewById(R.id.rv_typesofservices);
@@ -255,6 +285,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
         mNearestHubsList = new ArrayList<>();
+        mNavFacebook  = findViewById(R.id.nev_footer_facebook);
+        mNavYouTube  = findViewById(R.id.nev_footer_youtube);
+        mNavWebsite  = findViewById(R.id.nev_footer_webstie);
+
+        mLoadBoardNews =  findViewById(R.id.loadboard_news);
 
         mNoOfFilterApply = findViewById(R.id.no_of_filters);
         mSearchView = findViewById(R.id.floating_search_view);
@@ -571,6 +606,59 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
             }
         });
+
+        mNavFacebook.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent("go_to_FacebookPage", params);
+
+                Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                String facebookUrl = getFacebookPageURL(MainActivity.this);
+                facebookIntent.setData(Uri.parse(facebookUrl));
+                startActivity(facebookIntent);
+            }
+        });
+
+        mNavYouTube.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent("go_to_YouTube", params);
+
+                Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                facebookIntent.setData(Uri.parse("http://www.youtube.com/watch?v=FOkt6F0ZAOk"));
+                startActivity(facebookIntent);
+            }
+        });
+
+        mNavWebsite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent("go_to_website", params);
+
+            Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+            facebookIntent.setData(Uri.parse("http://indianlogisticsnetwork.com/#about"));
+            startActivity(facebookIntent);
+            }
+        });
+
+        mLoadBoardNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString("GoToForumByNews", "Click");
+                mFirebaseAnalytics.logEvent("GoToForumByNews", params);
+
+                if (mAuth.getCurrentUser() != null) {
+                    onAuthSuccess(mAuth.getCurrentUser());
+                } else {
+                    // not signed in
+                    startSignInFor(SIGN_IN_FOR_FORUM);
+                }
+            }
+        });
     }
 
     /**
@@ -655,7 +743,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Write new user
         writeNewUser(user.getUid(), userPhoneNo, userPhoneNo, fcmTocken);
         // Go to MainActivity
-        startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+        startActivity(new Intent(MainActivity.this, directory.tripin.com.tripindirectory.forum.MainActivity.class));
     }
 
     private void writeNewUser(String userId, String name, String userPhoneNo, String fcmtoken) {
@@ -818,6 +906,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mPartnerAdapter.startListening();
     }
 
+    String loadBoardNews = "| ";
     @Override
     protected void onStart() {
         super.onStart();
@@ -827,6 +916,50 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (bookmarksAdapter != null)
             bookmarksAdapter.startListening();
+
+        mLoadBoardNews.setText("");
+        mPostReference.limitToLast(10).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Log.v("LoadBoard", " onChildAdded  to read value.");
+
+                Post post = dataSnapshot.getValue(Post.class);
+                if(post!= null && post.getmSource() != null) {
+                    loadBoardNews += " | ";
+                    loadBoardNews += post.getmSource() + " \u25BA " .toUpperCase();
+                    loadBoardNews += post.getmDestination() + " ".toUpperCase() + " \u25AA ";
+                    loadBoardNews += post.getmTruckType() + " \u25AA ";
+                    loadBoardNews += post.getmTruckBodyType() + " \u25AA ";
+                    loadBoardNews += post.getmPayload() + " Ton ";
+
+                    mLoadBoardNews.append(loadBoardNews);
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.v("LoadBoard", " onChildRemoved  to read value.");
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.v("LoadBoard", " onChildChanged to read value.");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.v("LoadBoard", "onChildMoved Failed to read value.");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.v("LoadBoard", " onCancelledFailed to read value.");
+            }
+        });
+        Log.v("LoadBoard", " " + loadBoardNews);
+
     }
 
     @Override
@@ -1029,16 +1162,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
 
-        } else if (id == R.id.nav_inbox) {
-            if (mAuth.getCurrentUser() != null) {
-                // already signed in
-                startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
-            } else {
-                // not signed in
-                signinginfor = 4;
-                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
-            }
-        } else if (id == R.id.nav_logout) {
+        }  else if (id == R.id.nav_logout) {
             params = new Bundle();
             params.putString("logout", "Click");
             mFirebaseAnalytics.logEvent("ClickOnLogout", params);
@@ -1593,6 +1717,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
             return suggestionCompanyNames;
+        }
+    }
+    public static String FACEBOOK_URL = "https://www.facebook.com/ILNOfficial";
+    public static String FACEBOOK_PAGE_ID = "1288324944512615";
+    //method to get the right URL to use in the intent
+    public String getFacebookPageURL(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            int versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode;
+            if (versionCode >= 3002850) { //newer versions of fb app
+                return "fb://facewebmodal/f?href=" + FACEBOOK_URL;
+            } else { //older versions of fb app
+                return "fb://page/" + FACEBOOK_PAGE_ID;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            return FACEBOOK_URL; //normal web url
         }
     }
 }

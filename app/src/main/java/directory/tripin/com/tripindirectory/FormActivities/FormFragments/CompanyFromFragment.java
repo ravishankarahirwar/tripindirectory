@@ -25,7 +25,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,6 +49,7 @@ import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumber
 import directory.tripin.com.tripindirectory.FormActivities.ContactPersonsAdapter;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
+import directory.tripin.com.tripindirectory.forum.NewPostActivity;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.CompanyAddressPojo;
@@ -64,6 +67,7 @@ public class CompanyFromFragment extends BaseFragment {
 
     private static final int CONTACT_PICKER_RESULT = 1001;
     private static final int PLACE_PICKER_REQUEST = 1;
+    private static final int SELECT_CITY = 3;
 
     DocumentReference mUserDocRef;
     FirebaseAuth auth;
@@ -402,6 +406,13 @@ public class CompanyFromFragment extends BaseFragment {
 
         FetchUserData();
 
+        mCompanyCity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                starttheplacesfragment(SELECT_CITY);
+            }
+        });
+
         mAddContactPersonTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -553,7 +564,15 @@ public class CompanyFromFragment extends BaseFragment {
 
 
                 }
-
+                break;
+                case SELECT_CITY :
+                    final Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                    String cityNeme = "";
+                    if(place != null) {
+                        cityNeme = place.getName().toString().toUpperCase();
+                    }
+                    mCompanyCity.setText(cityNeme);
+                    break;
             }
         } else {
             // gracefully handle failure
@@ -562,5 +581,23 @@ public class CompanyFromFragment extends BaseFragment {
 
     }
 
+    private void starttheplacesfragment(int selectFor){
+        try {
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                    .setCountry("IN")
+                    .build();
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(typeFilter)
+                            .build(getActivity());
+            startActivityForResult(intent, selectFor);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
 
 }

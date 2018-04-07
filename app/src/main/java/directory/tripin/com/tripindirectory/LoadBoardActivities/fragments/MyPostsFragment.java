@@ -125,7 +125,6 @@ public class MyPostsFragment extends Fragment {
 
                     mFleetsList.setVisibility(View.VISIBLE);
                     mLoadsList.setVisibility(View.INVISIBLE);
-
                 }
             }
         });
@@ -288,7 +287,7 @@ public class MyPostsFragment extends Fragment {
                                         FirebaseFirestore.getInstance().collection("loads").document(docId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getActivity(),"Post Removed",Toast.LENGTH_LONG).show();
+//                                                Toast.makeText(getActivity(),"Post Removed",Toast.LENGTH_LONG).show();
                                             }
                                         });
 

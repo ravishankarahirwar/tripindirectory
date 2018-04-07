@@ -115,7 +115,7 @@
                     </RadioGroup>
                 </HorizontalScrollView>
 
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="45dp">
@@ -125,14 +125,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_centerInParent="true"
                         app:lottie_autoPlay="true"
                         app:lottie_fileName="animation_loading.json"
                         app:lottie_loop="true" />
+
+                    <TextView
+                        android:id="@+id/loadboard_news"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/categoriesbg"
+                        android:ellipsize="marquee"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:repeatCount="infinite"
+                        android:repeatMode="restart"
+                        android:focusable="true"
+                        android:textStyle="bold"
+                        android:focusableInTouchMode="true"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@android:color/black"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="Loadboard"
+                        android:textSize="14sp" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/transporter_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_below="@+id/loadboard_news"
                         android:layout_gravity="center_horizontal"
                         android:overScrollMode="ifContentScrolls"
                         app:fastScrollEnabled="true"
@@ -148,6 +171,7 @@
                         android:id="@+id/textViewResCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
                         android:layout_gravity="right"
                         android:layout_marginRight="8dp"
                         android:layout_marginTop="8dp"
@@ -157,7 +181,7 @@
                         android:text="101"
                         android:textColor="@color/app_title" />
 
-                </FrameLayout>
+                </RelativeLayout>
 
             </LinearLayout>
 
