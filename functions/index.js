@@ -2,7 +2,21 @@
 const functions = require('firebase-functions');
 //import admin module
 const admin = require('firebase-admin');
+const nodemailer = require('nodemailer');
 admin.initializeApp(functions.config().firebase);
+
+//const gmailEmail = functions.config().gmail.email;
+//const gmailPassword = functions.config().gmail.password;
+
+const mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: "ravishankar.ahirwar@tripin.co.in",
+    pass: "rrrrrr25121983",
+  },
+});
+const APP_NAME = 'Indian Logistics Network';
+
 
 //general updates PRODUCTION function
 exports.createUpdate = functions.firestore
@@ -351,4 +365,26 @@ exports.loadboardNotification = functions.database.ref('/posts/{pushId}')
 
          return admin.messaging().sendToTopic("loadboardNotification", payload, options);
         });
+exports.sendWelcomeEmail = functions.database.ref('/posts/{pushId}').onCreate(event => {
+// [END onCreateTrigger]
+  // [START eventAttributes]
+//  const email = user.email; // The email of the user.
+//  const displayName = user.displayName; // The display name of the user.
+  // [END eventAttributes]
 
+  return sendWelcomeEmail("ravishankar.ahirwar@gmail.com,ravishankar.malaysia@gmail.com", "Ravi");
+});
+
+// Sends a welcome email to the given user.
+function sendWelcomeEmail(email, displayName) {
+  const mailOptions = {
+    from: `${APP_NAME} <noreply@firebase.com>`,
+    bcc: email,
+  };
+  // The user subscribed to the newsletter.
+  mailOptions.subject = `Welcome to ${APP_NAME}!`;
+  mailOptions.text = `Hey ${displayName || ''}! Welcome to ${APP_NAME}. I hope you will enjoy our service.`;
+  return mailTransport.sendMail(mailOptions).then(() => {
+    return console.log('New welcome email sent to:', email);
+  });
+}

@@ -4,13 +4,18 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
@@ -93,6 +98,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Date;
@@ -132,6 +138,7 @@ import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
+import directory.tripin.com.tripindirectory.utils.Analytics;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
 import directory.tripin.com.tripindirectory.utils.FilterType;
@@ -611,12 +618,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 Bundle params = new Bundle();
-                mFirebaseAnalytics.logEvent("go_to_FacebookPage", params);
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FACEBOOKPAGE, params);
 
-                Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
-                String facebookUrl = getFacebookPageURL(MainActivity.this);
-                facebookIntent.setData(Uri.parse(facebookUrl));
-                startActivity(facebookIntent);
+                try {
+                    Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                    String facebookUrl = getFacebookPageURL(MainActivity.this);
+                    facebookIntent.setData(Uri.parse(facebookUrl));
+                    startActivity(facebookIntent);
+                } catch (ActivityNotFoundException exception) {
+                    Toast.makeText(mContext, "Sorry: There is some issue in opening facebook", Toast.LENGTH_SHORT).show();
+                } catch (Exception exception) {
+                    Logger.v("Not able to open ILN facebook page");
+                }
             }
         });
 
@@ -624,11 +637,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 Bundle params = new Bundle();
-                mFirebaseAnalytics.logEvent("go_to_YouTube", params);
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_YOUTUBE, params);
 
+                try {
                 Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
                 facebookIntent.setData(Uri.parse("http://www.youtube.com/watch?v=FOkt6F0ZAOk"));
                 startActivity(facebookIntent);
+                } catch (ActivityNotFoundException exception) {
+                    Toast.makeText(mContext, "Sorry: There is some issue in opening youtube", Toast.LENGTH_SHORT).show();
+                } catch (Exception exception) {
+                    Logger.v("Not able to open ILN youtube page");
+                }
             }
         });
 
@@ -636,11 +655,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 Bundle params = new Bundle();
-                mFirebaseAnalytics.logEvent("go_to_website", params);
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_WEBSITE, params);
 
+            try {
             Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
             facebookIntent.setData(Uri.parse("http://indianlogisticsnetwork.com/#about"));
             startActivity(facebookIntent);
+            } catch (ActivityNotFoundException exception) {
+                Toast.makeText(mContext, "Sorry: There is some issue in opening website", Toast.LENGTH_SHORT).show();
+            } catch (Exception exception) {
+                Logger.v("Not able to open ILN Website page");
+            }
             }
         });
 
@@ -648,8 +673,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View view) {
                 Bundle params = new Bundle();
-                params.putString("GoToForumByNews", "Click");
-                mFirebaseAnalytics.logEvent("GoToForumByNews", params);
+                params.putString(Analytics.Event.GO_TO_FORUM_BYNEWS, Analytics.Value.CLICK);
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FORUM_BYNEWS, params);
 
                 if (mAuth.getCurrentUser() != null) {
                     onAuthSuccess(mAuth.getCurrentUser());
@@ -685,7 +710,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
-//        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
     }
 
 
@@ -1129,7 +1154,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             onVoiceSearch(enquiry);
         } else if (requestCode == SIGN_IN_FOR_FORUM && resultCode == RESULT_OK) {
             if (mAuth.getCurrentUser() != null) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    try {
+                        final ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                        ShortcutInfo dynamicShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                                .setShortLabel("ILN-LoadBoard")
+                                .setLongLabel("ILN-LoadBoard Post load and Truck")
+                                .setIcon(Icon.createWithResource(this, R.drawable.delivery_truck_front))
+                                .setIntents(
+                                        new Intent[]{
+                                                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, directory.tripin.com.tripindirectory.forum.MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                                                new Intent("directory.tripin.com.tripindirectory.forum.MainActivity.OPEN_DYNAMIC_SHORTCUT")
+                                        })
+                                .setRank(0)
+                                .build();
+                        shortcutManager.setDynamicShortcuts(Arrays.asList(dynamicShortcut));
+                    }catch (Exception ex) {
+                        Logger.v("Exception in creating dynamic shortcut");
+                    }
+                }
                 onAuthSuccess(mAuth.getCurrentUser());
+
             } else {
                 Toast.makeText(mContext, "Unknow error", Toast.LENGTH_LONG).show();
             }
