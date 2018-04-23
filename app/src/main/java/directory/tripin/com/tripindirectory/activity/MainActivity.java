@@ -11,12 +11,15 @@ import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -90,6 +93,10 @@ import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.kobakei.ratethisapp.RateThisApp;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.wooplr.spotlight.SpotlightConfig;
+import com.wooplr.spotlight.SpotlightView;
+import com.wooplr.spotlight.prefs.PreferencesManager;
+import com.wooplr.spotlight.utils.SpotlightSequence;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -150,6 +157,13 @@ import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner {
 
+    private static final String INTRO_CARD = "fab_intro";
+    private static final String INTRO_SWITCH = "switch_intro";
+    private static final String INTRO_RESET = "reset_intro";
+    private static final String INTRO_REPEAT = "repeat_intro";
+    private static final String INTRO_CHANGE_POSITION = "change_position_intro";
+    private static final String INTRO_SEQUENCE = "sequence_intro";
+
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private static final int NO_OF_DAY = 1;
@@ -175,7 +189,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private PreferenceManager mPreferenceManager;
     private FloatingSearchView mSearchView;
     private DrawerLayout mDrawerLayout;
+
     private RadioGroup mSearchTagRadioGroup;
+
     private int searchTag = 0;
     private String mSearchQuery = "";
     private SearchData mSearchData;
@@ -220,6 +236,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
+    private RadioButton searchByRoute;
     private RadioButton radioButtonAlphabetically;
     private RadioButton mSortAlphDecending;
     private RadioButton radioButtonCrediblity;
@@ -243,6 +260,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ImageView mNavYouTube;
     private ImageView mNavWebsite;
 
+    private SpotlightView spotLight;
+    FloatingActionButton goToForum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,11 +276,34 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SpotlightConfig config = new SpotlightConfig();
+                config.setDismissOnTouch(true);
+                config.setRevealAnimationEnabled(true);
+                config.setLineAndArcColor(0xFFFFFFFF);
+                config.setMaskColor(Color.parseColor("#dc000000"));
+
+                SpotlightSequence.getInstance(MainActivity.this,config)
+                        .addSpotlight(searchByRoute, "Search By", "Search by route", INTRO_SWITCH)
+                        .addSpotlight(goToForum, "Loadboard ", "post your requirement in loadboard", INTRO_RESET)
+//                        .addSpotlight(resetAndPlay, "Play Again", "Click here to play again", INTRO_REPEAT)
+//                        .addSpotlight(changePosAndPlay, "Change Position", "Click here to change position and replay", INTRO_CHANGE_POSITION)
+//                        .addSpotlight(startSequence, "Start sequence", "Well.. you just clicked here", INTRO_SEQUENCE)
+//                        .addSpotlight(fab,"Love", "Like the picture?\n" + "Let others know.", INTRO_CARD)
+                        .startSequence();
+            }
+        }, 2400);
     }
 
 
     @Override
     protected void init() {
+        PreferencesManager mPreferencesManager = new PreferencesManager(MainActivity.this);
+        mPreferencesManager.resetAll();
+
         mContext = MainActivity.this;
         textUtils = new TextUtils();
         mAppUtils = new AppUtils(mContext);
@@ -331,6 +373,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
+        searchByRoute = findViewById(R.id.search_by_route);
         lottieAnimationView = findViewById(R.id.animation_view);
         animationBookmark = findViewById(R.id.animation_bookmark);
 
@@ -570,7 +613,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         setupSearchBar();
 
-        FloatingActionButton goToForum = findViewById(R.id.fab);
+
+        goToForum = findViewById(R.id.fab);
         goToForum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -684,6 +728,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         });
+    }
+
+    private void showIntro(View view, String usageId) {
+        spotLight = new SpotlightView.Builder(this)
+                .introAnimationDuration(400)
+                .enableRevealAnimation(false)
+                .performClick(true)
+                .fadeinTextDuration(400)
+                //.setTypeface(FontUtil.get(this, "RemachineScript_Personal_Use"))
+                .headingTvColor(Color.parseColor("#eb273f"))
+                .headingTvSize(32)
+                .headingTvText("Love")
+                .subHeadingTvColor(Color.parseColor("#ffffff"))
+                .subHeadingTvSize(16)
+                .subHeadingTvText("Like the picture?\nLet others know.")
+                .maskColor(Color.parseColor("#dc000000"))
+                .target(view)
+                .lineAnimDuration(400)
+                .lineAndArcColor(Color.parseColor("#eb273f"))
+                .dismissOnTouch(true)
+                .dismissOnBackPress(true)
+                .enableDismissAfterShown(true)
+                .usageId(usageId) //UNIQUE ID
+                .show();
     }
 
     /**
