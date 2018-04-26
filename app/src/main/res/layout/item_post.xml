@@ -120,7 +120,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
-                app:srcCompat="@drawable/ic_chat_black_24dp" />
+                app:srcCompat="@drawable/ic_chat" />
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackground"
+                app:srcCompat="@drawable/ic_delete_forever_black_24dp" />
         </LinearLayout>
     </RelativeLayout>
 

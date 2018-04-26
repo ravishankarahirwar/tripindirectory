@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.interfaces.BookmarkListner;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.utils.SearchBy;
@@ -27,9 +28,10 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class BookmarkAdapter extends FirestoreRecyclerAdapter<QueryBookmarkPojo, QueryBookmarkViewHolder> {
-
-    public BookmarkAdapter(FirestoreRecyclerOptions<QueryBookmarkPojo> options) {
+    private BookmarkListner mCallback;
+    public BookmarkAdapter(FirestoreRecyclerOptions<QueryBookmarkPojo> options, BookmarkListner callback) {
         super(options);
+        mCallback = callback;
     }
 
     @Override
@@ -51,39 +53,7 @@ public class BookmarkAdapter extends FirestoreRecyclerAdapter<QueryBookmarkPojo,
                     holder.searchnow.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-//                            // set the book mark
-//                            searchTag = model.getmSearchTag();
-//                            mSortIndex = model.getmSortIndex();
-//                            mSearchQuery = model.getmSearchQuery();
-//                            mFiltersList.clear();
-//                            mFiltersList.addAll(model.getmFiltersList());
-//
-//                            if (model.getmSortIndex() != 0) {
-//                                mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
-//                                                .getDrawable(getApplicationContext(),
-//                                                        R.drawable.ic_sort_black_24dp),
-//                                        null,
-//                                        ContextCompat
-//                                                .getDrawable(getApplicationContext(),
-//                                                        R.drawable.ic_bubble_chart_white_24dp),
-//                                        null);
-//                            }
-//
-//                            if(model.getmFiltersList().size()!=0){
-//                                int noOfFilterApply = model.getmFiltersList().size();
-//                                mNoOfFilterApply.setVisibility(TextView.VISIBLE);
-//                                mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
-//                            } else {
-//                                mNoOfFilterApply.setVisibility(TextView.GONE);
-//
-//                            }
-//
-//
-//                            mSearchView.setSearchText(model.getmSearchQuery());
-//                            setAdapter(model.getmSearchQuery());
-//                            sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
+                            mCallback.onBookMarkSearchClick(model);
                         }
                     });
 

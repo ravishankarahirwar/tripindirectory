@@ -4,10 +4,12 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,6 +40,7 @@ import directory.tripin.com.tripindirectory.forum.viewholder.PostViewHolder;
 public abstract class PostListFragment extends Fragment {
 
     private static final String TAG = "PostListFragment";
+    private boolean isMyPost;
 
     // [START define_database_reference]
     private DatabaseReference mDatabase;
@@ -112,13 +115,47 @@ public abstract class PostListFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         FirebaseUser user = mAuth.getCurrentUser();
-
                         ChatActivity.startActivity(getActivity(),
-                                "Ravi",
+                                model.mAuthor,
                                 model.getmUid(),
                                 "c9ZgQphxeBc:APA91bGtVuHIyn1drATtyfyVK3wriOljL15czdF_HMGsE6BP5UPuDUY7Nt5XAMcr-zWv3wxODmjYeyZuRPnH3MSO3ksKQTfoHCEr2xGhAc81mFnTQL_9_UGh9HJFzvSP9LqLePETymrt");
                     }
                 });
+
+                if(model.getmUid().equalsIgnoreCase(mAuth.getUid())) {
+                    viewHolder.delete.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.delete.setVisibility(View.GONE);
+                }
+
+                viewHolder.delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        if(postRef != null) {
+                                            postRef.removeValue();
+                                        }
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Delete Post");
+                        builder.setMessage("Are you sure? You want to delete this post.").setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener).show();
+
+                    }
+                });
+
 
 
                 viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
