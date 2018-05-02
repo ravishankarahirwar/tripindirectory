@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import directory.tripin.com.tripindirectory.FormActivities.FleetViewHolder;
+import directory.tripin.com.tripindirectory.formactivities.FleetViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
 

@@ -214,5 +214,9 @@
     <string name="slide_4_title">Load Board</string>
     <string name="slide_4_desc">Post your Load/Truck on LoadBoard, So Transporter/Shipper will contact you</string>
 
+    <string name="title_send_verification_request">Send Verification Request</string>
+    <string name="send_now">SEND NOW!</string>
+
+
     <!--End-->
 </resources>

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity">
+    tools:context="directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity">
 
     <item
         android:id="@+id/action_addpost"

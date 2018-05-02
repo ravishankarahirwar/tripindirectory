@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="directory.tripin.com.tripindirectory.LoadBoardActivities.FleetPostsActivity">
+    tools:context="directory.tripin.com.tripindirectory.loadboardactivities.FleetPostsActivity">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loadingloads"

@@ -39,18 +39,17 @@ import java.util.Date;
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.FleetDetailsActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadDetailsActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.CommentPojo;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.FleetPostPojo;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostPojo;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.FleetDetailsActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.LoadDetailsActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.models.CommentPojo;
+import directory.tripin.com.tripindirectory.loadboardactivities.models.FleetPostPojo;
+import directory.tripin.com.tripindirectory.loadboardactivities.models.LoadPostPojo;
+import directory.tripin.com.tripindirectory.loadboardactivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
-import directory.tripin.com.tripindirectory.forum.models.Comment;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 
 

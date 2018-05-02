@@ -109,9 +109,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
-import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
+import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;

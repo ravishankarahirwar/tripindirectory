@@ -78,7 +78,7 @@
             android:name=".activity.WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".FormActivities.CompanyInfoActivity"
+            android:name=".formactivities.CompanyInfoActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -194,7 +194,7 @@
                 android:value=".activity.MainActivity" />
         </activity>
         <activity
-            android:name=".LoadBoardActivities.LoadBoardActivity"
+            android:name=".loadboardactivities.LoadBoardActivity"
             android:label="@string/title_activity_load_board"
             android:parentActivityName=".activity.MainActivity"
             android:screenOrientation="portrait"
@@ -215,7 +215,7 @@
         <activity
             android:name=".activity.ProfileHelpActivity"
             android:label="Company Profile Help"
-            android:parentActivityName=".FormActivities.CompanyInfoActivity" />
+            android:parentActivityName=".formactivities.CompanyInfoActivity" />
 
         <!-- Used for Google Play Store Campaign Measurement -->
         <receiver
@@ -228,27 +228,27 @@
         </receiver>
 
         <activity
-            android:name=".LoadBoardActivities.PostLoadActivity"
+            android:name=".loadboardactivities.PostLoadActivity"
             android:label="Post Load ..."
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.PostFleetActivity"
+            android:name=".loadboardactivities.PostFleetActivity"
             android:label="Post Fleet ..."
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.LoadDetailsActivity"
+            android:name=".loadboardactivities.LoadDetailsActivity"
             android:label="LoadDetails..."
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.FleetDetailsActivity"
+            android:name=".loadboardactivities.FleetDetailsActivity"
             android:label="FleetDetails..."
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
@@ -264,19 +264,19 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.LoadPostsActivity"
+            android:name=".loadboardactivities.LoadPostsActivity"
             android:label="LoadPosts..."
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.LoadBoardMapViewActivity"
+            android:name=".loadboardactivities.LoadBoardMapViewActivity"
             android:label="LoadBoard MapView"
-            android:parentActivityName=".LoadBoardActivities.LoadBoardActivity"
+            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".LoadBoardActivities.FleetPostsActivity"
+            android:name=".loadboardactivities.FleetPostsActivity"
             android:label="FleetPosts..."
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
