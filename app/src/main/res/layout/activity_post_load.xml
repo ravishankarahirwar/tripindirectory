@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        tools:context=".LoadBoardActivities.PostLoadActivity">
+        tools:context=".loadboardactivities.PostLoadActivity">
 
         <LinearLayout
             android:layout_width="match_parent"

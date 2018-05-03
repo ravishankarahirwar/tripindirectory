@@ -15,6 +15,8 @@ public interface DB {
         String LASTACTIVETIME = "mLastActiveTime";
         String COMPANY_NAME = "mCompanyName";
         String ACCOUNT_STATUS = "mAccountStatus";
+        String ACSUBMIT_FOR_APPROVAL = "mAcSubmitForApproval";
+
     }
 
     interface QueryBookmarkFields {

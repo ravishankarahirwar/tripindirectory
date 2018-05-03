@@ -53,6 +53,9 @@ public class PartnerInfoPojo {
     @ServerTimestamp
     private Date mLastModifiedTime;
 
+    private long mAcSubmitForApproval;
+    private long mAcApproved;
+
     public PartnerInfoPojo() {
     }
 

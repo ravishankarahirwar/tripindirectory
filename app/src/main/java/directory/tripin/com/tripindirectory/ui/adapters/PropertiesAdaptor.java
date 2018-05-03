@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import java.util.List;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
+import directory.tripin.com.tripindirectory.formactivities.FormFragments.TruckPropertiesViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.callback.OnTruckPropertyValueChange;
 import directory.tripin.com.tripindirectory.callback.OnTruckValueChange;

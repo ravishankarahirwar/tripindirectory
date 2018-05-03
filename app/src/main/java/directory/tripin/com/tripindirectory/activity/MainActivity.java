@@ -10,13 +10,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -28,13 +30,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.CharacterStyle;
-import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,7 +75,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -90,6 +86,9 @@ import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.kobakei.ratethisapp.RateThisApp;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.wooplr.spotlight.SpotlightConfig;
+import com.wooplr.spotlight.SpotlightView;
+import com.wooplr.spotlight.utils.SpotlightSequence;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -110,21 +109,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
-import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
+import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
-import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
+import directory.tripin.com.tripindirectory.interfaces.BookmarkListner;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.QueryManager;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
@@ -134,6 +133,7 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.RouteCityPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
+import directory.tripin.com.tripindirectory.model.UserQuery;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
@@ -148,7 +148,11 @@ import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner, BookmarkListner {
+
+    private static final String INTRO_SEARCH = "search_intro";
+    private static final String INTRO_LOADBOARD = "loadboard_intro";
+
 
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
@@ -175,7 +179,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private PreferenceManager mPreferenceManager;
     private FloatingSearchView mSearchView;
     private DrawerLayout mDrawerLayout;
+
     private RadioGroup mSearchTagRadioGroup;
+
     private int searchTag = 0;
     private String mSearchQuery = "";
     private SearchData mSearchData;
@@ -220,6 +226,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
+    private RadioButton searchByRoute;
     private RadioButton radioButtonAlphabetically;
     private RadioButton mSortAlphDecending;
     private RadioButton radioButtonCrediblity;
@@ -243,6 +250,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ImageView mNavYouTube;
     private ImageView mNavWebsite;
 
+    private SpotlightView spotLight;
+    FloatingActionButton goToForum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,11 +266,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
+        showIntro();
     }
 
 
     @Override
     protected void init() {
+
         mContext = MainActivity.this;
         textUtils = new TextUtils();
         mAppUtils = new AppUtils(mContext);
@@ -331,6 +342,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
+        searchByRoute = findViewById(R.id.search_by_route);
         lottieAnimationView = findViewById(R.id.animation_view);
         animationBookmark = findViewById(R.id.animation_bookmark);
 
@@ -570,7 +582,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         setupSearchBar();
 
-        FloatingActionButton goToForum = findViewById(R.id.fab);
+
+        goToForum = findViewById(R.id.fab);
         goToForum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -686,6 +699,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    private void showIntro() {
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SpotlightConfig config = new SpotlightConfig();
+                config.setDismissOnTouch(true);
+                config.setRevealAnimationEnabled(true);
+                config.setLineAndArcColor(0xFFFFFFFF);
+
+                config.setMaskColor(Color.parseColor("#dc000000"));
+
+                SpotlightSequence.getInstance(MainActivity.this,config)
+                        .addSpotlight(searchByRoute, "Search By", "Search by Route, \nCompany Name, City(Touch to Next)", INTRO_SEARCH)
+                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard (Touch to END)", INTRO_LOADBOARD)
+                        .startSequence();
+            }
+        }, 1000);
+    }
+
     /**
      * This method is use for showing an dialog for rate app in google play store
      */
@@ -742,7 +775,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mAuth.getCurrentUser() != null) {
 
             optionsbookmark = mQueryManager.getBookMarkOptions(mAuth.getUid());
-            BookmarkAdapter bookmarkAdapter = new BookmarkAdapter(optionsbookmark);
+            BookmarkAdapter bookmarkAdapter = new BookmarkAdapter(optionsbookmark, this);
             mBookmarksList.setAdapter(bookmarkAdapter);
             bookmarkAdapter.startListening();
         } else {
@@ -1208,25 +1241,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
 
         }  else if (id == R.id.nav_logout) {
-            params = new Bundle();
-            params.putString("logout", "Click");
-            mFirebaseAnalytics.logEvent("ClickOnLogout", params);
-            mAuth.signOut();
-            Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
+
+            if(mAuth.getUid() != null) {
+                mAuth.signOut();
+                Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show();
+                params = new Bundle();
+                mFirebaseAnalytics.logEvent("ClickOnLogout", params);
+            } else {
+                Toast.makeText(this, "Not Sign-in", Toast.LENGTH_SHORT).show();
+            }
         } else if (id == R.id.nav_share) {
             params = new Bundle();
-            params.putString("share", "Click");
             mFirebaseAnalytics.logEvent("ClickOnShareApp", params);
             mAppUtils.shareApp();
 
         } else if (id == R.id.nav_feedback) {
             params = new Bundle();
-            params.putString("feedback", "Click");
             mFirebaseAnalytics.logEvent("ClickOnFeedback", params);
             mAppUtils.sendFeedback();
         } else if (id == R.id.nav_invite) {
             params = new Bundle();
-            params.putString("invite", "Click");
             mFirebaseAnalytics.logEvent("ClickOnInvite", params);
             onInviteClicked();
         }
@@ -1320,14 +1354,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
                 }
-
-//                Log.d(TAG, "onSearchTextChanged()");
             }
         });
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+
+                prepareUserQueary("onSuggestionClicked", searchSuggestion.getBody());
 
                 switch (searchTag) {
                     case SearchBy.SEARCHTAG_ROUTE: {
@@ -1388,8 +1422,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Toast.makeText(mContext, "Query : " + query,
                         Toast.LENGTH_SHORT).show();
                 Bundle params = new Bundle();
+
                 params.putString("key_search", "Click");
                 mFirebaseAnalytics.logEvent("SearchByKeyBoard", params);
+
+                Bundle paramsSearch = new Bundle();
+                paramsSearch.putString("search_by_keyboard", "Yes");
+                paramsSearch.putString("search_by", String.valueOf(searchTag));
+                paramsSearch.putString("search_query", query);
+                mFirebaseAnalytics.logEvent("SearchQueary", params);
+
+                prepareUserQueary("KeyboardSearchKey", query);
                 setAdapter(query);
             }
         });
@@ -1435,6 +1478,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    private String getSerchByText() {
+        switch (searchTag) {
+            case SearchBy.SEARCHTAG_ROUTE:
+                return "Route";
+            case SearchBy.SEARCHTAG_COMPANY:
+                return "Company";
+            case SearchBy.SEARCHTAG_CITY:
+                return "City";
+                default:
+                    return "--No--";
+        }
+    }
+
     //-------------------- Voice -----------
     public void startVoiceRecognitionActivity() {
         String voiceSearchDialogTitle = "Search by voice";
@@ -1464,6 +1520,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (query != null) {
             mSearchView.setSearchText(query);
             setAdapter(query);
+            prepareUserQueary("onVoiceSearch", query);
         }
     }
 
@@ -1680,11 +1737,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             Map<String, Object> updates = new HashMap<>();
             updates.put(DB.PartnerFields.LASTACTIVETIME, FieldValue.serverTimestamp());
-            mUserDocRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                }
-            });
         }
     }
 
@@ -1779,6 +1831,77 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } catch (PackageManager.NameNotFoundException e) {
             return FACEBOOK_URL; //normal web url
         }
+    }
+
+    @Override
+    public void onBookMarkSearchClick(QueryBookmarkPojo model) {
+                            searchTag = model.getmSearchTag();
+                            mSortIndex = model.getmSortIndex();
+                            mSearchQuery = model.getmSearchQuery();
+                            mFiltersList.clear();
+                            mFiltersList.addAll(model.getmFiltersList());
+
+                            if (model.getmSortIndex() != 0) {
+                                mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_sort_black_24dp),
+                                        null,
+                                        ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_bubble_chart_white_24dp),
+                                        null);
+                            }
+
+                            if(model.getmFiltersList().size()!=0){
+                                int noOfFilterApply = model.getmFiltersList().size();
+                                mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                                mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
+                            } else {
+                                mNoOfFilterApply.setVisibility(TextView.GONE);
+
+                            }
+
+                            mSearchView.setSearchText(model.getmSearchQuery());
+                            setAdapter(model.getmSearchQuery());
+                            sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
+    // [START write_fan_out]
+    private void writeUserQuery(String userId, UserQuery userQuery) {
+        DatabaseReference queryDataBase = FirebaseDatabase.getInstance().getReference();
+
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String key = queryDataBase.child("query").push().getKey();
+        Map<String, Object> queryValues = userQuery.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/query/" + key, queryValues);
+        childUpdates.put("/user-query/" + userId + "/" + key, queryValues);
+
+        queryDataBase.updateChildren(childUpdates);
+    }
+
+
+    private void prepareUserQueary(String action, String query) {
+        UserQuery userQuery = new UserQuery();
+        userQuery.setQueryTime(System.currentTimeMillis());
+        userQuery.setQuery(query);
+        userQuery.setQueryBy(getSerchByText());
+        userQuery.setQueryAction(action);
+
+        String uId;
+        if(mAuth != null) {
+            uId = mAuth.getUid();
+            if(mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getPhoneNumber() != null) {
+                String phone = mAuth.getCurrentUser().getPhoneNumber();
+                userQuery.setUserMobileNo(phone);
+            }
+        } else {
+            uId = "Anonimus";
+        }
+        userQuery.setmUid(uId);
+        writeUserQuery(uId, userQuery);
     }
 }
 

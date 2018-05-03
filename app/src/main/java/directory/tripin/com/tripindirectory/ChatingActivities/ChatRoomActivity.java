@@ -55,7 +55,7 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;

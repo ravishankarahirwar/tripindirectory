@@ -9,8 +9,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 45
-        versionName "6.8"
+        versionCode 49
+        versionName "7.2"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -116,8 +116,8 @@ dependencies {
     // event bus
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'io.github.kobakei:ratethisapp:1.2.0'
-
-}
+    compile 'com.github.wooplr:Spotlight:1.2.3'
+ }
 apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
