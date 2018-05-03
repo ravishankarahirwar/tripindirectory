@@ -6,12 +6,19 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -20,21 +27,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -52,7 +53,6 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -70,13 +70,15 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -84,6 +86,9 @@ import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
 import com.kobakei.ratethisapp.RateThisApp;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.wooplr.spotlight.SpotlightConfig;
+import com.wooplr.spotlight.SpotlightView;
+import com.wooplr.spotlight.utils.SpotlightSequence;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -92,6 +97,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Date;
@@ -103,28 +109,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
-import directory.tripin.com.tripindirectory.FormActivities.CheckBoxRecyclarAdapter;
-import directory.tripin.com.tripindirectory.FormActivities.CompanyInfoActivity;
-import directory.tripin.com.tripindirectory.FormActivities.FormFragments.TruckPropertiesViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
-import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
-import directory.tripin.com.tripindirectory.LoadBoardActivities.LoadBoardActivity;
+import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
+import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
-import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
-import directory.tripin.com.tripindirectory.adapters.PartnersViewHolder;
-import directory.tripin.com.tripindirectory.adapters.QueryBookmarkViewHolder;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
+import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
+import directory.tripin.com.tripindirectory.interfaces.BookmarkListner;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.manager.QueryManager;
-import directory.tripin.com.tripindirectory.model.ContactPersonPojo;
 import directory.tripin.com.tripindirectory.model.FilterPojo;
 import directory.tripin.com.tripindirectory.model.FoundHubPojo;
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback;
@@ -132,12 +133,12 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.model.QueryBookmarkPojo;
 import directory.tripin.com.tripindirectory.model.RouteCityPojo;
 import directory.tripin.com.tripindirectory.model.SuggestionCompanyName;
+import directory.tripin.com.tripindirectory.model.UserQuery;
 import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesAdaptor;
-import directory.tripin.com.tripindirectory.ui.adapters.PropertiesValuesAdaptor;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
+import directory.tripin.com.tripindirectory.utils.Analytics;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
 import directory.tripin.com.tripindirectory.utils.FilterType;
@@ -147,7 +148,11 @@ import directory.tripin.com.tripindirectory.utils.ShortingType;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, HubFetchedCallback, OnDataLoadListner, BookmarkListner {
+
+    private static final String INTRO_SEARCH = "search_intro";
+    private static final String INTRO_LOADBOARD = "loadboard_intro";
+
 
     public static final int REQUEST_INVITE = 1001;
     public static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
@@ -167,12 +172,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DocumentReference mUserDocRef;
     private FirestoreRecyclerOptions<PartnerInfoPojo> options;
     private FirestoreRecyclerOptions<QueryBookmarkPojo> optionsbookmark;
+    private DatabaseReference mPostReference;
+
     private Context mContext;
     private RecyclerView mPartnerList;
     private PreferenceManager mPreferenceManager;
     private FloatingSearchView mSearchView;
     private DrawerLayout mDrawerLayout;
+
     private RadioGroup mSearchTagRadioGroup;
+
     private int searchTag = 0;
     private String mSearchQuery = "";
     private SearchData mSearchData;
@@ -197,19 +206,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private LottieAnimationView mBookmarkPanelToggle;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+
     private HashMap<String, Boolean> mNatureofBusinessHashMap;
     private HashMap<String, Boolean> mTypesofServicesHashMap;
+
     private List<FilterPojo> mFiltersList;
+
     private CheckBoxRecyclarAdapter mNatureOfBusiness;
     private CheckBoxRecyclarAdapter mTypeOfService;
+
     private RecyclerView mNatureOfBusinessRecyclarView;
     private RecyclerView mTypesOfServicesRecyclarView;
     private RecyclerView mTypesofVehiclesRecyclarView;
+
     private TextView mTextCount;
+    private TextView mLoadBoardNews;
+
     private Dialog dialog;
     private boolean isApplyFilterPressed;
     private View mFilterView, mSortView, mBookmarkView;
 
+    private RadioButton searchByRoute;
     private RadioButton radioButtonAlphabetically;
     private RadioButton mSortAlphDecending;
     private RadioButton radioButtonCrediblity;
@@ -218,6 +235,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private Button mBtnApplySorts;
     private Button mBtnClearSorts;
+
     private int mSortIndex;
     private RecyclerView mBookmarksList;
     private FirestoreRecyclerAdapter bookmarksAdapter;
@@ -228,6 +246,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private PartnerAdapter mPartnerAdapter;
     private AppUtils mAppUtils;
 
+    private ImageView mNavFacebook;
+    private ImageView mNavYouTube;
+    private ImageView mNavWebsite;
+
+    private SpotlightView spotLight;
+    FloatingActionButton goToForum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -239,15 +263,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ratingDialogSetup();
         internetCheck();
         notificationSubscried();
-        showAppIntro();
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
+        showIntro();
     }
 
 
     @Override
     protected void init() {
+
         mContext = MainActivity.this;
         textUtils = new TextUtils();
         mAppUtils = new AppUtils(mContext);
@@ -258,6 +283,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mPostReference = FirebaseDatabase.getInstance().getReference()
+                .child("posts");
 
         mNatureOfBusinessRecyclarView = findViewById(R.id.rv_natureofbusiness);
         mTypesOfServicesRecyclarView = findViewById(R.id.rv_typesofservices);
@@ -276,6 +303,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
         mNearestHubsList = new ArrayList<>();
+        mNavFacebook  = findViewById(R.id.nev_footer_facebook);
+        mNavYouTube  = findViewById(R.id.nev_footer_youtube);
+        mNavWebsite  = findViewById(R.id.nev_footer_webstie);
+
+        mLoadBoardNews =  findViewById(R.id.loadboard_news);
 
         mNoOfFilterApply = findViewById(R.id.no_of_filters);
         mSearchView = findViewById(R.id.floating_search_view);
@@ -310,6 +342,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.toolbar_background));
         }
 
+        searchByRoute = findViewById(R.id.search_by_route);
         lottieAnimationView = findViewById(R.id.animation_view);
         animationBookmark = findViewById(R.id.animation_bookmark);
 
@@ -530,6 +563,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onCheckedChanged(RadioGroup radioGroup, int radioButtonID) {
                 Bundle params = new Bundle();
                 mSearchView.clearQuery();
+                mSortIndex = ShortingType.DEFAULT;
                 if (radioButtonID == R.id.search_by_route) {
                     params.putString("search_by", "ByRoute");
                     searchTag = SearchBy.SEARCHTAG_ROUTE;
@@ -548,7 +582,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         setupSearchBar();
 
-        FloatingActionButton goToForum = findViewById(R.id.fab);
+
+        goToForum = findViewById(R.id.fab);
         goToForum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -591,6 +626,97 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
             }
         });
+
+        mNavFacebook.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FACEBOOKPAGE, params);
+
+                try {
+                    Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                    String facebookUrl = getFacebookPageURL(MainActivity.this);
+                    facebookIntent.setData(Uri.parse(facebookUrl));
+                    startActivity(facebookIntent);
+                } catch (ActivityNotFoundException exception) {
+                    Toast.makeText(mContext, "Sorry: There is some issue in opening facebook", Toast.LENGTH_SHORT).show();
+                } catch (Exception exception) {
+                    Logger.v("Not able to open ILN facebook page");
+                }
+            }
+        });
+
+        mNavYouTube.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_YOUTUBE, params);
+
+                try {
+                Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+                facebookIntent.setData(Uri.parse("http://www.youtube.com/watch?v=FOkt6F0ZAOk"));
+                startActivity(facebookIntent);
+                } catch (ActivityNotFoundException exception) {
+                    Toast.makeText(mContext, "Sorry: There is some issue in opening youtube", Toast.LENGTH_SHORT).show();
+                } catch (Exception exception) {
+                    Logger.v("Not able to open ILN youtube page");
+                }
+            }
+        });
+
+        mNavWebsite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_WEBSITE, params);
+
+            try {
+            Intent facebookIntent = new Intent(Intent.ACTION_VIEW);
+            facebookIntent.setData(Uri.parse("http://indianlogisticsnetwork.com/#about"));
+            startActivity(facebookIntent);
+            } catch (ActivityNotFoundException exception) {
+                Toast.makeText(mContext, "Sorry: There is some issue in opening website", Toast.LENGTH_SHORT).show();
+            } catch (Exception exception) {
+                Logger.v("Not able to open ILN Website page");
+            }
+            }
+        });
+
+        mLoadBoardNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle params = new Bundle();
+                params.putString(Analytics.Event.GO_TO_FORUM_BYNEWS, Analytics.Value.CLICK);
+                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FORUM_BYNEWS, params);
+
+                if (mAuth.getCurrentUser() != null) {
+                    onAuthSuccess(mAuth.getCurrentUser());
+                } else {
+                    // not signed in
+                    startSignInFor(SIGN_IN_FOR_FORUM);
+                }
+            }
+        });
+    }
+
+    private void showIntro() {
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SpotlightConfig config = new SpotlightConfig();
+                config.setDismissOnTouch(true);
+                config.setRevealAnimationEnabled(true);
+                config.setLineAndArcColor(0xFFFFFFFF);
+
+                config.setMaskColor(Color.parseColor("#dc000000"));
+
+                SpotlightSequence.getInstance(MainActivity.this,config)
+                        .addSpotlight(searchByRoute, "Search By", "Search by Route, \nCompany Name, City(Touch to Next)", INTRO_SEARCH)
+                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard (Touch to END)", INTRO_LOADBOARD)
+                        .startSequence();
+            }
+        }, 1000);
     }
 
     /**
@@ -617,18 +743,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates");
         //For Testing
 //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
-//        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification");
     }
 
-    /**
-     * This method show app intro screen if user coming first time in the app
-     */
-    private void showAppIntro() {
-        if (mPreferenceManager.isFirstTime()) {
-            mPreferenceManager.setFirstTime(false);
-            startActivity(new Intent(mContext, TutorialScreensActivity.class));
-        }
-    }
+
 
     // Add to each long-lived activity
     @Override
@@ -657,7 +775,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mAuth.getCurrentUser() != null) {
 
             optionsbookmark = mQueryManager.getBookMarkOptions(mAuth.getUid());
-            BookmarkAdapter bookmarkAdapter = new BookmarkAdapter(optionsbookmark);
+            BookmarkAdapter bookmarkAdapter = new BookmarkAdapter(optionsbookmark, this);
             mBookmarksList.setAdapter(bookmarkAdapter);
             bookmarkAdapter.startListening();
         } else {
@@ -683,7 +801,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Write new user
         writeNewUser(user.getUid(), userPhoneNo, userPhoneNo, fcmTocken);
         // Go to MainActivity
-        startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+        startActivity(new Intent(MainActivity.this, directory.tripin.com.tripindirectory.forum.MainActivity.class));
     }
 
     private void writeNewUser(String userId, String name, String userPhoneNo, String fcmtoken) {
@@ -730,7 +848,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //apply filters
         for (FilterPojo filter : mFiltersList) {
             switch (filter.getmFilterType()) {
-                case FilterType.TYPE_OF_VEHICLE_PROPERTY: {
+                case FilterType.TYPE_OF_VEHICLE_PROPERTY : {
                     String filterName = filter.getmFilterName();
                     query = query.whereEqualTo(filterName, true);
                     break;
@@ -756,23 +874,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //apply sorting
         switch (mSortIndex) {
             case ShortingType.ALPHA_ASSENDING : {
+                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING);
                 break;
             }
             case ShortingType.ALPHA_DECENDING : {
+                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
                 query = query.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.DESCENDING);
                 break;
             }
             case ShortingType.ACCOUNT_TYPE : {
+                searchTag = -1;
                 query = query.orderBy(DB.PartnerFields.ACCOUNT_STATUS, Query.Direction.DESCENDING);
                 break;
             }
             case ShortingType.LAST_ACTIVE : {
+                searchTag = -1;
                 query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
                 break;
             }
             default: {
-                query = query.orderBy(DB.PartnerFields.COMPANY_NAME);
                 break;
             }
         }
@@ -825,9 +946,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         } else {
-            if (mSortIndex != ShortingType.ACCOUNT_TYPE && mSortIndex != ShortingType.LAST_ACTIVE) {
-                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
-            }
+            query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
+
+//            query = query.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING);
+//            if (mSortIndex != ShortingType.ACCOUNT_TYPE && mSortIndex != ShortingType.LAST_ACTIVE) {
+//                query = query.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "");
+//            }
         }
 
         options = new FirestoreRecyclerOptions.Builder<PartnerInfoPojo>()
@@ -840,6 +964,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mPartnerAdapter.startListening();
     }
 
+    String loadBoardNews = "| ";
     @Override
     protected void onStart() {
         super.onStart();
@@ -849,6 +974,50 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (bookmarksAdapter != null)
             bookmarksAdapter.startListening();
+
+        mLoadBoardNews.setText("");
+        mPostReference.limitToLast(10).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                Log.v("LoadBoard", " onChildAdded  to read value.");
+
+                Post post = dataSnapshot.getValue(Post.class);
+                if(post!= null && post.getmSource() != null) {
+                    loadBoardNews += " | ";
+                    loadBoardNews += post.getmSource() + " \u25BA " .toUpperCase();
+                    loadBoardNews += post.getmDestination() + " ".toUpperCase() + " \u25AA ";
+                    loadBoardNews += post.getmTruckType() + " \u25AA ";
+                    loadBoardNews += post.getmTruckBodyType() + " \u25AA ";
+                    loadBoardNews += post.getmPayload() + " Ton ";
+
+                    mLoadBoardNews.append(loadBoardNews);
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.v("LoadBoard", " onChildRemoved  to read value.");
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.v("LoadBoard", " onChildChanged to read value.");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.v("LoadBoard", "onChildMoved Failed to read value.");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.v("LoadBoard", " onCancelledFailed to read value.");
+            }
+        });
+        Log.v("LoadBoard", " " + loadBoardNews);
+
     }
 
     @Override
@@ -1018,7 +1187,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             onVoiceSearch(enquiry);
         } else if (requestCode == SIGN_IN_FOR_FORUM && resultCode == RESULT_OK) {
             if (mAuth.getCurrentUser() != null) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    try {
+                        final ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                        ShortcutInfo dynamicShortcut = new ShortcutInfo.Builder(this, "shortcut_web")
+                                .setShortLabel("ILN-LoadBoard")
+                                .setLongLabel("ILN-LoadBoard Post load and Truck")
+                                .setIcon(Icon.createWithResource(this, R.drawable.delivery_truck_front))
+                                .setIntents(
+                                        new Intent[]{
+                                                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, directory.tripin.com.tripindirectory.forum.MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                                                new Intent("directory.tripin.com.tripindirectory.forum.MainActivity.OPEN_DYNAMIC_SHORTCUT")
+                                        })
+                                .setRank(0)
+                                .build();
+                        shortcutManager.setDynamicShortcuts(Arrays.asList(dynamicShortcut));
+                    }catch (Exception ex) {
+                        Logger.v("Exception in creating dynamic shortcut");
+                    }
+                }
                 onAuthSuccess(mAuth.getCurrentUser());
+
             } else {
                 Toast.makeText(mContext, "Unknow error", Toast.LENGTH_LONG).show();
             }
@@ -1051,35 +1240,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
 
-        } else if (id == R.id.nav_inbox) {
-            if (mAuth.getCurrentUser() != null) {
-                // already signed in
-                startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+        }  else if (id == R.id.nav_logout) {
+
+            if(mAuth.getUid() != null) {
+                mAuth.signOut();
+                Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show();
+                params = new Bundle();
+                mFirebaseAnalytics.logEvent("ClickOnLogout", params);
             } else {
-                // not signed in
-                signinginfor = 4;
-                startSignInFor(SIGN_IN_FOR_CREATE_COMPANY);
+                Toast.makeText(this, "Not Sign-in", Toast.LENGTH_SHORT).show();
             }
-        } else if (id == R.id.nav_logout) {
-            params = new Bundle();
-            params.putString("logout", "Click");
-            mFirebaseAnalytics.logEvent("ClickOnLogout", params);
-            mAuth.signOut();
-            Toast.makeText(getApplicationContext(), "Signed Out", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
             params = new Bundle();
-            params.putString("share", "Click");
             mFirebaseAnalytics.logEvent("ClickOnShareApp", params);
             mAppUtils.shareApp();
 
         } else if (id == R.id.nav_feedback) {
             params = new Bundle();
-            params.putString("feedback", "Click");
             mFirebaseAnalytics.logEvent("ClickOnFeedback", params);
             mAppUtils.sendFeedback();
         } else if (id == R.id.nav_invite) {
             params = new Bundle();
-            params.putString("invite", "Click");
             mFirebaseAnalytics.logEvent("ClickOnInvite", params);
             onInviteClicked();
         }
@@ -1173,14 +1354,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
                 }
-
-//                Log.d(TAG, "onSearchTextChanged()");
             }
         });
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(final com.arlib.floatingsearchview.suggestions.model.SearchSuggestion searchSuggestion) {
+
+                prepareUserQueary("onSuggestionClicked", searchSuggestion.getBody());
 
                 switch (searchTag) {
                     case SearchBy.SEARCHTAG_ROUTE: {
@@ -1241,8 +1422,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Toast.makeText(mContext, "Query : " + query,
                         Toast.LENGTH_SHORT).show();
                 Bundle params = new Bundle();
+
                 params.putString("key_search", "Click");
                 mFirebaseAnalytics.logEvent("SearchByKeyBoard", params);
+
+                Bundle paramsSearch = new Bundle();
+                paramsSearch.putString("search_by_keyboard", "Yes");
+                paramsSearch.putString("search_by", String.valueOf(searchTag));
+                paramsSearch.putString("search_query", query);
+                mFirebaseAnalytics.logEvent("SearchQueary", params);
+
+                prepareUserQueary("KeyboardSearchKey", query);
                 setAdapter(query);
             }
         });
@@ -1288,6 +1478,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    private String getSerchByText() {
+        switch (searchTag) {
+            case SearchBy.SEARCHTAG_ROUTE:
+                return "Route";
+            case SearchBy.SEARCHTAG_COMPANY:
+                return "Company";
+            case SearchBy.SEARCHTAG_CITY:
+                return "City";
+                default:
+                    return "--No--";
+        }
+    }
+
     //-------------------- Voice -----------
     public void startVoiceRecognitionActivity() {
         String voiceSearchDialogTitle = "Search by voice";
@@ -1317,6 +1520,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (query != null) {
             mSearchView.setSearchText(query);
             setAdapter(query);
+            prepareUserQueary("onVoiceSearch", query);
         }
     }
 
@@ -1533,12 +1737,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             Map<String, Object> updates = new HashMap<>();
             updates.put(DB.PartnerFields.LASTACTIVETIME, FieldValue.serverTimestamp());
-            mUserDocRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-
-                }
-            });
         }
     }
 
@@ -1617,6 +1815,93 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
             return suggestionCompanyNames;
         }
+    }
+    public static String FACEBOOK_URL = "https://www.facebook.com/ILNOfficial";
+    public static String FACEBOOK_PAGE_ID = "1288324944512615";
+    //method to get the right URL to use in the intent
+    public String getFacebookPageURL(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            int versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode;
+            if (versionCode >= 3002850) { //newer versions of fb app
+                return "fb://facewebmodal/f?href=" + FACEBOOK_URL;
+            } else { //older versions of fb app
+                return "fb://page/" + FACEBOOK_PAGE_ID;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            return FACEBOOK_URL; //normal web url
+        }
+    }
+
+    @Override
+    public void onBookMarkSearchClick(QueryBookmarkPojo model) {
+                            searchTag = model.getmSearchTag();
+                            mSortIndex = model.getmSortIndex();
+                            mSearchQuery = model.getmSearchQuery();
+                            mFiltersList.clear();
+                            mFiltersList.addAll(model.getmFiltersList());
+
+                            if (model.getmSortIndex() != 0) {
+                                mSortPanelToggle.setCompoundDrawablesWithIntrinsicBounds(ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_sort_black_24dp),
+                                        null,
+                                        ContextCompat
+                                                .getDrawable(getApplicationContext(),
+                                                        R.drawable.ic_bubble_chart_white_24dp),
+                                        null);
+                            }
+
+                            if(model.getmFiltersList().size()!=0){
+                                int noOfFilterApply = model.getmFiltersList().size();
+                                mNoOfFilterApply.setVisibility(TextView.VISIBLE);
+                                mNoOfFilterApply.setText(String.valueOf(noOfFilterApply));
+                            } else {
+                                mNoOfFilterApply.setVisibility(TextView.GONE);
+
+                            }
+
+                            mSearchView.setSearchText(model.getmSearchQuery());
+                            setAdapter(model.getmSearchQuery());
+                            sliderLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
+    // [START write_fan_out]
+    private void writeUserQuery(String userId, UserQuery userQuery) {
+        DatabaseReference queryDataBase = FirebaseDatabase.getInstance().getReference();
+
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String key = queryDataBase.child("query").push().getKey();
+        Map<String, Object> queryValues = userQuery.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/query/" + key, queryValues);
+        childUpdates.put("/user-query/" + userId + "/" + key, queryValues);
+
+        queryDataBase.updateChildren(childUpdates);
+    }
+
+
+    private void prepareUserQueary(String action, String query) {
+        UserQuery userQuery = new UserQuery();
+        userQuery.setQueryTime(System.currentTimeMillis());
+        userQuery.setQuery(query);
+        userQuery.setQueryBy(getSerchByText());
+        userQuery.setQueryAction(action);
+
+        String uId;
+        if(mAuth != null) {
+            uId = mAuth.getUid();
+            if(mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getPhoneNumber() != null) {
+                String phone = mAuth.getCurrentUser().getPhoneNumber();
+                userQuery.setUserMobileNo(phone);
+            }
+        } else {
+            uId = "Anonimus";
+        }
+        userQuery.setmUid(uId);
+        writeUserQuery(uId, userQuery);
     }
 }
 

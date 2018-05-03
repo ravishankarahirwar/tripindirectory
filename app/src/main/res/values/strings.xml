@@ -122,7 +122,7 @@
     <string name="vehicle_number">Vehicle Number</string>
     <string name="payload">Weight(MT)</string>
     <string name="length">Length(Ft)</string>
-    <string name="requirement">Your Requirement</string>
+    <string name="requirement">Other Requirement</string>
 
 
     <string name="driver_name">Driver Name</string>
@@ -196,4 +196,27 @@
     <string name="logout">Logout</string>
     <string name="are_you_sure">Are you sure ?</string>
     <string name="cancel">Cancel</string>
+
+    <!--Welcome Activity Strings Start-->
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">Partner!</string>
+    <string name="slide_1_desc">Add your business in ILN so other can search you in the world!</string>
+
+    <string name="slide_2_title">Search Query ?</string>
+    <string name="slide_2_desc">Search by Route, Company Name and City.</string>
+
+    <string name="slide_3_title">Just Speak</string>
+    <string name="slide_3_desc">No need to type just speak we will show you what you want!</string>
+
+    <string name="slide_4_title">Load Board</string>
+    <string name="slide_4_desc">Post your Load/Truck on LoadBoard, So Transporter/Shipper will contact you</string>
+
+    <string name="title_send_verification_request">Send Verification Request</string>
+    <string name="send_now">SEND NOW!</string>
+
+
+    <!--End-->
 </resources>

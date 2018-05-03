@@ -9,7 +9,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import directory.tripin.com.tripindirectory.FormActivities.CompanyLandLineNumbersAdapter;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.model.response.Vehicle;
 

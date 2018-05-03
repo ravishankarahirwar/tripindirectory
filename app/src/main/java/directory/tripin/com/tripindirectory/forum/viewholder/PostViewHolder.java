@@ -33,6 +33,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public ImageView call;
     public ImageView chat;
     public ImageView starView;
+    public ImageView delete;
+
 
     public TextView numStarsView;
     public TextView numCommentCount;
@@ -64,6 +66,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         sharePost =  itemView.findViewById(R.id.share);
         call = itemView.findViewById(R.id.call);
         chat = itemView.findViewById(R.id.chat);
+        delete = itemView.findViewById(R.id.delete);
+
     }
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {

@@ -11,7 +11,7 @@ import android.widget.CompoundButton;
 
 import java.util.List;
 
-import directory.tripin.com.tripindirectory.FormActivities.WorkingWithHolderNew;
+import directory.tripin.com.tripindirectory.formactivities.WorkingWithHolderNew;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.callback.OnTruckValueChange;
 import directory.tripin.com.tripindirectory.model.search.Fleet;

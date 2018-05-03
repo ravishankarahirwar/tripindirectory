@@ -15,7 +15,7 @@ import directory.tripin.com.tripindirectory.chat.fcm.FcmNotificationBuilder;
 import directory.tripin.com.tripindirectory.chat.models.Chat;
 import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.chat.utils.SharedPrefUtil;
-
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 
 
 public class ChatInteractor implements ChatContract.Interactor {
@@ -59,11 +59,12 @@ public class ChatInteractor implements ChatContract.Interactor {
                     databaseReference.child(Constants.ARG_CHAT_ROOMS).child(room_type_1).child(String.valueOf(chat.timestamp)).setValue(chat);
                     getMessageFromFirebaseUser(chat.senderUid, chat.receiverUid);
                 }
+
                 // send push notification to the receiver
                 sendPushNotificationToReceiver(chat.sender,
                         chat.message,
                         chat.senderUid,
-                        new SharedPrefUtil(context).getString(Constants.ARG_FIREBASE_TOKEN),
+                        PreferenceManager.getInstance(context).getFcmToken(),
                         receiverFirebaseToken);
                 mOnSendMessageListener.onSendMessageSuccess();
             }

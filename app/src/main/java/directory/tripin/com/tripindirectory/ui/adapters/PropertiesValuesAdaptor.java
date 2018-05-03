@@ -10,7 +10,7 @@ import android.widget.CompoundButton;
 import java.util.ArrayList;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.FormActivities.TruckPropertiesValueViewHolder;
+import directory.tripin.com.tripindirectory.formactivities.TruckPropertiesValueViewHolder;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.callback.OnTruckPropertyValueChange;
 

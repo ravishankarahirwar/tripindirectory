@@ -8,11 +8,7 @@
             android:id="@+id/nav_add_business"
             android:icon="@drawable/agreement"
             android:title="@string/nev_add_your_business" />
-        <item
-            android:id="@+id/nav_inbox"
-            android:visible="true"
-            android:icon="@drawable/fui_ic_mail_white_24dp"
-            android:title="Inbox" />
+
         <item
             android:id="@+id/nav_notification"
             android:visible="true"
@@ -20,7 +16,7 @@
             android:title="@string/nev_notification" />
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/logout"
+            android:icon="@drawable/ic_logout"
             android:title="@string/nev_log_out" />
     </group>
 
@@ -38,7 +34,12 @@
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_feedback_black_24dp"
                 android:title="@string/nev_feature_request_feedback" />
-
+            <item
+                android:id="@+id/footer_spacer_1"
+                android:checkable="false"
+                android:enabled="false"
+                android:orderInCategory="200"
+                android:title="" />
         </menu>
     </item>
 

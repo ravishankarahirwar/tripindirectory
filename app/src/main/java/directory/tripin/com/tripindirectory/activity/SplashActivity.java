@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 
 
 /**
@@ -22,18 +23,19 @@ public class SplashActivity extends AppCompatActivity {
     private static final String TAG = SplashActivity.class.getSimpleName();
     private static int SPLASH_SHOW_TIME = 1000;
     private static final int RC_SIGN_IN = 123;
-
-    FirebaseAuth auth;
+    private PreferenceManager mPreferenceManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        mPreferenceManager = PreferenceManager.getInstance(this);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-               startMainActivity();
+                showAppIntro();
 
             }
         }, SPLASH_SHOW_TIME);
@@ -48,6 +50,17 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-
+    /**
+     * This method show app intro screen if user coming first time in the app
+     */
+    private void showAppIntro() {
+        if (mPreferenceManager.isFirstTime()) {
+            mPreferenceManager.setFirstTime(false);
+            startActivity(new Intent(SplashActivity.this, WelcomeActivity.class));
+            finish();
+        } else {
+            startMainActivity();
+        }
+    }
 
 }

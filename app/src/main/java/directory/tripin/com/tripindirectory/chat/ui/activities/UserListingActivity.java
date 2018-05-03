@@ -46,9 +46,9 @@ public class UserListingActivity extends AppCompatActivity implements LogoutCont
     }
 
     private void bindViews() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mTabLayoutUserListing = (TabLayout) findViewById(R.id.tab_layout_user_listing);
-        mViewPagerUserListing = (ViewPager) findViewById(R.id.view_pager_user_listing);
+        mToolbar = findViewById(R.id.toolbar);
+        mTabLayoutUserListing = findViewById(R.id.tab_layout_user_listing);
+        mViewPagerUserListing = findViewById(R.id.view_pager_user_listing);
     }
 
     private void init() {
