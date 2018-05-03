@@ -55,6 +55,9 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
 
+        PreferenceManager preferenceManager =  PreferenceManager.getInstance(getApplicationContext());
+        preferenceManager.setFcmToken(token);
+
         if(mAuth.getCurrentUser()!=null){
             mUserDocRef = FirebaseFirestore.getInstance()
                     .collection("partners").document(mAuth.getUid());
@@ -73,13 +76,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .child(Constants.ARG_FIREBASE_TOKEN)
                     .setValue(token);
-        }else {
-            //save to shared pref
-            PreferenceManager preferenceManager =  PreferenceManager.getInstance(getApplicationContext());
-            preferenceManager.setFcmToken(token);
-            Log.d(TAG, "Refreshed token: " + "Saved In Shared Pref");
-
         }
-
     }
 }

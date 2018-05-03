@@ -32,6 +32,7 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.chat.ui.activities.ChatActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.forum.models.Post;
+import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.forum.viewholder.PostViewHolder;
 
 
@@ -111,12 +112,34 @@ public abstract class PostListFragment extends Fragment {
                 viewHolder.chat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        DatabaseReference myRef = mDatabase.child("users").child(model.getmUid());
+
+                        myRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                // This method is called once with the initial value and again
+                                // whenever data at this location is updated.
+                                User value = dataSnapshot.getValue(User.class);
+                                Log.d(TAG, "Value is: " + value.firebaseToken);
+                                ChatActivity.startActivity(getActivity(),
+                                        "Ravi",
+                                        model.getmUid(),
+                                        value.firebaseToken);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w(TAG, "Failed to read value.", error.toException());
+                            }
+                        });
+
+
+                        //mDatabase.child("users").child(model.getmUid())
                         FirebaseUser user = mAuth.getCurrentUser();
 
-                        ChatActivity.startActivity(getActivity(),
-                                "Ravi",
-                                model.getmUid(),
-                                "c9ZgQphxeBc:APA91bGtVuHIyn1drATtyfyVK3wriOljL15czdF_HMGsE6BP5UPuDUY7Nt5XAMcr-zWv3wxODmjYeyZuRPnH3MSO3ksKQTfoHCEr2xGhAc81mFnTQL_9_UGh9HJFzvSP9LqLePETymrt");
+
                     }
                 });
 

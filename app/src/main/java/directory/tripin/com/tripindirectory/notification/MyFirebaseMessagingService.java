@@ -49,6 +49,8 @@ import directory.tripin.com.tripindirectory.LoadBoardActivities.models.LoadPostP
 import directory.tripin.com.tripindirectory.LoadBoardActivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
+import directory.tripin.com.tripindirectory.chat.ui.activities.ChatActivity;
+import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.forum.models.Comment;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
@@ -116,10 +118,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     sendLoadboardNotification(title, body, postId);
                 } else if (type.equals("6")) {
                     String title = remoteMessage.getData().get("title");
+                    String message = remoteMessage.getData().get("text");
+                    String username = remoteMessage.getData().get("username");
+                    String uid = remoteMessage.getData().get("uid");
+                    String fcmToken = remoteMessage.getData().get("fcm_token");
+
                     String text = remoteMessage.getData().get("text");
 //                    Log.d(TAG, "Message Notification Body: " + messageBody);
-                    sendNotification(title, text);
-                }
+                    sendNotification(title,
+                            message,
+                            username,
+                            uid,
+                            fcmToken);                }
             } else {
                 String messageBody = remoteMessage.getNotification().getBody();
                 String messageTitle = remoteMessage.getNotification().getTitle();
@@ -884,5 +894,31 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    private void sendNotification(String title,
+                                  String message,
+                                  String receiver,
+                                  String receiverUid,
+                                  String firebaseToken) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(Constants.ARG_RECEIVER, receiver);
+        intent.putExtra(Constants.ARG_RECEIVER_UID, receiverUid);
+        intent.putExtra(Constants.ARG_FIREBASE_TOKEN, firebaseToken);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_ONE_SHOT);
 
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_messaging)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notificationBuilder.build());
+    }
 }
