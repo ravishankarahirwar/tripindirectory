@@ -145,19 +145,16 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/devider"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:id="@+id/fleet_size"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginLeft="16dp"
                     android:text="0"
                     android:background="@android:color/transparent"
-                    android:drawablePadding="8dp"
+                    android:drawablePadding="4dp"
                     android:drawableLeft="@drawable/delivery_truck_front"/>
 
                 <ImageButton
@@ -169,11 +166,10 @@
                     app:srcCompat="@drawable/ic_share_black_24dp" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:visibility="gone"
-                    android:layout_weight="1">
+                    android:visibility="gone">
                     <ImageView
                         android:id="@+id/star"
                         android:layout_width="wrap_content"
@@ -199,6 +195,15 @@
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground"
                     app:srcCompat="@drawable/ic_call_black_24dp" />
+
+                <ImageView
+                    android:id="@+id/chat"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    app:srcCompat="@drawable/ic_chat" />
+
             </LinearLayout>
 
             <!--<TextView-->

@@ -138,6 +138,7 @@ import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
+import directory.tripin.com.tripindirectory.userchat.ListChatActivity;
 import directory.tripin.com.tripindirectory.utils.Analytics;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
 import directory.tripin.com.tripindirectory.utils.DB;
@@ -161,6 +162,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private static final int SIGN_IN_FOR_CREATE_COMPANY = 123;
     private static final int SIGN_IN_FOR_FORUM = 222;
+    private static final int SIGN_IN_FOR_CHAT = 124;
+
 
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
@@ -1239,6 +1242,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else if (id == R.id.nav_notification) {
 
             startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+
+        } else if (id == R.id.nav_inbox) {
+            if (mAuth.getCurrentUser() != null) {
+                startActivity(new Intent(MainActivity.this, ListChatActivity.class));
+            } else {
+                startSignInFor(SIGN_IN_FOR_CHAT);
+            }
+
 
         }  else if (id == R.id.nav_logout) {
 

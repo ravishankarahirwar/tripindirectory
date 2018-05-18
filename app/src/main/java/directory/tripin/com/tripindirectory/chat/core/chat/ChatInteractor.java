@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 
+import com.firebase.ui.auth.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,8 +40,7 @@ public class ChatInteractor implements ChatContract.Interactor {
         this.mOnGetMessagesListener = onGetMessagesListener;
     }
 
-    @Override
-    public void sendMessageToFirebaseUser(final Context context, final Chat chat, final String receiverFirebaseToken) {
+        public void sendMessageToFirebaseUser(final Context context, final Chat chat, final String receiverFirebaseToken, String newNull) {
         final String room_type_1 = chat.senderUid + "_" + chat.receiverUid;
         final String room_type_2 = chat.receiverUid + "_" + chat.senderUid;
 
@@ -74,6 +75,83 @@ public class ChatInteractor implements ChatContract.Interactor {
                 mOnSendMessageListener.onSendMessageFailure("Unable to send message: " + databaseError.getMessage());
             }
         });
+    }
+
+    @Override
+    public void sendMessageToFirebaseUser(final Context context, final Chat chat, final String receiverFirebaseToken) {
+
+        String senderId = chat.getSenderUid();
+        String receiverId = chat.getReceiverUid();
+        String userId = FirebaseAuth.getInstance().getUid();
+
+        if (senderId.equals(userId)){
+
+            DatabaseReference senderChat = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(senderId).child(Constants.ARG_CHAT_ROOMS);
+            DatabaseReference receiverChat = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(receiverId).child(Constants.ARG_CHAT_ROOMS);
+
+            DatabaseReference senderChatList = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(senderId).child(Constants.ARG_CHAT_LIST);
+            DatabaseReference receiverChatList = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(receiverId).child(Constants.ARG_CHAT_LIST);
+
+            senderChat.child(receiverId).child(String.valueOf(chat.getTimestamp())).setValue(chat);
+            receiverChat.child(senderId).child(String.valueOf(chat.getTimestamp())).setValue(chat);
+
+            chat.setType(1);
+            senderChatList.child(receiverId).setValue(chat);
+            receiverChatList.child(senderId).setValue(chat);
+
+        } else {
+
+            DatabaseReference senderChat = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(senderId).child(Constants.ARG_CHAT_ROOMS);
+            DatabaseReference receiverChat = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(receiverId).child(Constants.ARG_CHAT_ROOMS);
+
+            DatabaseReference senderChatList = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(senderId).child(Constants.ARG_CHAT_LIST);
+            DatabaseReference receiverChatList = FirebaseDatabase.getInstance().getReference(Constants.ARG_USERS).child(receiverId).child(Constants.ARG_CHAT_LIST);
+
+            senderChat.child(senderId).child(String.valueOf(chat.getTimestamp())).setValue(chat);
+            receiverChat.child(receiverId).child(String.valueOf(chat.getTimestamp())).setValue(chat);
+
+            senderChatList.child(senderId).setValue(chat);
+            receiverChatList.child(receiverId).setValue(chat);
+
+        }
+
+        //getMessageFromFirebaseUser(chat.getReporterUid(), chat.getReportedUid());
+
+        // send push notification to the receiver
+
+        if (chat.getType() == 1){
+
+            sendPushNotificationToReceiver(
+                    chat.getSender(),
+                    chat.getMessage(),
+                    chat.getSenderUid(),
+                    new SharedPrefUtil(context).getString(Constants.ARG_FIREBASE_TOKEN),
+                    receiverFirebaseToken);
+
+
+        } else if (chat.getType() == 2){
+
+            sendPushNotificationToReceiver(
+                    chat.getSender(),
+                    "sent you an audio",
+                    chat.getSenderUid(),
+                    new SharedPrefUtil(context).getString(Constants.ARG_FIREBASE_TOKEN),
+                    receiverFirebaseToken);
+
+        } else if (chat.getType() == 3){
+
+            sendPushNotificationToReceiver(
+                    chat.getSender(),
+                    "sent you an image",
+                    chat.getSenderUid(),
+                    new SharedPrefUtil(context).getString(Constants.ARG_FIREBASE_TOKEN),
+                    receiverFirebaseToken);
+
+        }
+
+
+        mOnSendMessageListener.onSendMessageSuccess();
+
     }
 
     private void sendPushNotificationToReceiver(String username,

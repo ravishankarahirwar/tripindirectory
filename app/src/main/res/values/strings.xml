@@ -216,7 +216,10 @@
 
     <string name="title_send_verification_request">Send Verification Request</string>
     <string name="send_now">SEND NOW!</string>
+    <string name="nev_inbox">Inbox</string>
 
+    <string name="no_location">Private</string>
+    <string name="user_info_no_name">no_name</string>
 
     <!--End-->
 </resources>

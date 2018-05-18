@@ -336,4 +336,21 @@
         <item>@color/dot_dark_screen4</item>
     </array>
 
+    <!-- Phone login -->
+    <color name="pf_grey">#262626</color>
+    <color name="pf_grey_light">#999999</color>
+    <color name="pf_white">#ffffff</color>
+
+
+    <!-- Grays -->
+    <color name="gray0">#f4f4f4</color>
+    <color name="gray1">#e4e4e4</color>
+    <color name="gray2">@android:color/darker_gray</color>
+    <color name="gray3">#A4A4A4</color>
+    <color name="gray4">#747376</color>
+    <color name="gray5">#383333</color>
+
+    <!-- Transparent -->
+    <color name="full_transparent">#00000000</color>
+
 </resources>

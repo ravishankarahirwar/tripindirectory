@@ -9,8 +9,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 49
-        versionName "7.2"
+        versionCode 51
+        versionName "7.4"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,6 +24,11 @@ android {
         dexOptions {
             javaMaxHeapSize "4g"
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     productFlavors {
@@ -62,6 +67,8 @@ dependencies {
     })
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'jp.wasabeef:picasso-transformations:2.1.2'
+
     compile 'com.android.support:palette-v7:27.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
@@ -117,7 +124,14 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'io.github.kobakei:ratethisapp:1.2.0'
     compile 'com.github.wooplr:Spotlight:1.2.3'
- }
+
+    implementation 'com.vanniktech:emoji-twitter:0.5.1'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
+}
 apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()

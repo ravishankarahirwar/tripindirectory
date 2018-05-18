@@ -23,7 +23,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM" />
@@ -33,8 +32,8 @@
 
         <activity
             android:name=".activity.SplashActivity"
-            android:label="@string/app_name"
             android:configChanges="orientation"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -42,7 +41,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name=".forum.MainActivity.OPEN_DYNAMIC_SHORTCUT" />
@@ -54,16 +52,13 @@
                     android:host="http://indianlogisticsnetwork.com/"
                     android:scheme="http" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".chat.ui.activities.ChatActivity"
-            android:label="@string/app_name"
             android:configChanges="orientation"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
@@ -71,6 +66,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -86,7 +82,6 @@
                 android:value=".activity.MainActivity" />
 
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -145,8 +140,8 @@
         <!-- Forum Activities -->
         <activity
             android:name=".forum.MainActivity"
-            android:label="ILN Loadboard"
             android:configChanges="orientation"
+            android:label="ILN Loadboard"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -169,7 +164,6 @@
         <activity
             android:name=".forum.NewPostActivity"
             android:label="Now Post"
-
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -280,6 +274,7 @@
             android:label="FleetPosts..."
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".userchat.ListChatActivity"></activity>
     </application>
 
 </manifest>

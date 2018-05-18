@@ -18,6 +18,7 @@ public class TripinDirectoryApp extends Application {
     private static GoogleAnalytics sAnalytics;
     private static Tracker sTracker;
     private static boolean sIsChatActivityOpen = false;
+    private static TripinDirectoryApp mInstance;
 
     @Override
     public void onCreate() {
@@ -50,4 +51,9 @@ public class TripinDirectoryApp extends Application {
     public static void setChatActivityOpen(boolean isChatActivityOpen) {
         TripinDirectoryApp.sIsChatActivityOpen = isChatActivityOpen;
     }
+
+    public static synchronized TripinDirectoryApp getInstance() {
+        return mInstance;
+    }
+
 }
