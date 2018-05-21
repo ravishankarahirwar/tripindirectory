@@ -221,5 +221,26 @@
     <string name="no_location">Private</string>
     <string name="user_info_no_name">no_name</string>
 
+    <string name="conf_1">Confirmation</string>
+    <string name="conf_2">You are about to activated a paid service, this will cost you 100 credits.</string>
+    <string name="conf_3">Activate</string>
+    <string name="conf_4">Cancel</string>
+    <string name="FCM_KEY">AAAATegXd4w:APA91bE_RRy4w4s8aDSJHIeiJPn8xDoKzlSDyTBespBNSSPRMF2iX-VdHkvbdkLSXkyA07NBphPp2MIv1Al2Bhf_I4s_XSvsScVdgiQt4RRDZpyQGN7c-ITrQP7t9UAgmdTGfSQllx5F</string>
+    <string name="msg_permission_required">You denied the required permission, You Disabled the function. Grant the permission to use this function !</string>
+    <string name="dialog_title_select_image">Choose an image…</string>
+    <string name="error_upload_task_create">Error updating photo</string>
+    <string name="SignUp_username">Username</string>
+    <string name="signup_male">Male</string>
+    <string name="signup_female">Female</string>
+    <string name="basic_information">Basic information</string>
+    <string name="indefined">Undefined</string>
+    <string name="birthday2">Birthday</string>
+    <string name="personal_informations">Personal Informations</string>
+    <string name="status2">Status</string>
+    <string name="sexuality">Sexuality</string>
+    <string name="update_location2">Update Location</string>
+    <string name="oriantation">Oriantation</string>
+    <string name="about_me">About me</string>
+
     <!--End-->
 </resources>

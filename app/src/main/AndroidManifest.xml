@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chat.ui.activities.ChatActivity"
+            android:name="directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -274,7 +274,7 @@
             android:label="FleetPosts..."
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".userchat.ListChatActivity"></activity>
+        <activity android:name=".Messaging.ChatList.ListChatActivity"></activity>
     </application>
 
 </manifest>

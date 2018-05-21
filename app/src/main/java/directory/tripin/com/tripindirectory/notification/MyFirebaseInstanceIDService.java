@@ -13,8 +13,8 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import java.util.HashMap;
 
-import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.utils.Constants;
 
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {

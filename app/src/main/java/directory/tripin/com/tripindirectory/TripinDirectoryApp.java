@@ -7,6 +7,8 @@ import com.facebook.LoggingBehavior;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.vanniktech.emoji.EmojiManager;
+import com.vanniktech.emoji.google.GoogleEmojiProvider;
 
 /**
  * @author Ravishankar
@@ -29,6 +31,7 @@ public class TripinDirectoryApp extends Application {
         AppEventsLogger.activateApp(this);
         FacebookSdk.setIsDebugEnabled(true);
         FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS);
+        EmojiManager.install(new GoogleEmojiProvider());
     }
 
     /**

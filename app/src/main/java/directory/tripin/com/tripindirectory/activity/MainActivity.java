@@ -116,7 +116,6 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.BookmarkAdapter;
 import directory.tripin.com.tripindirectory.adapters.PartnerAdapter;
 import directory.tripin.com.tripindirectory.callback.OnDataLoadListner;
-import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.dataproviders.CopanyData;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
@@ -138,9 +137,10 @@ import directory.tripin.com.tripindirectory.model.search.Fleet;
 import directory.tripin.com.tripindirectory.model.search.Truck;
 import directory.tripin.com.tripindirectory.model.search.TruckProperty;
 import directory.tripin.com.tripindirectory.ui.adapters.WorkingWithAdapter;
-import directory.tripin.com.tripindirectory.userchat.ListChatActivity;
+import directory.tripin.com.tripindirectory.Messaging.ChatList.ListChatActivity;
 import directory.tripin.com.tripindirectory.utils.Analytics;
 import directory.tripin.com.tripindirectory.utils.AppUtils;
+import directory.tripin.com.tripindirectory.utils.Constants;
 import directory.tripin.com.tripindirectory.utils.DB;
 import directory.tripin.com.tripindirectory.utils.FilterType;
 import directory.tripin.com.tripindirectory.utils.SearchBy;
@@ -809,7 +809,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void writeNewUser(String userId, String name, String userPhoneNo, String fcmtoken) {
         User user = new User(name, userPhoneNo, fcmtoken);
-        mDatabase.child("users").child(userId).setValue(user);
+        mDatabase.child("users").child(userId).child("username").setValue(name);
     }
 
     private void fetchCompanyAutoSuggestions(String s) {

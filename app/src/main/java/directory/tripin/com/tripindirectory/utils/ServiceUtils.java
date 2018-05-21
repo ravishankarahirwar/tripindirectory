@@ -5,7 +5,7 @@ import android.net.ConnectivityManager;
 
 import com.google.firebase.database.FirebaseDatabase;
 
-import directory.tripin.com.tripindirectory.chat.models.User;
+import directory.tripin.com.tripindirectory.Messaging.Class.User;
 
 
 public class ServiceUtils {

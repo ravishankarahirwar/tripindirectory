@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
@@ -9,8 +10,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 51
-        versionName "7.4"
+        versionCode 53
+        versionName "7.6"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -125,16 +126,20 @@ dependencies {
     compile 'io.github.kobakei:ratethisapp:1.2.0'
     compile 'com.github.wooplr:Spotlight:1.2.3'
 
-    implementation 'com.vanniktech:emoji-twitter:0.5.1'
+    compile 'com.vanniktech:emoji-google:0.5.1'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+    implementation 'com.greysonparrelli.permiso:permiso:0.3.0'
+    implementation 'com.flipboard:bottomsheet-core:1.5.3'
+    implementation 'com.flipboard:bottomsheet-commons:1.5.3'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
 
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
 apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
 }
-
-apply plugin: 'kotlin-android-extensions'

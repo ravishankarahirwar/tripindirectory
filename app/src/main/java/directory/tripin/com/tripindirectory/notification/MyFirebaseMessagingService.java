@@ -39,6 +39,7 @@ import java.util.Date;
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
+import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.FleetDetailsActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
@@ -49,10 +50,9 @@ import directory.tripin.com.tripindirectory.loadboardactivities.models.LoadPostP
 import directory.tripin.com.tripindirectory.loadboardactivities.models.QuotePojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
-import directory.tripin.com.tripindirectory.chat.ui.activities.ChatActivity;
-import directory.tripin.com.tripindirectory.chat.utils.Constants;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
+import directory.tripin.com.tripindirectory.utils.Constants;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {

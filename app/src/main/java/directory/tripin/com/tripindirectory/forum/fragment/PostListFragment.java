@@ -30,8 +30,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.chat.ui.activities.ChatActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
@@ -126,10 +126,7 @@ public abstract class PostListFragment extends Fragment {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 User value = dataSnapshot.getValue(User.class);
                                 Log.d(TAG, "Value is: " + value.firebaseToken);
-                                ChatActivity.startActivity(getActivity(),
-                                        "Ravi",
-                                        model.getmUid(),
-                                        value.firebaseToken);
+
                             }
 
                             @Override
@@ -138,6 +135,11 @@ public abstract class PostListFragment extends Fragment {
                                 Log.w(TAG, "Failed to read value.", error.toException());
                             }
                         });
+
+                        ChatActivity.startActivity(getActivity(),
+                                model.getmAuthor(),
+                                model.getmUid(),
+                                "");
                     }
                 });
 
