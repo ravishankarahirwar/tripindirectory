@@ -24,6 +24,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:fitsSystemWindows="true"
+            android:visibility="visible"
             tools:context=".activity.MainActivity">
 
             <android.support.design.widget.AppBarLayout
@@ -36,7 +37,8 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
-                    android:background="@color/colorPrimary" />
+                    android:background="@color/colorPrimary"
+                    android:visibility="visible" />
 
             </android.support.design.widget.AppBarLayout>
 
@@ -68,17 +70,18 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
-                            android:fontFamily="sans-serif-condensed"
                             android:background="@drawable/search_tag_selector"
                             android:button="@null"
                             android:checked="true"
                             android:drawableLeft="@drawable/ic_directions_grey_24dp"
                             android:drawablePadding="2dp"
                             android:elevation="4dp"
-                            android:paddingLeft="8dp"
-                            android:paddingTop="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:paddingBottom="4dp"
-                            android:paddingRight="8dp"                            android:text="@string/route"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/route"
                             android:textColor="@color/black" />
 
                         <RadioButton
@@ -88,24 +91,23 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
-                            android:drawablePadding="2dp"
                             android:background="@drawable/search_tag_selector"
                             android:button="@null"
                             android:drawableLeft="@drawable/ic_domain_black_24dp"
+                            android:drawablePadding="2dp"
                             android:elevation="4dp"
                             android:fontFamily="sans-serif-condensed"
-                            android:paddingLeft="8dp"
-                            android:paddingTop="4dp"
                             android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
                             android:paddingRight="8dp"
+                            android:paddingTop="4dp"
                             android:text="@string/company_name_caps"
-                            android:textColor="@color/black"/>
+                            android:textColor="@color/black" />
 
                         <RadioButton
                             android:id="@+id/search_by_city"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed"
                             android:layout_marginBottom="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginTop="4dp"
@@ -113,11 +115,13 @@
                             android:button="@null"
                             android:drawableLeft="@drawable/ic_location_on_white_24dp"
                             android:elevation="4dp"
-                            android:paddingLeft="8dp"
-                            android:paddingTop="4dp"
+                            android:fontFamily="sans-serif-condensed"
                             android:paddingBottom="4dp"
-                            android:paddingRight="8dp"                            android:text="@string/search_tag_city"
-                            android:textColor="@color/black"/>
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="@string/search_tag_city"
+                            android:textColor="@color/black" />
 
                     </RadioGroup>
                 </HorizontalScrollView>
@@ -131,8 +135,8 @@
                         android:id="@+id/animation_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_centerInParent="true"
+                        android:layout_gravity="center"
                         app:lottie_autoPlay="true"
                         app:lottie_fileName="animation_loading.json"
                         app:lottie_loop="true" />
@@ -143,20 +147,20 @@
                         android:layout_height="wrap_content"
                         android:background="@color/categoriesbg"
                         android:ellipsize="marquee"
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:repeatCount="infinite"
-                        android:repeatMode="restart"
                         android:focusable="true"
-                        android:textStyle="bold"
                         android:focusableInTouchMode="true"
                         android:fontFamily="sans-serif-condensed"
-                        android:textColor="@android:color/black"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:repeatCount="infinite"
+                        android:repeatMode="restart"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="Loadboard"
-                        android:textSize="14sp" />
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/transporter_list"
@@ -171,8 +175,8 @@
                         app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
                         app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
                         app:layoutManager="LinearLayoutManager"
-                        tools:listitem="@layout/single_partner_row1"
-                        tools:context="directory.tripin.com.tripindirectory.activity.MainActivity" />
+                        tools:context="directory.tripin.com.tripindirectory.activity.MainActivity"
+                        tools:listitem="@layout/single_partner_row1" />
 
                     <TextView
                         android:id="@+id/textViewResCount"
@@ -212,14 +216,15 @@
                 android:layout_gravity="bottom"
                 android:background="@color/colorPrimary"
                 android:orientation="horizontal">
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/animation_bookmark"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        app:lottie_autoPlay="true"
-                        app:lottie_fileName="bookmark.json"
-                        app:lottie_loop="false" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animation_bookmark"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="bookmark.json"
+                    app:lottie_loop="false" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -227,46 +232,46 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="horizontal">
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@android:color/white" />
                 </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/sort"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:layout_gravity="center"
-                        android:drawableStart="@drawable/ic_sort_black_24dp"
-                        android:text="Sort"
-                        android:textColor="@color/background"/>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <View
-                    android:layout_width="1dp"
+                <TextView
+                    android:id="@+id/sort"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    />
-            </LinearLayout>
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_sort_black_24dp"
+                    android:gravity="center_vertical"
+                    android:text="Sort"
+                    android:textColor="@color/background" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@android:color/white" />
+                </LinearLayout>
 
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:layout_marginRight="8dp"
-                    >
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/filter"
@@ -279,17 +284,17 @@
                         android:textAllCaps="false"
                         android:textColor="@color/background" />
 
-                <TextView
-                    android:id="@+id/no_of_filters"
-                    android:layout_width="15dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/filter"
-                    android:background="@drawable/bage_circle"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:textSize="10sp"
-                    android:visibility="gone"
-                    android:textColor="@color/primaryColor"/>
+                    <TextView
+                        android:id="@+id/no_of_filters"
+                        android:layout_width="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_toRightOf="@+id/filter"
+                        android:background="@drawable/bage_circle"
+                        android:gravity="center"
+                        android:textColor="@color/primaryColor"
+                        android:textSize="10sp"
+                        android:visibility="gone" />
                 </RelativeLayout>
             </LinearLayout>
         </android.support.design.widget.CoordinatorLayout>
