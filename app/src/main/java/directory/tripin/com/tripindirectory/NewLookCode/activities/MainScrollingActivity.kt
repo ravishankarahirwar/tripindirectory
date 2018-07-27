@@ -253,8 +253,6 @@ class MainScrollingActivity : AppCompatActivity() {
                         Logger.v("onLoadingStateChanged ${state.name}")
                     }
 
-                    else -> {
-                    }
                 }
             }
         }
