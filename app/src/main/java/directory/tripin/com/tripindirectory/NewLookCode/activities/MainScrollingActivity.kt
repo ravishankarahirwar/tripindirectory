@@ -24,16 +24,24 @@ import android.view.View
 import android.view.ViewGroup
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
+import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity
 import directory.tripin.com.tripindirectory.NewLookCode.*
+import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity
+import directory.tripin.com.tripindirectory.formactivities.FormFragments.CompanyFromFragment
+import directory.tripin.com.tripindirectory.forum.MainActivity
+import directory.tripin.com.tripindirectory.forum.NewPostActivity
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import kotlinx.android.synthetic.main.content_main_scrolling.*
+import kotlinx.android.synthetic.main.layout_main_actionbar.*
 
 
 class MainScrollingActivity : AppCompatActivity() {
@@ -45,6 +53,7 @@ class MainScrollingActivity : AppCompatActivity() {
     var fabrotation = 0f
     lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
+    private val SIGN_IN_FOR_CREATE_COMPANY = 123
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,11 +114,65 @@ class MainScrollingActivity : AppCompatActivity() {
         showall.setOnClickListener {
             startAllTransportersActivity()
         }
+        yourbusiness.setOnClickListener{
+            startYourBusinessActivity()
+        }
+        showchats.setOnClickListener{
+            setChatHeadsActivity()
+        }
+        posttolb.setOnClickListener {
+            startLoadboardActivity()
+        }
+        posttoselected.setOnClickListener {
 
+        }
+
+    }
+
+    private fun startLoadboardActivity() {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            // already signed in
+            val i = Intent(this, NewPostActivity::class.java)
+            i.putExtra("query",basicQueryPojo)
+            startActivity(i)          } else {
+            // not signed in
+            startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
+        }    }
+
+    private fun setChatHeadsActivity() {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            // already signed in
+            val i = Intent(this, ChatHeadsActivity::class.java)
+            startActivity(i)          } else {
+            // not signed in
+            startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
+        }
+    }
+
+    private fun startYourBusinessActivity() {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            // already signed in
+            val i = Intent(this, CompanyInfoActivity::class.java)
+            startActivity(i)          } else {
+            // not signed in
+            startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
+        }
+
+    }
+
+    private fun startSignInFor(signInFor: Int) {
+        startActivityForResult(
+                // Get an instance of AuthUI based on the default app
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                listOf<AuthUI.IdpConfig>(AuthUI.IdpConfig.PhoneBuilder().build()))
+                        .build(),
+                signInFor)
     }
 
     private fun startAllTransportersActivity() {
         val i = Intent(this, AllTransportersActivity::class.java)
+        i.putExtra("query",basicQueryPojo)
         startActivity(i)
     }
 
@@ -121,11 +184,11 @@ class MainScrollingActivity : AppCompatActivity() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("partners")
 
-        if (!basicQueryPojo.mSourceCity.isEmpty()) {
+        if (!basicQueryPojo.mSourceCity.isEmpty()&& basicQueryPojo.mSourceCity != "Select City") {
             baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
 
         }
-        if (!basicQueryPojo.mDestinationCity.isEmpty()) {
+        if (!basicQueryPojo.mDestinationCity.isEmpty()&& basicQueryPojo.mDestinationCity != "Select City") {
             baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
 
         }
@@ -223,6 +286,9 @@ class MainScrollingActivity : AppCompatActivity() {
                     setMainAdapter(basicQueryPojo)
 
                 }
+                SIGN_IN_FOR_CREATE_COMPANY -> {
+                    startYourBusinessActivity()
+                }
             }
         }
     }
@@ -259,6 +325,9 @@ class MainScrollingActivity : AppCompatActivity() {
 
         textViewSource.text = t2
         textViewDestination.text = t1
+        basicQueryPojo.mDestinationCity = t1.substring(2)
+        basicQueryPojo.mSourceCity = t2.substring(2)
+        setMainAdapter(basicQueryPojo)
     }
 
     private fun setSelectFleetAdapter() {

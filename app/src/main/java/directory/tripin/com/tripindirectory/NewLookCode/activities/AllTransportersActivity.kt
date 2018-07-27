@@ -10,6 +10,7 @@ import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo
 import directory.tripin.com.tripindirectory.NewLookCode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.R
@@ -26,9 +27,20 @@ class AllTransportersActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_transporters)
-        title = "Mumbai To Rajkot"
-        supportActionBar!!.subtitle = "LCV, Truck, Trailer"
-        setMainAdapter(basicQueryPojo)
+
+        if(intent.extras!=null){
+            if(intent.extras.getSerializable("query")!=null){
+                basicQueryPojo = intent.extras.getSerializable("query") as BasicQueryPojo
+                title = "${basicQueryPojo.mSourceCity} To ${basicQueryPojo.mDestinationCity}"
+                var fleets: String = ""
+                for(fleet:String in basicQueryPojo.mFleets!!){
+                    fleets = "$fleets,$fleet"
+                }
+                supportActionBar!!.subtitle = fleets
+                setMainAdapter(basicQueryPojo)
+            }
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -52,7 +64,23 @@ class AllTransportersActivity : AppCompatActivity() {
 
     private fun setMainAdapter( basicQueryPojo: BasicQueryPojo) {
 
-        val baseQuery = FirebaseFirestore.getInstance().collection("partners")
+        Logger.v(basicQueryPojo.toString())
+
+        var baseQuery: Query = FirebaseFirestore.getInstance()
+                .collection("partners")
+
+        if (!basicQueryPojo.mSourceCity.isEmpty()&& basicQueryPojo.mSourceCity != "Select City") {
+            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+
+        }
+        if (!basicQueryPojo.mDestinationCity.isEmpty()&& basicQueryPojo.mDestinationCity != "Select City") {
+            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+
+        }
+
+        for (fleet in basicQueryPojo.mFleets!!) {
+            baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
+        }
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)
@@ -92,10 +120,10 @@ class AllTransportersActivity : AppCompatActivity() {
 
             override fun getItemViewType(position: Int): Int {
 
-                if (position == itemCount - 1) {
-                    return 1
+                return if (position == itemCount - 1) {
+                    1
                 } else {
-                    return 0
+                    0
                 }
             }
 

@@ -1546,15 +1546,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void startSignInFor(int signInFor) {
-        // not signed in
-//        startActivityForResult(
-//                // Get an instance of AuthUI based on the default app
-//                AuthUI.getInstance().createSignInIntentBuilder()
-//                        .setAvailableProviders(
-//                                Collections.singletonList(
-//                                        new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build()))
-//                        .build(),
-//                signInFor);
+        startActivityForResult(
+                // Get an instance of AuthUI based on the default app
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(
+                                Collections.singletonList(
+                                        new AuthUI.IdpConfig.PhoneBuilder().build()))
+                        .build(),
+                signInFor);
     }
 
     private void startCountAnimation(int n) {
