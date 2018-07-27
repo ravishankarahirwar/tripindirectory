@@ -190,14 +190,14 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     // Get a URL to the uploaded content
-                                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                    images.get(index).setmImageUrl(downloadUrl.toString());
-                                    progressDialog.hide();
-                                    if (index + 1 <= 2) {
-                                        uploadImagesandGetURL(index + 1);
-                                    } else {
-                                        uploadData();
-                                    }
+//                                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+//                                    images.get(index).setmImageUrl(downloadUrl.toString());
+//                                    progressDialog.hide();
+//                                    if (index + 1 <= 2) {
+//                                        uploadImagesandGetURL(index + 1);
+//                                    } else {
+//                                        uploadData();
+//                                    }
 
                                 }
                             })

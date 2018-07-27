@@ -823,10 +823,10 @@ public class ChatFragment extends Fragment implements ChatContract.View {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // Handle successful uploads on complete
-                Uri downloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
+                //Uri downloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
                 //animationView.cancelAnimation();
                 //animationView.setVisibility(View.GONE);
-                sendAudio(String.valueOf(downloadUrl));
+                //sendAudio(String.valueOf(downloadUrl));
             }
         });
     }
@@ -1259,38 +1259,38 @@ public class ChatFragment extends Fragment implements ChatContract.View {
 
     public void uploadToFirebase (Uri cropImageUri){
 
-        //Toast.makeText(getActivity(), "Uri received", Toast.LENGTH_LONG).show();
-
-        userDB = FirebaseDatabase.getInstance().getReference("users").child(User.getUser().getUid());
-        FirebaseStorage storageRef = FirebaseStorage.getInstance();
-        StorageReference photoRef = storageRef.getReferenceFromUrl("gs://" + getString(R.string.google_storage_bucket));
-
-
-        Long timestamp = System.currentTimeMillis();
-        final StorageReference fullSizeRef = photoRef.child(User.getUser().getUid()).child("image_full").child(timestamp.toString() + ".jpg");
-
-        fullSizeRef.putFile(cropImageUri).addOnSuccessListener(taskSnapshot -> {
-            final Uri fullSizeUrl = taskSnapshot.getDownloadUrl();
-
-            sendImage(String.valueOf(fullSizeUrl));
-
-
-        }).addOnProgressListener(taskSnapshot -> {
-            //calculating progress percentage
-            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-            animationView.setVisibility(View.VISIBLE);
-            animationView.setAnimation("preloader.json");
-            animationView.loop(true);
-            //animationView.setProgress(0.5f);
-            animationView.playAnimation();
-        }).addOnFailureListener(e -> {
-            Toast.makeText(getActivity(), "Failed to upload chat image to database.", Toast.LENGTH_LONG).show();
-            FirebaseCrash.logcat(Log.ERROR, TAG, "Failed to upload chat image to database.");
-            FirebaseCrash.report(e);
-
-            animationView.setVisibility(View.GONE);
-        });
+//        //Toast.makeText(getActivity(), "Uri received", Toast.LENGTH_LONG).show();
+//
+//        userDB = FirebaseDatabase.getInstance().getReference("users").child(User.getUser().getUid());
+//        FirebaseStorage storageRef = FirebaseStorage.getInstance();
+//        StorageReference photoRef = storageRef.getReferenceFromUrl("gs://" + getString(R.string.google_storage_bucket));
+//
+//
+//        Long timestamp = System.currentTimeMillis();
+//        final StorageReference fullSizeRef = photoRef.child(User.getUser().getUid()).child("image_full").child(timestamp.toString() + ".jpg");
+//
+//        fullSizeRef.putFile(cropImageUri).addOnSuccessListener(taskSnapshot -> {
+//            final Uri fullSizeUrl = taskSnapshot.getDownloadUrl();
+//
+//            sendImage(String.valueOf(fullSizeUrl));
+//
+//
+//        }).addOnProgressListener(taskSnapshot -> {
+//            //calculating progress percentage
+//            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+//
+//            animationView.setVisibility(View.VISIBLE);
+//            animationView.setAnimation("preloader.json");
+//            animationView.loop(true);
+//            //animationView.setProgress(0.5f);
+//            animationView.playAnimation();
+//        }).addOnFailureListener(e -> {
+//            Toast.makeText(getActivity(), "Failed to upload chat image to database.", Toast.LENGTH_LONG).show();
+//            FirebaseCrash.logcat(Log.ERROR, TAG, "Failed to upload chat image to database.");
+//            FirebaseCrash.report(e);
+//
+//            animationView.setVisibility(View.GONE);
+//        });
 
     }
 

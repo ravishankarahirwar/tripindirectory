@@ -10,9 +10,6 @@ import android.widget.TextView;
 
 import directory.tripin.com.tripindirectory.R;
 
-/**
- * Created by Yogesh N. Tikam on 12/14/2017.
- */
 
 public class PartnersViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout mPartnerView;

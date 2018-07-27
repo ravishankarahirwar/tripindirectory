@@ -161,7 +161,7 @@ public class UploadTask extends Fragment {
             fullSizeRef.putBytes(bytes).addOnSuccessListener(new OnSuccessListener<com.google.firebase.storage.UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(com.google.firebase.storage.UploadTask.TaskSnapshot taskSnapshot) {
-                    final Uri fullSizeUrl = taskSnapshot.getDownloadUrl();
+                    //final Uri fullSizeUrl = taskSnapshot.getDownloadUrl();
 
                     dismissProgressBar();
 
@@ -175,7 +175,7 @@ public class UploadTask extends Fragment {
                             final DatabaseReference ref = FirebaseUtil.getBaseRef();
                             //DatabaseReference postsRef = FirebaseUtil.getPostsRef();
                             //final String newPostKey = postsRef.push().getKey();
-                            final Uri thumbnailUrl = taskSnapshot.getDownloadUrl();
+                            //final Uri thumbnailUrl = taskSnapshot.getDownloadUrl();
 
                             // upload here
 
@@ -184,41 +184,41 @@ public class UploadTask extends Fragment {
 
                                 showProgressBar("Finalizing...");
 
-                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setPhotoUri(fullSizeUrl)
-                                        .build();
+//                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+//                                        .setPhotoUri(fullSizeUrl)
+//                                        .build();
 
-                                user.updateProfile(profileUpdates)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    userDB.child("photoThumb").setValue(fullSizeUrl.toString());
-                                                    userDB.child("photoUrl").setValue(thumbnailUrl.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-
-                                                            if(task.isSuccessful()){
-
-                                                                dismissProgressBar();
-
-                                                                mCallbacks.onPostUploaded(null);
-                                                            }
-                                                        }
-                                                    }).addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-
-                                                            dismissProgressBar();
-
-                                                            mCallbacks.onPostUploaded(mApplicationContext.getString(R.string.error_upload_task_create));
-                                                        }
-                                                    });
-
-
-                                                }
-                                            }
-                                        });
+//                                user.updateProfile(profileUpdates)
+//                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                            @Override
+//                                            public void onComplete(@NonNull Task<Void> task) {
+//                                                if (task.isSuccessful()) {
+//                                                    userDB.child("photoThumb").setValue(fullSizeUrl.toString());
+//                                                    userDB.child("photoUrl").setValue(thumbnailUrl.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                        @Override
+//                                                        public void onComplete(@NonNull Task<Void> task) {
+//
+//                                                            if(task.isSuccessful()){
+//
+//                                                                dismissProgressBar();
+//
+//                                                                mCallbacks.onPostUploaded(null);
+//                                                            }
+//                                                        }
+//                                                    }).addOnFailureListener(new OnFailureListener() {
+//                                                        @Override
+//                                                        public void onFailure(@NonNull Exception e) {
+//
+//                                                            dismissProgressBar();
+//
+//                                                            mCallbacks.onPostUploaded(mApplicationContext.getString(R.string.error_upload_task_create));
+//                                                        }
+//                                                    });
+//
+//
+//                                                }
+//                                            }
+//                                        });
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {

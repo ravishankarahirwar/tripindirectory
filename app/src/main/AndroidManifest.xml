@@ -39,7 +39,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -53,8 +53,27 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
+
+        <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
+
         <activity
-            android:name="directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity"
+            android:name=".NewLookCode.activities.MainScrollingActivity"
+            android:label="@string/title_activity_main_scrolling"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".NewLookCode.activities.AllTransportersActivity"
+            ></activity>
+
+        <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
+
+        <activity
+            android:name=".Messaging.Activity.ChatActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -274,7 +293,8 @@
             android:label="FleetPosts..."
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".Messaging.ChatList.ListChatActivity"></activity>
+        <activity android:name=".Messaging.ChatList.ListChatActivity" />
+
     </application>
 
 </manifest>
