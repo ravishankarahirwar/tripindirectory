@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
@@ -78,6 +79,7 @@ public class NewPostActivity extends BaseActivity {
     private RadioGroup mPostTypeGroup;
     private RadioButton mPostLoad;
     private RadioButton mPostTruck;
+    private BasicQueryPojo basicQueryPojo;
 
     private int SELECT_SOURCE = 1;
     private int SELECT_DESTINATION = 2;
@@ -88,6 +90,7 @@ public class NewPostActivity extends BaseActivity {
         setContentView(R.layout.activity_new_post);
 
         setupToolbar();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mSource = findViewById(R.id.source);
@@ -157,6 +160,20 @@ public class NewPostActivity extends BaseActivity {
         bodyType.setAdapter(bodyTypeAdapter);
 
         viewSetup();
+
+        if(getIntent().getExtras()!=null){
+            if(getIntent().getSerializableExtra("query")!=null){
+                basicQueryPojo = (BasicQueryPojo) getIntent().getSerializableExtra("query");
+                if(basicQueryPojo != null){
+                    basicQueryPojo.toString();
+                    mSource.setText(basicQueryPojo.getMSourceCity());
+                    mDestination.setText(basicQueryPojo.getMDestinationCity());
+                }else {
+                    Logger.v("pojo empty");
+                }
+
+            }
+        }
     }
 
     @Override
