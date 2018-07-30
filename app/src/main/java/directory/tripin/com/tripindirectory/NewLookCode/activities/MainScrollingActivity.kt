@@ -18,21 +18,30 @@ import kotlinx.android.synthetic.main.layout_route_input.*
 import android.support.v4.view.ViewCompat
 import android.view.animation.OvershootInterpolator
 import android.arch.paging.PagedList
+import android.content.DialogInterface
+import android.net.Uri
 import android.support.annotation.NonNull
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
+import com.bumptech.glide.util.Util.getSnapshot
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity
 import directory.tripin.com.tripindirectory.NewLookCode.*
+import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity
 import directory.tripin.com.tripindirectory.formactivities.FormFragments.CompanyFromFragment
 import directory.tripin.com.tripindirectory.forum.MainActivity
@@ -114,10 +123,10 @@ class MainScrollingActivity : AppCompatActivity() {
         showall.setOnClickListener {
             startAllTransportersActivity()
         }
-        yourbusiness.setOnClickListener{
+        yourbusiness.setOnClickListener {
             startYourBusinessActivity()
         }
-        showchats.setOnClickListener{
+        showchats.setOnClickListener {
             setChatHeadsActivity()
         }
         posttolb.setOnClickListener {
@@ -132,18 +141,21 @@ class MainScrollingActivity : AppCompatActivity() {
     private fun startLoadboardActivity() {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
-            val i = Intent(this, NewPostActivity::class.java)
-            i.putExtra("query",basicQueryPojo)
-            startActivity(i)          } else {
+            val i = Intent(this, LoadBoardActivity::class.java)
+            i.putExtra("query", basicQueryPojo)
+            startActivity(i)
+        } else {
             // not signed in
             startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
-        }    }
+        }
+    }
 
     private fun setChatHeadsActivity() {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
             val i = Intent(this, ChatHeadsActivity::class.java)
-            startActivity(i)          } else {
+            startActivity(i)
+        } else {
             // not signed in
             startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
         }
@@ -153,7 +165,8 @@ class MainScrollingActivity : AppCompatActivity() {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
             val i = Intent(this, CompanyInfoActivity::class.java)
-            startActivity(i)          } else {
+            startActivity(i)
+        } else {
             // not signed in
             startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
         }
@@ -172,7 +185,7 @@ class MainScrollingActivity : AppCompatActivity() {
 
     private fun startAllTransportersActivity() {
         val i = Intent(this, AllTransportersActivity::class.java)
-        i.putExtra("query",basicQueryPojo)
+        i.putExtra("query", basicQueryPojo)
         startActivity(i)
     }
 
@@ -184,11 +197,11 @@ class MainScrollingActivity : AppCompatActivity() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("partners")
 
-        if (!basicQueryPojo.mSourceCity.isEmpty()&& basicQueryPojo.mSourceCity != "Select City") {
+        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
             baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
 
         }
-        if (!basicQueryPojo.mDestinationCity.isEmpty()&& basicQueryPojo.mDestinationCity != "Select City") {
+        if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
             baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
 
         }
@@ -208,6 +221,8 @@ class MainScrollingActivity : AppCompatActivity() {
                 .setQuery(baseQuery, config, PartnerInfoPojo::class.java)
                 .build()
         adapter = object : FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+
+
             @NonNull
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): PartnersViewHolder {
                 val view = LayoutInflater.from(parent.context)
@@ -218,11 +233,62 @@ class MainScrollingActivity : AppCompatActivity() {
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
+
                 holder.mCompany.text = model.getmCompanyName()
+
 
                 if (model != null) {
                     if (model.getmCompanyAdderss() != null)
                         holder.mAddress.text = model.getmCompanyAdderss().city
+                }
+
+                holder.itemView.setOnClickListener {
+
+                    val i = Intent(context, PartnerDetailScrollingActivity::class.java)
+                    i.putExtra("uid",getItem(position)!!.id)
+                    i.putExtra("cname",model.getmCompanyName())
+                    startActivity(i)
+                }
+
+                holder.mCall.setOnClickListener {
+
+
+                    val phoneNumbers = java.util.ArrayList<String>()
+                    val contactPersonPojos = model.getmContactPersonsList()
+
+                    if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
+                        for (i in contactPersonPojos!!.indices) {
+                            if (model.getmContactPersonsList()[i] != null) {
+                                val number = model.getmContactPersonsList()[i].getmContactPersonMobile
+                                phoneNumbers.add(number)
+
+                            }
+                        }
+
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle("Looks like there are multiple phone numbers.")
+                                .setCancelable(false)
+                                .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
+                                ) { dialog, item ->
+                                    Logger.v("Dialog number selected :" + phoneNumbers[item])
+
+                                    callNumber(phoneNumbers[item])
+                                }
+
+                        builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface, id: Int) {
+                                // User cancelled the dialog
+                            }
+                        })
+                        builder.create()
+                        builder.show()
+
+
+                    } else {
+
+                        val number = model.getmContactPersonsList()[0].getmContactPersonMobile
+                        callNumber(number)
+                    }
                 }
 
 
@@ -382,5 +448,12 @@ class MainScrollingActivity : AppCompatActivity() {
             // TODO: Handle the error.
         }
 
+    }
+
+    private fun callNumber(number: String) {
+        val callIntent = Intent(Intent.ACTION_DIAL)
+        callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
+        callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        context.startActivity(callIntent)
     }
 }

@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
@@ -32,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
@@ -82,6 +84,7 @@ public abstract class PostListFragment extends Fragment {
         mManager.setReverseLayout(true);
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
+        Log.v("PostListFragment","onActivityCreated");
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getQuery(mDatabase);
@@ -90,6 +93,8 @@ public abstract class PostListFragment extends Fragment {
             @Override
             protected void populateViewHolder(final PostViewHolder viewHolder, final Post model, final int position) {
                 final DatabaseReference postRef = getRef(position);
+                Log.v("PostListFragment","popolate");
+
 
                 // Set click listener for the whole post view
                 final String postKey = postRef.getKey();
@@ -226,6 +231,22 @@ public abstract class PostListFragment extends Fragment {
                         onStarClicked(userPostRef);
                     }
                 });
+            }
+
+            @Override
+            public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                Log.v("PostListFragment","onCreateViewholder");
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.include_post_author, parent, false);
+                return new PostViewHolder(view);
+            }
+
+            @Override
+            public void onDataChanged() {
+                Log.v("PostListFragment","onDataChanged");
+
+                super.onDataChanged();
             }
         };
         mRecycler.setAdapter(mAdapter);
