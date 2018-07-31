@@ -70,7 +70,7 @@ public abstract class PostListFragment extends Fragment {
         // [END create_database_reference]
 
         mRecycler = rootView.findViewById(R.id.messages_list);
-        mRecycler.setHasFixedSize(true);
+       // mRecycler.setHasFixedSize(true);
 
         return rootView;
     }
@@ -93,130 +93,130 @@ public abstract class PostListFragment extends Fragment {
             @Override
             protected void populateViewHolder(final PostViewHolder viewHolder, final Post model, final int position) {
                 final DatabaseReference postRef = getRef(position);
-                Log.v("PostListFragment","popolate");
+                Log.v("PostListFragment","popolate "+position);
 
 
                 // Set click listener for the whole post view
                 final String postKey = postRef.getKey();
-                viewHolder.postTextContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Launch PostDetailActivity
-                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
-                        startActivity(intent);
-                    }
-                });
+//                viewHolder.postTextContainer.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Launch PostDetailActivity
+//                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+//                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
+//                        startActivity(intent);
+//                    }
+//                });
 
-                viewHolder.comments.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
-                        startActivity(intent);
-                    }
-                });
+//                viewHolder.comments.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+//                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
+//                        startActivity(intent);
+//                    }
+//                });
+//
+//                viewHolder.chat.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                        DatabaseReference myRef = mDatabase.child("users").child(model.getmUid());
+//
+//                        myRef.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                // This method is called once with the initial value and again
+//                                // whenever data at this location is updated.
+//                                FirebaseUser user = mAuth.getCurrentUser();
+//                                User value = dataSnapshot.getValue(User.class);
+//                                Log.d(TAG, "Value is: " + value.firebaseToken);
+//
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError error) {
+//                                // Failed to read value
+//                                Log.w(TAG, "Failed to read value.", error.toException());
+//                            }
+//                        });
+//
+//                        ChatActivity.startActivity(getActivity(),
+//                                model.getmAuthor(),
+//                                model.getmUid(),
+//                                "");
+//                    }
+//                });
 
-                viewHolder.chat.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+//                if(model.getmUid().equalsIgnoreCase(mAuth.getUid())) {
+//                    viewHolder.delete.setVisibility(View.VISIBLE);
+//                } else {
+//                    viewHolder.delete.setVisibility(View.GONE);
+//                }
 
-                        DatabaseReference myRef = mDatabase.child("users").child(model.getmUid());
-
-                        myRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
-                                // whenever data at this location is updated.
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                User value = dataSnapshot.getValue(User.class);
-                                Log.d(TAG, "Value is: " + value.firebaseToken);
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
-
-                        ChatActivity.startActivity(getActivity(),
-                                model.getmAuthor(),
-                                model.getmUid(),
-                                "");
-                    }
-                });
-
-                if(model.getmUid().equalsIgnoreCase(mAuth.getUid())) {
-                    viewHolder.delete.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.delete.setVisibility(View.GONE);
-                }
-
-                viewHolder.delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which){
-                                    case DialogInterface.BUTTON_POSITIVE:
-                                        if(postRef != null) {
-                                            postRef.removeValue();
-                                        }
-                                        break;
-
-                                    case DialogInterface.BUTTON_NEGATIVE:
-                                        //No button clicked
-                                        break;
-                                }
-                            }
-                        };
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setTitle("Delete Post");
-                        builder.setMessage("Are you sure? You want to delete this post.").setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener).show();
-
-                    }
-                });
-
-
-
-                viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (model.mFindOrPost == 1) {
-                            shareMesssages(getActivity(), "Need Truck", model.toString());
-
-                        }else if (model.mFindOrPost == 2) {
-                            shareMesssages(getActivity(), "Need LOAD", model.toString());
-                        }
-                    }
-                });
-
-                viewHolder.call.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        String phoneNO = model.getmContactNo();
-                        if(phoneNO != null && phoneNO.length() > 0) {
-                            callNumber(phoneNO);
-                        } else {
-                            Toast.makeText(getContext(), "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+//                viewHolder.delete.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                switch (which){
+//                                    case DialogInterface.BUTTON_POSITIVE:
+//                                        if(postRef != null) {
+//                                            postRef.removeValue();
+//                                        }
+//                                        break;
+//
+//                                    case DialogInterface.BUTTON_NEGATIVE:
+//                                        //No button clicked
+//                                        break;
+//                                }
+//                            }
+//                        };
+//
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                        builder.setTitle("Delete Post");
+//                        builder.setMessage("Are you sure? You want to delete this post.").setPositiveButton("Yes", dialogClickListener)
+//                                .setNegativeButton("No", dialogClickListener).show();
+//
+//                    }
+//                });
 
 
+//
+//                viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (model.mFindOrPost == 1) {
+//                            shareMesssages(getActivity(), "Need Truck", model.toString());
+//
+//                        }else if (model.mFindOrPost == 2) {
+//                            shareMesssages(getActivity(), "Need LOAD", model.toString());
+//                        }
+//                    }
+//                });
 
-                // Determine if the current user has liked this post and set UI accordingly
-                if (model.stars.containsKey(getUid())) {
-                    viewHolder.starView.setImageResource(R.drawable.ic_favorite);
-                } else {
-                    viewHolder.starView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                }
+//                viewHolder.call.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        FirebaseUser user = mAuth.getCurrentUser();
+//                        String phoneNO = model.getmContactNo();
+//                        if(phoneNO != null && phoneNO.length() > 0) {
+//                            callNumber(phoneNO);
+//                        } else {
+//                            Toast.makeText(getContext(), "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+
+
+
+//                // Determine if the current user has liked this post and set UI accordingly
+//                if (model.stars.containsKey(getUid())) {
+//                    viewHolder.starView.setImageResource(R.drawable.ic_favorite);
+//                } else {
+//                    viewHolder.starView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+//                }
 
                 // Bind Post to ViewHolder, setting OnClickListener for the star button
                 viewHolder.bindToPost(model, new View.OnClickListener() {
@@ -238,7 +238,7 @@ public abstract class PostListFragment extends Fragment {
                 Log.v("PostListFragment","onCreateViewholder");
 
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.include_post_author, parent, false);
+                        .inflate(R.layout.item_new_load_post, parent, false);
                 return new PostViewHolder(view);
             }
 

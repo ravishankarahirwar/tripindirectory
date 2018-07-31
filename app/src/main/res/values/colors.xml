@@ -196,7 +196,7 @@
     <color name="light_green_A700">#64DD17</color>
 
     <color name="amber_50">#fff8e1</color>
-    <color name="amber_100">#FFECB3</color>
+    <color name="amber_100">#ffecb3</color>
     <color name="amber_200">#FFE082</color>
     <color name="amber_300">#FFD54F</color>
     <color name="amber_400">#FFCA28</color>
@@ -210,7 +210,7 @@
     <color name="amber_A400">#FFC400</color>
     <color name="amber_A700">#FFAB00</color>
 
-    <color name="brown_50">#EFEBE9</color>
+    <color name="brown_50">#efebe9</color>
     <color name="brown_100">#d7ccc8</color>
     <color name="brown_200">#BCAAA4</color>
     <color name="brown_300">#A1887F</color>

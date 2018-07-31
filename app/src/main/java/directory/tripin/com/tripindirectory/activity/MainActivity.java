@@ -109,6 +109,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.MainScrollingActivity;
 import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
@@ -223,6 +224,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private RecyclerView mTypesofVehiclesRecyclarView;
 
     private TextView mTextCount;
+    private TextView mTryNewLook;
     private TextView mLoadBoardNews;
 
     private Dialog dialog;
@@ -311,6 +313,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mNavWebsite  = findViewById(R.id.nev_footer_webstie);
 
         mLoadBoardNews =  findViewById(R.id.loadboard_news);
+        mTryNewLook =  findViewById(R.id.trynewlook);
+
 
         mNoOfFilterApply = findViewById(R.id.no_of_filters);
         mSearchView = findViewById(R.id.floating_search_view);
@@ -560,6 +564,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mTypesofVehiclesRecyclarView.setLayoutManager(new LinearLayoutManager(this));
         mTypesofVehiclesRecyclarView.setNestedScrollingEnabled(false);
         mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
+
+        mTryNewLook.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this,
+                    directory.tripin.com.tripindirectory.NewLookCode.activities.MainScrollingActivity.class));
+            finish();
+        });
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

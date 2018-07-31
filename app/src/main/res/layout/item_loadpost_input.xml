@@ -8,17 +8,15 @@
     android:background="@drawable/border_stroke_bg"
     android:padding="4dp">
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageView
         android:id="@+id/fab_revert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorLightBg"
-        android:clickable="true"
-        android:tint="@color/blue_grey_900"
-        app:fab_size="mini"
+        android:background="@drawable/chat_in_bg"
+        android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -66,6 +64,171 @@
         app:layout_constraintTop_toTopOf="@+id/fab_revert" />
 
     <LinearLayout
+        android:id="@+id/llinput2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fab_revert">
+
+        <LinearLayout
+            android:id="@+id/lltype"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="VEHICLE TYPE"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/truck_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:drawableRight="@drawable/ic_arrow_drop_down_black_24dp"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="Select" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llbody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="BODY TYPE"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/body_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:drawableRight="@drawable/ic_arrow_drop_down_black_24dp"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="Select" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llweight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:padding="8dp"
+                android:text="PAYLOAD"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/weight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:gravity="center_vertical"
+                android:hint="Type Payload"
+                android:padding="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lllength"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:padding="8dp"
+                android:text="LENGTH"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/length"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:gravity="center_vertical"
+                android:hint="Type Length"
+                android:padding="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llmaterial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:padding="8dp"
+                android:text="MATERIAL"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/material"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:gravity="center_vertical"
+                android:hint="Type Material"
+                android:padding="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/form"
         android:layout_width="match_parent"
         android:layout_height="266dp"
@@ -73,6 +236,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_revert">
@@ -117,7 +281,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/chat_in_bg"
             android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
@@ -193,7 +358,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/border_sreoke_yollo_bg"
         android:gravity="center"
@@ -204,8 +368,25 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llinput2" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@null"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="Other Requirement (Optional)"
+        android:inputType="textPersonName"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/post"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/form"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/llinput2" />
 
 </android.support.constraint.ConstraintLayout>

@@ -12,6 +12,7 @@ import directory.tripin.com.tripindirectory.forum.fragment.MyTopPostsFragment
 import directory.tripin.com.tripindirectory.forum.fragment.RecentPostsFragment
 import directory.tripin.com.tripindirectory.helper.Logger
 import kotlinx.android.synthetic.main.content_main_loadboard.*
+import kotlinx.android.synthetic.main.layout_loadboard_actionbar.*
 
 class LoadBoardActivity : AppCompatActivity() {
     private var mPagerAdapter: FragmentPagerAdapter? = null
@@ -25,7 +26,7 @@ class LoadBoardActivity : AppCompatActivity() {
 
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = object : FragmentPagerAdapter(supportFragmentManager) {
-            private val mFragments = arrayOf<Fragment>(RecentPostsFragment())
+            private val mFragments = arrayOf<Fragment>(RecentPostsFragment(),MyPostsFragment())
             override fun getItem(position: Int): Fragment {
                 return mFragments[position]
             }
@@ -36,5 +37,9 @@ class LoadBoardActivity : AppCompatActivity() {
         }
         mViewPager.adapter = mPagerAdapter
         Logger.v("LoadBoardActivity")
+
+        back.setOnClickListener {
+            finish()
+        }
     }
 }
