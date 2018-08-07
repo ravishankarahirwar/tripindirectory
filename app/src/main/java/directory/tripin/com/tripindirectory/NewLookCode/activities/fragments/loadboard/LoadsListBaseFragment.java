@@ -1,4 +1,4 @@
-package directory.tripin.com.tripindirectory.forum.fragment;
+package directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard;
 
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -16,8 +16,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,36 +27,36 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard.models.Post;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.adapters.FirstItemMainViewHolder;
-import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
-import directory.tripin.com.tripindirectory.forum.models.Post;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.forum.viewholder.PostViewHolder;
 
 
-public abstract class PostListFragment extends Fragment {
+public abstract class LoadsListBaseFragment extends Fragment {
 
     private static final String TAG = "PostListFragment";
     private boolean isMyPost;
+    LottieAnimationView loading;
+    private TextView noItems;
 
     // [START define_database_reference]
     private DatabaseReference mDatabase;
     // [END define_database_reference]
 
-    private FirebaseRecyclerAdapter<Post, PostViewHolder> mAdapter;
+    private FirebaseRecyclerAdapter<Post, LoadPostViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
     private FirebaseAuth mAuth;
 
-    public PostListFragment() {}
+    public LoadsListBaseFragment() {}
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
@@ -70,6 +72,8 @@ public abstract class PostListFragment extends Fragment {
         // [END create_database_reference]
 
         mRecycler = rootView.findViewById(R.id.messages_list);
+        loading = rootView.findViewById(R.id.loading);
+        noItems = rootView.findViewById(R.id.noitems);
        // mRecycler.setHasFixedSize(true);
 
         return rootView;
@@ -88,63 +92,34 @@ public abstract class PostListFragment extends Fragment {
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getQuery(mDatabase);
-        mAdapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class, R.layout.item_post,
-                PostViewHolder.class, postsQuery) {
+        mAdapter = new FirebaseRecyclerAdapter<Post, LoadPostViewHolder>(Post.class, R.layout.item_post,
+                LoadPostViewHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final PostViewHolder viewHolder, final Post model, final int position) {
+            protected void populateViewHolder(final LoadPostViewHolder viewHolder, final Post model, final int position) {
                 final DatabaseReference postRef = getRef(position);
                 Log.v("PostListFragment","popolate "+position);
 
 
                 // Set click listener for the whole post view
                 final String postKey = postRef.getKey();
-                viewHolder.postTextContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Launch PostDetailActivity
-                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
-                        startActivity(intent);
-                    }
-                });
 
-                viewHolder.comments.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                        intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postKey);
-                        startActivity(intent);
-                    }
-                });
+
 
                 viewHolder.chat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        DatabaseReference myRef = mDatabase.child("users").child(model.getmUid());
+                        if(model.mFuid!=null){
+                            Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
+                            intent.putExtra("imsg", model.toString());
+                            intent.putExtra("ormn", model.getmContactNo());
+                            intent.putExtra("ouid", model.getmUid());
+                            intent.putExtra("ofuid", model.getmFuid());
+                            startActivity(intent);
+                        }else {
+                            Toast.makeText(getContext(),"Cant Chat",Toast.LENGTH_LONG).show();
+                        }
 
-                        myRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
-                                // whenever data at this location is updated.
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                User value = dataSnapshot.getValue(User.class);
-                                Log.d(TAG, "Value is: " + value.firebaseToken);
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                // Failed to read value
-                                Log.w(TAG, "Failed to read value.", error.toException());
-                            }
-                        });
-
-                        ChatActivity.startActivity(getActivity(),
-                                model.getmAuthor(),
-                                model.getmUid(),
-                                "");
                     }
                 });
 
@@ -211,12 +186,12 @@ public abstract class PostListFragment extends Fragment {
 
 
 
-                // Determine if the current user has liked this post and set UI accordingly
-                if (model.stars.containsKey(getUid())) {
-                    viewHolder.starView.setImageResource(R.drawable.ic_favorite);
-                } else {
-                    viewHolder.starView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                }
+//                // Determine if the current user has liked this post and set UI accordingly
+//                if (model.stars.containsKey(getUid())) {
+//                    viewHolder.starView.setImageResource(R.drawable.ic_favorite);
+//                } else {
+//                    viewHolder.starView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+//                }
 
                 // Bind Post to ViewHolder, setting OnClickListener for the star button
                 viewHolder.bindToPost(model, new View.OnClickListener() {
@@ -233,19 +208,25 @@ public abstract class PostListFragment extends Fragment {
                 });
             }
 
-//            @Override
-//            public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//                Log.v("PostListFragment","onCreateViewholder");
-//
-//                View view = LayoutInflater.from(parent.getContext())
-//                        .inflate(R.layout.include_post_author, parent, false);
-//                return new PostViewHolder(view);
-//            }
+            @Override
+            public LoadPostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                Log.v("PostListFragment","onCreateViewholder");
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_new_load_post, parent, false);
+                return new LoadPostViewHolder(view);
+            }
 
             @Override
             public void onDataChanged() {
                 Log.v("PostListFragment","onDataChanged");
+                loading.setVisibility(View.GONE);
 
+                if(getItemCount()==0){
+                    noItems.setVisibility(View.VISIBLE);
+                }else {
+                    noItems.setVisibility(View.GONE);
+                }
                 super.onDataChanged();
             }
         };

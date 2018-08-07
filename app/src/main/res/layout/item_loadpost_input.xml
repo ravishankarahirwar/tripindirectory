@@ -5,6 +5,7 @@
     android:id="@+id/loadpost_input"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:background="@drawable/border_stroke_bg"
     android:padding="4dp">
 
@@ -16,6 +17,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/chat_in_bg"
+        android:contentDescription="TODO"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +55,7 @@
         android:background="@drawable/chat_in_bg"
         android:drawableRight="@drawable/ic_edit_black_24dp"
         android:gravity="center_vertical"
+        android:inputType="textCapSentences"
         android:padding="8dp"
         android:text="Destination"
         android:textSize="14sp"
@@ -88,22 +91,21 @@
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
                 android:gravity="center_vertical"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:text="VEHICLE TYPE"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/truck_type"
+            <com.jaredrummler.materialspinner.MaterialSpinner
+                android:id="@+id/spinnervtype"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:drawableRight="@drawable/ic_arrow_drop_down_black_24dp"
-                android:gravity="center_vertical"
-                android:padding="5dp"
-                android:text="Select" />
+                android:gravity="center_horizontal"
+                android:textSize="12sp"
+                app:ms_background_selector="@color/blue_grey_50" />
         </LinearLayout>
 
         <LinearLayout
@@ -119,22 +121,21 @@
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
                 android:gravity="center_vertical"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:text="BODY TYPE"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/body_type"
+            <com.jaredrummler.materialspinner.MaterialSpinner
+                android:id="@+id/spinnerbtype"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:drawableRight="@drawable/ic_arrow_drop_down_black_24dp"
-                android:gravity="center_vertical"
-                android:padding="5dp"
-                android:text="Select" />
+                android:gravity="center_horizontal"
+                android:textSize="12sp"
+                app:ms_background_selector="@color/blue_grey_50" />
         </LinearLayout>
 
         <LinearLayout
@@ -143,28 +144,134 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:layout_weight="1"
-                android:background="@color/blue_grey_50"
-                android:padding="8dp"
-                android:text="PAYLOAD"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/weight"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:gravity="center_vertical"
-                android:hint="Type Payload"
-                android:padding="5dp"
-                android:textSize="12sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="PAYLOAD"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:scrollbars="none"
+                    android:visibility="gone">
+
+                    <RadioGroup
+                        android:id="@+id/search_tag_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center_vertical"
+                        android:alpha="0.6"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/kg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:checked="true"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="KG"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/ton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="Ton"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <RadioButton
+                            android:id="@+id/mt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="MT"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+
+                    </RadioGroup>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/weight"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="@null"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:hint="Payload"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <com.jaredrummler.materialspinner.MaterialSpinner
+                    android:id="@+id/spinnerweight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/blue_grey_50"
+                    android:gravity="center_horizontal"
+                    android:textSize="10sp"
+                    app:ms_background_selector="@color/blue_grey_50" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -173,27 +280,135 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:layout_weight="1"
-                android:background="@color/blue_grey_50"
-                android:padding="8dp"
-                android:text="LENGTH"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-            <EditText
-                android:id="@+id/length"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:gravity="center_vertical"
-                android:hint="Type Length"
-                android:padding="5dp"
-                android:textSize="12sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:padding="10dp"
+                    android:text="LENGTH"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:scrollbars="none"
+                    android:visibility="gone">
+
+                    <RadioGroup
+                        android:id="@+id/length_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center_vertical"
+                        android:alpha="0.6"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/lengthl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:checked="true"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="KG"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+                        <RadioButton
+                            android:id="@+id/m"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="Ton"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <RadioButton
+                            android:id="@+id/ft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/search_tag_selector"
+                            android:button="@null"
+                            android:drawablePadding="2dp"
+                            android:elevation="4dp"
+                            android:fontFamily="sans-serif-condensed"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:text="MT"
+                            android:textColor="@color/brown_100"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+
+                    </RadioGroup>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/blue_grey_50"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/length"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="@null"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:hint="Length"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <com.jaredrummler.materialspinner.MaterialSpinner
+                    android:id="@+id/spinnerlength"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/blue_grey_50"
+                    android:gravity="center_horizontal"
+                    android:textSize="10sp"
+
+                    app:ms_background_selector="@color/blue_grey_50" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -204,11 +419,12 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:padding="10dp"
                 android:text="MATERIAL"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -216,14 +432,19 @@
             <EditText
                 android:id="@+id/material"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/blue_grey_50"
-                android:gravity="center_vertical"
-                android:hint="Type Material"
-                android:padding="5dp"
-                android:textSize="12sp" />
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="Type Material Specifications"
+                android:inputType="textCapSentences|textMultiLine"
+                android:paddingBottom="16dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="16dp"
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
@@ -362,7 +583,7 @@
         android:background="@drawable/border_sreoke_yollo_bg"
         android:gravity="center"
         android:padding="10dp"
-        android:text="POST TO LOADBOARD"
+        android:text="POST NOW"
         android:textColor="@color/blue_grey_900"
         android:textSize="12sp"
         android:textStyle="bold"
@@ -371,7 +592,7 @@
         app:layout_constraintTop_toBottomOf="@+id/llinput2" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/otherreq"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -381,9 +602,10 @@
         android:background="@null"
         android:ems="10"
         android:gravity="top"
-        android:hint="Other Requirement (Optional)"
-        android:inputType="textPersonName"
+        android:hint="Type Other Requirement here..."
+        android:inputType="textCapSentences|textMultiLine|textPersonName"
         android:textSize="10sp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/post"
         app:layout_constraintStart_toStartOf="parent"

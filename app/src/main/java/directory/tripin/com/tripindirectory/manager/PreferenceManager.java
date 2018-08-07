@@ -10,6 +10,16 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
     public static final String PREF_FCM_TOKEN = "fcmtoken";
+    public static final String PREF_FACEBOOK_UID = "fuid";
+
+    public static final String PREF_DISPLAY_NAME = "displayneame";
+    public static final String PREF_IMAGE_URL = "imageurl";
+    public static final String PREF_FACEBOOKED = "isfacebooked";
+    public static final String PREF_REG_MOBILE = "mobile";
+
+
+
+
     public static final String DEVICE_ID = "device_id";
     public static final String USER_ID = "user_id";
 
@@ -45,6 +55,18 @@ public class PreferenceManager {
         return retrivedValue;
     }
 
+
+
+    public void setisFacebboked(boolean b) {
+        editor.putBoolean(PREF_FACEBOOKED, b);
+        editor.commit();
+    }
+
+    public boolean isFacebooked() {
+        boolean isfacebooked = sInstance.getBoolean(PREF_FACEBOOKED, false);
+        return isfacebooked;
+    }
+
     public String getFcmToken() {
         String token = sInstance.getString(PREF_FCM_TOKEN, null);
         return token;
@@ -54,6 +76,47 @@ public class PreferenceManager {
         editor.putString(PREF_FCM_TOKEN, accessToken);
         editor.commit();
     }
+
+    public String getRMN() {
+        String token = sInstance.getString(PREF_REG_MOBILE, "");
+        return token;
+    }
+
+    public void setRMN(String rmn) {
+        editor.putString(PREF_REG_MOBILE, rmn);
+        editor.commit();
+    }
+
+    public String getFuid() {
+        String fuid = sInstance.getString(PREF_FACEBOOK_UID, "");
+        return fuid;
+    }
+
+    public void setFuid(String fuid) {
+        editor.putString(PREF_FACEBOOK_UID, fuid);
+        editor.commit();
+    }
+
+    public String getImageUrl() {
+        String url = sInstance.getString(PREF_IMAGE_URL, null);
+        return url;
+    }
+
+    public void setImageUrl(String url) {
+        editor.putString(PREF_IMAGE_URL, url);
+        editor.commit();
+    }
+
+    public String getDisplayName() {
+        String name = sInstance.getString(PREF_DISPLAY_NAME, null);
+        return name;
+    }
+
+    public void setDisplayName(String name) {
+        editor.putString(PREF_DISPLAY_NAME, name);
+        editor.commit();
+    }
+
 
     public String getDeviceId() {
         String deviceId = sInstance.getString(DEVICE_ID, null);

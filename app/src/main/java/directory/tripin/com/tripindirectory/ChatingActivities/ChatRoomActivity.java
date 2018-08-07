@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -29,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,11 +57,14 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
+import directory.tripin.com.tripindirectory.NewLookCode.pojos.UserProfile;
+import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
@@ -90,17 +95,22 @@ public class ChatRoomActivity extends AppCompatActivity {
     //opponents necessary information
     private String mORMN;
     private String mOUID;
+    private String mOFUID;
 
-    //collected user info
+
+    //collected opponent user info
     private String mOpponentCompName = "";
-    private String mMyCompName = "";
     private String mOpponentImageUrl = "";
-    private String mMyImageUrl = "";
     private String mOpponentFcm;
+
+    //my info
+    private String mMyCompName = "";
+    private String mMyImageUrl = "";
     private String mMyFcm;
+    private FirebaseAuth mAuth;
+    private PreferenceManager preferenceManager;
 
 
-    FirebaseAuth mAuth;
     TextUtils textUtils;
     ListPaddingDecoration listPaddingDecoration;
 
@@ -115,13 +125,32 @@ public class ChatRoomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+
+        //Checking Auth, Finish if not logged in
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            finish();
+            Toast.makeText(getApplicationContext(), "Sign In First!", Toast.LENGTH_LONG).show();
+        }
+
+        preferenceManager = PreferenceManager.getInstance(this);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        setChatListUI();
+        setUI();
+        setListners();
+
+    }
+
+    private void setChatListUI() {
         mChatsList = findViewById(R.id.rv_chat);
         mLayoutManagerChats = new LinearLayoutManager(this);
         mLayoutManagerChats.setReverseLayout(true);
         //mLayoutManagerChats.setStackFromEnd(true);
         mChatsList.setLayoutManager(mLayoutManagerChats);
         listPaddingDecoration = new ListPaddingDecoration(getApplicationContext());
+    }
 
+    private void setUI() {
         mSendAction = findViewById(R.id.imageButtonSendAction);
         mChatEditText = findViewById(R.id.et_msg);
         mInitiatorMsg = findViewById(R.id.textViewimsg);
@@ -131,195 +160,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         mTypingView = findViewById(R.id.cl_typing);
         mCancelImsg = findViewById(R.id.imageButtonCancelImsg);
         textUtils = new TextUtils();
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() == null) {
-            finish();
-            Toast.makeText(getApplicationContext(), "Sign In First!", Toast.LENGTH_LONG).show();
-        }
-        //get Intent
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-
-            if (bundle.getString("ormn") != null && bundle.getString("ouid") != null) {
-                mORMN = bundle.getString("ormn");
-                mOUID = bundle.getString("ouid");
-
-                //check if there is any i msg
-                if (bundle.getString("imsg") != null) {
-                    iMsg = bundle.getString("imsg");
-                    if (!iMsg.isEmpty()) {
-                        mInitiatorMsg.setText(iMsg);
-                        mChatIntiatorLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-                setTitle(mORMN);
-                //getSupportActionBar().setSubtitle("Active");
-                getOpponentsDetails(mOUID);
-            } else {
-                Logger.v("ormn or ouid null");
-                finish();
-            }
-
-        } else {
-            Logger.v("bundle null");
-            finish();
-        }
-
-
-        //set Listners;
-        setListners();
-//
-//        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-//        findViewById(abTitleId).setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ChatRoomActivity.this, PartnerDetailScrollingActivity.class);
-//                intent.putExtra("uid",mOUID);
-//                startActivity(intent);
-//            }
-//        });
-
-    }
-
-    private void setPresenceListners() {
-
-
-        userpresencelistner = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
-                    if (userPresensePojo != null) {
-                        if (userPresensePojo.getActive()) {
-                            mSubTitleText = "Active Now";
-                            getSupportActionBar().setSubtitle(mSubTitleText);
-                        } else {
-                            Date date = new Date(userPresensePojo.getmTimeStamp());
-                            mSubTitleText = "Active " + gettimeDiff(date);
-                            getSupportActionBar().setSubtitle(mSubTitleText);
-                        }
-                    }
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        databaseReference.child("chatpresence").child("users").child(mOUID).addValueEventListener(userpresencelistner);
-
-        useractivity = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.exists()) {
-                    UserActivityPojo userActivityPojo = dataSnapshot.getValue(UserActivityPojo.class);
-                    if (userActivityPojo != null) {
-                        if (userActivityPojo.getTyping()) {
-                            //set typing visible
-                            // mTypingView.setVisibility(View.VISIBLE);
-                            getSupportActionBar().setSubtitle("Typing...");
-                        } else {
-                            //set typing invisible
-                            //mTypingView.setVisibility(View.GONE);
-                            getSupportActionBar().setSubtitle(mSubTitleText);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).addValueEventListener(useractivity);
-    }
-
-
-    private void getOpponentsDetails(String ouid) {
-
-        FirebaseFirestore.getInstance().collection("partners").document(ouid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    PartnerInfoPojo mOpppontInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
-
-                    if (!mOpppontInfo.getmCompanyName().isEmpty()) {
-                        mOpponentCompName = textUtils.toTitleCase(mOpppontInfo.getmCompanyName());
-                        setTitle(textUtils.toTitleCase(mOpppontInfo.getmCompanyName()));
-                    }
-
-                    if (mOpppontInfo.getmImagesUrl() != null) {
-                        mOpponentImageUrl = mOpppontInfo.getmImagesUrl().get(2);
-                        //setTypingThumbnail(mOpponentImageUrl);
-                        //setActionbarImage(mOpponentImageUrl);
-                    }
-
-                    mOpponentFcm = mOpppontInfo.getmFcmToken();
-
-                    FirebaseFirestore.getInstance().collection("partners").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                            if (documentSnapshot.exists()) {
-                                PartnerInfoPojo mInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
-
-                                if (!mInfo.getmCompanyName().isEmpty()) {
-                                    mMyCompName = mInfo.getmCompanyName();
-                                }
-
-                                if (mInfo.getmImagesUrl() != null) {
-                                    mMyImageUrl = mInfo.getmImagesUrl().get(2);
-                                }
-                                mMyFcm = mInfo.getmFcmToken();
-
-                                FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        if (documentSnapshot.exists()) {
-                                            ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
-                                            mChatRoomId = chatHeadPojo.getmChatRoomId();
-                                        } else {
-                                            mChatRoomId = mAuth.getUid() + mOUID;
-                                        }
-
-                                        buildAdapter(mChatRoomId);
-                                        setPresenceListners();
-                                        UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
-                                        databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Logger.v("onResume userpresence updated");
-                                            }
-                                        });
-
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Add Your Company Info First", Toast.LENGTH_LONG).show();
-                                startActivity(new Intent(ChatRoomActivity.this, CompanyInfoActivity.class));
-                            }
-
-                        }
-                    });
-
-
-                } else {
-                    Logger.v("opponents doc dont exist");
-                    finish();
-                }
-            }
-        });
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -532,7 +372,224 @@ public class ChatRoomActivity extends AppCompatActivity {
                 }
             }
         });
+        getIntentData();
     }
+
+
+    private void getIntentData() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            if (bundle.getString("ormn") != null &&
+                    bundle.getString("ouid") != null &&
+                    bundle.getString("ofuid") != null) {
+                mORMN = bundle.getString("ormn");
+                mOUID = bundle.getString("ouid");
+                mOFUID = bundle.getString("ofuid");
+                //check if there is any i msg
+                if (bundle.getString("imsg") != null) {
+                    iMsg = bundle.getString("imsg");
+                    if (!iMsg.isEmpty()) {
+                        mInitiatorMsg.setText(iMsg);
+                        mChatIntiatorLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+                setTitle(mORMN);
+                //getSupportActionBar().setSubtitle("Active");
+                getMyDetails();
+            } else {
+                Logger.v("ormn or ouid null");
+                finish();
+            }
+
+        } else {
+            Logger.v("bundle null");
+            finish();
+        }
+    }
+
+    private void getMyDetails() {
+        mMyCompName = preferenceManager.getDisplayName();
+        mMyFcm = preferenceManager.getFcmToken();
+        mMyImageUrl = preferenceManager.getImageUrl();
+        getOpponentsDetails(mOFUID);
+
+    }
+
+
+    private void getOpponentsDetails(String ofuid) {
+
+        FirebaseDatabase.getInstance().getReference().child("user_profiles").child(ofuid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                if(userProfile!=null){
+                    mOpponentImageUrl = userProfile.getMImageUrl();
+                    mOpponentFcm = userProfile.getMFCM();
+                    mOpponentCompName = userProfile.getMDisplayName();
+
+                    FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
+                                assert chatHeadPojo != null;
+                                mChatRoomId = chatHeadPojo.getmChatRoomId();
+                            } else {
+                                mChatRoomId = mAuth.getUid() + mOUID;
+                            }
+
+                            buildAdapter(mChatRoomId);
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(),"User Unavailable to Chat",Toast.LENGTH_LONG).show();
+            }
+        });
+
+//        FirebaseFirestore.getInstance().collection("partners").document(ouid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                if (documentSnapshot.exists()) {
+//                    PartnerInfoPojo mOpppontInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
+//
+//                    if (!mOpppontInfo.getmCompanyName().isEmpty()) {
+//                        mOpponentCompName = textUtils.toTitleCase(mOpppontInfo.getmCompanyName());
+//                        setTitle(textUtils.toTitleCase(mOpppontInfo.getmCompanyName()));
+//                    }
+//
+//                    if (mOpppontInfo.getmImagesUrl() != null) {
+//                        mOpponentImageUrl = mOpppontInfo.getmImagesUrl().get(2);
+//                        //setTypingThumbnail(mOpponentImageUrl);
+//                        //setActionbarImage(mOpponentImageUrl);
+//                    }
+//
+//                    mOpponentFcm = mOpppontInfo.getmFcmToken();
+//
+//                    FirebaseFirestore.getInstance().collection("partners").document(mAuth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//
+//
+//                        @Override
+//                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+//
+//                            if (documentSnapshot.exists()) {
+//                                PartnerInfoPojo mInfo = documentSnapshot.toObject(PartnerInfoPojo.class);
+//
+//                                if (!mInfo.getmCompanyName().isEmpty()) {
+//                                    mMyCompName = mInfo.getmCompanyName();
+//                                }
+//
+//                                if (mInfo.getmImagesUrl() != null) {
+//                                    mMyImageUrl = mInfo.getmImagesUrl().get(2);
+//                                }
+//                                mMyFcm = mInfo.getmFcmToken();
+//
+//
+//                            } else {
+//                                Toast.makeText(getApplicationContext(), "Add Your Company Info First", Toast.LENGTH_LONG).show();
+//                                startActivity(new Intent(ChatRoomActivity.this, CompanyInfoActivity.class));
+//                            }
+//
+//                        }
+//                    });
+//
+//
+//                } else {
+//                    Logger.v("opponents doc dont exist");
+//                    finish();
+//                }
+//            }
+//        });
+
+
+    }
+
+
+    private void setOpponentPresenceListners() {
+
+        userpresencelistner = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
+                    if (userPresensePojo != null) {
+                        if (userPresensePojo.getActive()) {
+                            mSubTitleText = "Active Now";
+                            getSupportActionBar().setSubtitle(mSubTitleText);
+                        } else {
+                            Date date = new Date(userPresensePojo.getmTimeStamp());
+                            mSubTitleText = "Active " + gettimeDiff(date);
+                            getSupportActionBar().setSubtitle(mSubTitleText);
+                        }
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        databaseReference.child("chatpresence").child("users").child(mOUID).addValueEventListener(userpresencelistner);
+        setOpponentTypingListner();
+
+    }
+
+    private void setOpponentTypingListner(){
+        useractivity = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    UserActivityPojo userActivityPojo = dataSnapshot.getValue(UserActivityPojo.class);
+                    if (userActivityPojo != null) {
+                        if (userActivityPojo.getTyping()) {
+                            //set typing visible
+                             mTypingView.setVisibility(View.VISIBLE);
+                            getSupportActionBar().setSubtitle("Typing...");
+                        } else {
+                            //set typing invisible
+                            mTypingView.setVisibility(View.GONE);
+                            getSupportActionBar().setSubtitle(mSubTitleText);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).addValueEventListener(useractivity);
+    }
+
+    private void updateUserPresence(boolean b) {
+        UserPresensePojo userPresensePojo = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
+        databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Logger.v("onResume userpresence updated");
+            }
+        });
+    }
+
+    private void gotoDetailsActivity(){
+
+        Intent intent = new Intent(ChatRoomActivity.this, PartnerDetailScrollingActivity.class);
+        intent.putExtra("uid",mOUID);
+        startActivity(intent);
+    }
+
+
+
 
     private void updateTypingStatus(final boolean isTyping) {
         UserActivityPojo userActivityPojo = new UserActivityPojo(isTyping);
@@ -555,6 +612,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         FirestoreRecyclerOptions<ChatItemPojo> options = new FirestoreRecyclerOptions.Builder<ChatItemPojo>()
                 .setQuery(query, ChatItemPojo.class)
+                .setLifecycleOwner(this)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<ChatItemPojo, ChatItemViewHolder>(options) {
@@ -692,9 +750,8 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onDataChanged() {
                 mLayoutManagerChats.scrollToPosition(0);
                 loading.setVisibility(View.GONE);
+                setTypingThumbnail(mOpponentImageUrl);
                 mChatEditText.setVisibility(View.VISIBLE);
-                super.onDataChanged();
-
                 if (adapter.getItemCount() > 0) {
                     if (getItem(0) != null) {
                         Logger.v("onDataChanged " + getItem(0).getmChatMesssage());
@@ -711,11 +768,25 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                 }
 
+                super.onDataChanged();
+
+
             }
         };
 
         mChatsList.setAdapter(adapter);
-        adapter.startListening();
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mChatRoomId!=null){
+            updateUserPresence(true);
+            setOpponentPresenceListners();
+        }
+
     }
 
     @Override
@@ -723,13 +794,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onPause();
         if (mChatRoomId != null) {
             if (!mChatRoomId.isEmpty()) {
-                UserPresensePojo userPresensePojo = new UserPresensePojo(false, new Date().getTime(), mChatRoomId);
-                databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Logger.v("onPause userpresence updated");
-                    }
-                });
+
+                updateUserPresence(false);
                 updateTypingStatus(false);
                 removeuserpresencelistners();
             }
@@ -737,29 +803,9 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (adapter != null) {
-            adapter.startListening();
-            UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), mChatRoomId);
-            databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Logger.v("onResume userpresence updated");
-                }
-            });
-            setPresenceListners();
-        }
-
-
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
-        if (adapter != null) {
-            adapter.stopListening();
-        }
+
     }
 
     public void startVoiceRecognitionActivity() {
@@ -886,41 +932,9 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                     @Override
                     public void onError() {
-                        Logger.v("image error: Typing thumb");
-                        if (mOUID != null) {
-                            FirebaseFirestore.getInstance().collection("partners").document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                        if (partnerInfoPojo.getmImagesUrl() != null) {
-                                            if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                Picasso.with(getApplicationContext())
-                                                        .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                        .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                , R.drawable.ic_insert_comment_black_24dp))
-                                                        .transform(new CircleTransform())
-                                                        .fit()
-                                                        .into(mTypingThumnail, new Callback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                Logger.v("image set: typiing thumb 2");
-                                                            }
-
-                                                            @Override
-                                                            public void onError() {
-                                                                Logger.v("image error: Typing thumb 2 ");
-                                                            }
-                                                        });
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                        }
+                        Logger.v("image typing Error");
                     }
+
 
                 });
     }

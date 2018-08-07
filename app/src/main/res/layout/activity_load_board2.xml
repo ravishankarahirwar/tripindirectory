@@ -29,6 +29,17 @@
             layout="@layout/content_main_loadboard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/showall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/amber_50"
+            android:gravity="center"
+            android:padding="20dp"
+            android:text="Show All"
+            android:visibility="gone" />
     </LinearLayout>
 
 

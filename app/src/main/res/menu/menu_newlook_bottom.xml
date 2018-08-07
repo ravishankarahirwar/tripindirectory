@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity">
+
+    <item
+        android:id="@+id/action_loadboard"
+        android:icon="@drawable/ic_widgets_black_24dp"
+        android:orderInCategory="30"
+        android:title="Loadboard"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@drawable/ic_person_white_24dp"
+        android:orderInCategory="50"
+        android:title="Your Profile"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_live_help_black_24dp"
+        android:orderInCategory="70"
+        android:title="Help"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_rate"
+        android:icon="@drawable/ic_play_arrow_white_24dp"
+        android:orderInCategory="80"
+        android:title="Rate Us"
+        app:showAsAction="always" />
+
+</menu>

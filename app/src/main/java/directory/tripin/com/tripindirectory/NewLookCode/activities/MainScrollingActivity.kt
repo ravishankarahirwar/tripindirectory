@@ -71,6 +71,11 @@ class MainScrollingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_scrolling)
         context = this
 
+        if(FirebaseAuth.getInstance().currentUser==null|| FirebaseAuth.getInstance().currentUser!!.phoneNumber==null){
+            val i = Intent(this, FacebookRequiredActivity::class.java)
+            startActivity(i)
+        }
+
 
         fabFlip.setOnClickListener {
             flipthefab()
@@ -87,22 +92,35 @@ class MainScrollingActivity : AppCompatActivity() {
 
     private fun setBottomNavogation() {
 
-        val ahBottomNavidATION: AHBottomNavigation
-        ahBottomNavidATION = findViewById(R.id.bottom_navigation)
+//        val ahBottomNavidATION: AHBottomNavigation
+//        ahBottomNavidATION = findViewById(R.id.bottom_navigation)
+//
+//        val item1 = AHBottomNavigationItem("Directory", ContextCompat.getDrawable(context, R.drawable.ic_home_black_24dp))
+//        val item2 = AHBottomNavigationItem("Loadboard", ContextCompat.getDrawable(context, R.drawable.ic_widgets_grey_24dp))
+//        val item3 = AHBottomNavigationItem("Profile", ContextCompat.getDrawable(context, R.drawable.ic_account_circle_black_24dp))
+//
+//        ahBottomNavidATION.addItem(item1)
+//        ahBottomNavidATION.addItem(item2)
+//        ahBottomNavidATION.addItem(item3)
+//        ahBottomNavidATION.defaultBackgroundColor = ContextCompat.getColor(context, R.color.blue_grey_100)
+//        ahBottomNavidATION.accentColor = ContextCompat.getColor(context, R.color.blue_grey_800)
+//        ahBottomNavidATION.inactiveColor = ContextCompat.getColor(context, R.color.blue_grey_300)
 
-        val item1 = AHBottomNavigationItem("Directory", ContextCompat.getDrawable(context, R.drawable.ic_home_black_24dp))
-        val item2 = AHBottomNavigationItem("Loadboard", ContextCompat.getDrawable(context, R.drawable.ic_widgets_grey_24dp))
-        val item3 = AHBottomNavigationItem("Profile", ContextCompat.getDrawable(context, R.drawable.ic_account_circle_black_24dp))
-
-        ahBottomNavidATION.addItem(item1)
-        ahBottomNavidATION.addItem(item2)
-        ahBottomNavidATION.addItem(item3)
-        ahBottomNavidATION.defaultBackgroundColor = ContextCompat.getColor(context, R.color.blue_grey_100)
-        ahBottomNavidATION.accentColor = ContextCompat.getColor(context, R.color.blue_grey_800)
-        ahBottomNavidATION.inactiveColor = ContextCompat.getColor(context, R.color.blue_grey_300)
+        fabMenu.bindAnchorView(fab)
+        fabMenu.setOnFABMenuSelectedListener { view, id ->
+            when (id) {
+                R.id.action_loadboard -> {
+                    startLoadboardActivity()
+                }
+                R.id.action_profile -> {
+                    startProfileActivity()
+                }
+            }
+        }
 
 
     }
+
 
     private fun setListners() {
 //        app_bar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
@@ -136,6 +154,11 @@ class MainScrollingActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    private fun startProfileActivity() {
+        val i = Intent(this, FacebookRequiredActivity::class.java)
+        startActivity(i)
     }
 
     private fun startLoadboardActivity() {
@@ -245,8 +268,8 @@ class MainScrollingActivity : AppCompatActivity() {
                 holder.itemView.setOnClickListener {
 
                     val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                    i.putExtra("uid",getItem(position)!!.id)
-                    i.putExtra("cname",model.getmCompanyName())
+                    i.putExtra("uid", getItem(position)!!.id)
+                    i.putExtra("cname", model.getmCompanyName())
                     startActivity(i)
                 }
 
