@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +32,8 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
@@ -38,6 +41,8 @@ import directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loa
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.forum.models.User;
 import directory.tripin.com.tripindirectory.forum.viewholder.PostViewHolder;
+import directory.tripin.com.tripindirectory.helper.CircleTransform;
+import directory.tripin.com.tripindirectory.helper.Logger;
 
 
 public abstract class LoadsListBaseFragment extends Fragment {
@@ -98,6 +103,33 @@ public abstract class LoadsListBaseFragment extends Fragment {
             protected void populateViewHolder(final LoadPostViewHolder viewHolder, final Post model, final int position) {
                 final DatabaseReference postRef = getRef(position);
                 Log.v("PostListFragment","popolate "+position);
+
+                if(model.getmPhotoUrl()!=null){
+                    if(!model.getmPhotoUrl().isEmpty()){
+                        Picasso.with(getActivity())
+                                .load(model.getmPhotoUrl())
+                                .placeholder(ContextCompat.getDrawable(getContext()
+                                        , R.mipmap.ic_launcher_round))
+                                .transform(new CircleTransform())
+                                .fit()
+                                .into(viewHolder.mThumbnail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Logger.v("image set: " + position);
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Logger.v("image error: " + position);
+                                    }
+
+                                });
+                    }else {
+                        Logger.v("image url empty: " + position);
+                    }
+                }else {
+                    Logger.v("image url null: " + position);
+                }
 
 
                 // Set click listener for the whole post view

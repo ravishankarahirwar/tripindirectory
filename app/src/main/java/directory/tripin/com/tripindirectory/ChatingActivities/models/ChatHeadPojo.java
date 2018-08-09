@@ -13,6 +13,7 @@ public class ChatHeadPojo {
     String mChatRoomId;
     String mORMN;
     String mOUID;
+    String mOFUID;
     String mLastMessage;
     String mOpponentCompanyName;
 
@@ -24,13 +25,22 @@ public class ChatHeadPojo {
     public ChatHeadPojo() {
     }
 
-    public ChatHeadPojo(String mChatRoomId, String mORMN, String mOUID, String mLastMessage, String mOpponentImageUrl, String mOpponentCompanyName) {
+    public ChatHeadPojo(String mChatRoomId, String mORMN, String mOUID,String mOFUID, String mLastMessage, String mOpponentImageUrl, String mOpponentCompanyName) {
         this.mChatRoomId = mChatRoomId;
         this.mORMN = mORMN;
         this.mOUID = mOUID;
+        this.mOFUID = mOFUID;
         this.mLastMessage = mLastMessage;
         this.mOpponentImageUrl = mOpponentImageUrl;
         this.mOpponentCompanyName = mOpponentCompanyName;
+    }
+
+    public String getmOFUID() {
+        return mOFUID;
+    }
+
+    public void setmOFUID(String mOFUID) {
+        this.mOFUID = mOFUID;
     }
 
     public String getmChatRoomId() {

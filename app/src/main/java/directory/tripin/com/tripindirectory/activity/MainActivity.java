@@ -566,8 +566,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
 
         mTryNewLook.setOnClickListener(v -> {
+            mAuth.signOut();
             startActivity(new Intent(MainActivity.this,
-                    directory.tripin.com.tripindirectory.NewLookCode.activities.MainScrollingActivity.class));
+                    directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity.class));
             finish();
         });
 

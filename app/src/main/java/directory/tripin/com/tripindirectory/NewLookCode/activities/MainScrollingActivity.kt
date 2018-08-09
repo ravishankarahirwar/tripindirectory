@@ -47,6 +47,7 @@ import directory.tripin.com.tripindirectory.formactivities.FormFragments.Company
 import directory.tripin.com.tripindirectory.forum.MainActivity
 import directory.tripin.com.tripindirectory.forum.NewPostActivity
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import kotlinx.android.synthetic.main.content_main_scrolling.*
@@ -63,6 +64,7 @@ class MainScrollingActivity : AppCompatActivity() {
     lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
     private val SIGN_IN_FOR_CREATE_COMPANY = 123
+    lateinit var preferenceManager: PreferenceManager
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +72,11 @@ class MainScrollingActivity : AppCompatActivity() {
         //Activity Itit
         setContentView(R.layout.activity_main_scrolling)
         context = this
+        preferenceManager = PreferenceManager.getInstance(this)
 
-        if(FirebaseAuth.getInstance().currentUser==null|| FirebaseAuth.getInstance().currentUser!!.phoneNumber==null){
+        if(FirebaseAuth.getInstance().currentUser==null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
+                || !preferenceManager.isFacebooked){
             val i = Intent(this, FacebookRequiredActivity::class.java)
             startActivity(i)
         }
@@ -114,6 +119,13 @@ class MainScrollingActivity : AppCompatActivity() {
                 }
                 R.id.action_profile -> {
                     startProfileActivity()
+                }
+                R.id.action_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    preferenceManager.setisFacebboked(false)
+                    val i = Intent(this, NewSplashActivity::class.java)
+                    startActivity(i)
+                finish()
                 }
             }
         }

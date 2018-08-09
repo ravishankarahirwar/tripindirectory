@@ -23,8 +23,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM" />
@@ -76,6 +74,13 @@
             android:name=".NewLookCode.activities.LoadBoardActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".NewLookCode.FacebookRequiredActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".NewLookCode.activities.NewSplashActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
 
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
 
@@ -273,9 +278,10 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ChatingActivities.ChatRoomActivity"
-            android:label="ChatRoom..."
+            android:label="ChatRoom"
             android:parentActivityName=".ChatingActivities.ChatHeadsActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ChatingActivities.ChatHeadsActivity"
@@ -301,7 +307,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".Messaging.ChatList.ListChatActivity" />
-        <activity android:name=".NewLookCode.FacebookRequiredActivity" />
     </application>
 
 </manifest>

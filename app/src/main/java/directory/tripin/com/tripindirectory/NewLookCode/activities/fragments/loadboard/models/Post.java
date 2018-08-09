@@ -27,6 +27,8 @@ public class Post {
     public String mPayload;
     public String mContactNo;
     public String mRemark;
+    public String mPhotoUrl;
+
 
     public int commentCount = 0;
 
@@ -50,7 +52,7 @@ public class Post {
      * @param payload
      * @param remark
      */
-    public Post(String fuid, String uid, String author, int findOrPost, String source, String destination, String meterial, String date, String truckType, String bodyType, String truckLength, String payload, String remark, String contactNo) {
+    public Post(String fuid, String uid, String author, int findOrPost, String source, String destination, String meterial, String date, String truckType, String bodyType, String truckLength, String payload, String remark, String contactNo, String mPhotoUrl) {
         this.mFuid = fuid;
         this.mUid = uid;
         this.mAuthor = author;
@@ -65,6 +67,15 @@ public class Post {
         this.mPayload = payload;
         this.mRemark = remark;
         this.mContactNo = contactNo;
+        this.mPhotoUrl = mPhotoUrl;
+    }
+
+    public String getmPhotoUrl() {
+        return mPhotoUrl;
+    }
+
+    public void setmPhotoUrl(String mPhotoUrl) {
+        this.mPhotoUrl = mPhotoUrl;
     }
 
     public String getmFuid() {

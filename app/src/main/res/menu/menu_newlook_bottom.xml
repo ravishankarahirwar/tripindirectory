@@ -17,6 +17,12 @@
         android:title="Your Profile"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_power_settings_new_white_24dp"
+        android:orderInCategory="80"
+        android:title="Log Out"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_help"
         android:icon="@drawable/ic_live_help_black_24dp"
         android:orderInCategory="70"

@@ -32,6 +32,7 @@ import com.google.firebase.crash.FirebaseCrash
 import com.google.firebase.database.*
 import com.jaredrummler.materialspinner.MaterialSpinner
 import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo
+import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard.models.Post
 import directory.tripin.com.tripindirectory.forum.MainActivity
 import directory.tripin.com.tripindirectory.forum.models.User
@@ -71,6 +72,12 @@ class LoadBoardActivity : AppCompatActivity() {
         mDatabase = FirebaseDatabase.getInstance().reference
         preferenceManager = PreferenceManager.getInstance(this)
 
+        if(FirebaseAuth.getInstance().currentUser==null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
+                || !preferenceManager.isFacebooked){
+            val i = Intent(this, FacebookRequiredActivity::class.java)
+            startActivity(i)
+        }
 
         setFragmentsAdapter()
         setSpinners()
@@ -133,9 +140,10 @@ class LoadBoardActivity : AppCompatActivity() {
 
                 postpojo.setmFuid(getFuid())
                 postpojo.setmUid(getUid())
-                postpojo.setmAuthor(getUserPhoneNo())
                 postpojo.setmContactNo(getUserPhoneNo())
                 postpojo.setmDate(getDate())
+                postpojo.setmPhotoUrl(preferenceManager.imageUrl)
+                postpojo.setmAuthor(preferenceManager.displayName)
                 postpojo.mFindOrPost = POST_TYPE
 
                 Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show()

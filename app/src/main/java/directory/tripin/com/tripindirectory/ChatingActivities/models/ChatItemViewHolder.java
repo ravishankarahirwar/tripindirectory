@@ -16,11 +16,13 @@ public class ChatItemViewHolder extends RecyclerView.ViewHolder {
     public TextView msg;
     public ImageView seenEye;
     public ImageView thumbnail;
+    public TextView time;
 
     public ChatItemViewHolder(View itemView) {
         super(itemView);
         msg = itemView.findViewById(R.id.tv_msg);
         seenEye = itemView.findViewById(R.id.imageViewseen);
         thumbnail = itemView.findViewById(R.id.imageViewThumbTyping);
+        time = itemView.findViewById(R.id.time);
     }
 }

@@ -1,13 +1,17 @@
 package directory.tripin.com.tripindirectory.NewLookCode;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +31,9 @@ public class FacebookRequiredActivity extends AppCompatActivity {
 
     private static final int FB_SIGN_IN = 100;
     private static final int PHONE_SIGN_IN = 101;
+    CardView loginwithfacebbok;
+    CardView loginwithphone;
+
 
     private TextView mNameWelcome;
     private PreferenceManager preferenceManager;
@@ -35,15 +42,35 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_required2);
-        mNameWelcome = findViewById(R.id.namewelcome);
+        init();
 
-        preferenceManager = PreferenceManager.getInstance(this);
+        loginwithfacebbok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpbyFacebook();
+            }
+        });
 
-        signUpbyFacebook();
+        loginwithphone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSignInFor(PHONE_SIGN_IN);
+            }
+        });
+
 
     }
 
+    private void init() {
+        preferenceManager = PreferenceManager.getInstance(this);
+        loginwithfacebbok = findViewById(R.id.facebbok);
+        loginwithphone = findViewById(R.id.phone);
+    }
 
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -60,17 +87,25 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                             user.getUid(),
                             preferenceManager.getFcmToken()
                             );
-                    preferenceManager.setDisplayName(userProfile.getMDisplayName());
-                    preferenceManager.setImageUrl(userProfile.getMImageUrl());
-                    FirebaseDatabase.getInstance().getReference().child("user_profiles").child(userProfile.getMUid()).setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    preferenceManager.setDisplayName(userProfile.getmDisplayName());
+                    preferenceManager.setImageUrl(userProfile.getmImageUrl());
+                    FirebaseDatabase.getInstance().getReference().child("user_profiles").child(userProfile.getmUid()).setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getApplicationContext(),"Connected with Facebook",Toast.LENGTH_LONG).show();
+                            FirebaseAuth.getInstance().signOut();
                             preferenceManager.setisFacebboked(true);
                             preferenceManager.setFuid(user.getUid());
                             startSignInFor(PHONE_SIGN_IN);
                         }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(),"Failed to create, Try Again",Toast.LENGTH_LONG).show();
+                        }
                     });
+                }else {
+                    Toast.makeText(getApplicationContext(),"User Null, Try Again",Toast.LENGTH_LONG).show();
                 }
             }
             if(requestCode == PHONE_SIGN_IN){
@@ -79,7 +114,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                     if(user.getPhoneNumber()!=null){
                         preferenceManager.setRMN(user.getPhoneNumber());
                         preferenceManager.setUserId(user.getUid());
-                        Toast.makeText(getApplicationContext(),"RMN: "+ Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhoneNumber(),Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(),"RMN: "+ Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhoneNumber(),Toast.LENGTH_LONG).show();
                         finish();
                     }else {
                         Toast.makeText(getApplicationContext(),"RMN Null! Try again",Toast.LENGTH_LONG).show();
@@ -87,6 +122,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 }
 
             }
+        }else {
+            Toast.makeText(getApplicationContext(),"Try again",Toast.LENGTH_LONG).show();
         }
     }
 

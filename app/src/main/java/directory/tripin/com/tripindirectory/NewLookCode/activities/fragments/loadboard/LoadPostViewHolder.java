@@ -2,6 +2,7 @@ package directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.lo
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,6 +13,8 @@ import directory.tripin.com.tripindirectory.R;
 public class LoadPostViewHolder extends RecyclerView.ViewHolder {
 
     public TextView postType;
+    public ImageView mThumbnail;
+    public TextView auther;
 
     public TextView date;
     public TextView source;
@@ -31,8 +34,8 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
 
     public LoadPostViewHolder(View itemView) {
         super(itemView);
-
-
+        auther = itemView.findViewById(R.id.authername);
+        mThumbnail = itemView.findViewById(R.id.thumb);
         postType =  itemView.findViewById(R.id.post_type);
         date = itemView.findViewById(R.id.date);
         source = itemView.findViewById(R.id.source);
@@ -58,6 +61,12 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
             postType.setText("Need Truck");
         }else if (post.mFindOrPost == 2) {
             postType.setText("Need Load");
+        }
+        if(post.getmAuthor()==null){
+            auther.setVisibility(View.GONE);
+        }else {
+            auther.setVisibility(View.VISIBLE);
+            auther.setText(post.getmAuthor());
         }
 
         date.setText(post.getmDate());

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -41,6 +42,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
     private RecyclerView mChatHeadsList;
     private FirebaseAuth mAuth;
+    private TextView mTextNoChats;
     private TextUtils textUtils;
     private PreferenceManager preferenceManager;
     private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
@@ -54,9 +56,17 @@ public class ChatHeadsActivity extends AppCompatActivity {
         mChatHeadsList = findViewById(R.id.rv_chatheads);
         mChatHeadsList.setLayoutManager(new LinearLayoutManager(this));
         lottieAnimationView = findViewById(R.id.loading);
+        mTextNoChats = findViewById(R.id.nochats);
         mAuth = FirebaseAuth.getInstance();
         textUtils = new TextUtils();
         preferenceManager = PreferenceManager.getInstance(this);
+
+        if(mAuth.getCurrentUser()==null
+                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
+                || !preferenceManager.isFacebooked()){
+            Intent i = new Intent(this, FacebookRequiredActivity.class);
+            startActivity(i);
+        }
 
         if (mAuth.getCurrentUser() == null) {
             finish();
@@ -78,6 +88,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 .orderBy("mTimeStamp", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<ChatHeadPojo> options = new FirestoreRecyclerOptions.Builder<ChatHeadPojo>()
                 .setQuery(query, ChatHeadPojo.class)
+                .setLifecycleOwner(this)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder>(options) {
@@ -100,6 +111,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                         Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
                         intent.putExtra("ormn", model.getmORMN());
                         intent.putExtra("ouid", model.getmOUID());
+                        intent.putExtra("ofuid", model.getmOFUID());
                         startActivity(intent);
                     }
                 });
@@ -156,6 +168,11 @@ public class ChatHeadsActivity extends AppCompatActivity {
             public void onDataChanged() {
                 super.onDataChanged();
                 lottieAnimationView.setVisibility(View.GONE);
+                if(getItemCount()==0){
+                    mTextNoChats.setVisibility(View.VISIBLE);
+                }else {
+                    mTextNoChats.setVisibility(View.GONE);
+                }
             }
         };
 
@@ -166,13 +183,11 @@ public class ChatHeadsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.startListening();
     }
 
     public String gettimeDiff(Date startDate) {

@@ -33,6 +33,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -48,8 +49,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadPojo;
@@ -85,7 +88,14 @@ public class ChatRoomActivity extends AppCompatActivity {
     ValueEventListener useractivity;
     ConstraintLayout mTypingView;
     ImageView mTypingThumnail;
+    ImageView mMainThumbnail;
+    ImageView mMainBack;
+    ImageView mCall;
+    TextView mTitle;
+    TextView mSubtitle;
     ImageButton mCancelImsg;
+    SimpleDateFormat simpleDateFormat;
+
 
 
     private String mChatRoomId;
@@ -125,6 +135,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+        simpleDateFormat =  new SimpleDateFormat("hh:mm, EEE", Locale.ENGLISH);
 
         //Checking Auth, Finish if not logged in
         mAuth = FirebaseAuth.getInstance();
@@ -148,6 +159,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         //mLayoutManagerChats.setStackFromEnd(true);
         mChatsList.setLayoutManager(mLayoutManagerChats);
         listPaddingDecoration = new ListPaddingDecoration(getApplicationContext());
+        //mChatsList.addItemDecoration(listPaddingDecoration);
     }
 
     private void setUI() {
@@ -159,6 +171,11 @@ public class ChatRoomActivity extends AppCompatActivity {
         mTypingThumnail = findViewById(R.id.imageViewThumbTyping);
         mTypingView = findViewById(R.id.cl_typing);
         mCancelImsg = findViewById(R.id.imageButtonCancelImsg);
+        mMainThumbnail = findViewById(R.id.mainchatthumb);
+        mMainBack = findViewById(R.id.back);
+        mSubtitle = findViewById(R.id.status);
+        mTitle = findViewById(R.id.opponentname);
+        mCall = findViewById(R.id.call);
         textUtils = new TextUtils();
     }
 
@@ -242,6 +259,25 @@ public class ChatRoomActivity extends AppCompatActivity {
 
             }
         });
+
+        mTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoDetailsActivity();
+            }
+        });
+        mCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callNumber(mORMN);
+            }
+        });
+        mMainBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         mSendAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -291,6 +327,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                         ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
                                                 mAuth.getCurrentUser().getPhoneNumber(),
                                                 mAuth.getUid(),
+                                                preferenceManager.getFuid(),
                                                 lastmsg,
                                                 mMyImageUrl
                                                 , mMyCompName);
@@ -300,6 +337,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                 ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
                                                         mORMN,
                                                         mOUID,
+                                                        mOFUID,
                                                         lastmsg,
                                                         mOpponentImageUrl
                                                         , mOpponentCompName);
@@ -343,6 +381,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
                                         mAuth.getCurrentUser().getPhoneNumber(),
                                         mAuth.getUid(),
+                                        preferenceManager.getFuid(),
                                         lastmsg,
                                         mMyImageUrl
                                         , mMyCompName);
@@ -352,6 +391,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                         ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
                                                 mORMN,
                                                 mOUID,
+                                                mOFUID,
                                                 lastmsg,
                                                 mOpponentImageUrl
                                                 , mOpponentCompName);
@@ -393,8 +433,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         mChatIntiatorLayout.setVisibility(View.VISIBLE);
                     }
                 }
-                setTitle(mORMN);
-                //getSupportActionBar().setSubtitle("Active");
+                mTitle.setText(mORMN);
                 getMyDetails();
             } else {
                 Logger.v("ormn or ouid null");
@@ -417,19 +456,30 @@ public class ChatRoomActivity extends AppCompatActivity {
 
 
     private void getOpponentsDetails(String ofuid) {
+        Logger.v("get Opponent Details: "+ofuid);
+        Logger.v("muid: "+mAuth.getUid());
+        Logger.v("ouid: "+mOUID);
 
         FirebaseDatabase.getInstance().getReference().child("user_profiles").child(ofuid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 if(userProfile!=null){
-                    mOpponentImageUrl = userProfile.getMImageUrl();
-                    mOpponentFcm = userProfile.getMFCM();
-                    mOpponentCompName = userProfile.getMDisplayName();
+                    mOpponentImageUrl = userProfile.getmImageUrl();
+                    Logger.v("Image URL : "+mOpponentImageUrl);
+                    mOpponentFcm = userProfile.getmFCM();
+                    Logger.v("FCM : "+mOpponentFcm);
+
+                    mOpponentCompName = userProfile.getmDisplayName();
+                    Logger.v("DisplayName : "+mOpponentCompName);
+                    if(!mOpponentCompName.isEmpty())
+                    mTitle.setText(mOpponentCompName);
+
 
                     FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Logger.v("onSuccess: Checking Chat Heads");
                             if (documentSnapshot.exists()) {
                                 ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
                                 assert chatHeadPojo != null;
@@ -437,7 +487,17 @@ public class ChatRoomActivity extends AppCompatActivity {
                             } else {
                                 mChatRoomId = mAuth.getUid() + mOUID;
                             }
+                            Logger.v("mChatRoomId: "+mChatRoomId);
+                            buildAdapter(mChatRoomId);
 
+                        }
+
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Logger.v("onFailure: Checking Chat Heads");
+                            mChatRoomId = mAuth.getUid() + mOUID;
+                            Logger.v("mChatRoomId: "+mChatRoomId);
                             buildAdapter(mChatRoomId);
 
                         }
@@ -519,11 +579,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                     if (userPresensePojo != null) {
                         if (userPresensePojo.getActive()) {
                             mSubTitleText = "Active Now";
-                            getSupportActionBar().setSubtitle(mSubTitleText);
+                            mSubtitle.setText(mSubTitleText);
                         } else {
                             Date date = new Date(userPresensePojo.getmTimeStamp());
                             mSubTitleText = "Active " + gettimeDiff(date);
-                            getSupportActionBar().setSubtitle(mSubTitleText);
+                            mSubtitle.setText(mSubTitleText);
                         }
                     }
 
@@ -552,11 +612,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                         if (userActivityPojo.getTyping()) {
                             //set typing visible
                              mTypingView.setVisibility(View.VISIBLE);
-                            getSupportActionBar().setSubtitle("Typing...");
+                            mSubtitle.setText("Typing...");
+
                         } else {
                             //set typing invisible
                             mTypingView.setVisibility(View.GONE);
-                            getSupportActionBar().setSubtitle(mSubTitleText);
+                            mSubtitle.setText(mSubTitleText);
                         }
                     }
                 }
@@ -604,6 +665,9 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private void buildAdapter(final String mChatRoomId) {
 
+        updateUserPresence(true);
+        setOpponentPresenceListners();
+
         Query query = FirebaseFirestore.getInstance()
                 .collection("chats")
                 .document("chatrooms")
@@ -650,7 +714,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final ChatItemViewHolder holder, final int position, final ChatItemPojo model) {
+            protected void onBindViewHolder(final ChatItemViewHolder holder,  int position,  ChatItemPojo model) {
 
                 Logger.v("onBind " + position + " " + model.getmChatMesssage());
 
@@ -658,19 +722,30 @@ public class ChatRoomActivity extends AppCompatActivity {
                 final String docId = snapshot.getId();
 
                 holder.msg.setText(model.getmChatMesssage());
+                if(model.getmTimeStamp()!=null)
+                holder.time.setText(simpleDateFormat.format(model.getmTimeStamp()));
 
-//                if(model.getmMessageType()==2){
-//                    holder.msg.setTypeface(null, Typeface.BOLD);
-//                }
+
+                if(model.getmMessageType()==2){
+                    holder.msg.setTextSize(10);
+                }else {
+                    holder.msg.setTextSize(15);
+                }
 
                 if (model.getmSendersUid().equals(mAuth.getUid())) {
                     //my message
                     if (model.getmMessageStatus() == 1) {
-                        Logger.v(model.getmChatMesssage() + " : is seen............... ");
+                        Logger.v(model.getmChatMesssage() + " : is seen..");
                         holder.seenEye
                                 .setImageDrawable(ContextCompat
                                         .getDrawable(getApplicationContext(),
                                                 R.drawable.ic_visibility_red_24dp));
+                    }else {
+                        Logger.v(model.getmChatMesssage() + " : is not seen");
+                        holder.seenEye
+                                .setImageDrawable(ContextCompat
+                                        .getDrawable(getApplicationContext(),
+                                                R.drawable.ic_visibility_grey_24dp));
                     }
                 } else {
                     //opponents message
@@ -683,14 +758,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 .update("mMessageStatus", 1);
                     }
 
-                    if (model.getmMessageType() == 1) {
-                        holder.thumbnail.setVisibility(View.INVISIBLE);
-                    } else {
-                        if (!mOpponentImageUrl.isEmpty()) {
-                            Picasso.with(holder.thumbnail.getContext())
+                    Picasso.with(holder.thumbnail.getContext())
                                     .load(mOpponentImageUrl)
                                     .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                            , R.drawable.ic_insert_comment_black_24dp))
+                                            , R.mipmap.ic_launcher_round))
                                     .transform(new CircleTransform())
                                     .fit()
                                     .into(holder.thumbnail, new Callback() {
@@ -701,46 +772,36 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                         @Override
                                         public void onError() {
-                                            Logger.v("image error: " + position);
-                                            if (mOUID != null) {
-                                                FirebaseFirestore.getInstance().collection("partners").document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                        if (documentSnapshot.exists()) {
-                                                            PartnerInfoPojo partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                                                            if (partnerInfoPojo.getmImagesUrl() != null) {
-                                                                if (partnerInfoPojo.getmImagesUrl().get(2) != null) {
-                                                                    Picasso.with(holder.thumbnail.getContext())
-                                                                            .load(partnerInfoPojo.getmImagesUrl().get(2))
-                                                                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                                                                    , R.drawable.ic_insert_comment_black_24dp))
-                                                                            .transform(new CircleTransform())
-                                                                            .fit()
-                                                                            .into(holder.thumbnail, new Callback() {
-                                                                                @Override
-                                                                                public void onSuccess() {
-                                                                                    Logger.v("Feched from original doc");
-                                                                                }
 
-                                                                                @Override
-                                                                                public void onError() {
-                                                                                    Logger.v("user have no image");
-                                                                                }
-                                                                            });
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                });
-
-
-                                            }
                                         }
 
                                     });
 
-                        }
-                    }
+//                    if (model.getmMessageType() == 1) {
+//                        holder.thumbnail.setVisibility(View.INVISIBLE);
+//                    } else {
+//                        if (!mOpponentImageUrl.isEmpty()) {
+//                            Picasso.with(holder.thumbnail.getContext())
+//                                    .load(mOpponentImageUrl)
+//                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
+//                                            , R.drawable.ic_insert_comment_black_24dp))
+//                                    .transform(new CircleTransform())
+//                                    .fit()
+//                                    .into(holder.thumbnail, new Callback() {
+//                                        @Override
+//                                        public void onSuccess() {
+//                                            Logger.v("image set: " + position);
+//                                        }
+//
+//                                        @Override
+//                                        public void onError() {
+//
+//                                        }
+//
+//                                    });
+//
+//                        }
+//                    }
 
 
                 }
@@ -750,7 +811,6 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onDataChanged() {
                 mLayoutManagerChats.scrollToPosition(0);
                 loading.setVisibility(View.GONE);
-                setTypingThumbnail(mOpponentImageUrl);
                 mChatEditText.setVisibility(View.VISIBLE);
                 if (adapter.getItemCount() > 0) {
                     if (getItem(0) != null) {
@@ -760,13 +820,14 @@ public class ChatRoomActivity extends AppCompatActivity {
                             mTypingThumnail.setVisibility(View.VISIBLE);
                             mMsgType = 1;
                         } else {
-                            mTypingThumnail.setVisibility(View.INVISIBLE);
+                            mTypingThumnail.setVisibility(View.VISIBLE);
                             //opponents msg at last
                             mMsgType = 0;
                         }
                     }
 
                 }
+                setThumbnail(mOpponentImageUrl);
 
                 super.onDataChanged();
 
@@ -832,50 +893,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setActionbarImage(String mOpponentImageUrl) {
-        final ActionBar ab = getSupportActionBar();
-        Picasso.with(this)
-                .load(mOpponentImageUrl)
-                .transform(new CircleTransform())
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        Drawable d = new BitmapDrawable(getResources(), bitmap);
-                        ab.setIcon(d);
-                        ab.setDisplayShowHomeEnabled(true);
-                        ab.setDisplayHomeAsUpEnabled(true);
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    }
-                });
-    }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_chatroom, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_call: {
-                callNumber(mORMN);
-                break;
-            }
-            case R.id.action_comments: {
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public String gettimeDiff(Date startDate) {
 
@@ -912,16 +932,41 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     public void removeuserpresencelistners() {
-        databaseReference.child("chatpresence").child("users").child(mOUID).removeEventListener(userpresencelistner);
-        databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).removeEventListener(useractivity);
+
+        if(userpresencelistner!=null){
+            databaseReference.child("chatpresence").child("users").child(mOUID).removeEventListener(userpresencelistner);
+        }
+
+        if(useractivity!=null){
+            databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).removeEventListener(useractivity);
+        }
 
     }
 
-    public void setTypingThumbnail(String mOpponentImageUrl) {
+    public void setThumbnail(String mOpponentImageUrl) {
         Picasso.with(getApplicationContext())
                 .load(mOpponentImageUrl)
                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                        , R.drawable.ic_insert_comment_black_24dp))
+                        , R.mipmap.ic_launcher_round))
+                .transform(new CircleTransform())
+                .fit()
+                .into(mMainThumbnail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Logger.v("image set: typiing thumb");
+                    }
+
+                    @Override
+                    public void onError() {
+                        Logger.v("image typing Error");
+                    }
+
+
+                });
+        Picasso.with(getApplicationContext())
+                .load(mOpponentImageUrl)
+                .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                        , R.mipmap.ic_launcher_round))
                 .transform(new CircleTransform())
                 .fit()
                 .into(mTypingThumnail, new Callback() {

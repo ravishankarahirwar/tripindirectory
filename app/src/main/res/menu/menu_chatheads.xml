@@ -3,18 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity">
 
-    <item
-        android:id="@+id/action_filters"
-        android:orderInCategory="50"
-        android:title="@string/action_filter"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_search"
-        android:orderInCategory="30"
-        android:title="Search"
-        android:icon="@drawable/ic_search_tutorial"
-        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/action_filters"-->
+        <!--android:orderInCategory="50"-->
+        <!--android:title="@string/action_filter"-->
+        <!--android:icon="@drawable/ic_filter_list_white_24dp"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_search"-->
+        <!--android:orderInCategory="30"-->
+        <!--android:title="Search"-->
+        <!--android:icon="@drawable/ic_search_tutorial"-->
+        <!--app:showAsAction="always" />-->
     <item
         android:id="@+id/action_help"
         android:orderInCategory="70"
