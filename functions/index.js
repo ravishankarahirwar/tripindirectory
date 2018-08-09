@@ -98,20 +98,24 @@ exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVeri
 	//one to one message notification
 exports.onetoonechat = functions.firestore
   .document('chats/chatrooms/{chatroomId}/{messageId}')
-  .onCreate(event => {
-    var newValue = event.data.data();
+  .onCreate((snap, context) => {
+
+      const newValue = snap.data();
 
 	// Create a DATA notification
     const payload = {
        data: {
         type: "6",
-		chatroomId: event.params.chatroomId,
-        docId: event.params.messageId
+		chatroomId: context.params.chatroomId,
+        docId: context.params.messageId
       }
     };
 
-	 console.log('Sending chat notification', event.params.chatroomId, newValue);
+	 console.log('Sending chat notification', context.params.chatroomId, newValue);
 
     return admin.messaging().sendToDevice(newValue.mReciversFcmToken, payload);
-});
+
+      });
+
+
 

@@ -14,6 +14,9 @@ public class ChatItemPojo {
     private String mReciversUid;
     private String mChatRoomId;
     private String mChatDocId;
+    private String mSendersFuid;
+    private String mImageUrl;
+
 
     private String mSendersFcmToken;
     private String mReciversFcmToken;
@@ -32,6 +35,8 @@ public class ChatItemPojo {
     }
 
     public ChatItemPojo(String mSendersUid,
+                        String mSendersFuid,
+                        String mImageUrl,
                         String mReciversUid,
                         String mSendersFcmToken,
                         String mReciversFcmToken,
@@ -43,6 +48,8 @@ public class ChatItemPojo {
                         int mMessageType) {
 
         this.mSendersUid = mSendersUid;
+        this.mSendersFuid = mSendersFuid;
+        this.mImageUrl = mImageUrl;
         this.mReciversUid = mReciversUid;
         this.mSendersFcmToken = mSendersFcmToken;
         this.mReciversFcmToken = mReciversFcmToken;
@@ -52,6 +59,22 @@ public class ChatItemPojo {
         this.mMessageStatus = mMessageStatus;
         this.mMessageType = mMessageType;
         this.mChatRoomId = mChatRoomId;
+    }
+
+    public String getmImageUrl() {
+        return mImageUrl;
+    }
+
+    public void setmImageUrl(String mImageUrl) {
+        this.mImageUrl = mImageUrl;
+    }
+
+    public String getmSendersFuid() {
+        return mSendersFuid;
+    }
+
+    public void setmSendersFuid(String mSendersFuid) {
+        this.mSendersFuid = mSendersFuid;
     }
 
     public String getmChatRoomId() {

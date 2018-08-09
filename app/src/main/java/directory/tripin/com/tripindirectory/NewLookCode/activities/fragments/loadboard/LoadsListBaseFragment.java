@@ -51,6 +51,7 @@ public abstract class LoadsListBaseFragment extends Fragment {
     private boolean isMyPost;
     LottieAnimationView loading;
     private TextView noItems;
+    private Context context;
 
     // [START define_database_reference]
     private DatabaseReference mDatabase;
@@ -100,15 +101,15 @@ public abstract class LoadsListBaseFragment extends Fragment {
         mAdapter = new FirebaseRecyclerAdapter<Post, LoadPostViewHolder>(Post.class, R.layout.item_post,
                 LoadPostViewHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final LoadPostViewHolder viewHolder, final Post model, final int position) {
+            protected void populateViewHolder( LoadPostViewHolder viewHolder, Post model, int position) {
                 final DatabaseReference postRef = getRef(position);
-                Log.v("PostListFragment","popolate "+position);
+                Logger.v("PostListFragment popolate "+position+" "+model.getmAuthor());
 
                 if(model.getmPhotoUrl()!=null){
                     if(!model.getmPhotoUrl().isEmpty()){
-                        Picasso.with(getActivity())
+                        Picasso.with(viewHolder.mThumbnail.getContext())
                                 .load(model.getmPhotoUrl())
-                                .placeholder(ContextCompat.getDrawable(getContext()
+                                .placeholder(ContextCompat.getDrawable(getActivity()
                                         , R.mipmap.ic_launcher_round))
                                 .transform(new CircleTransform())
                                 .fit()
@@ -239,6 +240,7 @@ public abstract class LoadsListBaseFragment extends Fragment {
                     }
                 });
             }
+
 
             @Override
             public LoadPostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -143,6 +143,7 @@ class LoadBoardActivity : AppCompatActivity() {
                 postpojo.setmContactNo(getUserPhoneNo())
                 postpojo.setmDate(getDate())
                 postpojo.setmPhotoUrl(preferenceManager.imageUrl)
+                Logger.v("image set: "+postpojo.getmPhotoUrl())
                 postpojo.setmAuthor(preferenceManager.displayName)
                 postpojo.mFindOrPost = POST_TYPE
 

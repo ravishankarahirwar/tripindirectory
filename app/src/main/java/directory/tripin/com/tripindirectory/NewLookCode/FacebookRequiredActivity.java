@@ -89,10 +89,11 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                             );
                     preferenceManager.setDisplayName(userProfile.getmDisplayName());
                     preferenceManager.setImageUrl(userProfile.getmImageUrl());
+                    Toast.makeText(getApplicationContext(),"Creating User",Toast.LENGTH_LONG).show();
                     FirebaseDatabase.getInstance().getReference().child("user_profiles").child(userProfile.getmUid()).setValue(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(),"Connected with Facebook",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getApplicationContext(),"Connected with Facebook",Toast.LENGTH_LONG).show();
                             FirebaseAuth.getInstance().signOut();
                             preferenceManager.setisFacebboked(true);
                             preferenceManager.setFuid(user.getUid());

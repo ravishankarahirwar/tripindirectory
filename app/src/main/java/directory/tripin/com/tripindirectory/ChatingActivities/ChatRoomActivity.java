@@ -292,7 +292,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         //send msg with imsg
                         mChatIntiatorLayout.setVisibility(View.GONE);
 
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
                                 mOUID,
                                 mMyFcm,
                                 mOpponentFcm,
@@ -306,7 +306,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                             public void onSuccess(DocumentReference documentReference) {
                                 iMsg = "";
                                 mSendAction.setClickable(false);
-                                ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),
+                                ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
                                         mOUID,
                                         mMyFcm,
                                         mOpponentFcm,
@@ -360,7 +360,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     } else {
                         //only msg
                         mSendAction.setClickable(false);
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
                                 mOUID,
                                 mMyFcm,
                                 mOpponentFcm,
@@ -468,7 +468,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     mOpponentImageUrl = userProfile.getmImageUrl();
                     Logger.v("Image URL : "+mOpponentImageUrl);
                     mOpponentFcm = userProfile.getmFCM();
-                    Logger.v("FCM : "+mOpponentFcm);
+                    Logger.v("mOpponentFcm : "+mOpponentFcm);
 
                     mOpponentCompName = userProfile.getmDisplayName();
                     Logger.v("DisplayName : "+mOpponentCompName);

@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.Objects;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
@@ -116,107 +117,96 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     sendLoadboardNotification(title, body, postId);
                 } else if (type.equals("6")) {
-                    String title = remoteMessage.getData().get("title");
-                    String message = remoteMessage.getData().get("text");
-                    String username = remoteMessage.getData().get("username");
-                    String uid = remoteMessage.getData().get("uid");
-                    String fcmToken = remoteMessage.getData().get("fcm_token");
+                    //OneToOneChat New Message Notification
+                    String docId = remoteMessage.getData().get("docId");
+                    String chatroomId = remoteMessage.getData().get("chatroomId");
+                    Log.d(TAG, "new one to one msg");
 
-                    String text = remoteMessage.getData().get("text");
-//                    Log.d(TAG, "Message Notification Body: " + messageBody);
-                    sendNotification(title,
-                            message,
-                            username,
-                            uid,
-                            fcmToken);                }
+                    if(chatroomId!=null&&docId!=null){
+                        sendNewChatMsgNotification(chatroomId,docId);
+
+                    }else {
+                        Log.d(TAG, "ids null");
+                    }
+                }else {
+
+
+                    if (type.equals("7")) {
+                        //New comment on loadpost
+                        String docId = remoteMessage.getData().get("docId");
+                        String loadId = remoteMessage.getData().get("loadId");
+                        if(loadId!=null&&docId!=null){
+                            sendNewLoadCommentNotification(loadId,docId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+
+                    if (type.equals("8")) {
+                        //New comment on fleetpost
+                        String docId = remoteMessage.getData().get("docId");
+                        String loadId = remoteMessage.getData().get("fleetId");
+                        if(loadId!=null&&docId!=null){
+                            sendNewFleetCommentNotification(loadId,docId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+
+                    if (type.equals("9")) {
+                        //New quote on loadpost
+                        String docId = remoteMessage.getData().get("docId");
+                        String loadId = remoteMessage.getData().get("loadId");
+                        if(loadId!=null&&docId!=null){
+                            sendNewLoadQuoteNotification(loadId,docId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+
+                    if (type.equals("10")) {
+                        //New quote on fleetpost
+                        String docId = remoteMessage.getData().get("docId");
+                        String loadId = remoteMessage.getData().get("fleetId");
+                        if(loadId!=null&&docId!=null){
+                            sendNewFleetQuoteNotification(loadId,docId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+
+                    if (type.equals("11")) {
+                        //New loadpost
+                        String loadId = remoteMessage.getData().get("loadId");
+                        if(loadId!=null){
+                            sendNewLoadPostNotification(loadId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+                    if (type.equals("12")) {
+                        //New fleetpost
+                        String fleetId = remoteMessage.getData().get("fleetId");
+                        if(fleetId!=null){
+                            sendNewFleetPostNotification(fleetId);
+
+                        }else {
+                            Log.d(TAG, "ids null");
+                        }
+                    }
+                }
             } else {
-                String messageBody = remoteMessage.getNotification().getBody();
+                String messageBody = Objects.requireNonNull(remoteMessage.getNotification()).getBody();
                 String messageTitle = remoteMessage.getNotification().getTitle();
                 Log.d(TAG, "Message Notification Body: " + messageBody);
                 sendNotification(messageBody, messageTitle);
             }
 
-            //OneToOneChat New Message Notification
-            if (type.equals("6")) {
-                String docId = remoteMessage.getData().get("docId");
-                String chatroomId = remoteMessage.getData().get("chatroomId");
-                Log.d(TAG, "new one to one msg");
-
-                if(chatroomId!=null&&docId!=null){
-                    sendNewChatMsgNotification(chatroomId,docId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-            //New comment on loadpost
-            if (type.equals("7")) {
-                String docId = remoteMessage.getData().get("docId");
-                String loadId = remoteMessage.getData().get("loadId");
-                if(loadId!=null&&docId!=null){
-                    sendNewLoadCommentNotification(loadId,docId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-
-            //New comment on fleetpost
-            if (type.equals("8")) {
-                String docId = remoteMessage.getData().get("docId");
-                String loadId = remoteMessage.getData().get("fleetId");
-                if(loadId!=null&&docId!=null){
-                    sendNewFleetCommentNotification(loadId,docId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-
-            //New quote on loadpost
-            if (type.equals("9")) {
-                String docId = remoteMessage.getData().get("docId");
-                String loadId = remoteMessage.getData().get("loadId");
-                if(loadId!=null&&docId!=null){
-                    sendNewLoadQuoteNotification(loadId,docId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-
-            //New quote on fleetpost
-            if (type.equals("10")) {
-                String docId = remoteMessage.getData().get("docId");
-                String loadId = remoteMessage.getData().get("fleetId");
-                if(loadId!=null&&docId!=null){
-                    sendNewFleetQuoteNotification(loadId,docId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-
-            //New loadpost
-            if (type.equals("11")) {
-                String loadId = remoteMessage.getData().get("loadId");
-                if(loadId!=null){
-                    sendNewLoadPostNotification(loadId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
-            //New fleetpost
-            if (type.equals("12")) {
-                String fleetId = remoteMessage.getData().get("fleetId");
-                if(fleetId!=null){
-                    sendNewFleetPostNotification(fleetId);
-
-                }else {
-                    Log.d(TAG, "ids null");
-                }
-            }
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -555,6 +545,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                             intent.putExtra("ouid",chatItemPojo.getmSendersUid());
                             intent.putExtra("ormn",chatItemPojo.getmRMN());
+                            intent.putExtra("ofuid",chatItemPojo.getmSendersFuid());
+
                             String title = "";
                             if(chatItemPojo.getmDisplayName().isEmpty()){
                                 title = chatItemPojo.getmRMN()+" :";
@@ -580,6 +572,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                            Log.v(TAG, "new one to one msg notified");
+
                         }
 
                         @Override
