@@ -62,6 +62,7 @@
         <activity
             android:name=".NewLookCode.activities.MainScrollingActivity"
             android:label="@string/title_activity_main_scrolling"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -72,18 +73,29 @@
         <activity android:name=".NewLookCode.activities.AllTransportersActivity" />
         <activity
             android:name=".NewLookCode.activities.LoadBoardActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".NewLookCode.FacebookRequiredActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".NewLookCode.activities.NewSplashActivity"
+        <activity
+            android:name=".NewLookCode.activities.NewSplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".NewLookCode.activities.PostToSelectedActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

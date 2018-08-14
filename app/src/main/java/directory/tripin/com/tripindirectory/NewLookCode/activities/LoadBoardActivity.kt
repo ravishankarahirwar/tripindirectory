@@ -76,7 +76,9 @@ class LoadBoardActivity : AppCompatActivity() {
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
                 || !preferenceManager.isFacebooked){
             val i = Intent(this, FacebookRequiredActivity::class.java)
+            i.putExtra("backstack", true)
             startActivity(i)
+            Toast.makeText(applicationContext, "Login with Facebook To Use Loadboard", Toast.LENGTH_LONG).show()
         }
 
         setFragmentsAdapter()
@@ -85,14 +87,17 @@ class LoadBoardActivity : AppCompatActivity() {
         setRoutePickup()
         postpojo = Post()
 
-        val basicQueryPojo:BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
-        if(!basicQueryPojo.mSourceCity.isEmpty()){
-            select_source.text = basicQueryPojo.mSourceCity
-            postpojo.mSource = basicQueryPojo.mSourceCity
-        }
-        if(!basicQueryPojo.mDestinationCity.isEmpty()){
-            select_destination.text = basicQueryPojo.mDestinationCity
-            postpojo.mDestination = basicQueryPojo.mDestinationCity
+        if(intent.extras!=null){
+            val basicQueryPojo:BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
+            if(!basicQueryPojo.mSourceCity.isEmpty()){
+                select_source.text = basicQueryPojo.mSourceCity
+                postpojo.mSource = basicQueryPojo.mSourceCity
+            }
+            if(!basicQueryPojo.mDestinationCity.isEmpty()){
+                select_destination.text = basicQueryPojo.mDestinationCity
+                postpojo.mDestination = basicQueryPojo.mDestinationCity
+            }
+
         }
 
 

@@ -10,12 +10,18 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
     public static final String PREF_FCM_TOKEN = "fcmtoken";
+    public static final String PREF_EMAIL = "useremail";
+
     public static final String PREF_FACEBOOK_UID = "fuid";
 
     public static final String PREF_DISPLAY_NAME = "displayneame";
     public static final String PREF_IMAGE_URL = "imageurl";
     public static final String PREF_FACEBOOKED = "isfacebooked";
     public static final String PREF_REG_MOBILE = "mobile";
+    public static final String PREF_IS_ON_NEWLOOK = "isonnewlook";
+    public static final String PREF_ISNEWLOOKACCEPTED = "isnewlookaccepted";
+
+
 
 
 
@@ -63,8 +69,35 @@ public class PreferenceManager {
     }
 
     public boolean isFacebooked() {
-        boolean isfacebooked = sInstance.getBoolean(PREF_FACEBOOKED, false);
-        return isfacebooked;
+        return sInstance.getBoolean(PREF_FACEBOOKED, false);
+    }
+
+    public void setisOnNewLook(boolean b) {
+        editor.putBoolean(PREF_IS_ON_NEWLOOK, b);
+        editor.commit();
+    }
+
+    public boolean isOnNewLook() {
+         return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, false);
+    }
+
+    public void setisNewLookAccepted(boolean b) {
+        editor.putBoolean(PREF_ISNEWLOOKACCEPTED, b);
+        editor.commit();
+    }
+
+    public boolean isNewLookAccepted() {
+        return sInstance.getBoolean(PREF_ISNEWLOOKACCEPTED, false);
+    }
+
+    public String getEmail() {
+        String token = sInstance.getString(PREF_EMAIL, "");
+        return token;
+    }
+
+    public void setEmail(String accessToken) {
+        editor.putString(PREF_EMAIL, accessToken);
+        editor.commit();
     }
 
     public String getFcmToken() {

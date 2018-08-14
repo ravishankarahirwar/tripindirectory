@@ -141,17 +141,12 @@ public abstract class LoadsListBaseFragment extends Fragment {
                 viewHolder.chat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        if(model.mFuid!=null){
                             Intent intent = new Intent(getActivity(), ChatRoomActivity.class);
                             intent.putExtra("imsg", model.toString());
                             intent.putExtra("ormn", model.getmContactNo());
                             intent.putExtra("ouid", model.getmUid());
                             intent.putExtra("ofuid", model.getmFuid());
                             startActivity(intent);
-                        }else {
-                            Toast.makeText(getContext(),"Cant Chat",Toast.LENGTH_LONG).show();
-                        }
 
                     }
                 });

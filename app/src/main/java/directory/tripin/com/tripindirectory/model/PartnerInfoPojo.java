@@ -25,6 +25,9 @@ public class PartnerInfoPojo {
     private String mFcmToken;
     private String mCompanyEmail;
     private String mCompanyWebsite;
+    private String mFUID;
+    private String mPhotoUrl;
+    private String mDisplayName;
 
     private boolean isVerified = true;
 
@@ -55,6 +58,7 @@ public class PartnerInfoPojo {
 
     private long mAcSubmitForApproval;
     private long mAcApproved;
+    public boolean isSelected;
 
     public PartnerInfoPojo() {
     }
@@ -68,6 +72,30 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public String getmDisplayName() {
+        return mDisplayName;
+    }
+
+    public void setmDisplayName(String mDisplayName) {
+        this.mDisplayName = mDisplayName;
+    }
+
+    public String getmPhotoUrl() {
+        return mPhotoUrl;
+    }
+
+    public void setmPhotoUrl(String mPhotoUrl) {
+        this.mPhotoUrl = mPhotoUrl;
+    }
+
+    public String getmFUID() {
+        return mFUID;
+    }
+
+    public void setmFUID(String mFUID) {
+        this.mFUID = mFUID;
     }
 
     public Date getmLastActiveTime() {

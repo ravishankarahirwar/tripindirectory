@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -65,12 +66,11 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
                 || !preferenceManager.isFacebooked()){
             Intent i = new Intent(this, FacebookRequiredActivity.class);
+            i.putExtra("backstack",true);
             startActivity(i);
+            Toast.makeText(getApplicationContext(),"Login with Facebook To chat",Toast.LENGTH_LONG).show();
         }
 
-        if (mAuth.getCurrentUser() == null) {
-            finish();
-        }
         if(!preferenceManager.isFacebooked()){
             startActivity(new Intent(ChatHeadsActivity.this, FacebookRequiredActivity.class));
         }
@@ -97,11 +97,16 @@ public class ChatHeadsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final ChatHeadItemViewHolder holder, final int position, final ChatHeadPojo model) {
 
-                if (!model.getmOpponentCompanyName().isEmpty()) {
-                    holder.title.setText(textUtils.toTitleCase(model.getmOpponentCompanyName()));
-                } else {
+                if(model.getmOpponentCompanyName()!=null){
+                    if (!model.getmOpponentCompanyName().isEmpty()) {
+                        holder.title.setText(textUtils.toTitleCase(model.getmOpponentCompanyName()));
+                    } else {
+                        holder.title.setText(model.getmORMN());
+                    }
+                }else {
                     holder.title.setText(model.getmORMN());
                 }
+
 
                 holder.timeago.setText(gettimeDiff(model.getmTimeStamp()));
 
@@ -117,27 +122,28 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 });
 
                 holder.lastmsg.setText(model.getmLastMessage());
-                if(!model.getmOpponentImageUrl().isEmpty()){
-                    Picasso.with(getApplicationContext())
-                            .load(model.getmOpponentImageUrl())
-                            .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                    , R.drawable.ic_email_black_24dp))
-                            .transform(new CircleTransform())
-                            .fit()
-                            .into(holder.thumbnail, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Logger.v("image set: " + position);
-                                }
+                if(model.getmOpponentImageUrl()!=null){
+                    if(!model.getmOpponentImageUrl().isEmpty()){
+                        Picasso.with(getApplicationContext())
+                                .load(model.getmOpponentImageUrl())
+                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                        , R.mipmap.ic_launcher_round))
+                                .transform(new CircleTransform())
+                                .fit()
+                                .into(holder.thumbnail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Logger.v("image set: " + position);
+                                    }
 
-                                @Override
-                                public void onError() {
+                                    @Override
+                                    public void onError() {
 
-                                }
+                                    }
 
-                            });
+                                });
+                    }
                 }
-
 
                 FirebaseFirestore.getInstance().collection("chats")
                         .document("chatrooms")
@@ -150,6 +156,8 @@ public class ChatHeadsActivity extends AppCompatActivity {
                             public void onSuccess(QuerySnapshot documentSnapshots) {
                                 if (!documentSnapshots.isEmpty()) {
                                     holder.badge.setNumber(documentSnapshots.size());
+                                }else {
+                                    holder.badge.setNumber(0);
                                 }
                             }
                         });

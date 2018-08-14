@@ -1,5 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const request = require('request');
+const urlencode = require('urlencode');
+const rawurlencode = require('locutus/php/url/rawurlencode')
+
 admin.initializeApp();
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -102,20 +106,72 @@ exports.onetoonechat = functions.firestore
 
       const newValue = snap.data();
 
-	// Create a DATA notification
-    const payload = {
-       data: {
-        type: "6",
-		chatroomId: context.params.chatroomId,
-        docId: context.params.messageId
+
+      if(newValue.mReciversFcmToken===null){
+      //Hit SMS API
+      console.log('Sending SMS :', context.params.chatroomId, newValue);
+      const hashkey = rawurlencode('hLGz8/yJ4bI-GS5XO3Pr8b3V7W2Nvoxiz3A3Kh6IWA');
+      const rmn = rawurlencode(newValue.mORMN.substring(1));
+      const sender = rawurlencode('TRIPIN');
+      const appurl = rawurlencode('bit.ly/2m8n54N')
+      console.log('Sending SMS to :', context.params.chatroomId, rmn);
+      const msg = rawurlencode('Hello ILN User. '+newValue.mDisplayName+' have sent you a new msg in chat. Do not miss the opportunity. Install the updated ILN app now. '+appurl)
+      request.get('https://api.textlocal.in/send/?apikey='+hashkey+'&numbers='+rmn+'&message='+msg+'&sender='+sender, function (error, response, body) {
+      console.log('error:', error); // Print the error if one occurred
+      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+      return console.log('body:', body); //Prints the response of the request.
+       });
+        return console.log("Sms api processing: ", msg)
+      }else{
+
+      if(newValue.mOFUID===null){
+
+       //Hit SMS API
+            console.log('Sending SMS :', context.params.chatroomId, newValue);
+            const hashkey = rawurlencode('hLGz8/yJ4bI-GS5XO3Pr8b3V7W2Nvoxiz3A3Kh6IWA');
+            const rmn = rawurlencode(newValue.mORMN.substring(1));
+            const sender = rawurlencode('TRIPIN');
+            const appurl = rawurlencode('bit.ly/2m8n54N')
+            console.log('Sending SMS to :', context.params.chatroomId, rmn);
+            const msg = rawurlencode('Hello ILN User. '+newValue.mDisplayName+' have sent you a new msg in chat. Do not miss the opportunity. Install the updated ILN app now. '+appurl)
+            request.get('https://api.textlocal.in/send/?apikey='+hashkey+'&numbers='+rmn+'&message='+msg+'&sender='+sender, function (error, response, body) {
+            console.log('error:', error); // Print the error if one occurred
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+            return console.log('body:', body); //Prints the response of the request.
+             });
+              return console.log("Sms api processing: ", msg)
+
+      }else{
+       // Create a DATA notification
+                const payload = {
+                   data: {
+                    type: "6",
+            		chatroomId: context.params.chatroomId,
+                    docId: context.params.messageId
+                  }
+                };
+
+            	 console.log('Sending chat notification', context.params.chatroomId, newValue);
+
+                return admin.messaging().sendToDevice(newValue.mReciversFcmToken, payload);
       }
-    };
 
-	 console.log('Sending chat notification', context.params.chatroomId, newValue);
+      }
 
-    return admin.messaging().sendToDevice(newValue.mReciversFcmToken, payload);
+
 
       });
+
+//Make the initial mAccountStatusValue 0
+exports.facebookprofilecreated =  functions.database.ref('/user_profiles/{pushId}')
+  .onCreate((snapshot, context) => {
+      const newValue = snapshot.val();
+      console.log('new facebook user created', context.params.pushId, newValue);
+      admin.firestore().collection('partners').doc(newValue.mUid).update({ mFUID: context.params.pushId });
+      admin.firestore().collection('partners').doc(newValue.mUid).update({ mDisplayName: newValue.mDisplayName });
+      return admin.firestore().collection('partners').doc(newValue.mUid).update({ mPhotoUrl: newValue.mImageUrl });
+
+});
 
 
 

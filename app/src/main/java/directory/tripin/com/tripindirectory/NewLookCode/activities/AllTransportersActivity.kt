@@ -8,6 +8,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.NonNull
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
@@ -17,35 +18,51 @@ import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo
 import directory.tripin.com.tripindirectory.NewLookCode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
+import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
-import kotlinx.android.synthetic.main.content_main_scrolling.*
+import directory.tripin.com.tripindirectory.utils.DB
+import directory.tripin.com.tripindirectory.utils.TextUtils
+import kotlinx.android.synthetic.main.activity_all_transporters.*
 
 class AllTransportersActivity : AppCompatActivity() {
 
     lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
+    lateinit var textUtils: TextUtils
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_transporters)
         context = this
+        textUtils = TextUtils()
 
         if(intent.extras!=null){
             if(intent.extras.getSerializable("query")!=null){
                 basicQueryPojo = intent.extras.getSerializable("query") as BasicQueryPojo
-                title = "${basicQueryPojo.mSourceCity} To ${basicQueryPojo.mDestinationCity}"
+                if(!basicQueryPojo.mSourceCity.isEmpty()&&!basicQueryPojo.mDestinationCity.isEmpty()){
+                    title = "${textUtils.toTitleCase(basicQueryPojo.mSourceCity)} To ${textUtils.toTitleCase(basicQueryPojo.mDestinationCity)}"
+                }else{
+                    title = "All Transporters"
+                }
                 var fleets: String = ""
                 for(fleet:String in basicQueryPojo.mFleets!!){
                     fleets = "$fleets,$fleet"
                 }
-                supportActionBar!!.subtitle = fleets
+                if(!fleets.isEmpty()){
+                    supportActionBar!!.subtitle = fleets.substring(1)
+                }else{
+                    supportActionBar!!.subtitle = fleets
+                }
                 setMainAdapter(basicQueryPojo)
             }
         }
@@ -78,18 +95,34 @@ class AllTransportersActivity : AppCompatActivity() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("partners")
 
-        if (!basicQueryPojo.mSourceCity.isEmpty()&& basicQueryPojo.mSourceCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+        //sort by last active
 
+        var isNoQiery : Boolean = true
+
+        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
+//            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+            baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+            isNoQiery = false
         }
-        if (!basicQueryPojo.mDestinationCity.isEmpty()&& basicQueryPojo.mDestinationCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+
+        if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
+//            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+            baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+            isNoQiery = false
 
         }
 
         for (fleet in basicQueryPojo.mFleets!!) {
             baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
+            isNoQiery = false
         }
+
+        if(isNoQiery){
+            baseQuery = baseQuery.whereGreaterThan(DB.PartnerFields.COMPANY_NAME,"")
+            baseQuery = baseQuery.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING)
+            baseQuery = baseQuery.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING)
+        }
+
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)
@@ -117,11 +150,35 @@ class AllTransportersActivity : AppCompatActivity() {
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
-                holder.mCompany.text = model.getmCompanyName()
+                holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+
+                if(model.getmPhotoUrl()!=null){
+                    if(!model.getmPhotoUrl().isEmpty()){
+                        Picasso.with(applicationContext)
+                                .load(model.getmPhotoUrl())
+                                .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
+                                .transform(CircleTransform())
+                                .fit()
+                                .into(holder.mThumbnail, object : Callback {
+
+                                    override fun onSuccess() {
+                                        Logger.v("image set: transporter thumb")
+                                    }
+
+                                    override fun onError() {
+                                        Logger.v("image transporter Error")
+                                    }
+                                })
+
+                    }
+
+                }else{
+                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.emoji_google_category_travel))
+                }
 
                 if (model != null) {
                     if (model.getmCompanyAdderss() != null)
-                        holder.mAddress.text = model.getmCompanyAdderss().city
+                        holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
                 }
 
                 holder.itemView.setOnClickListener {
@@ -130,6 +187,18 @@ class AllTransportersActivity : AppCompatActivity() {
                     i.putExtra("uid",getItem(position)!!.id)
                     i.putExtra("cname",model.getmCompanyName())
                     startActivity(i)
+                }
+
+                holder.mChat.setOnClickListener {
+
+                    val intent = Intent(context, ChatRoomActivity::class.java)
+                    intent.putExtra("imsg", basicQueryPojo.toString())
+                    intent.putExtra("ormn", model.getmRMN())
+                    intent.putExtra("ouid", getItem(position)!!.id)
+                    intent.putExtra("ofuid", model.getmFUID())
+                    Logger.v("Ofuid :" +model.getmFUID())
+                    startActivity(intent)
+
                 }
 
                 holder.mCall.setOnClickListener {
@@ -180,7 +249,7 @@ class AllTransportersActivity : AppCompatActivity() {
             override fun getItemViewType(position: Int): Int {
 
                 return if (position == itemCount - 1) {
-                    1
+                    0
                 } else {
                     0
                 }
@@ -192,8 +261,7 @@ class AllTransportersActivity : AppCompatActivity() {
 
                     LoadingState.LOADING_INITIAL -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
-
-
+                        loadingat.visibility = View.VISIBLE
                     }
 
                     LoadingState.LOADING_MORE -> {
@@ -202,6 +270,7 @@ class AllTransportersActivity : AppCompatActivity() {
 
                     LoadingState.LOADED -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
+                        loadingat.visibility = View.GONE
 
                     }
 
@@ -213,9 +282,8 @@ class AllTransportersActivity : AppCompatActivity() {
             }
         }
 
-        rv_transporters.layoutManager = LinearLayoutManager(this)
-        rv_transporters.adapter = adapter
-
+        rv_transporters_at.layoutManager = LinearLayoutManager(this)
+        rv_transporters_at.adapter = adapter
 
     }
 

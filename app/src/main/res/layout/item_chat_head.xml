@@ -55,6 +55,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="The Last message"
+            android:textSize="12sp"
+            android:maxLines="2"
             tools:layout_editor_absoluteX="119dp"
             tools:layout_editor_absoluteY="42dp" />
     </LinearLayout>

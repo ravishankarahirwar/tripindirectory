@@ -4,22 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewLookCode.activities.AllTransportersActivity">
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/loadingat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:visibility="visible"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="loading.json"
-        app:lottie_loop="true"
-        tools:layout_editor_absoluteX="20dp" />
+    tools:context=".NewLookCode.activities.PostToSelectedActivity">
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/sendtoaalfab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -34,15 +23,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/ic_filter_list_black2_24dp" />
+        app:srcCompat="@drawable/ic_send_white_24dp" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_transporters_at"
+        android:id="@+id/rv_transporterss"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/selected_comps"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/selected_comps"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blue_grey_100"
+        android:padding="14dp"
+        android:text="Selected Companies"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingpts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:visibility="visible"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="loading.json"
+        app:lottie_loop="true"
+        tools:layout_editor_absoluteX="20dp" />
 </android.support.constraint.ConstraintLayout>

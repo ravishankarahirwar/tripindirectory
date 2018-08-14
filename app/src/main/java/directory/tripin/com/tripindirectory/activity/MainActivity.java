@@ -566,10 +566,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mTypesofVehiclesRecyclarView.setAdapter(mWorkingWithAdapter);
 
         mTryNewLook.setOnClickListener(v -> {
-            mAuth.signOut();
-            startActivity(new Intent(MainActivity.this,
-                    directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity.class));
-            finish();
+            Toast.makeText(getApplicationContext(),"Launching New Look!",Toast.LENGTH_SHORT).show();
+            AuthUI.getInstance().signOut(getApplicationContext()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    mPreferenceManager.setisOnNewLook(true);
+                    startActivity(new Intent(MainActivity.this,
+                            directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity.class));
+                    finish();
+                }
+            });
+
         });
 
         mSearchTagRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

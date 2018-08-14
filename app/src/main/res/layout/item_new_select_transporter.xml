@@ -7,26 +7,10 @@
     android:id="@+id/partner_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="3dp"
+    app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="2dp">
-
-    <ImageView
-        android:id="@+id/ischecked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="5dp"
-        android:tint="@color/app_version"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_read_24dp"
-        android:contentDescription="TODO" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,40 +26,38 @@
 
             <ImageView
                 android:id="@+id/transporter_thumbnail"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/border_stroke_bg"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ischecked"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/emoji_google_category_travel" />
 
             <TextView
                 android:id="@+id/company_name1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
+                android:drawableRight="@drawable/ic_keyboard_arrow_right_black_24dp"
+                android:gravity="left|center"
                 android:text="TRIPIN TRANSPORT"
                 android:textColor="@color/blue_grey_800"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageButton2"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/transporter_thumbnail"
-                app:layout_constraintTop_toTopOf="@+id/transporter_thumbnail"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="@+id/transporter_thumbnail" />
 
             <TextView
                 android:id="@+id/company_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Mumbai"
                 android:textSize="10sp"
@@ -99,6 +81,18 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_more_vert_black_24dp" />
 
+            <ImageView
+                android:id="@+id/ischecked"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_readgrey_24dp" />
+
 
         </android.support.constraint.ConstraintLayout>
 
@@ -119,7 +113,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/chat"
@@ -130,7 +125,7 @@
                 android:padding="8dp"
                 android:text="CHAT"
                 android:textColor="@color/blue_grey_900"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <View
@@ -147,7 +142,7 @@
                 android:padding="8dp"
                 android:text="CALL"
                 android:textColor="@color/blue_grey_900"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

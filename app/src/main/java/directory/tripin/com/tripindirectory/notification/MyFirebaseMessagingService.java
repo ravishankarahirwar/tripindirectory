@@ -41,6 +41,7 @@ import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.FleetDetailsActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
@@ -52,6 +53,7 @@ import directory.tripin.com.tripindirectory.loadboardactivities.models.QuotePojo
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
+import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 import directory.tripin.com.tripindirectory.utils.Constants;
 
@@ -62,6 +64,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     DocumentReference mUpdateDocRef;
     NotificationCompat.Builder generalUpdatesNotificationBuilder;
     private FirebaseAuth mAuth;
+    private PreferenceManager preferenceManager;
 
 
     /**
@@ -604,11 +607,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent;
         if (mAuth.getCurrentUser() != null && postId != null) {
             //if user signed in
-            intent = new Intent(this,PostDetailActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+            preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+            if(preferenceManager.isOnNewLook()){
+                intent = new Intent(this, directory.tripin.com.tripindirectory.NewLookCode.activities.LoadBoardActivity.class);
+            }else {
+                intent = new Intent(this,PostDetailActivity.class);
+                intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+            }
         } else {
             // not signed in
-            intent = new Intent(this,MainActivity.class);
+            intent = new Intent(this,NewSplashActivity.class);
         }
 
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -11,10 +11,16 @@
         android:title="Loadboard"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_profile"
-        android:icon="@drawable/ic_person_white_24dp"
+        android:id="@+id/action_business"
+        android:icon="@drawable/ic_business_center_white_24dp"
         android:orderInCategory="50"
-        android:title="Your Profile"
+        android:title="Add Business"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_chat"
+        android:icon="@drawable/messenger_bubble_large_white"
+        android:orderInCategory="70"
+        android:title="Chats"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_logout"
@@ -22,12 +28,13 @@
         android:orderInCategory="80"
         android:title="Log Out"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/action_help"
-        android:icon="@drawable/ic_live_help_black_24dp"
-        android:orderInCategory="70"
-        android:title="Help"
-        app:showAsAction="always" />
+
+    <!--<item-->
+        <!--android:id="@+id/action_help"-->
+        <!--android:icon="@drawable/ic_live_help_black_24dp"-->
+        <!--android:orderInCategory="70"-->
+        <!--android:title="Help"-->
+        <!--app:showAsAction="never" />-->
     <item
         android:id="@+id/action_rate"
         android:icon="@drawable/ic_play_arrow_white_24dp"

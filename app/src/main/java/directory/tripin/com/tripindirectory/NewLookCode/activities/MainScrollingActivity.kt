@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.layout_route_input.*
 import android.support.v4.view.ViewCompat
 import android.view.animation.OvershootInterpolator
 import android.arch.paging.PagedList
+import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.net.Uri
 import android.support.annotation.NonNull
@@ -26,35 +27,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
-import com.bumptech.glide.util.Util.getSnapshot
+import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity
+import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.NewLookCode.*
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
+import directory.tripin.com.tripindirectory.activity.SplashActivity
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity
-import directory.tripin.com.tripindirectory.formactivities.FormFragments.CompanyFromFragment
-import directory.tripin.com.tripindirectory.forum.MainActivity
-import directory.tripin.com.tripindirectory.forum.NewPostActivity
+import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
+import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.model.RouteCityPojo
 import directory.tripin.com.tripindirectory.utils.DB
+import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
+import kotlinx.android.synthetic.main.newlookfeedback.*
+import libs.mjn.prettydialog.PrettyDialog
+import libs.mjn.prettydialog.PrettyDialogCallback
 
 
-class MainScrollingActivity : AppCompatActivity() {
+class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
+
 
     val fleets: ArrayList<FleetSelectPojo> = ArrayList()
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE = 1
@@ -65,6 +69,9 @@ class MainScrollingActivity : AppCompatActivity() {
     lateinit var basicQueryPojo: BasicQueryPojo
     private val SIGN_IN_FOR_CREATE_COMPANY = 123
     lateinit var preferenceManager: PreferenceManager
+    lateinit var mSourceRouteCityPojo: RouteCityPojo
+    lateinit var mDestinationRouteCityPojo: RouteCityPojo
+    lateinit var textUtils: TextUtils
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,14 +79,15 @@ class MainScrollingActivity : AppCompatActivity() {
         //Activity Itit
         setContentView(R.layout.activity_main_scrolling)
         context = this
+        textUtils = TextUtils()
         preferenceManager = PreferenceManager.getInstance(this)
 
-        if(FirebaseAuth.getInstance().currentUser==null
-                || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
-                || !preferenceManager.isFacebooked){
+        if (FirebaseAuth.getInstance().currentUser == null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null) {
             val i = Intent(this, FacebookRequiredActivity::class.java)
             startActivity(i)
         }
+
 
 
         fabFlip.setOnClickListener {
@@ -91,6 +99,21 @@ class MainScrollingActivity : AppCompatActivity() {
         setMainAdapter(basicQueryPojo)
         setListners()
         setBottomNavogation()
+
+        mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
+        mDestinationRouteCityPojo = RouteCityPojo(context, 2, 0, this)
+
+        if(preferenceManager.isNewLookAccepted){
+            feedback.visibility = View.GONE
+        }else{
+            feedback.visibility = View.VISIBLE
+        }
+
+        if(preferenceManager.displayName!=null){
+            var name = preferenceManager.displayName.substringBefore(" ")
+            lookque.text = "Hello $name, how is the new look?"
+        }
+
 
 
     }
@@ -117,15 +140,24 @@ class MainScrollingActivity : AppCompatActivity() {
                 R.id.action_loadboard -> {
                     startLoadboardActivity()
                 }
-                R.id.action_profile -> {
-                    startProfileActivity()
+                R.id.action_business -> {
+                    startYourBusinessActivity()
+                }
+                R.id.action_chat -> {
+                    setChatHeadsActivity()
+                }
+                R.id.action_rate -> {
+                    rateApp()
                 }
                 R.id.action_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    preferenceManager.setisFacebboked(false)
-                    val i = Intent(this, NewSplashActivity::class.java)
-                    startActivity(i)
-                finish()
+                    AuthUI.getInstance().signOut(context).addOnSuccessListener {
+                        Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
+                        preferenceManager.setisFacebboked(false)
+                        val i = Intent(this, NewSplashActivity::class.java)
+                        startActivity(i)
+                        finish()
+                    }
+
                 }
             }
         }
@@ -159,13 +191,87 @@ class MainScrollingActivity : AppCompatActivity() {
         showchats.setOnClickListener {
             setChatHeadsActivity()
         }
+
         posttolb.setOnClickListener {
             startLoadboardActivity()
         }
-        posttoselected.setOnClickListener {
 
+        posttoselected.setOnClickListener {
+            startPostToSelectedActivity()
         }
 
+        oldlook.setOnClickListener {
+            startOldActivity()
+        }
+        givefeedback.setOnClickListener {
+            shownewlookfeedbackdialog()
+        }
+
+    }
+
+    private fun shownewlookfeedbackdialog() {
+
+        val prettyDialog:PrettyDialog = PrettyDialog(this)
+
+                prettyDialog
+                .setTitle("ILN New Look")
+                .setMessage("Do you like the new look?")
+                .addButton(
+                        "Yes! Keep it",
+                        R.color.pdlg_color_white,
+                        R.color.green_400
+                ) {
+
+                    Toast.makeText(context,"Welcome!",Toast.LENGTH_LONG).show()
+                    preferenceManager.setisNewLookAccepted(true)
+                    feedback.visibility = View.GONE
+                    prettyDialog.dismiss()
+
+                }.addButton(
+                        "Go Back to Old Look",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_400
+                        ) {
+                            Toast.makeText(context,"Launching Old Look!",Toast.LENGTH_LONG).show()
+                            prettyDialog.dismiss()
+                            preferenceManager.setisOnNewLook(false)
+                            startOldActivity()
+
+                        }.addButton(
+                        "Cancel",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100,
+                        PrettyDialogCallback {
+
+                            prettyDialog.dismiss()
+
+                        }
+                )
+        prettyDialog.show()
+    }
+
+    private fun startPostToSelectedActivity() {
+        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
+
+            if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
+                val i = Intent(this, PostToSelectedActivity::class.java)
+                i.putExtra("query", basicQueryPojo)
+                startActivity(i)
+            }else{
+                Toast.makeText(context,"Enter Destination City!",Toast.LENGTH_LONG).show()
+            }
+
+        }else{
+            Toast.makeText(context,"Enter Source City!",Toast.LENGTH_LONG).show()
+        }
+
+
+    }
+
+    private fun startOldActivity() {
+        val i = Intent(this, SplashActivity::class.java)
+        startActivity(i)
+        finishAffinity()
     }
 
     private fun startProfileActivity() {
@@ -227,22 +333,39 @@ class MainScrollingActivity : AppCompatActivity() {
 
     private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
 
+
+
         Logger.v(basicQueryPojo.toString())
 
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("partners")
 
-        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+        //sort by last active
 
+        var isNoQiery : Boolean = true
+
+        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
+//            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+            baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+            isNoQiery = false
         }
+
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+//            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+            baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+            isNoQiery = false
 
         }
 
         for (fleet in basicQueryPojo.mFleets!!) {
             baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
+            isNoQiery = false
+        }
+
+        if(isNoQiery){
+            baseQuery = baseQuery.whereGreaterThan(DB.PartnerFields.COMPANY_NAME,"")
+            baseQuery = baseQuery.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING)
+            baseQuery = baseQuery.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING)
         }
 
         val config = PagedList.Config.Builder()
@@ -269,12 +392,35 @@ class MainScrollingActivity : AppCompatActivity() {
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
 
-                holder.mCompany.text = model.getmCompanyName()
+                holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
 
+                if(model.getmPhotoUrl()!=null){
+                    if(!model.getmPhotoUrl().isEmpty()){
+                        Picasso.with(applicationContext)
+                                .load(model.getmPhotoUrl())
+                                .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
+                                .transform(CircleTransform())
+                                .fit()
+                                .into(holder.mThumbnail, object : Callback {
+
+                                    override fun onSuccess() {
+                                        Logger.v("image set: transporter thumb")
+                                    }
+
+                                    override fun onError() {
+                                        Logger.v("image transporter Error")
+                                    }
+                                })
+
+                    }
+
+                }else{
+                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.emoji_google_category_travel))
+                }
 
                 if (model != null) {
                     if (model.getmCompanyAdderss() != null)
-                        holder.mAddress.text = model.getmCompanyAdderss().city
+                        holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
                 }
 
                 holder.itemView.setOnClickListener {
@@ -326,6 +472,18 @@ class MainScrollingActivity : AppCompatActivity() {
                     }
                 }
 
+                holder.mChat.setOnClickListener {
+
+                    val intent = Intent(context, ChatRoomActivity::class.java)
+                    intent.putExtra("imsg", basicQueryPojo.toString())
+                    intent.putExtra("ormn", model.getmRMN())
+                    intent.putExtra("ouid", getItem(position)!!.id)
+                    intent.putExtra("ofuid", model.getmFUID())
+                    Logger.v("Ofuid :" +model.getmFUID())
+                    startActivity(intent)
+
+                }
+
 
             }
 
@@ -336,6 +494,7 @@ class MainScrollingActivity : AppCompatActivity() {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loading.visibility = View.VISIBLE
                         showall.visibility = View.GONE
+                        noresult.visibility = View.GONE
 
                     }
 
@@ -347,7 +506,20 @@ class MainScrollingActivity : AppCompatActivity() {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loading.visibility = View.GONE
                         showall.visibility = View.VISIBLE
+                        noresult.visibility = View.GONE
 
+                    }
+                    LoadingState.FINISHED ->{
+                        Logger.v("onLoadingStateChanged ${state.name}")
+                        loading.visibility = View.GONE
+                        if(itemCount==0){
+                            noresult.visibility = View.VISIBLE
+                            showall.visibility = View.GONE
+
+                        }else{
+                            noresult.visibility = View.GONE
+                            showall.visibility = View.VISIBLE
+                        }
                     }
 
                     LoadingState.ERROR -> {
@@ -358,8 +530,8 @@ class MainScrollingActivity : AppCompatActivity() {
             }
         }
 
-        rv_transporters.layoutManager = LinearLayoutManager(this)
-        rv_transporters.adapter = adapter
+        rv_transporters_at.layoutManager = LinearLayoutManager(this)
+        rv_transporters_at.adapter = adapter
 
 
     }
@@ -375,14 +547,24 @@ class MainScrollingActivity : AppCompatActivity() {
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
                     textViewSource.text = ". ${place.name}"
                     textViewSource.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
-                    basicQueryPojo.mSourceCity = place.name.toString()
-                    setMainAdapter(basicQueryPojo)
+
+//                    basicQueryPojo.mSourceCity = place.name.toString()
+//                    setMainAdapter(basicQueryPojo)
+
+                    mSourceRouteCityPojo.setmCityName(place.name.toString())
+                    loading.visibility = View.VISIBLE
+
+
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
                     textViewDestination.text = ". ${place.name}"
                     textViewDestination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
-                    basicQueryPojo.mDestinationCity = place.name.toString()
-                    setMainAdapter(basicQueryPojo)
+
+//                    basicQueryPojo.mDestinationCity = place.name.toString()
+//                    setMainAdapter(basicQueryPojo)
+
+                    mDestinationRouteCityPojo.setmCityName(place.name.toString())
+                    loading.visibility = View.VISIBLE
 
                 }
                 SIGN_IN_FOR_CREATE_COMPANY -> {
@@ -390,6 +572,16 @@ class MainScrollingActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestinationHubFetched(destinationhub: String, operaion: Int) {
+        basicQueryPojo.mDestinationCity = destinationhub
+        setMainAdapter(basicQueryPojo)
+    }
+
+    override fun onSourceHubFetched(sourcehub: String, operation: Int) {
+        basicQueryPojo.mSourceCity = sourcehub
+        setMainAdapter(basicQueryPojo)
     }
 
     private fun setRoutePickup() {
@@ -424,8 +616,9 @@ class MainScrollingActivity : AppCompatActivity() {
 
         textViewSource.text = t2
         textViewDestination.text = t1
-        basicQueryPojo.mDestinationCity = t1.substring(2)
-        basicQueryPojo.mSourceCity = t2.substring(2)
+        val dest: String =  basicQueryPojo.mDestinationCity
+        basicQueryPojo.mDestinationCity = basicQueryPojo.mSourceCity
+        basicQueryPojo.mSourceCity = dest
         setMainAdapter(basicQueryPojo)
     }
 
@@ -490,5 +683,22 @@ class MainScrollingActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    internal fun rateApp() {
+        val uri = Uri.parse("market://details?id=" + context.getPackageName())
+        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+        // To count with Play market backstack, After pressing back button,
+        // to taken back to our application, we need to add following flags to intent.
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        try {
+            startActivity(goToMarket)
+        } catch (e: ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())))
+        }
+
     }
 }

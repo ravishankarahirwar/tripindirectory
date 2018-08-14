@@ -69,6 +69,12 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
             auther.setText(post.getmAuthor());
         }
 
+        if(post.getmFuid()!=null){
+            chat.setAlpha(0.6f);
+        }else {
+            chat.setAlpha(1);
+        }
+
         date.setText(post.getmDate());
         source.setText(post.getmSource());
         destination.setText(post.getmDestination());

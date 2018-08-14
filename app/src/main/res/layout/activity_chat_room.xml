@@ -9,75 +9,6 @@
     tools:context="directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity">
 
 
-    <include
-        android:id="@+id/actionbar"
-        layout="@layout/layout_chatroom_actionbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_imsg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/constraintLayout2"
-        android:layout_margin="10dp"
-        android:alpha="0.95"
-        android:background="@drawable/border_stroke_bg"
-        android:elevation="1dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/textViewChatIntiatortitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:drawableLeft="@drawable/ic_message"
-            android:gravity="center_vertical"
-            android:text=" Chat Initiating Message :"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/imageButtonCancelImsg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_cancel_black_24dp" />
-
-        <TextView
-            android:id="@+id/textViewimsg"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_bg_red"
-            android:padding="10dp"
-            android:text="Msg..."
-            android:textColor="@color/background"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textViewChatIntiatortitle"
-            app:layout_constraintTop_toBottomOf="@+id/textViewChatIntiatortitle"
-            app:layout_constraintVertical_bias="0.0" />
-
-    </android.support.constraint.ConstraintLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_chat"
         android:layout_width="match_parent"
@@ -96,8 +27,90 @@
         android:padding="3dp">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_imsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/constraintLayout2"
+            android:layout_margin="10dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.95"
+            android:elevation="1dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/cl_typing"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textViewChatIntiatortitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:drawableLeft="@drawable/ic_message"
+                android:gravity="center_vertical"
+                android:text=" Chat Initiating Message :"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageButtonCancelImsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_cancel_black_24dp" />
+
+            <TextView
+                android:id="@+id/textViewimsg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/msg_bg_you"
+                android:padding="10dp"
+                android:text="imsg"
+                android:textColor="@color/app_title"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageView9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageButtonCancelImsg" />
+
+            <ImageView
+                android:id="@+id/imageView9"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:tint="@color/blue_grey_400"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewimsg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textViewimsg"
+                app:layout_constraintVertical_bias="1.0"
+                app:srcCompat="@drawable/ic_menu_send" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/cl_typing"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
@@ -105,6 +118,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/et_msg"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0">
@@ -194,5 +208,13 @@
         app:lottie_autoPlay="true"
         app:lottie_fileName="loadloading.json"
         app:lottie_loop="true" />
+
+    <include
+        android:id="@+id/actionbar"
+        layout="@layout/layout_chatroom_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

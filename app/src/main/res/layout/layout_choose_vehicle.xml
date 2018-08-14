@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/blue_grey_100"
+        android:background="@color/brown_100"
         android:fadingEdgeLength="1dp"
         android:orientation="horizontal"
         android:padding="5dp"
@@ -68,11 +68,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:text="POST TO SELECTED"
             android:textColor="@color/blue_grey_900"
             android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="visible" />
 
 
         <View
@@ -86,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:text="POST TO LOADBOARD"
             android:textColor="@color/blue_grey_800"
             android:textSize="12sp"
@@ -94,4 +95,15 @@
 
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/border2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:alpha="0.25"
+        android:background="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+        app:layout_constraintVertical_bias="0.0" />
+
 </android.support.constraint.ConstraintLayout>

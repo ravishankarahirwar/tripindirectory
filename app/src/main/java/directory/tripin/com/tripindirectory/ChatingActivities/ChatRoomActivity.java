@@ -49,6 +49,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,6 +64,7 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
+import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity;
 import directory.tripin.com.tripindirectory.NewLookCode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
@@ -105,7 +110,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     //opponents necessary information
     private String mORMN;
     private String mOUID;
-    private String mOFUID;
+    private String mOFUID = "";
 
 
     //collected opponent user info
@@ -136,16 +141,20 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
         simpleDateFormat =  new SimpleDateFormat("hh:mm, EEE", Locale.ENGLISH);
-
-        //Checking Auth, Finish if not logged in
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() == null) {
-            finish();
-            Toast.makeText(getApplicationContext(), "Sign In First!", Toast.LENGTH_LONG).show();
-        }
-
         preferenceManager = PreferenceManager.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        //Checking Auth, Finish if not logged in
+
+        if(mAuth.getCurrentUser()==null
+                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
+                || !preferenceManager.isFacebooked()){
+            Intent i = new Intent(this, FacebookRequiredActivity.class);
+            i.putExtra("backstack",true);
+            startActivity(i);
+            Toast.makeText(getApplicationContext(),"Login with Facebook To chat",Toast.LENGTH_LONG).show();
+        }
+
         setChatListUI();
         setUI();
         setListners();
@@ -292,12 +301,16 @@ public class ChatRoomActivity extends AppCompatActivity {
                         //send msg with imsg
                         mChatIntiatorLayout.setVisibility(View.GONE);
 
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                                mOpponentImageUrl,
                                 mOUID,
                                 mMyFcm,
                                 mOpponentFcm,
-                                mAuth.getCurrentUser().getPhoneNumber(),
+                                preferenceManager.getRMN(),
+                                mORMN,
+                                preferenceManager.getFuid(),
                                 mMyCompName,
+                                mOpponentCompName,
                                 iMsg, mChatRoomId,
                                 0, 2);
 
@@ -306,12 +319,16 @@ public class ChatRoomActivity extends AppCompatActivity {
                             public void onSuccess(DocumentReference documentReference) {
                                 iMsg = "";
                                 mSendAction.setClickable(false);
-                                ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                                ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                                        mOpponentImageUrl,
                                         mOUID,
                                         mMyFcm,
                                         mOpponentFcm,
-                                        mAuth.getCurrentUser().getPhoneNumber(),
+                                        preferenceManager.getRMN(),
+                                        mORMN,
+                                        preferenceManager.getFuid(),
                                         mMyCompName,
+                                        mOpponentCompName,
                                         mChatEditText.getText().toString().trim(),
                                         mChatRoomId,
                                         0, mMsgType);
@@ -325,8 +342,8 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                         mSendAction.setClickable(true);
                                         ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
-                                                mAuth.getCurrentUser().getPhoneNumber(),
-                                                mAuth.getUid(),
+                                                preferenceManager.getRMN(),
+                                                preferenceManager.getUserId(),
                                                 preferenceManager.getFuid(),
                                                 lastmsg,
                                                 mMyImageUrl
@@ -346,6 +363,9 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Logger.v("heads updated");
+                                                        if(mOFUID.isEmpty()){
+//                                                            sendSMS(mORMN);
+                                                        }
                                                     }
                                                 });
                                             }
@@ -360,12 +380,16 @@ public class ChatRoomActivity extends AppCompatActivity {
                     } else {
                         //only msg
                         mSendAction.setClickable(false);
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(mAuth.getUid(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                                mOpponentImageUrl,
                                 mOUID,
                                 mMyFcm,
                                 mOpponentFcm,
-                                mAuth.getCurrentUser().getPhoneNumber(),
+                                preferenceManager.getRMN(),
+                                mORMN,
+                                preferenceManager.getFuid(),
                                 mMyCompName,
+                                mOpponentCompName,
                                 mChatEditText.getText().toString().trim(),
                                 mChatRoomId,
                                 0, mMsgType);
@@ -379,8 +403,8 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                 mSendAction.setClickable(true);
                                 ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
-                                        mAuth.getCurrentUser().getPhoneNumber(),
-                                        mAuth.getUid(),
+                                        preferenceManager.getRMN(),
+                                        preferenceManager.getUserId(),
                                         preferenceManager.getFuid(),
                                         lastmsg,
                                         mMyImageUrl
@@ -416,15 +440,16 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
 
+
+
     private void getIntentData() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             if (bundle.getString("ormn") != null &&
-                    bundle.getString("ouid") != null &&
-                    bundle.getString("ofuid") != null) {
+                    bundle.getString("ouid") != null) {
                 mORMN = bundle.getString("ormn");
+                mTitle.setText(mORMN);
                 mOUID = bundle.getString("ouid");
-                mOFUID = bundle.getString("ofuid");
                 //check if there is any i msg
                 if (bundle.getString("imsg") != null) {
                     iMsg = bundle.getString("imsg");
@@ -433,8 +458,17 @@ public class ChatRoomActivity extends AppCompatActivity {
                         mChatIntiatorLayout.setVisibility(View.VISIBLE);
                     }
                 }
-                mTitle.setText(mORMN);
+                if(bundle.getString("ofuid") != null){
+                    if(!bundle.getString("ofuid").isEmpty()){
+                        mOFUID = bundle.getString("ofuid");
+                    }else {
+                        mSubtitle.setText("User Inactive, will be invited via SMS.");
+                    }
+                }else {
+                    mSubtitle.setText("User Inactive, will be invited via SMS.");
+                }
                 getMyDetails();
+
             } else {
                 Logger.v("ormn or ouid null");
                 finish();
@@ -460,56 +494,68 @@ public class ChatRoomActivity extends AppCompatActivity {
         Logger.v("muid: "+mAuth.getUid());
         Logger.v("ouid: "+mOUID);
 
-        FirebaseDatabase.getInstance().getReference().child("user_profiles").child(ofuid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                if(userProfile!=null){
-                    mOpponentImageUrl = userProfile.getmImageUrl();
-                    Logger.v("Image URL : "+mOpponentImageUrl);
-                    mOpponentFcm = userProfile.getmFCM();
-                    Logger.v("mOpponentFcm : "+mOpponentFcm);
+        if(!ofuid.isEmpty()){
+            FirebaseDatabase.getInstance().getReference().child("user_profiles").child(ofuid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                    if(userProfile!=null){
+                        mOpponentImageUrl = userProfile.getmImageUrl();
+                        Logger.v("Image URL : "+mOpponentImageUrl);
+                        mOpponentFcm = userProfile.getmFCM();
+                        Logger.v("mOpponentFcm : "+mOpponentFcm);
 
-                    mOpponentCompName = userProfile.getmDisplayName();
-                    Logger.v("DisplayName : "+mOpponentCompName);
-                    if(!mOpponentCompName.isEmpty())
-                    mTitle.setText(mOpponentCompName);
+                        mOpponentCompName = userProfile.getmDisplayName();
+                        Logger.v("DisplayName : "+mOpponentCompName);
+                        if(!mOpponentCompName.isEmpty())
+                            mTitle.setText(mOpponentCompName);
 
 
-                    FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            Logger.v("onSuccess: Checking Chat Heads");
-                            if (documentSnapshot.exists()) {
-                                ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
-                                assert chatHeadPojo != null;
-                                mChatRoomId = chatHeadPojo.getmChatRoomId();
-                            } else {
-                                mChatRoomId = mAuth.getUid() + mOUID;
+                        FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Logger.v("onSuccess: Checking Chat Heads");
+                                if (documentSnapshot.exists()) {
+                                    ChatHeadPojo chatHeadPojo = documentSnapshot.toObject(ChatHeadPojo.class);
+                                    assert chatHeadPojo != null;
+                                    mChatRoomId = chatHeadPojo.getmChatRoomId();
+                                } else {
+                                    mChatRoomId = mAuth.getUid() + mOUID;
+                                }
+                                Logger.v("mChatRoomId: "+mChatRoomId);
+                                buildAdapter(mChatRoomId);
+
                             }
-                            Logger.v("mChatRoomId: "+mChatRoomId);
-                            buildAdapter(mChatRoomId);
 
-                        }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Logger.v("onFailure: Checking Chat Heads");
+                                mChatRoomId = mAuth.getUid() + mOUID;
+                                Logger.v("mChatRoomId: "+mChatRoomId);
+                                buildAdapter(mChatRoomId);
 
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Logger.v("onFailure: Checking Chat Heads");
-                            mChatRoomId = mAuth.getUid() + mOUID;
-                            Logger.v("mChatRoomId: "+mChatRoomId);
-                            buildAdapter(mChatRoomId);
-
-                        }
-                    });
+                            }
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(),"User Unavailable to Chat",Toast.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(),"User Unavailable to Chat",Toast.LENGTH_LONG).show();
+                }
+            });
+        }else {
+            //User Never Loged In using FB :Create Chatroom and call sms api
+//            Toast.makeText(getApplicationContext(),"SMS will be sent",Toast.LENGTH_SHORT).show();
+
+            mChatRoomId = mAuth.getUid() + mOUID;
+            buildAdapter(mChatRoomId);
+
+
+        }
+
+
 
 //        FirebaseFirestore.getInstance().collection("partners").document(ouid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 //            @Override
@@ -758,24 +804,28 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 .update("mMessageStatus", 1);
                     }
 
-                    Picasso.with(holder.thumbnail.getContext())
-                                    .load(mOpponentImageUrl)
-                                    .placeholder(ContextCompat.getDrawable(getApplicationContext()
-                                            , R.mipmap.ic_launcher_round))
-                                    .transform(new CircleTransform())
-                                    .fit()
-                                    .into(holder.thumbnail, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            Logger.v("image set: " + position);
-                                        }
+                    if(!mOpponentImageUrl.isEmpty()){
+                        Picasso.with(holder.thumbnail.getContext())
+                                .load(mOpponentImageUrl)
+                                .placeholder(ContextCompat.getDrawable(getApplicationContext()
+                                        , R.mipmap.ic_launcher_round))
+                                .transform(new CircleTransform())
+                                .fit()
+                                .into(holder.thumbnail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Logger.v("image set: " + position);
+                                    }
 
-                                        @Override
-                                        public void onError() {
+                                    @Override
+                                    public void onError() {
 
-                                        }
+                                    }
 
-                                    });
+                                });
+                    }
+
+
 
 //                    if (model.getmMessageType() == 1) {
 //                        holder.thumbnail.setVisibility(View.INVISIBLE);
@@ -827,6 +877,8 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
 
                 }
+
+                if(!mOpponentImageUrl.isEmpty())
                 setThumbnail(mOpponentImageUrl);
 
                 super.onDataChanged();
@@ -989,5 +1041,37 @@ public class ChatRoomActivity extends AppCompatActivity {
         callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(callIntent);
+    }
+
+    private String sendSMS(String mORMN) {
+
+        try {
+            // Construct data
+            String apiKey = "apikey=" + "yourapiKey";
+            String message = "&message=" + "This is your message";
+            String sender = "&sender=" + "ILNCHA";
+            String numbers = "&numbers=" + mORMN.substring(1);
+
+            // Send data
+            HttpURLConnection conn = (HttpURLConnection) new URL("https://api.textlocal.in/send/?").openConnection();
+            String data = apiKey + numbers + message + sender;
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
+            conn.getOutputStream().write(data.getBytes("UTF-8"));
+            final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            final StringBuffer stringBuffer = new StringBuffer();
+            String line;
+            while ((line = rd.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+            rd.close();
+
+            return stringBuffer.toString();
+        } catch (Exception e) {
+            System.out.println("Error SMS "+e);
+            return "Error "+e;
+        }
+
     }
 }

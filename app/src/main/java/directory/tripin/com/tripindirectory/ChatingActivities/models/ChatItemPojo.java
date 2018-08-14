@@ -16,13 +16,19 @@ public class ChatItemPojo {
     private String mChatDocId;
     private String mSendersFuid;
     private String mImageUrl;
+    private String mOpponentsImageUrl;
+    private Boolean isSelected = false;
 
 
     private String mSendersFcmToken;
     private String mReciversFcmToken;
 
     private String mRMN;
+    private String mORMN;
+    private String mOFUID;
+
     private String mDisplayName = "";
+    private String mOpponentsDisplayName = "";
     private String mChatMesssage;
 
     @ServerTimestamp
@@ -37,11 +43,15 @@ public class ChatItemPojo {
     public ChatItemPojo(String mSendersUid,
                         String mSendersFuid,
                         String mImageUrl,
+                        String mOpponentsImageUrl,
                         String mReciversUid,
                         String mSendersFcmToken,
                         String mReciversFcmToken,
                         String mRMN,
+                        String mORMN,
+                        String mOFUID,
                         String mDisplayName,
+                        String mOpponentsDisplayName,
                         String mChatMesssage,
                         String mChatRoomId,
                         int mMessageStatus,
@@ -50,15 +60,59 @@ public class ChatItemPojo {
         this.mSendersUid = mSendersUid;
         this.mSendersFuid = mSendersFuid;
         this.mImageUrl = mImageUrl;
+        this.mOpponentsImageUrl = mOpponentsImageUrl;
         this.mReciversUid = mReciversUid;
         this.mSendersFcmToken = mSendersFcmToken;
         this.mReciversFcmToken = mReciversFcmToken;
         this.mRMN = mRMN;
+        this.mORMN = mORMN;
+        this.mOFUID = mOFUID;
         this.mDisplayName = mDisplayName;
+        this.mOpponentsDisplayName = mOpponentsDisplayName;
         this.mChatMesssage = mChatMesssage;
         this.mMessageStatus = mMessageStatus;
         this.mMessageType = mMessageType;
         this.mChatRoomId = mChatRoomId;
+    }
+
+    public String getmOpponentsDisplayName() {
+        return mOpponentsDisplayName;
+    }
+
+    public void setmOpponentsDisplayName(String mOpponentsDisplayName) {
+        this.mOpponentsDisplayName = mOpponentsDisplayName;
+    }
+
+    public String getmOpponentsImageUrl() {
+        return mOpponentsImageUrl;
+    }
+
+    public void setmOpponentsImageUrl(String mOpponentsImageUrl) {
+        this.mOpponentsImageUrl = mOpponentsImageUrl;
+    }
+
+    public String getmOFUID() {
+        return mOFUID;
+    }
+
+    public void setmOFUID(String mOFUID) {
+        this.mOFUID = mOFUID;
+    }
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
+
+    public String getmORMN() {
+        return mORMN;
+    }
+
+    public void setmORMN(String mORMN) {
+        this.mORMN = mORMN;
     }
 
     public String getmImageUrl() {

@@ -19,6 +19,12 @@
             android:layout_height="match_parent">
 
                 <include
+                    android:id="@+id/feedback"
+                    layout="@layout/newlookfeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
                     android:id="@+id/routeinput"
                     layout="@layout/layout_route_input"
                     android:layout_width="match_parent"
@@ -33,35 +39,46 @@
                     android:layout_height="wrap_content"
                     android:visibility="visible" />
 
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/loading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:visibility="visible"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="loading.json"
+                    app:lottie_loop="true" />
+
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_transporters"
+                    android:id="@+id/rv_transporters_at"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
                     android:padding="10dp"
                     android:visibility="visible" />
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/loading"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:visibility="visible"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="loading.json"
-                    app:lottie_loop="true" />
-
                 <TextView
                     android:id="@+id/showall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@color/blue_grey_50"
+                    android:background="@color/brown_50"
                     android:gravity="center"
                     android:padding="15dp"
                     android:text="SHOW ALL"
                     android:textColor="@color/blue_grey_800"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/noresult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="No Results Found, Try Nearby Route"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
 
         </LinearLayout>
