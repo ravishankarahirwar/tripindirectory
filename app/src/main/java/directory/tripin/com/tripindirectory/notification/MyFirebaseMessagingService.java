@@ -605,14 +605,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendLoadboardNotification (String messageBody, String messageTitle, String postId) {
         Intent intent;
-        if (mAuth.getCurrentUser() != null && postId != null) {
+        if (mAuth.getCurrentUser() != null) {
             //if user signed in
             preferenceManager = PreferenceManager.getInstance(getApplicationContext());
             if(preferenceManager.isOnNewLook()){
                 intent = new Intent(this, directory.tripin.com.tripindirectory.NewLookCode.activities.LoadBoardActivity.class);
             }else {
-                intent = new Intent(this,PostDetailActivity.class);
-                intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+                if( postId != null){
+                    intent = new Intent(this,PostDetailActivity.class);
+                    intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+                }else {
+                    intent = new Intent(this, directory.tripin.com.tripindirectory.forum.MainActivity.class);
+                }
             }
         } else {
             // not signed in

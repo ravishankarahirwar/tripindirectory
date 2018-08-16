@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -865,15 +866,20 @@ public class ChatRoomActivity extends AppCompatActivity {
                 if (adapter.getItemCount() > 0) {
                     if (getItem(0) != null) {
                         Logger.v("onDataChanged " + getItem(0).getmChatMesssage());
-                        if (getItem(0).getmSendersUid().equals(mAuth.getUid())) {
-                            //my msg at last
-                            mTypingThumnail.setVisibility(View.VISIBLE);
-                            mMsgType = 1;
-                        } else {
-                            mTypingThumnail.setVisibility(View.VISIBLE);
-                            //opponents msg at last
-                            mMsgType = 0;
+                        if(getItem(0).getmSendersUid()!=null){
+                            if (getItem(0).getmSendersUid().equals(mAuth.getUid())) {
+                                //my msg at last
+                                mTypingThumnail.setVisibility(View.VISIBLE);
+                                mMsgType = 1;
+                            } else {
+                                mTypingThumnail.setVisibility(View.VISIBLE);
+                                //opponents msg at last
+                                mMsgType = 0;
+                            }
+                        }else {
+                            Logger.v("onData Changed: senders uid null");
                         }
+
                     }
 
                 }

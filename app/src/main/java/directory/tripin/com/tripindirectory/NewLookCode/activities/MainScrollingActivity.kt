@@ -32,6 +32,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.squareup.picasso.Callback
@@ -72,6 +73,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     lateinit var mSourceRouteCityPojo: RouteCityPojo
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
     lateinit var textUtils: TextUtils
+    lateinit var firebaseAnalytics :FirebaseAnalytics
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +83,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         context = this
         textUtils = TextUtils()
         preferenceManager = PreferenceManager.getInstance(this)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
         if (FirebaseAuth.getInstance().currentUser == null
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null) {
@@ -103,19 +106,26 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
         mDestinationRouteCityPojo = RouteCityPojo(context, 2, 0, this)
 
-        if(preferenceManager.isNewLookAccepted){
-            feedback.visibility = View.GONE
-        }else{
-            feedback.visibility = View.VISIBLE
-        }
+
+
+
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         if(preferenceManager.displayName!=null){
             var name = preferenceManager.displayName.substringBefore(" ")
             lookque.text = "Hello $name, how is the new look?"
         }
 
-
-
+        if(preferenceManager.isNewLookAccepted){
+            feedback.visibility = View.GONE
+        }else{
+            feedback.visibility = View.VISIBLE
+        }
     }
 
     private fun setBottomNavogation() {
@@ -296,6 +306,11 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             // already signed in
             val i = Intent(this, ChatHeadsActivity::class.java)
             startActivity(i)
+
+            val bundle = Bundle()
+            bundle.putString("uid",FirebaseAuth.getInstance().currentUser!!.uid )
+            firebaseAnalytics.logEvent("n_openchatheads",bundle)
+
         } else {
             // not signed in
             startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
@@ -307,6 +322,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             // already signed in
             val i = Intent(this, CompanyInfoActivity::class.java)
             startActivity(i)
+            val bundle = Bundle()
+            bundle.putString("uid",FirebaseAuth.getInstance().currentUser!!.uid )
+            firebaseAnalytics.logEvent("n_selfcompanyprofile",bundle)
         } else {
             // not signed in
             startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
@@ -392,7 +410,15 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
 
-                holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                if(model.getmCompanyName()!=null){
+                    if(!model.getmCompanyName().isEmpty()){
+                        holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                    }else{
+                        holder.mCompany.text = "Unknown Name"
+                    }
+                }else{
+                    holder.mCompany.text = "Unknown Name"
+                }
 
                 if(model.getmPhotoUrl()!=null){
                     if(!model.getmPhotoUrl().isEmpty()){

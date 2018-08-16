@@ -88,15 +88,19 @@ class LoadBoardActivity : AppCompatActivity() {
         postpojo = Post()
 
         if(intent.extras!=null){
-            val basicQueryPojo:BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
-            if(!basicQueryPojo.mSourceCity.isEmpty()){
-                select_source.text = basicQueryPojo.mSourceCity
-                postpojo.mSource = basicQueryPojo.mSourceCity
+            if(intent.extras.getSerializable("query")!=null){
+
+                val basicQueryPojo:BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
+                if(!basicQueryPojo.mSourceCity.isEmpty()){
+                    select_source.text = basicQueryPojo.mSourceCity
+                    postpojo.mSource = basicQueryPojo.mSourceCity
+                }
+                if(!basicQueryPojo.mDestinationCity.isEmpty()){
+                    select_destination.text = basicQueryPojo.mDestinationCity
+                    postpojo.mDestination = basicQueryPojo.mDestinationCity
+                }
             }
-            if(!basicQueryPojo.mDestinationCity.isEmpty()){
-                select_destination.text = basicQueryPojo.mDestinationCity
-                postpojo.mDestination = basicQueryPojo.mDestinationCity
-            }
+
 
         }
 
