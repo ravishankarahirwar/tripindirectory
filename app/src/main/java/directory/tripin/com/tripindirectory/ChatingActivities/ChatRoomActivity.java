@@ -36,6 +36,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -101,6 +102,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     TextView mSubtitle;
     ImageButton mCancelImsg;
     SimpleDateFormat simpleDateFormat;
+    private FirebaseAnalytics firebaseAnalytics;
+
 
 
 
@@ -145,6 +148,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         preferenceManager = PreferenceManager.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         //Checking Auth, Finish if not logged in
 
         if(mAuth.getCurrentUser()==null
@@ -197,6 +202,8 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onClick(View view) {
                 iMsg = "";
                 mChatIntiatorLayout.setVisibility(View.GONE);
+                Bundle bundle = new Bundle();
+                firebaseAnalytics.logEvent("z_imsg_canceled",bundle);
             }
         });
         mChatEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -425,6 +432,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Logger.v("heads updated");
+                                                Bundle bundle = new Bundle();
+                                                if(mSubTitleText.equals("Active Now")){
+                                                    bundle.putString("opponent_active", "Yes");
+                                                }else {
+                                                    bundle.putString("opponent_active", "No");
+                                                }
+                                                firebaseAnalytics.logEvent("z_chat_send_action",bundle);
                                             }
                                         });
                                     }
@@ -694,6 +708,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         Intent intent = new Intent(ChatRoomActivity.this, PartnerDetailScrollingActivity.class);
         intent.putExtra("uid",mOUID);
         startActivity(intent);
+
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_chat_goto_details",bundle);
     }
 
 
@@ -936,6 +953,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 voiceSearchDialogTitle);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_chat_voice_clicked",bundle);
     }
 
 
@@ -947,6 +966,8 @@ public class ChatRoomActivity extends AppCompatActivity {
             ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String enquiry = matches.get(0).toString();
             mChatEditText.setText(enquiry);
+            Bundle bundle = new Bundle();
+            firebaseAnalytics.logEvent("z_chat_voice_used",bundle);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -1047,6 +1068,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(callIntent);
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_chat_callopponent",bundle);
     }
 
     private String sendSMS(String mORMN) {

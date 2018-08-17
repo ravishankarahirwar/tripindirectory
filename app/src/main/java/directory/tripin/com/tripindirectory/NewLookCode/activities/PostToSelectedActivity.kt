@@ -19,6 +19,7 @@ import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,6 +50,8 @@ class PostToSelectedActivity : AppCompatActivity() {
     var noc: Int = 0
     lateinit var preferenceManager: PreferenceManager
     lateinit var textUtils: TextUtils
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
 
 
 
@@ -61,6 +64,8 @@ class PostToSelectedActivity : AppCompatActivity() {
         textUtils = TextUtils()
         hashmap = HashMap<String, ChatItemPojo>()
         preferenceManager = PreferenceManager.getInstance(context)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+
 
 
         if (intent.extras != null) {
@@ -115,7 +120,16 @@ class PostToSelectedActivity : AppCompatActivity() {
         if (values.size == 0) {
             //Sending Finished
             Toast.makeText(context, "Sending Done!", Toast.LENGTH_SHORT).show()
+            val bundle = Bundle()
+            if(preferenceManager.rmn!=null){
+                bundle.putString("by_rmn",preferenceManager.rmn)
+            }else{
+                bundle.putString("by_rmn","Unknown")
+            }
+            firebaseAnalytics.logEvent("z_posted_to_selected", bundle)
+
             finish()
+
         } else {
             //#1 Check Chat Room Id Existance
             var chatroomid: String = ""

@@ -18,6 +18,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,12 +49,15 @@ public class ChatHeadsActivity extends AppCompatActivity {
     private PreferenceManager preferenceManager;
     private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
     private LottieAnimationView lottieAnimationView;
+    private FirebaseAnalytics firebaseAnalytics;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_heads);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mChatHeadsList = findViewById(R.id.rv_chatheads);
         mChatHeadsList.setLayoutManager(new LinearLayoutManager(this));
         lottieAnimationView = findViewById(R.id.loading);
@@ -118,6 +122,8 @@ public class ChatHeadsActivity extends AppCompatActivity {
                         intent.putExtra("ouid", model.getmOUID());
                         intent.putExtra("ofuid", model.getmOFUID());
                         startActivity(intent);
+                        Bundle bundle = new Bundle();
+                        firebaseAnalytics.logEvent("z_chathead_clicked",bundle);
                     }
                 });
 
@@ -138,9 +144,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onError() {
-
                                     }
-
                                 });
                     }
                 }
@@ -161,8 +165,6 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
-
             }
 
             @Override

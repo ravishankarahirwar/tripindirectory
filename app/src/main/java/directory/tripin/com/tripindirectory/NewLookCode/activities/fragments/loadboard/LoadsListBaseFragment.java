@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -61,6 +62,7 @@ public abstract class LoadsListBaseFragment extends Fragment {
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics firebaseAnalytics;
 
     public LoadsListBaseFragment() {}
 
@@ -73,7 +75,7 @@ public abstract class LoadsListBaseFragment extends Fragment {
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // Initialize Database
-        mAuth = FirebaseAuth.getInstance();
+
 
         // [END create_database_reference]
 
@@ -88,7 +90,8 @@ public abstract class LoadsListBaseFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        mAuth = FirebaseAuth.getInstance();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         // Set up Layout Manager, reverse layout
         mManager = new LinearLayoutManager(getActivity());
         mManager.setReverseLayout(true);
@@ -148,6 +151,20 @@ public abstract class LoadsListBaseFragment extends Fragment {
                             intent.putExtra("ofuid", model.getmFuid());
                             startActivity(intent);
 
+                        Bundle bundle = new Bundle();
+                        if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                            bundle.putString("by_rmn",mAuth.getCurrentUser().getPhoneNumber());
+                        }else{
+                            bundle.putString("by_rmn","Unknown");
+                        }
+                        bundle.putString("to_rmn",model.getmContactNo());
+                        if(model.getmFuid()!=null){
+                            bundle.putString("is_opponent_updated","Yes");
+                        }else{
+                            bundle.putString("is_opponent_updated","No");
+                        }
+                        firebaseAnalytics.logEvent("z_chat_clicked_lb", bundle);
+
                     }
                 });
 
@@ -167,6 +184,8 @@ public abstract class LoadsListBaseFragment extends Fragment {
                                     case DialogInterface.BUTTON_POSITIVE:
                                         if(postRef != null) {
                                             postRef.removeValue();
+                                            Bundle bundle = new Bundle();
+                                            firebaseAnalytics.logEvent("z_remove_clicked_lb", bundle);
                                         }
                                         break;
 
@@ -196,6 +215,20 @@ public abstract class LoadsListBaseFragment extends Fragment {
                         }else if (model.mFindOrPost == 2) {
                             shareMesssages(getActivity(), "Need LOAD", model.toString());
                         }
+
+                        Bundle bundle = new Bundle();
+                        if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                            bundle.putString("by_rmn",mAuth.getCurrentUser().getPhoneNumber());
+                        }else{
+                            bundle.putString("by_rmn","Unknown");
+                        }
+                        bundle.putString("to_rmn",model.getmContactNo());
+                        if(model.getmFuid()!=null){
+                            bundle.putString("is_opponent_updated","Yes");
+                        }else{
+                            bundle.putString("is_opponent_updated","No");
+                        }
+                        firebaseAnalytics.logEvent("z_share_clicked_lb", bundle);
                     }
                 });
 
@@ -209,6 +242,20 @@ public abstract class LoadsListBaseFragment extends Fragment {
                         } else {
                             Toast.makeText(getContext(), "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show();
                         }
+                        Bundle bundle = new Bundle();
+                        if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                            bundle.putString("by_rmn",mAuth.getCurrentUser().getPhoneNumber());
+                        }else{
+                            bundle.putString("by_rmn","Unknown");
+                        }
+                        bundle.putString("to_rmn",model.getmContactNo());
+                        if(model.getmFuid()!=null){
+                            bundle.putString("is_opponent_updated","Yes");
+                        }else{
+                            bundle.putString("is_opponent_updated","No");
+                        }
+                        firebaseAnalytics.logEvent("z_call_clicked_lb", bundle);
+
                     }
                 });
 

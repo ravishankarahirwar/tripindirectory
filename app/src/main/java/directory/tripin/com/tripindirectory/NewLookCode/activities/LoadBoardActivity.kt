@@ -26,6 +26,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.crash.FirebaseCrash
@@ -61,6 +62,8 @@ class LoadBoardActivity : AppCompatActivity() {
     private var mDatabase: DatabaseReference? = null
     var fabrotation = 0f
     private lateinit var preferenceManager: PreferenceManager
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
 
 
 
@@ -71,6 +74,7 @@ class LoadBoardActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(applicationContext)
         mDatabase = FirebaseDatabase.getInstance().reference
         preferenceManager = PreferenceManager.getInstance(this)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
         if(FirebaseAuth.getInstance().currentUser==null
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
@@ -188,6 +192,20 @@ class LoadBoardActivity : AppCompatActivity() {
             cleanUpPostInput()
             Toast.makeText(context,"Successfully Posted!",Toast.LENGTH_LONG).show()
             post.text = "POST NOW"
+
+            val bundle = Bundle()
+            bundle.putString("by_rmn",preferenceManager.rmn)
+
+            if(postpojo.mMeterial!=null){
+                if(!postpojo.mMeterial.isEmpty()){
+                    bundle.putString("is_material_entered","Yes")
+                }else{
+                    bundle.putString("is_material_entered","No")
+                }
+            }else{
+                bundle.putString("is_material_entered","No")
+            }
+            firebaseAnalytics.logEvent("z_loadboard_post", bundle)
 
         }.addOnCanceledListener {
             Toast.makeText(context,"Try Again",Toast.LENGTH_LONG).show()

@@ -574,8 +574,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     startActivity(new Intent(MainActivity.this,
                             directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity.class));
                     finish();
+                    Bundle bundle = new Bundle();
+                    mFirebaseAnalytics.logEvent("z_try_new_look",bundle);
                 }
             });
+
 
         });
 

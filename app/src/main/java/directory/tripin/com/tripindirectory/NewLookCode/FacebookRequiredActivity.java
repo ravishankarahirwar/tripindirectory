@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.NewLookCode;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,6 +37,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     CardView loginwithfacebbok;
     CardView loginwithphone;
     private boolean isBackStacked = false;
+    private FirebaseAnalytics firebaseAnalytics;
 
 
     private TextView mNameWelcome;
@@ -44,6 +47,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_required2);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         init();
 
         if(getIntent().getExtras()!=null){
@@ -77,8 +81,9 @@ public class FacebookRequiredActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-            finishAffinity();
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_back_from_authland",bundle);
+        finishAffinity();
 
     }
 
@@ -107,9 +112,12 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user!=null){
                     if(user.getPhoneNumber()!=null){
+                        Bundle bundle = new Bundle();
+
                         preferenceManager.setRMN(user.getPhoneNumber());
                         preferenceManager.setUserId(user.getUid());
                         if(preferenceManager.isFacebooked()){
+                            bundle.putString("isFacebooked","Yes");
                             Toast.makeText(getApplicationContext(),"Creating User",Toast.LENGTH_LONG).show();
                             UserProfile userProfile = new UserProfile(preferenceManager.getDisplayName(),
                                     preferenceManager.getRMN(),
@@ -131,8 +139,10 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                                 }
                             });
                         }else {
+                            bundle.putString("isFacebooked","No");
                             finish();
                         }
+                        firebaseAnalytics.logEvent("z_login_done",bundle);
 
 //                        Toast.makeText(getApplicationContext(),"RMN: "+ Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhoneNumber(),Toast.LENGTH_LONG).show();
                     }else {
@@ -161,6 +171,10 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                                         new AuthUI.IdpConfig.PhoneBuilder().build()))
                         .build(),
                 signInFor);
+
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_phone_clicked",bundle);
+
     }
 
     private void signUpbyFacebook() {
@@ -175,5 +189,10 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                         .setAvailableProviders(Arrays.asList(facebookIdp))
                         .build(),
                 FB_SIGN_IN);
+
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("z_facebook_clicked",bundle);
+
+
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.squareup.picasso.Callback
@@ -27,6 +28,7 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
@@ -38,6 +40,9 @@ class AllTransportersActivity : AppCompatActivity() {
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
     lateinit var textUtils: TextUtils
+    lateinit var preferenceManager :PreferenceManager
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +50,9 @@ class AllTransportersActivity : AppCompatActivity() {
         setContentView(R.layout.activity_all_transporters)
         context = this
         textUtils = TextUtils()
+        preferenceManager = PreferenceManager.getInstance(context)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+
 
         if(intent.extras!=null){
             if(intent.extras.getSerializable("query")!=null){
@@ -199,6 +207,29 @@ class AllTransportersActivity : AppCompatActivity() {
                     Logger.v("Ofuid :" +model.getmFUID())
                     startActivity(intent)
 
+                    val bundle = Bundle()
+                    if(preferenceManager.rmn!=null){
+                        bundle.putString("by_rmn",preferenceManager.rmn)
+                    }else{
+                        bundle.putString("by_rmn","Unknown")
+                    }
+                    bundle.putString("to_rmn",model.getmRMN())
+                    if(model.getmFUID()!=null){
+                        bundle.putString("is_opponent_updated","Yes")
+                    }else{
+                        bundle.putString("is_opponent_updated","No")
+                    }
+                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
+                            basicQueryPojo.mSourceCity != "Select City" &&
+                            !basicQueryPojo.mDestinationCity.isEmpty() &&
+                            basicQueryPojo.mDestinationCity != "Select City"){
+                        bundle.putString("is_route_queried","Yes")
+                    }else{
+                        bundle.putString("is_route_queried","No")
+                    }
+                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+                    firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
+
                 }
 
                 holder.mCall.setOnClickListener {
@@ -240,6 +271,29 @@ class AllTransportersActivity : AppCompatActivity() {
                         val number = model.getmContactPersonsList()[0].getmContactPersonMobile
                         callNumber(number)
                     }
+
+                    val bundle = Bundle()
+                    if(preferenceManager.rmn!=null){
+                        bundle.putString("by_rmn",preferenceManager.rmn)
+                    }else{
+                        bundle.putString("by_rmn","Unknown")
+                    }
+                    bundle.putString("to_rmn",model.getmRMN())
+                    if(model.getmFUID()!=null){
+                        bundle.putString("is_opponent_updated","Yes")
+                    }else{
+                        bundle.putString("is_opponent_updated","No")
+                    }
+                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
+                            basicQueryPojo.mSourceCity != "Select City" &&
+                            !basicQueryPojo.mDestinationCity.isEmpty() &&
+                            basicQueryPojo.mDestinationCity != "Select City"){
+                        bundle.putString("is_route_queried","Yes")
+                    }else{
+                        bundle.putString("is_route_queried","No")
+                    }
+                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+                    firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
                 }
 
 
