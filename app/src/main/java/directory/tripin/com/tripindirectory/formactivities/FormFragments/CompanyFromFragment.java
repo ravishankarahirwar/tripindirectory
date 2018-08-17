@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import directory.tripin.com.tripindirectory.NewLookCode.activities.ILNRegisterAdActivity;
 import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.formactivities.CompanyLandLineNumbersAdapter;
 import directory.tripin.com.tripindirectory.formactivities.ContactPersonsAdapter;
@@ -179,6 +180,13 @@ public class CompanyFromFragment extends BaseFragment {
                     if (partnerInfoPojo.getmCompanyAdderss() != null) {
                         mCompanyAddress.setText(partnerInfoPojo.getmCompanyAdderss().getAddress());
                         mCompanyCity.setText(partnerInfoPojo.getmCompanyAdderss().getCity());
+                        //show iln reg ad
+                        if(!mCompanyCity.getText().toString().isEmpty()){
+                            if(mCompanyCity.getText().toString().trim().toUpperCase().equals("MUMBAI")){
+                                if(preferenceManager.toShowRegAd())
+                                startActivity(new Intent(getActivity(), ILNRegisterAdActivity.class));
+                            }
+                        }
                         mCompanyState.setText(partnerInfoPojo.getmCompanyAdderss().getState());
                         mPinCode.setText(partnerInfoPojo.getmCompanyAdderss().getPincode());
                         if(partnerInfoPojo.getmCompanyAdderss().isLatLongSet()){

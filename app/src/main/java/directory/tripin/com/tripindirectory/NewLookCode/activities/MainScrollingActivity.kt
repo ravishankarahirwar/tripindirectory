@@ -86,7 +86,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
         if (FirebaseAuth.getInstance().currentUser == null
-                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null) {
+                || preferenceManager.rmn == null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null ) {
             val i = Intent(this, FacebookRequiredActivity::class.java)
             startActivity(i)
         }
@@ -115,6 +116,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (preferenceManager.displayName != null) {
             var name = preferenceManager.displayName.substringBefore(" ")
             lookque.text = "Hello $name, how is the new look?"
+        }
+
+        if(preferenceManager.isInboxRead){
+            chatbadge.visibility = View.INVISIBLE
+        }else{
+            chatbadge.visibility = View.VISIBLE
         }
 
         if (preferenceManager.isNewLookAccepted) {
@@ -159,9 +166,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     AuthUI.getInstance().signOut(context).addOnSuccessListener {
                         Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
                         preferenceManager.setisFacebboked(false)
+                        preferenceManager.rmn = null
                         val i = Intent(this, NewSplashActivity::class.java)
                         startActivity(i)
                         finish()
+                        val bundle = Bundle()
+                        firebaseAnalytics.logEvent("z_logout", bundle)
                     }
 
                 }
@@ -632,6 +642,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loading.visibility = View.GONE
                         if (itemCount == 0) {
+                            //no result
+                            val bundle = Bundle()
+                            firebaseAnalytics.logEvent("z_no_result", bundle)
+
                             noresult.visibility = View.VISIBLE
                             showall.visibility = View.GONE
 

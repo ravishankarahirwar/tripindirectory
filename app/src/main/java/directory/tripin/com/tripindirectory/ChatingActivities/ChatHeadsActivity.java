@@ -160,8 +160,10 @@ public class ChatHeadsActivity extends AppCompatActivity {
                             public void onSuccess(QuerySnapshot documentSnapshots) {
                                 if (!documentSnapshots.isEmpty()) {
                                     holder.badge.setNumber(documentSnapshots.size());
+                                    preferenceManager.setInbocRead(false);
                                 }else {
                                     holder.badge.setNumber(0);
+                                    preferenceManager.setInbocRead(true);
                                 }
                             }
                         });
@@ -244,7 +246,14 @@ public class ChatHeadsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_notifications: {
+            case R.id.action_help: {
+                Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
+                intent.putExtra("ormn", "+919284089759");
+                intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1");
+                intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1");
+                startActivity(intent);
+                Bundle bundle = new Bundle();
+                firebaseAnalytics.logEvent("z_assistant", bundle);
                 break;
             }
             case R.id.action_comments: {

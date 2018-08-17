@@ -574,7 +574,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             NotificationManager notificationManager =
                                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                            notificationManager.notify(6 /* ID of notification */, notificationBuilder.build());
                             Log.v(TAG, "new one to one msg notified");
 
                         }

@@ -1,6 +1,8 @@
 package directory.tripin.com.tripindirectory.ChatingActivities;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -103,6 +105,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     ImageButton mCancelImsg;
     SimpleDateFormat simpleDateFormat;
     private FirebaseAnalytics firebaseAnalytics;
+    NotificationManager notificationManager;
+
 
 
 
@@ -149,6 +153,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Checking Auth, Finish if not logged in
 
@@ -166,6 +171,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         setListners();
 
     }
+
+
 
     private void setChatListUI() {
         mChatsList = findViewById(R.id.rv_chat);
@@ -922,7 +929,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             updateUserPresence(true);
             setOpponentPresenceListners();
         }
-
+        notificationManager.cancel(6);
     }
 
     @Override

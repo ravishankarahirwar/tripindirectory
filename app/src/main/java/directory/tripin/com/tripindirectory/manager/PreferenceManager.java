@@ -19,6 +19,10 @@ public class PreferenceManager {
     public static final String PREF_FACEBOOKED = "isfacebooked";
     public static final String PREF_REG_MOBILE = "mobile";
     public static final String PREF_IS_ON_NEWLOOK = "isonnewlook";
+    public static final String PREF_IS_INBOXREAD = "isinboxread";
+
+    public static final String PREF_TO_SHOW_REG_AD = "toshowregad";
+
     public static final String PREF_ISNEWLOOKACCEPTED = "isnewlookaccepted";
 
 
@@ -72,13 +76,31 @@ public class PreferenceManager {
         return sInstance.getBoolean(PREF_FACEBOOKED, false);
     }
 
-    public void setisOnNewLook(boolean b) {
-        editor.putBoolean(PREF_IS_ON_NEWLOOK, b);
+
+
+    public boolean toShowRegAd() {
+        return sInstance.getBoolean(PREF_TO_SHOW_REG_AD, true);
+    }
+
+    public void setToShowRegAd(boolean b) {
+        editor.putBoolean(PREF_TO_SHOW_REG_AD, b);
+        editor.commit();
+    }
+
+    public boolean isInboxRead() {
+        return sInstance.getBoolean(PREF_IS_INBOXREAD, true);
+    }
+    public void setInbocRead(boolean b) {
+        editor.putBoolean(PREF_IS_INBOXREAD, b);
         editor.commit();
     }
 
     public boolean isOnNewLook() {
          return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, false);
+    }
+    public void setisOnNewLook(boolean b) {
+        editor.putBoolean(PREF_IS_ON_NEWLOOK, b);
+        editor.commit();
     }
 
     public void setisNewLookAccepted(boolean b) {

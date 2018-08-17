@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import directory.tripin.com.tripindirectory.NewLookCode.activities.ILNRegisterAdActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;
@@ -93,6 +95,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
     View view1;
     View view2;
     View view3;
+    LinearLayout ilnreg;
 
 
     public ImagesFormFragment() {
@@ -149,6 +152,7 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
         mCompName = view.findViewById(R.id.company_name1);
         mCompAddress = view.findViewById(R.id.company_address);
         mSendReq = view.findViewById(R.id.textViewSendRequest);
+        ilnreg = view.findViewById(R.id.ilnreg);
 
 
         view1 = view.findViewById(R.id.acc_status_0);
@@ -347,6 +351,12 @@ public class ImagesFormFragment extends BaseFragment implements AddImage, EasyIm
                             }
                             case 2: {
                                 view3.setVisibility(View.VISIBLE);
+                                ilnreg.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        startActivity(new Intent(getActivity(), ILNRegisterAdActivity.class));
+                                    }
+                                });
                                 break;
                             }
                         }

@@ -97,6 +97,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                     Log.v("onActivityResult: ",user.getDisplayName()+" "+user.getPhoneNumber()+" "+user.getProviderId());
 
                     preferenceManager.setDisplayName(user.getDisplayName());
+                    Toast.makeText(getApplicationContext(),"Hello "+user.getDisplayName()+"!", Toast.LENGTH_LONG).show();
+
                     preferenceManager.setImageUrl(user.getPhotoUrl().toString());
                     preferenceManager.setFuid(user.getUid());
                     if(user.getEmail()!=null)
@@ -178,6 +180,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     }
 
     private void signUpbyFacebook() {
+
+        Toast.makeText(getApplicationContext(),"Checking Facebook!",Toast.LENGTH_SHORT).show();
 
         AuthUI.IdpConfig facebookIdp = new AuthUI.IdpConfig.FacebookBuilder()
                 .setPermissions(Arrays.asList("user_friends"))

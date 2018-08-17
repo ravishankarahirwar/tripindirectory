@@ -95,6 +95,7 @@ class PostToSelectedActivity : AppCompatActivity() {
                 Toast.makeText(context, "Nothing Selected", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "Sending", Toast.LENGTH_SHORT).show()
+                selected_comps.text = "Sending... Please Wait!"
 
                 //Sending Function
 
