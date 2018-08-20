@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.keiferstone.nonet.NoNet;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadPojo;
 import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -69,18 +71,30 @@ public class ChatHeadsActivity extends AppCompatActivity {
         if(mAuth.getCurrentUser()==null
                 || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
                 || !preferenceManager.isFacebooked()){
-            Intent i = new Intent(this, FacebookRequiredActivity.class);
-            i.putExtra("backstack",true);
-            startActivity(i);
+            Intent i = new Intent(ChatHeadsActivity.this, FacebookRequiredActivity.class);
+            i.putExtra("from","Chat");
+            startActivityForResult(i,3);
             Toast.makeText(getApplicationContext(),"Login with Facebook To chat",Toast.LENGTH_LONG).show();
         }
 
-        if(!preferenceManager.isFacebooked()){
-            startActivity(new Intent(ChatHeadsActivity.this, FacebookRequiredActivity.class));
-        }
 
         buildAdapter();
+        internetCheck();
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(requestCode==3){
+                Toast.makeText(getApplicationContext(),"Welcome",Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            if(requestCode==3){
+                finish();
+            }
+        }
     }
 
     private void buildAdapter() {
@@ -261,5 +275,15 @@ public class ChatHeadsActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private void internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
     }
 }

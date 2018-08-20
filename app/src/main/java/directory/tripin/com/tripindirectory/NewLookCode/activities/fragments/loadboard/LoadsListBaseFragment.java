@@ -91,6 +91,7 @@ public abstract class LoadsListBaseFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        context = getActivity().getApplicationContext();
         firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         // Set up Layout Manager, reverse layout
         mManager = new LinearLayoutManager(getActivity());
@@ -108,32 +109,32 @@ public abstract class LoadsListBaseFragment extends Fragment {
                 final DatabaseReference postRef = getRef(position);
                 Logger.v("PostListFragment popolate "+position+" "+model.getmAuthor());
 
-                if(model.getmPhotoUrl()!=null){
-                    if(!model.getmPhotoUrl().isEmpty()){
-                        Picasso.with(viewHolder.mThumbnail.getContext())
-                                .load(model.getmPhotoUrl())
-                                .placeholder(ContextCompat.getDrawable(getActivity()
-                                        , R.mipmap.ic_launcher_round))
-                                .transform(new CircleTransform())
-                                .fit()
-                                .into(viewHolder.mThumbnail, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        Logger.v("image set: " + position);
-                                    }
-
-                                    @Override
-                                    public void onError() {
-                                        Logger.v("image error: " + position);
-                                    }
-
-                                });
-                    }else {
-                        Logger.v("image url empty: " + position);
-                    }
-                }else {
-                    Logger.v("image url null: " + position);
-                }
+//                if(model.getmPhotoUrl()!=null){
+//                    if(!model.getmPhotoUrl().isEmpty()){
+//                        Picasso.with(context)
+//                                .load(model.getmPhotoUrl())
+//                                .placeholder(ContextCompat.getDrawable(getActivity()
+//                                        , R.mipmap.ic_launcher_round))
+//                                .transform(new CircleTransform())
+//                                .fit()
+//                                .into(viewHolder.mThumbnail, new Callback() {
+//                                    @Override
+//                                    public void onSuccess() {
+//                                        Logger.v("image set: " + position);
+//                                    }
+//
+//                                    @Override
+//                                    public void onError() {
+//                                        Logger.v("image error: " + position);
+//                                    }
+//
+//                                });
+//                    }else {
+//                        Logger.v("image url empty: " + position);
+//                    }
+//                }else {
+//                    Logger.v("image url null: " + position);
+//                }
 
 
                 // Set click listener for the whole post view

@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
+import com.keiferstone.nonet.NoNet;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 import directory.tripin.com.tripindirectory.NewLookCode.activities.MainScrollingActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.NewLookCode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
@@ -36,11 +38,14 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     private static final int PHONE_SIGN_IN = 101;
     CardView loginwithfacebbok;
     CardView loginwithphone;
-    private boolean isBackStacked = false;
     private FirebaseAnalytics firebaseAnalytics;
 
 
     private TextView mNameWelcome;
+    private TextView mNote;
+    String from = "";
+
+
     private PreferenceManager preferenceManager;
 
     @Override
@@ -51,10 +56,22 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         init();
 
         if(getIntent().getExtras()!=null){
-            if(getIntent().getExtras().getBoolean("backstack")){
-                isBackStacked = true;
+            if(getIntent().getExtras().get("from")!=null){
+                from = getIntent().getExtras().getString("from");
+                if(from.equals("MainActivity")){
+                    mNote.setText("Hi, You are almost there! Log in with Facebook for a more personalised experience in the new look.");
+                }
+                if(from.equals("Chat")){
+                    mNote.setText("Hi, Log in once with Facebook to use the chat feature of Indian Logistics Network.");
+                    loginwithphone.setVisibility(View.INVISIBLE);
+                }
+                if(from.equals("Loadboard")){
+                    mNote.setText("Hi, Log in once with Facebook to use the LoadBoard of Indian Logistics Network.");
+                    loginwithphone.setVisibility(View.INVISIBLE);
+                }
             }
         }
+
 
         loginwithfacebbok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +86,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 startSignInFor(PHONE_SIGN_IN);
             }
         });
+        internetCheck();
+
 
 
     }
@@ -77,13 +96,30 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         loginwithfacebbok = findViewById(R.id.facebbok);
         loginwithphone = findViewById(R.id.phone);
+        mNote =findViewById(R.id.note);
     }
 
     @Override
     public void onBackPressed() {
         Bundle bundle = new Bundle();
+        //finishAffinity();
+        if(from.equals("MainActivity")){
+            preferenceManager.setisOnNewLook(false);
+            setResult(RESULT_CANCELED);
+            bundle.putString("wasfrom","MainActivity");
+            finish();
+        }
+        if(from.equals("Chat")){
+            setResult(RESULT_CANCELED);
+            bundle.putString("wasfrom","Chat");
+            finish();
+        }
+        if(from.equals("Loadboard")){
+            setResult(RESULT_CANCELED);
+            bundle.putString("wasfrom","Loadboard");
+            finish();
+        }
         firebaseAnalytics.logEvent("z_back_from_authland",bundle);
-        finishAffinity();
 
     }
 
@@ -132,6 +168,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     //Toast.makeText(getApplicationContext(),"Connected with Facebook",Toast.LENGTH_LONG).show();
+                                    setResult(RESULT_OK);
                                     finish();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -198,5 +235,15 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         firebaseAnalytics.logEvent("z_facebook_clicked",bundle);
 
 
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private void internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
     }
 }

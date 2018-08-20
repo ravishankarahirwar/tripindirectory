@@ -79,8 +79,16 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
         source.setText(post.getmSource());
         destination.setText(post.getmDestination());
         material.setText(post.getmMeterial());
-        truckType.setText(post.getmTruckType());
-        bodyType.setText(post.getmTruckBodyType());
+        if(!post.getmTruckType().equals("Select Type of Vehicle")){
+            truckType.setText(post.getmTruckType());
+        }else {
+            truckType.setText("");
+        }
+        if(!post.getmTruckBodyType().equals("Select Type of Body")){
+            bodyType.setText(post.getmTruckBodyType());
+        }else {
+            bodyType.setText("");
+        }
         length.setText(post.getmTruckLength());
         weight.setText(post.getmPayload());
 

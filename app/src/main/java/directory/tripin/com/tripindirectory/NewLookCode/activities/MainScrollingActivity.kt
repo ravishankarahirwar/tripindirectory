@@ -35,6 +35,7 @@ import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
+import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity
@@ -89,7 +90,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 || preferenceManager.rmn == null
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null ) {
             val i = Intent(this, FacebookRequiredActivity::class.java)
-            startActivity(i)
+            i.putExtra("from","MainActivity")
+            startActivityForResult(i,3)
         }
 
 
@@ -107,6 +109,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
         mDestinationRouteCityPojo = RouteCityPojo(context, 2, 0, this)
 
+        internetCheck()
 
     }
 
@@ -309,7 +312,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     }
 
     private fun startOldActivity() {
-        val i = Intent(this, SplashActivity::class.java)
+        val i = Intent(this, NewSplashActivity::class.java)
         startActivity(i)
         finishAffinity()
     }
@@ -673,11 +676,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            val place = PlaceAutocomplete.getPlace(context, data)
 
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
+                    val place = PlaceAutocomplete.getPlace(context, data)
+
                     textViewSource.text = ". ${place.name}"
                     textViewSource.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
 
@@ -693,6 +697,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
+                    val place = PlaceAutocomplete.getPlace(context, data)
+
                     textViewDestination.text = ". ${place.name}"
                     textViewDestination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
 
@@ -709,7 +715,21 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 SIGN_IN_FOR_CREATE_COMPANY -> {
                     startYourBusinessActivity("AfterPhoneSignup")
                 }
+
+                3->{
+                    Toast.makeText(context,"Welcome",Toast.LENGTH_SHORT).show()
+                }
             }
+        }else{
+            when (requestCode) {
+
+                3->{
+                    val i = Intent(this, NewSplashActivity::class.java)
+                    startActivity(i)
+                    finishAffinity()
+                }
+            }
+
         }
     }
 
@@ -852,5 +872,15 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())))
         }
 
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 }

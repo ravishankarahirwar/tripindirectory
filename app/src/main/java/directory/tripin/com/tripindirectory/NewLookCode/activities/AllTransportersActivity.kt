@@ -19,6 +19,7 @@ import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity
@@ -74,6 +75,9 @@ class AllTransportersActivity : AppCompatActivity() {
                 setMainAdapter(basicQueryPojo)
             }
         }
+
+        internetCheck()
+
 
     }
 
@@ -346,5 +350,15 @@ class AllTransportersActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 }

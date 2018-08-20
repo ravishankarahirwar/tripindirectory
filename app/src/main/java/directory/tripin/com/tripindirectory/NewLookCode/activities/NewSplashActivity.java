@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.keiferstone.nonet.NoNet;
 
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
@@ -45,6 +46,8 @@ public class NewSplashActivity extends AppCompatActivity {
                 firebaseAnalytics.logEvent("z_from_splash",bundle);
             }
         }, SPLASH_SHOW_TIME);
+
+        internetCheck();
     }
 
     private void startMainNewActivity() {
@@ -56,5 +59,15 @@ public class NewSplashActivity extends AppCompatActivity {
         Intent i = new Intent(NewSplashActivity.this, MainActivity.class);
         startActivity(i);
         finish();
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private void internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
     }
 }

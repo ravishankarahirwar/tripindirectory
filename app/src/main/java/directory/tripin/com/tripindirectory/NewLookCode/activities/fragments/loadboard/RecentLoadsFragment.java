@@ -13,7 +13,7 @@ public class RecentLoadsFragment extends LoadsListBaseFragment {
         // Last 100 posts, these are automatically the 100 most recent
         // due to sorting by push() keys
         Query recentPostsQuery = databaseReference.child("posts")
-                .limitToLast(20);
+                .limitToLast(30);
         // [END recent_posts_query]
         return recentPostsQuery;
     }

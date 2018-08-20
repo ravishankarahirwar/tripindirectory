@@ -605,7 +605,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendLoadboardNotification (String messageBody, String messageTitle, String postId) {
         Intent intent;
-        if (mAuth.getCurrentUser() != null) {
+
             //if user signed in
             preferenceManager = PreferenceManager.getInstance(getApplicationContext());
             if(preferenceManager.isOnNewLook()){
@@ -618,10 +618,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     intent = new Intent(this, directory.tripin.com.tripindirectory.forum.MainActivity.class);
                 }
             }
-        } else {
-            // not signed in
-            intent = new Intent(this,NewSplashActivity.class);
-        }
 
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,

@@ -20,6 +20,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.util.Log
+import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -32,6 +33,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.crash.FirebaseCrash
 import com.google.firebase.database.*
 import com.jaredrummler.materialspinner.MaterialSpinner
+import com.keiferstone.nonet.NoNet
+import directory.tripin.com.tripindirectory.Messaging.Addon.ChatContract
 import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo
 import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard.models.Post
@@ -79,9 +82,9 @@ class LoadBoardActivity : AppCompatActivity() {
         if(FirebaseAuth.getInstance().currentUser==null
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber==null
                 || !preferenceManager.isFacebooked){
-            val i = Intent(this, FacebookRequiredActivity::class.java)
-            i.putExtra("backstack", true)
-            startActivity(i)
+            val i = Intent(this@LoadBoardActivity, FacebookRequiredActivity::class.java)
+            i.putExtra("from", "Loadboard")
+            startActivityForResult(i, 3)
             Toast.makeText(applicationContext, "Login with Facebook To Use Loadboard", Toast.LENGTH_LONG).show()
         }
 
@@ -98,21 +101,31 @@ class LoadBoardActivity : AppCompatActivity() {
                 if(!basicQueryPojo.mSourceCity.isEmpty()){
                     select_source.text = basicQueryPojo.mSourceCity
                     postpojo.mSource = basicQueryPojo.mSourceCity
+                    newload.visibility = View.GONE
+                    loadpost_input.visibility = View.VISIBLE
                 }
                 if(!basicQueryPojo.mDestinationCity.isEmpty()){
                     select_destination.text = basicQueryPojo.mDestinationCity
                     postpojo.mDestination = basicQueryPojo.mDestinationCity
+                    newload.visibility = View.GONE
+                    loadpost_input.visibility = View.VISIBLE
                 }
             }
 
 
         }
 
+        internetCheck()
 
 
     }
 
     private fun setListners() {
+
+        newload.setOnClickListener {
+            newload.visibility = View.GONE
+            loadpost_input.visibility = View.VISIBLE
+        }
 
         fab_revert.setOnClickListener {
             flipthefab()
@@ -169,6 +182,7 @@ class LoadBoardActivity : AppCompatActivity() {
                 writeNewPost(userId, postpojo)
 
 
+
             }
         }
     }
@@ -190,6 +204,7 @@ class LoadBoardActivity : AppCompatActivity() {
 
         mDatabase!!.updateChildren(childUpdates).addOnCompleteListener {
             cleanUpPostInput()
+
             Toast.makeText(context,"Successfully Posted!",Toast.LENGTH_LONG).show()
             post.text = "POST NOW"
 
@@ -226,6 +241,8 @@ class LoadBoardActivity : AppCompatActivity() {
         length.setText("")
         material.setText("")
         otherreq.setText("")
+        newload.visibility = View.VISIBLE
+        loadpost_input.visibility = View.GONE
 
     }
     private fun flipthefab() {
@@ -319,22 +336,33 @@ class LoadBoardActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            val place = PlaceAutocomplete.getPlace(context, data)
 
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
+                    val place = PlaceAutocomplete.getPlace(context, data)
                     select_source.text = ". ${place.name}"
                     select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                     postpojo.mSource = place.name.toString()
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
+                    val place = PlaceAutocomplete.getPlace(context, data)
                     select_destination.text = ". ${place.name}"
                     select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                     postpojo.mDestination = place.name.toString()
 
                 }
 
+                3->{
+                    Toast.makeText(applicationContext, "Welcome", Toast.LENGTH_LONG).show()
+                }
+
+            }
+        }else{
+            when (requestCode) {
+                3->{
+                    finish()
+                }
             }
         }
     }
@@ -388,6 +416,16 @@ class LoadBoardActivity : AppCompatActivity() {
 
         val df = SimpleDateFormat("MMM dd, HH:mm")
         return df.format(c.time)
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 
 }

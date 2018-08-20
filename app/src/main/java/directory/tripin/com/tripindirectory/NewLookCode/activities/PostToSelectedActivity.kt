@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadPojo
@@ -105,12 +106,14 @@ class PostToSelectedActivity : AppCompatActivity() {
                         list.add(chatItemPojo)
                 }
                 sendtothefirst(list)
-
+                sendtoaalfab.visibility = View.INVISIBLE
 
             }
 
 
         }
+
+        internetCheck()
 
     }
 
@@ -127,6 +130,7 @@ class PostToSelectedActivity : AppCompatActivity() {
             }else{
                 bundle.putString("by_rmn","Unknown")
             }
+            bundle.putString("status","Done")
             firebaseAnalytics.logEvent("z_posted_to_selected", bundle)
 
             finish()
@@ -187,6 +191,16 @@ class PostToSelectedActivity : AppCompatActivity() {
 
                     }.addOnFailureListener {
                         Logger.v("onFailure: Checking Chat Heads")
+                        Toast.makeText(context, "Sending Failed! Try Again", Toast.LENGTH_SHORT).show()
+                        val bundle = Bundle()
+                        if(preferenceManager.rmn!=null){
+                            bundle.putString("by_rmn",preferenceManager.rmn)
+                        }else{
+                            bundle.putString("by_rmn","Unknown")
+                        }
+                        bundle.putString("status","Failed")
+                        firebaseAnalytics.logEvent("z_posted_to_selected", bundle)
+                        finish()
                     }
         }
 
@@ -495,5 +509,15 @@ class PostToSelectedActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 }

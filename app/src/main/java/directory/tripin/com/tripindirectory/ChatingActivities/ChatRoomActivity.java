@@ -49,6 +49,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.keiferstone.nonet.NoNet;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -69,6 +70,7 @@ import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemVie
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity;
+import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.NewLookCode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
@@ -108,9 +110,6 @@ public class ChatRoomActivity extends AppCompatActivity {
     NotificationManager notificationManager;
 
 
-
-
-
     private String mChatRoomId;
     private String iMsg = "";
 
@@ -148,7 +147,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
-        simpleDateFormat =  new SimpleDateFormat("hh:mm, EEE", Locale.ENGLISH);
+        simpleDateFormat = new SimpleDateFormat("hh:mm, EEE", Locale.ENGLISH);
         mAuth = FirebaseAuth.getInstance();
         preferenceManager = PreferenceManager.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -157,21 +156,21 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         //Checking Auth, Finish if not logged in
 
-        if(mAuth.getCurrentUser()==null
-                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
-                || !preferenceManager.isFacebooked()){
-            Intent i = new Intent(this, FacebookRequiredActivity.class);
-            i.putExtra("backstack",true);
-            startActivity(i);
-            Toast.makeText(getApplicationContext(),"Login with Facebook To chat",Toast.LENGTH_LONG).show();
+        if (mAuth.getCurrentUser() == null
+                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() == null
+                || !preferenceManager.isFacebooked()) {
+            Intent i = new Intent(ChatRoomActivity.this, FacebookRequiredActivity.class);
+            i.putExtra("from","Chat");
+            startActivityForResult(i,3);
+            Toast.makeText(getApplicationContext(), "Login with Facebook To chat", Toast.LENGTH_LONG).show();
         }
 
         setChatListUI();
         setUI();
         setListners();
+        internetCheck();
 
     }
-
 
 
     private void setChatListUI() {
@@ -210,7 +209,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 iMsg = "";
                 mChatIntiatorLayout.setVisibility(View.GONE);
                 Bundle bundle = new Bundle();
-                firebaseAnalytics.logEvent("z_imsg_canceled",bundle);
+                firebaseAnalytics.logEvent("z_imsg_canceled", bundle);
             }
         });
         mChatEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -316,7 +315,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                         //send msg with imsg
                         mChatIntiatorLayout.setVisibility(View.GONE);
 
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(), preferenceManager.getFuid(), preferenceManager.getImageUrl(),
                                 mOpponentImageUrl,
                                 mOUID,
                                 mMyFcm,
@@ -334,7 +333,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                             public void onSuccess(DocumentReference documentReference) {
                                 iMsg = "";
                                 mSendAction.setClickable(false);
-                                ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                                ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(), preferenceManager.getFuid(), preferenceManager.getImageUrl(),
                                         mOpponentImageUrl,
                                         mOUID,
                                         mMyFcm,
@@ -378,7 +377,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Logger.v("heads updated");
-                                                        if(mOFUID.isEmpty()){
+                                                        if (mOFUID.isEmpty()) {
 //                                                            sendSMS(mORMN);
                                                         }
                                                     }
@@ -395,7 +394,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     } else {
                         //only msg
                         mSendAction.setClickable(false);
-                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(),preferenceManager.getFuid(),preferenceManager.getImageUrl(),
+                        ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(), preferenceManager.getFuid(), preferenceManager.getImageUrl(),
                                 mOpponentImageUrl,
                                 mOUID,
                                 mMyFcm,
@@ -440,12 +439,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                                             public void onSuccess(Void aVoid) {
                                                 Logger.v("heads updated");
                                                 Bundle bundle = new Bundle();
-                                                if(mSubTitleText.equals("Active Now")){
+                                                if (mSubTitleText.equals("Active Now")) {
                                                     bundle.putString("opponent_active", "Yes");
-                                                }else {
+                                                } else {
                                                     bundle.putString("opponent_active", "No");
                                                 }
-                                                firebaseAnalytics.logEvent("z_chat_send_action",bundle);
+                                                firebaseAnalytics.logEvent("z_chat_send_action", bundle);
                                             }
                                         });
                                     }
@@ -460,8 +459,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
         getIntentData();
     }
-
-
 
 
     private void getIntentData() {
@@ -480,13 +477,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                         mChatIntiatorLayout.setVisibility(View.VISIBLE);
                     }
                 }
-                if(bundle.getString("ofuid") != null){
-                    if(!bundle.getString("ofuid").isEmpty()){
+                if (bundle.getString("ofuid") != null) {
+                    if (!bundle.getString("ofuid").isEmpty()) {
                         mOFUID = bundle.getString("ofuid");
-                    }else {
+                    } else {
                         mSubtitle.setText("User Inactive, will be invited via SMS.");
                     }
-                }else {
+                } else {
                     mSubtitle.setText("User Inactive, will be invited via SMS.");
                 }
                 getMyDetails();
@@ -512,24 +509,24 @@ public class ChatRoomActivity extends AppCompatActivity {
 
 
     private void getOpponentsDetails(String ofuid) {
-        Logger.v("get Opponent Details: "+ofuid);
-        Logger.v("muid: "+mAuth.getUid());
-        Logger.v("ouid: "+mOUID);
+        Logger.v("get Opponent Details: " + ofuid);
+        Logger.v("muid: " + mAuth.getUid());
+        Logger.v("ouid: " + mOUID);
 
-        if(!ofuid.isEmpty()){
+        if (!ofuid.isEmpty()) {
             FirebaseDatabase.getInstance().getReference().child("user_profiles").child(ofuid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                    if(userProfile!=null){
+                    if (userProfile != null) {
                         mOpponentImageUrl = userProfile.getmImageUrl();
-                        Logger.v("Image URL : "+mOpponentImageUrl);
+                        Logger.v("Image URL : " + mOpponentImageUrl);
                         mOpponentFcm = userProfile.getmFCM();
-                        Logger.v("mOpponentFcm : "+mOpponentFcm);
+                        Logger.v("mOpponentFcm : " + mOpponentFcm);
 
                         mOpponentCompName = userProfile.getmDisplayName();
-                        Logger.v("DisplayName : "+mOpponentCompName);
-                        if(!mOpponentCompName.isEmpty())
+                        Logger.v("DisplayName : " + mOpponentCompName);
+                        if (!mOpponentCompName.isEmpty())
                             mTitle.setText(mOpponentCompName);
 
 
@@ -544,7 +541,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 } else {
                                     mChatRoomId = mAuth.getUid() + mOUID;
                                 }
-                                Logger.v("mChatRoomId: "+mChatRoomId);
+                                Logger.v("mChatRoomId: " + mChatRoomId);
                                 buildAdapter(mChatRoomId);
 
                             }
@@ -554,7 +551,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
                                 Logger.v("onFailure: Checking Chat Heads");
                                 mChatRoomId = mAuth.getUid() + mOUID;
-                                Logger.v("mChatRoomId: "+mChatRoomId);
+                                Logger.v("mChatRoomId: " + mChatRoomId);
                                 buildAdapter(mChatRoomId);
 
                             }
@@ -564,10 +561,10 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(getApplicationContext(),"User Unavailable to Chat",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "User Unavailable to Chat", Toast.LENGTH_LONG).show();
                 }
             });
-        }else {
+        } else {
             //User Never Loged In using FB :Create Chatroom and call sms api
 //            Toast.makeText(getApplicationContext(),"SMS will be sent",Toast.LENGTH_SHORT).show();
 
@@ -576,7 +573,6 @@ public class ChatRoomActivity extends AppCompatActivity {
 
 
         }
-
 
 
 //        FirebaseFirestore.getInstance().collection("partners").document(ouid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -669,7 +665,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     }
 
-    private void setOpponentTypingListner(){
+    private void setOpponentTypingListner() {
         useractivity = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -679,7 +675,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     if (userActivityPojo != null) {
                         if (userActivityPojo.getTyping()) {
                             //set typing visible
-                             mTypingView.setVisibility(View.VISIBLE);
+                            mTypingView.setVisibility(View.VISIBLE);
                             mSubtitle.setText("Typing...");
 
                         } else {
@@ -710,17 +706,15 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
     }
 
-    private void gotoDetailsActivity(){
+    private void gotoDetailsActivity() {
 
         Intent intent = new Intent(ChatRoomActivity.this, PartnerDetailScrollingActivity.class);
-        intent.putExtra("uid",mOUID);
+        intent.putExtra("uid", mOUID);
         startActivity(intent);
 
         Bundle bundle = new Bundle();
-        firebaseAnalytics.logEvent("z_chat_goto_details",bundle);
+        firebaseAnalytics.logEvent("z_chat_goto_details", bundle);
     }
-
-
 
 
     private void updateTypingStatus(final boolean isTyping) {
@@ -785,7 +779,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final ChatItemViewHolder holder,  int position,  ChatItemPojo model) {
+            protected void onBindViewHolder(final ChatItemViewHolder holder, int position, ChatItemPojo model) {
 
                 Logger.v("onBind " + position + " " + model.getmChatMesssage());
 
@@ -793,13 +787,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                 final String docId = snapshot.getId();
 
                 holder.msg.setText(model.getmChatMesssage());
-                if(model.getmTimeStamp()!=null)
-                holder.time.setText(simpleDateFormat.format(model.getmTimeStamp()));
+                if (model.getmTimeStamp() != null)
+                    holder.time.setText(simpleDateFormat.format(model.getmTimeStamp()));
 
 
-                if(model.getmMessageType()==2){
+                if (model.getmMessageType() == 2) {
                     holder.msg.setTextSize(10);
-                }else {
+                } else {
                     holder.msg.setTextSize(15);
                 }
 
@@ -811,7 +805,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 .setImageDrawable(ContextCompat
                                         .getDrawable(getApplicationContext(),
                                                 R.drawable.ic_visibility_red_24dp));
-                    }else {
+                    } else {
                         Logger.v(model.getmChatMesssage() + " : is not seen");
                         holder.seenEye
                                 .setImageDrawable(ContextCompat
@@ -829,7 +823,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 .update("mMessageStatus", 1);
                     }
 
-                    if(!mOpponentImageUrl.isEmpty()){
+                    if (!mOpponentImageUrl.isEmpty()) {
                         Picasso.with(holder.thumbnail.getContext())
                                 .load(mOpponentImageUrl)
                                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
@@ -849,7 +843,6 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                 });
                     }
-
 
 
 //                    if (model.getmMessageType() == 1) {
@@ -890,7 +883,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 if (adapter.getItemCount() > 0) {
                     if (getItem(0) != null) {
                         Logger.v("onDataChanged " + getItem(0).getmChatMesssage());
-                        if(getItem(0).getmSendersUid()!=null){
+                        if (getItem(0).getmSendersUid() != null) {
                             if (getItem(0).getmSendersUid().equals(mAuth.getUid())) {
                                 //my msg at last
                                 mTypingThumnail.setVisibility(View.VISIBLE);
@@ -900,7 +893,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 //opponents msg at last
                                 mMsgType = 0;
                             }
-                        }else {
+                        } else {
                             Logger.v("onData Changed: senders uid null");
                         }
 
@@ -908,8 +901,8 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                 }
 
-                if(!mOpponentImageUrl.isEmpty())
-                setThumbnail(mOpponentImageUrl);
+                if (!mOpponentImageUrl.isEmpty())
+                    setThumbnail(mOpponentImageUrl);
 
                 super.onDataChanged();
 
@@ -921,11 +914,10 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
-        if(mChatRoomId!=null){
+        if (mChatRoomId != null) {
             updateUserPresence(true);
             setOpponentPresenceListners();
         }
@@ -961,7 +953,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 voiceSearchDialogTitle);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
         Bundle bundle = new Bundle();
-        firebaseAnalytics.logEvent("z_chat_voice_clicked",bundle);
+        firebaseAnalytics.logEvent("z_chat_voice_clicked", bundle);
     }
 
 
@@ -974,13 +966,21 @@ public class ChatRoomActivity extends AppCompatActivity {
             String enquiry = matches.get(0).toString();
             mChatEditText.setText(enquiry);
             Bundle bundle = new Bundle();
-            firebaseAnalytics.logEvent("z_chat_voice_used",bundle);
+            firebaseAnalytics.logEvent("z_chat_voice_used", bundle);
         }
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 3) {
+                Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (requestCode == 3) {
+                finish();
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-
 
 
     public String gettimeDiff(Date startDate) {
@@ -1019,11 +1019,11 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     public void removeuserpresencelistners() {
 
-        if(userpresencelistner!=null){
+        if (userpresencelistner != null) {
             databaseReference.child("chatpresence").child("users").child(mOUID).removeEventListener(userpresencelistner);
         }
 
-        if(useractivity!=null){
+        if (useractivity != null) {
             databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).removeEventListener(useractivity);
         }
 
@@ -1076,7 +1076,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(callIntent);
         Bundle bundle = new Bundle();
-        firebaseAnalytics.logEvent("z_chat_callopponent",bundle);
+        firebaseAnalytics.logEvent("z_chat_callopponent", bundle);
     }
 
     private String sendSMS(String mORMN) {
@@ -1105,9 +1105,19 @@ public class ChatRoomActivity extends AppCompatActivity {
 
             return stringBuffer.toString();
         } catch (Exception e) {
-            System.out.println("Error SMS "+e);
-            return "Error "+e;
+            System.out.println("Error SMS " + e);
+            return "Error " + e;
         }
 
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private void internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar();
     }
 }

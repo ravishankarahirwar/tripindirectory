@@ -7,10 +7,9 @@
     android:id="@+id/partner_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="3dp"
+    app:cardCornerRadius="4dp"
     app:cardElevation="2dp"
-    app:cardUseCompatPadding="true"
-    app:contentPadding="2dp">
+    app:cardUseCompatPadding="true">
 
     <ImageView
         android:id="@+id/ischecked"
@@ -19,14 +18,14 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="TODO"
         android:padding="5dp"
         android:tint="@color/app_version"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_read_24dp"
-        android:contentDescription="TODO" />
+        app:srcCompat="@drawable/ic_read_24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -118,7 +117,8 @@
             android:id="@+id/actions"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
+            android:background="@color/browser_actions_bg_grey"
+            android:elevation="2dp"
             android:orientation="horizontal">
 
             <TextView
@@ -127,7 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:text="CHAT"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="10sp"
@@ -136,7 +136,7 @@
             <View
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:background="@color/colorLightBg"></View>
+                android:background="@color/arrow_white"></View>
 
             <TextView
                 android:id="@+id/call"
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:text="CALL"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="10sp"
