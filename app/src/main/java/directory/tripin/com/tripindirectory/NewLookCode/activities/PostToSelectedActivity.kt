@@ -17,9 +17,12 @@ import android.widget.Toast
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,6 +33,7 @@ import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadPojo
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo
 import directory.tripin.com.tripindirectory.NewLookCode.BasicQueryPojo
+import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.NewLookCode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
@@ -40,6 +44,9 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_post_to_selected.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
+import kotlinx.android.synthetic.main.layout_choose_vehicle.*
+import kotlinx.android.synthetic.main.layout_main_actionbar.*
+import kotlinx.android.synthetic.main.layout_route_input.*
 
 class PostToSelectedActivity : AppCompatActivity() {
 
@@ -52,6 +59,7 @@ class PostToSelectedActivity : AppCompatActivity() {
     lateinit var preferenceManager: PreferenceManager
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var mAuth : FirebaseAuth
 
 
 
@@ -66,6 +74,16 @@ class PostToSelectedActivity : AppCompatActivity() {
         hashmap = HashMap<String, ChatItemPojo>()
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        mAuth = FirebaseAuth.getInstance()
+
+        if (mAuth.currentUser == null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null
+                || !preferenceManager.isFacebooked) {
+            val i = Intent(this@PostToSelectedActivity, FacebookRequiredActivity::class.java)
+            i.putExtra("from", "PostToSelected")
+            startActivityForResult(i, 3)
+            Toast.makeText(applicationContext, "Login with FB To send requirement to selected", Toast.LENGTH_LONG).show()
+        }
 
 
 
@@ -114,6 +132,10 @@ class PostToSelectedActivity : AppCompatActivity() {
         }
 
         internetCheck()
+
+        if(!preferenceManager.isPTSScreenGuided){
+            showIntro()
+        }
 
     }
 
@@ -479,6 +501,20 @@ class PostToSelectedActivity : AppCompatActivity() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 3) {
+                Toast.makeText(applicationContext, "Welcome", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            if (requestCode == 3) {
+                finish()
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+
+    }
+
     fun updatebottomview() {
         noc = 0
         for (rmn: String in hashmap.keys) {
@@ -509,6 +545,33 @@ class PostToSelectedActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    private fun showIntro() {
+
+        val tapTargetSequence : TapTargetSequence = TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(sendtoaalfab, "Send to Selected feature","Select the transporters from the list and click on send. Your requirement details will be sent to all in the chat. You can proceed your transaction further with interested members. Tap on the target!")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(false).outerCircleColor(R.color.primaryColor)
+
+                )
+                .listener(object: TapTargetSequence.Listener {
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                    }
+
+                    override fun onSequenceFinish() {
+                        Toast.makeText(applicationContext,"Use ILN wisely!",Toast.LENGTH_SHORT).show()
+                        preferenceManager.setisPTSScreenGuided(true)
+                    }
+                    override fun onSequenceCanceled(lastTarget: TapTarget) {
+                        // Boo
+                        preferenceManager.setisPTSScreenGuided(true)
+                    }
+                })
+
+        tapTargetSequence.start()
     }
 
     /**

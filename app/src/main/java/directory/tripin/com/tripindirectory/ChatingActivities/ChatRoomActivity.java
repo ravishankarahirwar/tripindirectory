@@ -4,25 +4,18 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,7 +44,6 @@ import com.google.firebase.firestore.Query;
 import com.keiferstone.nonet.NoNet;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -65,21 +56,19 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatHeadPojo;
+import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatIndicatorPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.NewLookCode.FacebookRequiredActivity;
-import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.NewLookCode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
-import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
-import directory.tripin.com.tripindirectory.model.PartnerInfoPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class ChatRoomActivity extends AppCompatActivity {
@@ -97,6 +86,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     ValueEventListener userpresencelistner;
     ValueEventListener useractivity;
+    ValueEventListener pendingMsgs;
+
     ConstraintLayout mTypingView;
     ImageView mTypingThumnail;
     ImageView mMainThumbnail;
@@ -112,6 +103,10 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private String mChatRoomId;
     private String iMsg = "";
+    private ChatIndicatorPojo mOpponentIndicator;
+    private ChatIndicatorPojo mMyIndicator;
+    private int howmanyread = 0;
+
 
 
     //opponents necessary information
@@ -165,10 +160,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Login with Facebook To chat", Toast.LENGTH_LONG).show();
         }
 
+        mOpponentIndicator = new ChatIndicatorPojo(mMyImageUrl,0);
+        mMyIndicator = new ChatIndicatorPojo(mMyImageUrl,0);
+
         setChatListUI();
         setUI();
         setListners();
         internetCheck();
+
 
     }
 
@@ -192,7 +191,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         mTypingThumnail = findViewById(R.id.imageViewThumbTyping);
         mTypingView = findViewById(R.id.cl_typing);
         mCancelImsg = findViewById(R.id.imageButtonCancelImsg);
-        mMainThumbnail = findViewById(R.id.mainchatthumb);
+        mMainThumbnail = findViewById(R.id.mainhumb);
         mMainBack = findViewById(R.id.back);
         mSubtitle = findViewById(R.id.status);
         mTitle = findViewById(R.id.opponentname);
@@ -331,8 +330,20 @@ public class ChatRoomActivity extends AppCompatActivity {
                         FirebaseFirestore.getInstance().collection("chats").document("chatrooms").collection(mChatRoomId).add(chatItemPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
+
+                                Bundle bundle = new Bundle();
+                                if (mSubTitleText.equals("Active Now")) {
+                                    bundle.putString("opponent_active", "Yes");
+                                } else {
+                                    bundle.putString("opponent_active", "No");
+                                }
+
+                                bundle.putString("msg_type", "InfoMsg");
+                                firebaseAnalytics.logEvent("z_chat_send_action", bundle);
                                 iMsg = "";
                                 mSendAction.setClickable(false);
+
+
                                 ChatItemPojo chatItemPojo = new ChatItemPojo(preferenceManager.getUserId(), preferenceManager.getFuid(), preferenceManager.getImageUrl(),
                                         mOpponentImageUrl,
                                         mOUID,
@@ -353,6 +364,15 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 FirebaseFirestore.getInstance().collection("chats").document("chatrooms").collection(mChatRoomId).add(chatItemPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
                                     public void onSuccess(DocumentReference documentReference) {
+
+                                        Bundle bundle = new Bundle();
+                                        if (mSubTitleText.equals("Active Now")) {
+                                            bundle.putString("opponent_active", "Yes");
+                                        } else {
+                                            bundle.putString("opponent_active", "No");
+                                        }
+                                        bundle.putString("msg_type", "Normal");
+                                        firebaseAnalytics.logEvent("z_chat_send_action", bundle);
 
                                         mSendAction.setClickable(true);
                                         ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
@@ -377,9 +397,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Logger.v("heads updated");
-                                                        if (mOFUID.isEmpty()) {
-//                                                            sendSMS(mORMN);
-                                                        }
+                                                        mOpponentIndicator.setmMsgCount(mOpponentIndicator.getmMsgCount()+2);
+                                                        databaseReference.child("chatpresence").child("chatpendings").child(mOUID).setValue(mOpponentIndicator).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Logger.v("opponent indicator updated");
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
@@ -415,6 +439,15 @@ public class ChatRoomActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
 
+                                Bundle bundle = new Bundle();
+                                if (mSubTitleText.equals("Active Now")) {
+                                    bundle.putString("opponent_active", "Yes");
+                                } else {
+                                    bundle.putString("opponent_active", "No");
+                                }
+                                bundle.putString("msg_type", "Normal");
+                                firebaseAnalytics.logEvent("z_chat_send_action", bundle);
+
                                 mSendAction.setClickable(true);
                                 ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
                                         preferenceManager.getRMN(),
@@ -438,13 +471,14 @@ public class ChatRoomActivity extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Logger.v("heads updated");
-                                                Bundle bundle = new Bundle();
-                                                if (mSubTitleText.equals("Active Now")) {
-                                                    bundle.putString("opponent_active", "Yes");
-                                                } else {
-                                                    bundle.putString("opponent_active", "No");
-                                                }
-                                                firebaseAnalytics.logEvent("z_chat_send_action", bundle);
+                                                mOpponentIndicator.setmMsgCount(mOpponentIndicator.getmMsgCount()+1);
+                                                mOpponentIndicator.setmLastMsgUserImageUrl(preferenceManager.getImageUrl());
+                                                databaseReference.child("chatpresence").child("chatpendings").child(mOUID).setValue(mOpponentIndicator).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Logger.v("opponent indicator updated");
+                                                    }
+                                                });
                                             }
                                         });
                                     }
@@ -481,10 +515,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                     if (!bundle.getString("ofuid").isEmpty()) {
                         mOFUID = bundle.getString("ofuid");
                     } else {
-                        mSubtitle.setText("User Inactive, will be invited via SMS.");
+                        mSubtitle.setText(R.string.userInactive);
                     }
                 } else {
-                    mSubtitle.setText("User Inactive, will be invited via SMS.");
+                    mSubtitle.setText(R.string.userInactive);
                 }
                 getMyDetails();
 
@@ -651,6 +685,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                         }
                     }
 
+                }else {
+                    if(!mOFUID.isEmpty()){
+                        mSubtitle.setText(R.string.available);
+                    }
                 }
 
             }
@@ -694,6 +732,30 @@ public class ChatRoomActivity extends AppCompatActivity {
         };
 
         databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).addValueEventListener(useractivity);
+        setOpponentPendingsListners();
+    }
+
+    private void setOpponentPendingsListners() {
+        pendingMsgs = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    ChatIndicatorPojo chatIndicatorPojo = dataSnapshot.getValue(ChatIndicatorPojo.class);
+                    if (chatIndicatorPojo != null) {
+                        mOpponentIndicator.setmMsgCount(chatIndicatorPojo.getmMsgCount());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        databaseReference.child("chatpresence").child("chatpendings").child(mOUID).addValueEventListener(pendingMsgs);
+
     }
 
     private void updateUserPresence(boolean b) {
@@ -820,7 +882,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 .document("chatrooms")
                                 .collection(mChatRoomId)
                                 .document(docId)
-                                .update("mMessageStatus", 1);
+                                .update("mMessageStatus", 1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                howmanyread = howmanyread+1;
+                            }
+                        });
                     }
 
                     if (!mOpponentImageUrl.isEmpty()) {
@@ -933,9 +1000,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                 updateUserPresence(false);
                 updateTypingStatus(false);
                 removeuserpresencelistners();
+                updateUserPendings();
             }
         }
     }
+
+
 
     @Override
     protected void onStop() {
@@ -1026,7 +1096,42 @@ public class ChatRoomActivity extends AppCompatActivity {
         if (useractivity != null) {
             databaseReference.child("chatpresence").child("chatrooms").child(mChatRoomId).child(mOUID).removeEventListener(useractivity);
         }
+        if (pendingMsgs != null) {
+            databaseReference.child("chatpresence").child("chatpendings").child(mOUID).removeEventListener(pendingMsgs);
+        }
 
+    }
+
+    private void updateUserPendings() {
+
+        databaseReference.child("chatpresence").child("chatpendings").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    mMyIndicator = dataSnapshot.getValue(ChatIndicatorPojo.class);
+                    int count = mMyIndicator.getmMsgCount()-howmanyread;
+                    if(count<0){
+                        count = 0;
+                    }
+                    mMyIndicator.setmMsgCount(count);
+                    if(mMyIndicator.getmLastMsgUserImageUrl().equals(mOpponentImageUrl)){
+                        mMyIndicator.setmLastMsgUserImageUrl("");
+                    }
+                    databaseReference.child("chatpresence").child("chatpendings").child(mAuth.getCurrentUser().getUid()).setValue(mMyIndicator).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Logger.v("self indicator updated");
+                            howmanyread = 0;
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void setThumbnail(String mOpponentImageUrl) {

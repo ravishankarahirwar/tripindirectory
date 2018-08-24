@@ -17,9 +17,9 @@
         <!--app:showAsAction="always" />-->
     <item
         android:id="@+id/action_help"
+        android:icon="@drawable/ic_assistant_black_24dp"
         android:orderInCategory="70"
         android:title="Help"
-        android:icon="@drawable/ic_live_help_black_24dp"
         app:showAsAction="always" />
 
 </menu>

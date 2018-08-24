@@ -154,6 +154,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private static final String INTRO_SEARCH = "search_intro";
     private static final String INTRO_LOADBOARD = "loadboard_intro";
+    private static final String INTRO_NEWLOOK = "newlook_intro";
+
 
 
     public static final int REQUEST_INVITE = 1001;
@@ -737,7 +739,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 SpotlightSequence.getInstance(MainActivity.this,config)
                         .addSpotlight(searchByRoute, "Search By", "Search by Route, \nCompany Name, City(Touch to Next)", INTRO_SEARCH)
-                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard (Touch to END)", INTRO_LOADBOARD)
+                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard ", INTRO_LOADBOARD)
+                        .addSpotlight(mTryNewLook,"Try New Look","We have redesigned the whole app just the way you want it, give it a try!",INTRO_NEWLOOK)
                         .startSequence();
             }
         }, 1000);

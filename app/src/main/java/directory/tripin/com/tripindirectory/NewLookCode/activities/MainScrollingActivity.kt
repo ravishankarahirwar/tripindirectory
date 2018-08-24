@@ -32,17 +32,23 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.*
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity
+import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatIndicatorPojo
 import directory.tripin.com.tripindirectory.NewLookCode.*
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
-import directory.tripin.com.tripindirectory.activity.SplashActivity
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
@@ -75,6 +81,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    var mMyIndicator : ChatIndicatorPojo? = null
+    var pendingChatsvalueEventListener: ValueEventListener? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,27 +120,161 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         internetCheck()
 
+        if(!preferenceManager.isMainScreenGuided){
+            showIntro()
+        }
+
+    }
+
+    private fun setChatPendingIndicator() {
+        pendingChatsvalueEventListener = object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                chatloading.visibility = View.GONE
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                chatloading.visibility = View.GONE
+                if (p0.exists()) {
+                    mMyIndicator = p0.getValue(ChatIndicatorPojo::class.java)
+                    if(mMyIndicator!=null){
+                        if(mMyIndicator!!.getmMsgCount()>0){
+                            chatbadge.visibility = View.VISIBLE
+
+                            if(mMyIndicator!!.getmLastMsgUserImageUrl()!=null){
+                                if(!mMyIndicator!!.getmLastMsgUserImageUrl().isEmpty()){
+                                    lastmsgimgurl.visibility = View.VISIBLE
+                                    val url = mMyIndicator!!.getmLastMsgUserImageUrl()
+                                    Picasso.with(applicationContext)
+                                            .load(url)
+                                            .placeholder(ContextCompat.getDrawable(applicationContext, R.drawable.emoji_google_1f464))
+                                            .transform(CircleTransform())
+                                            .fit()
+                                            .into(lastmsgimgurl, object : Callback {
+
+                                                override fun onSuccess() {
+                                                }
+
+                                                override fun onError() {
+                                                    lastmsgimgurl.visibility = View.INVISIBLE
+                                                }
+                                            })
+                            }
+
+                            }
+                        }else{
+                            chatbadge.visibility = View.INVISIBLE
+                            lastmsgimgurl.visibility = View.INVISIBLE
+                        }
+                    }else{
+                        chatbadge.visibility = View.INVISIBLE
+                        lastmsgimgurl.visibility = View.INVISIBLE
+                    }
+                }else{
+                    chatbadge.visibility = View.INVISIBLE
+                    lastmsgimgurl.visibility = View.INVISIBLE
+                }
+            }
+
+        }
+        FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).addValueEventListener(pendingChatsvalueEventListener as ValueEventListener)
+
+    }
+
+    override fun onStop() {
+        if(pendingChatsvalueEventListener!=null){
+            if(preferenceManager.userId!=null)
+            FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).removeEventListener(pendingChatsvalueEventListener!!)
+        }
+        super.onStop()
+    }
+
+    private fun showIntro() {
+
+        val tapTargetSequence : TapTargetSequence = TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(mainhumb, "Welcome to ILN Directory","Lets get through what you can explore here. Tap on the target!")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(false).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(fromtitle, "Select Source City from here","Result will be filtered accordingly. Tap on the target.")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(totitle, "Select Destination City here","Transporters operating only between your selected route will be shown!")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(rv_fleets, "Select Fleet Type","The result will be filtered accordingly. You can select multiple fleet types.")
+                                .transparentTarget(true)
+                                .targetRadius(75)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(posttoselected, "Post To Selected Transporters","Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(posttolb, "Post to Loadboard","Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(yourbusiness, "Your Business Here","Fill your company details and you are in the directory. Its Free! Tap on the target for next")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(showchats, "Your Chats Here","All your chats are saved here, Now keep your business talks at one place. Tap the target!")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor)
+
+        )
+                .listener(object: TapTargetSequence.Listener {
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                    }
+
+                    override fun onSequenceFinish() {
+                        Toast.makeText(applicationContext,"Use ILN wisely!",Toast.LENGTH_SHORT).show()
+                        preferenceManager.setisMainScreenGuided(true)
+                    }
+                    override fun onSequenceCanceled(lastTarget:TapTarget) {
+                        // Boo
+                        preferenceManager.setisMainScreenGuided(true)
+                        Toast.makeText(applicationContext,"You can restart the guide from menu!",Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+        tapTargetSequence.start()
     }
 
     override fun onResume() {
         super.onResume()
+
+        if(preferenceManager.userId!=null){
+            setChatPendingIndicator()
+        }
 
         if (preferenceManager.displayName != null) {
             var name = preferenceManager.displayName.substringBefore(" ")
             lookque.text = "Hello $name, how is the new look?"
         }
 
-        if(preferenceManager.isInboxRead){
-            chatbadge.visibility = View.INVISIBLE
-        }else{
-            chatbadge.visibility = View.VISIBLE
-        }
+//        if(preferenceManager.isInboxRead){
+//            chatbadge.visibility = View.INVISIBLE
+//        }else{
+//            chatbadge.visibility = View.VISIBLE
+//        }
+
 
         if (preferenceManager.isNewLookAccepted) {
             feedback.visibility = View.GONE
         } else {
             feedback.visibility = View.VISIBLE
         }
+    }
+
+    override fun onBackPressed() {
+        //finishAffinity()
+        super.onBackPressed()
     }
 
     private fun setBottomNavogation() {
@@ -165,6 +308,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 R.id.action_rate -> {
                     rateApp()
                 }
+                R.id.action_guide -> {
+                    showIntro()
+                }
+                R.id.action_feedback -> {
+                    chatwithassistant()
+                }
                 R.id.action_logout -> {
                     AuthUI.getInstance().signOut(context).addOnSuccessListener {
                         Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
@@ -183,6 +332,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
 
     }
+
+
 
 
     private fun setListners() {
@@ -326,7 +477,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
             val i = Intent(this, LoadBoardActivity::class.java)
-            i.putExtra("query", basicQueryPojo)
+            if(s != "BottomMenu"){
+                i.putExtra("query", basicQueryPojo)
+            }
             startActivity(i)
             val bundle = Bundle()
             bundle.putString("from", s)
@@ -666,8 +819,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             }
         }
 
-        rv_transporters_at.layoutManager = LinearLayoutManager(this)
-        rv_transporters_at.adapter = adapter
+        rv_transporters_att.layoutManager = LinearLayoutManager(this)
+        rv_transporters_att.adapter = adapter
 
 
     }
@@ -717,6 +870,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 }
 
                 3->{
+                    if(preferenceManager.userId!=null){
+                        setChatPendingIndicator()
+                    }
                     Toast.makeText(context,"Welcome",Toast.LENGTH_SHORT).show()
                 }
             }
@@ -882,5 +1038,15 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         NoNet.monitor(this)
                 .poll()
                 .snackbar()
+    }
+
+    private fun chatwithassistant() {
+        val intent = Intent(this@MainScrollingActivity, ChatRoomActivity::class.java)
+        intent.putExtra("ormn", "+919284089759")
+        intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
+        intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
+        startActivity(intent)
+        val bundle = Bundle()
+        firebaseAnalytics.logEvent("z_assistant", bundle)
     }
 }

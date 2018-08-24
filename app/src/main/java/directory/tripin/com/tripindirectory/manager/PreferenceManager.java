@@ -13,6 +13,14 @@ public class PreferenceManager {
     public static final String PREF_EMAIL = "useremail";
 
     public static final String PREF_FACEBOOK_UID = "fuid";
+    public static final String PREF_IS_MAINSCREEN_GUIDED = "ismainguided";
+    public static final String PREF_IS_LOADBOARD_GUIDED = "isloadboardguided";
+    public static final String PREF_IS_POSTTOSELECTED_GUIDED = "isposttoselectedguided";
+    public static final String PREF_IS_MAININTRO_SEEN = "ismainintroseen";
+
+
+
+
 
     public static final String PREF_DISPLAY_NAME = "displayneame";
     public static final String PREF_IMAGE_URL = "imageurl";
@@ -96,7 +104,7 @@ public class PreferenceManager {
     }
 
     public boolean isOnNewLook() {
-         return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, false);
+         return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, true);
     }
     public void setisOnNewLook(boolean b) {
         editor.putBoolean(PREF_IS_ON_NEWLOOK, b);
@@ -110,6 +118,42 @@ public class PreferenceManager {
 
     public boolean isNewLookAccepted() {
         return sInstance.getBoolean(PREF_ISNEWLOOKACCEPTED, false);
+    }
+
+    public void setisMainScreenGuided(boolean b) {
+        editor.putBoolean(PREF_IS_MAINSCREEN_GUIDED, b);
+        editor.commit();
+    }
+
+    public boolean isMainScreenGuided() {
+        return sInstance.getBoolean(PREF_IS_MAINSCREEN_GUIDED, false);
+    }
+
+    public void setisLBScreenGuided(boolean b) {
+        editor.putBoolean(PREF_IS_LOADBOARD_GUIDED, b);
+        editor.commit();
+    }
+
+    public boolean isLBScreenGuided() {
+        return sInstance.getBoolean(PREF_IS_LOADBOARD_GUIDED, false);
+    }
+
+    public void setisPTSScreenGuided(boolean b) {
+        editor.putBoolean(PREF_IS_POSTTOSELECTED_GUIDED, b);
+        editor.commit();
+    }
+
+    public boolean isPTSScreenGuided() {
+        return sInstance.getBoolean(PREF_IS_POSTTOSELECTED_GUIDED, false);
+    }
+
+    public boolean isMainIntroSeen() {
+        return sInstance.getBoolean(PREF_IS_MAININTRO_SEEN, false);
+    }
+
+    public void setisMainIntroSeen(boolean b) {
+        editor.putBoolean(PREF_IS_MAININTRO_SEEN, b);
+        editor.commit();
     }
 
     public String getEmail() {

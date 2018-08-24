@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
@@ -34,6 +35,8 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
+import libs.mjn.prettydialog.PrettyDialog
+import libs.mjn.prettydialog.PrettyDialogCallback
 
 class AllTransportersActivity : AppCompatActivity() {
 
@@ -74,6 +77,10 @@ class AllTransportersActivity : AppCompatActivity() {
                 }
                 setMainAdapter(basicQueryPojo)
             }
+        }
+
+        fabfilter.setOnClickListener {
+            Toast.makeText(context,"Feature Coming Soon",Toast.LENGTH_SHORT).show()
         }
 
         internetCheck()
@@ -324,6 +331,7 @@ class AllTransportersActivity : AppCompatActivity() {
 
                     LoadingState.LOADING_MORE -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
+                        loadingat.visibility = View.VISIBLE
                     }
 
                     LoadingState.LOADED -> {
@@ -350,6 +358,52 @@ class AllTransportersActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    private fun shownewlookfeedbackdialog() {
+
+        val prettyDialog: PrettyDialog = PrettyDialog(this)
+
+        prettyDialog
+                .setTitle("Filters and Sorting")
+                .setMessage("This feature is still in development, do you have any suggestion about how it should be?")
+                .addButton(
+                        "Yes, Feedback to Assistant",
+                        R.color.pdlg_color_white,
+                        R.color.green_400
+                ) {
+                    prettyDialog.dismiss()
+                    chatwithassistant()
+
+                }.addButton(
+                        "Cancel",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100,
+                        PrettyDialogCallback {
+                            prettyDialog.dismiss()
+
+                        }
+                )
+        prettyDialog.show()
+
+        val bundle = Bundle()
+        if (preferenceManager.displayName == null) {
+            bundle.putString("iswithname", "No")
+        } else {
+            bundle.putString("iswithname", "Yes")
+        }
+        firebaseAnalytics.logEvent("z_respond_clicked", bundle)
+    }
+
+    private fun chatwithassistant() {
+        val intent = Intent(this@AllTransportersActivity, ChatRoomActivity::class.java)
+        intent.putExtra("ormn", "+919284089759")
+        intent.putExtra("imgs", "Hi, This is my suggestion/requirement for the filter/sor feature in transporters list.")
+        intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
+        intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
+        startActivity(intent)
+        val bundle = Bundle()
+        firebaseAnalytics.logEvent("z_assistant", bundle)
     }
 
     /**

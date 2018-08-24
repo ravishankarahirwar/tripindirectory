@@ -12,6 +12,46 @@ admin.initializeApp();
 //  response.send("Hello from Firebase!");
 // });
 
+//general updates PRODUCTION function
+exports.createUpdate = functions.firestore
+  .document('updates/{documentId}')
+  .onCreate((snap, context) => {
+    var newValue = snap.data();
+
+	// Create a DATA notification
+    const payload = {
+       data: {
+        type: newValue.mType,
+        docId: newValue.mTimeStamp
+      }
+    };
+    const options = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
+    return admin.messaging().sendToTopic("generalUpdates", payload, options);
+});
+
+////general updates Test function
+//exports.createUpdateTest = functions.firestore
+//  .document('updatestest/{documentId}')
+//  .onCreate((snap, context) => {
+//    var newValue = snap.data();
+//
+//	// Create a DATA notification
+//    const payload = {
+//       data: {
+//        type: newValue.mType,
+//        docId: newValue.mTimeStamp
+//      }
+//    };
+//    const options = {
+//        priority: "high",
+//        timeToLive: 60 * 60 * 24
+//    };
+//    return admin.messaging().sendToTopic("generalUpdatesTest", payload, options);
+//});
+
 exports.newLoadpost = functions.database.ref('/posts/{pushId}')
     .onCreate((snapshot, context) => {
       // Grab the current value of what was written to the Realtime Database.
@@ -162,14 +202,25 @@ exports.onetoonechat = functions.firestore
 
       });
 
-//Make the initial mAccountStatusValue 0
+//updating values in partners document
 exports.facebookprofilecreated =  functions.database.ref('/user_profiles/{pushId}')
   .onCreate((snapshot, context) => {
       const newValue = snapshot.val();
       console.log('new facebook user created', context.params.pushId, newValue);
-      admin.firestore().collection('partners').doc(newValue.mUid).update({ mFUID: context.params.pushId });
-      admin.firestore().collection('partners').doc(newValue.mUid).update({ mDisplayName: newValue.mDisplayName });
-      return admin.firestore().collection('partners').doc(newValue.mUid).update({ mPhotoUrl: newValue.mImageUrl });
+
+      admin.firestore().collection('partners').doc(newValue.mUid).get().then(doc => {
+                                                                         if (!doc.exists) {
+                                                                           return console.log('No such document!');
+                                                                         } else {
+                                                                           admin.firestore().collection('partners').doc(newValue.mUid).update({ mFUID: context.params.pushId });
+                                                                           admin.firestore().collection('partners').doc(newValue.mUid).update({ mDisplayName: newValue.mDisplayName });
+                                                                           return admin.firestore().collection('partners').doc(newValue.mUid).update({ mPhotoUrl: newValue.mImageUrl });
+                                                                         }
+                                                                       })
+                                                                       .catch(err => {
+                                                                         return console.log('Error getting document', err);
+                                                                       });
+
 
 });
 

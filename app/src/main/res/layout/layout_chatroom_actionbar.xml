@@ -39,12 +39,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/mainchatthumb"
+        app:layout_constraintStart_toEndOf="@+id/mainhumb"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/mainchatthumb"
+        android:id="@+id/mainhumb"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginBottom="8dp"
@@ -65,7 +65,7 @@
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mainchatthumb"
+        app:layout_constraintStart_toEndOf="@+id/mainhumb"
         app:layout_constraintTop_toBottomOf="@+id/opponentname"
         app:layout_constraintVertical_bias="0.0" />
 

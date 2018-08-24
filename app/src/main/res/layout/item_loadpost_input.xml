@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:background="@drawable/border_stroke_bg"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lbform"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_stroke_bg"
     android:orientation="vertical"
-    android:padding="4dp"
 
-    >
+    android:padding="4dp">
 
     <TextView
         android:id="@+id/newload"
@@ -629,7 +629,6 @@
             app:layout_constraintTop_toBottomOf="@+id/llinput2" />
 
     </android.support.constraint.ConstraintLayout>
-
 
 
 </LinearLayout>

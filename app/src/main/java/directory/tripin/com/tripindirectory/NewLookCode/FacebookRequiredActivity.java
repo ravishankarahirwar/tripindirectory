@@ -2,12 +2,15 @@ package directory.tripin.com.tripindirectory.NewLookCode;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
 
     private TextView mNameWelcome;
     private TextView mNote;
+    private TextView mBactooldapp;
+
     String from = "";
 
 
@@ -64,10 +69,20 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 if(from.equals("Chat")){
                     mNote.setText("Hi, Log in once with Facebook to use the chat feature of Indian Logistics Network.");
                     loginwithphone.setVisibility(View.INVISIBLE);
+                    mBactooldapp.setVisibility(View.INVISIBLE);
+
                 }
                 if(from.equals("Loadboard")){
-                    mNote.setText("Hi, Log in once with Facebook to use the LoadBoard of Indian Logistics Network.");
+                    mNote.setText("Hi, Log in once with Facebook to use the LoadBoard, Post your load and get deals from ILN trusted trasporters.");
                     loginwithphone.setVisibility(View.INVISIBLE);
+                    mBactooldapp.setVisibility(View.INVISIBLE);
+
+                }
+                if(from.equals("PostToSelected")){
+                    mNote.setText("Hi, Log in once with Facebook and send your requirement to multiple selected transporters in one click!");
+                    loginwithphone.setVisibility(View.INVISIBLE);
+                    mBactooldapp.setVisibility(View.INVISIBLE);
+
                 }
             }
         }
@@ -86,6 +101,17 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 startSignInFor(PHONE_SIGN_IN);
             }
         });
+
+        mBactooldapp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                preferenceManager.setisOnNewLook(false);
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
+
+
         internetCheck();
 
 
@@ -96,7 +122,14 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         loginwithfacebbok = findViewById(R.id.facebbok);
         loginwithphone = findViewById(R.id.phone);
+        mBactooldapp = findViewById(R.id.backtooldapp);
         mNote =findViewById(R.id.note);
+
+        ImageView imageview = (ImageView) findViewById(R.id.fbreqimagebg);
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0.2f);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        imageview.setColorFilter(filter);
     }
 
     @Override
@@ -104,10 +137,9 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         //finishAffinity();
         if(from.equals("MainActivity")){
-            preferenceManager.setisOnNewLook(false);
             setResult(RESULT_CANCELED);
             bundle.putString("wasfrom","MainActivity");
-            finish();
+            finishAffinity();
         }
         if(from.equals("Chat")){
             setResult(RESULT_CANCELED);
@@ -119,6 +151,12 @@ public class FacebookRequiredActivity extends AppCompatActivity {
             bundle.putString("wasfrom","Loadboard");
             finish();
         }
+        if(from.equals("PostToSelected")){
+            setResult(RESULT_CANCELED);
+            bundle.putString("wasfrom","PostToSelected");
+            finish();
+        }
+
         firebaseAnalytics.logEvent("z_back_from_authland",bundle);
 
     }
@@ -140,6 +178,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                     if(user.getEmail()!=null)
                     preferenceManager.setEmail(user.getEmail());
                     preferenceManager.setisFacebboked(true);
+                    preferenceManager.setRMN(null);
                     startSignInFor(PHONE_SIGN_IN);
 
                 }else {
@@ -197,7 +236,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Try again",Toast.LENGTH_SHORT).show();
                     }
                 });
-
+                preferenceManager.setRMN(null);
         }
     }
 

@@ -23,6 +23,8 @@ import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
@@ -44,6 +46,8 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import kotlinx.android.synthetic.main.activity_load_board2.*
 import kotlinx.android.synthetic.main.chat_list_item.view.*
 import kotlinx.android.synthetic.main.item_loadpost_input.*
+import kotlinx.android.synthetic.main.layout_choose_vehicle.*
+import kotlinx.android.synthetic.main.layout_main_actionbar.*
 import kotlinx.android.synthetic.main.layout_route_input.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -117,6 +121,10 @@ class LoadBoardActivity : AppCompatActivity() {
 
         internetCheck()
 
+        if(!preferenceManager.isLBScreenGuided){
+            showIntro()
+        }
+
 
     }
 
@@ -147,14 +155,23 @@ class LoadBoardActivity : AppCompatActivity() {
             }else{
                 if(weight.text != null){
                     //add unit
-                    val list = spinnerweight.getItems<String>()
-                    postpojo.mPayload = weight.text.toString()+list.get(spinnerweight.selectedIndex)
+                    if(!weight.text.isEmpty()){
+                        val list = spinnerweight.getItems<String>()
+                        postpojo.mPayload = weight.text.toString()+list.get(spinnerweight.selectedIndex)
+                    }else{
+                        postpojo.mPayload = ""
+                    }
 
                 }
                 if(length.text != null){
                     //add unit
-                    val list = spinnerlength.getItems<String>()
-                    postpojo.mTruckLength = length.text.toString()+list.get(spinnerlength.selectedIndex)
+                    if(!length.text.isEmpty()){
+                        val list = spinnerlength.getItems<String>()
+                        postpojo.mTruckLength = length.text.toString()+list.get(spinnerlength.selectedIndex)
+                    }else{
+                        postpojo.mTruckLength = ""
+                    }
+
 
                 }
                 if(otherreq.text != null){
@@ -416,6 +433,40 @@ class LoadBoardActivity : AppCompatActivity() {
 
         val df = SimpleDateFormat("MMM dd, HH:mm")
         return df.format(c.time)
+    }
+
+    private fun showIntro() {
+
+        val tapTargetSequence : TapTargetSequence = TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(tabs, "ILN LoadBoard, Tabs here!","Here you can toggle all loads and your loads list. Tap on the target!")
+                                .transparentTarget(true)
+                                .targetRadius(100)
+                                .drawShadow(true)
+                                .cancelable(false).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(lbform, "The Load-Post form here","Tap on the target!")
+                                .transparentTarget(true)
+                                .targetRadius(120)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor)
+
+                )
+                .listener(object: TapTargetSequence.Listener {
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                    }
+
+                    override fun onSequenceFinish() {
+                        Toast.makeText(applicationContext,"Welcome to Loadboard",Toast.LENGTH_SHORT).show()
+                        preferenceManager.setisLBScreenGuided(true)
+                    }
+                    override fun onSequenceCanceled(lastTarget: TapTarget) {
+                        // Boo
+                        preferenceManager.setisLBScreenGuided(true)
+
+                    }
+                })
+
+        tapTargetSequence.start()
     }
 
     /**

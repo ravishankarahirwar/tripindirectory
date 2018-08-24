@@ -21,7 +21,7 @@
         android:padding="4dp"
         android:tint="@color/blue_grey_800"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/mainchatthumb"
+        app:layout_constraintEnd_toStartOf="@+id/mainhumb"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.51"
@@ -60,13 +60,13 @@
         android:tint="@color/blue_grey_800"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mainchatthumb"
+        app:layout_constraintStart_toEndOf="@+id/mainhumb"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.53"
         app:srcCompat="@drawable/messenger_bubble_large_white" />
 
     <ImageView
-        android:id="@+id/mainchatthumb"
+        android:id="@+id/mainhumb"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="8dp"
@@ -97,5 +97,32 @@
         app:layout_constraintBottom_toBottomOf="@+id/yourbusiness"
         app:layout_constraintEnd_toStartOf="@+id/yourbusiness"
         app:srcCompat="@drawable/emoji_google_1f534" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/chatloading"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/showchats"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="waveloading.json"
+        app:lottie_loop="true" />
+
+    <ImageView
+        android:id="@+id/lastmsgimgurl"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginEnd="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/showchats"
+        app:layout_constraintEnd_toStartOf="@+id/showchats"
+        app:layout_constraintTop_toTopOf="@+id/showchats"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/emoji_google_1f464" />
 
 </android.support.constraint.ConstraintLayout>

@@ -334,6 +334,7 @@
     <string name="from">From</string>
     <string name="select_city">. Select City</string>
     <string name="to">To</string>
+    <string name="userInactive">User Inactive, will be invited via SMS.</string>
 
     <!--End-->
 </resources>

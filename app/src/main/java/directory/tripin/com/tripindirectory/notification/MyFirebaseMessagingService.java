@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -35,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 
 import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
@@ -65,7 +67,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     NotificationCompat.Builder generalUpdatesNotificationBuilder;
     private FirebaseAuth mAuth;
     private PreferenceManager preferenceManager;
+    DocumentReference mUserDocRef;
 
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        mAuth = FirebaseAuth.getInstance();
+        sendRegistrationToServer(s);
+    }
+
+    private void sendRegistrationToServer(String token) {
+
+        PreferenceManager preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+        preferenceManager.setFcmToken(token);
+
+        if (mAuth.getCurrentUser() != null) {
+            mUserDocRef = FirebaseFirestore.getInstance()
+                    .collection("partners").document(mAuth.getUid());
+            HashMap<String, String> hashMap6 = new HashMap<>();
+            hashMap6.put("mFcmToken", token);
+            mUserDocRef.set(hashMap6, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Refreshed token: " + "Updated to Firestore");
+                }
+            });
+
+            FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child(Constants.ARG_USERS)
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child(Constants.ARG_FIREBASE_TOKEN)
+                    .setValue(token);
+        }
+    }
 
     /**
      * Called when message is received.
@@ -95,7 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             String type = remoteMessage.getData().get("type");
             Log.d(TAG, "type" + type);
-            if(type != null) {
+            if (type != null) {
                 if (type.equals("0")) {
                     String docId = remoteMessage.getData().get("docId");
                     Log.d(TAG, "docId" + docId);
@@ -125,23 +161,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String chatroomId = remoteMessage.getData().get("chatroomId");
                     Log.d(TAG, "new one to one msg");
 
-                    if(chatroomId!=null&&docId!=null){
-                        sendNewChatMsgNotification(chatroomId,docId);
+                    if (chatroomId != null && docId != null) {
+                        sendNewChatMsgNotification(chatroomId, docId);
 
-                    }else {
+                    } else {
                         Log.d(TAG, "ids null");
                     }
-                }else {
+                } else {
 
 
                     if (type.equals("7")) {
                         //New comment on loadpost
                         String docId = remoteMessage.getData().get("docId");
                         String loadId = remoteMessage.getData().get("loadId");
-                        if(loadId!=null&&docId!=null){
-                            sendNewLoadCommentNotification(loadId,docId);
+                        if (loadId != null && docId != null) {
+                            sendNewLoadCommentNotification(loadId, docId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
@@ -150,10 +186,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         //New comment on fleetpost
                         String docId = remoteMessage.getData().get("docId");
                         String loadId = remoteMessage.getData().get("fleetId");
-                        if(loadId!=null&&docId!=null){
-                            sendNewFleetCommentNotification(loadId,docId);
+                        if (loadId != null && docId != null) {
+                            sendNewFleetCommentNotification(loadId, docId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
@@ -162,10 +198,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         //New quote on loadpost
                         String docId = remoteMessage.getData().get("docId");
                         String loadId = remoteMessage.getData().get("loadId");
-                        if(loadId!=null&&docId!=null){
-                            sendNewLoadQuoteNotification(loadId,docId);
+                        if (loadId != null && docId != null) {
+                            sendNewLoadQuoteNotification(loadId, docId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
@@ -174,10 +210,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         //New quote on fleetpost
                         String docId = remoteMessage.getData().get("docId");
                         String loadId = remoteMessage.getData().get("fleetId");
-                        if(loadId!=null&&docId!=null){
-                            sendNewFleetQuoteNotification(loadId,docId);
+                        if (loadId != null && docId != null) {
+                            sendNewFleetQuoteNotification(loadId, docId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
@@ -185,20 +221,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     if (type.equals("11")) {
                         //New loadpost
                         String loadId = remoteMessage.getData().get("loadId");
-                        if(loadId!=null){
+                        if (loadId != null) {
                             sendNewLoadPostNotification(loadId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
                     if (type.equals("12")) {
                         //New fleetpost
                         String fleetId = remoteMessage.getData().get("fleetId");
-                        if(fleetId!=null){
+                        if (fleetId != null) {
                             sendNewFleetPostNotification(fleetId);
 
-                        }else {
+                        } else {
                             Log.d(TAG, "ids null");
                         }
                     }
@@ -234,12 +270,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         FirebaseFirestore.getInstance().collection("fleets").document(fleetId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
                     FleetPostPojo fleetPostPojo = documentSnapshot.toObject(FleetPostPojo.class);
 
-                    if(!fleetPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())){
+                    if (!fleetPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())) {
                         Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
-                        intent.putExtra("docId",fleetId);
+                        intent.putExtra("docId", fleetId);
                         String title = "New Fleet Posted";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -251,7 +287,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 new NotificationCompat.Builder(getApplicationContext(), channelId)
                                         .setSmallIcon(R.drawable.ic_notification)
                                         .setContentTitle(title)
-                                        .setContentText(fleetPostPojo.getmSourceCity()+" to "+fleetPostPojo.getmDestinationCity())
+                                        .setContentText(fleetPostPojo.getmSourceCity() + " to " + fleetPostPojo.getmDestinationCity())
                                         .setAutoCancel(true)
                                         .setSound(defaultSoundUri)
                                         .setContentIntent(pendingIntent);
@@ -260,9 +296,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-                    }else {
+                    } else {
                         Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
-                        intent.putExtra("docId",fleetId);
+                        intent.putExtra("docId", fleetId);
                         String title = "Hi ILN User";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -294,12 +330,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         FirebaseFirestore.getInstance().collection("loads").document(loadId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
                     LoadPostPojo loadPostPojo = documentSnapshot.toObject(LoadPostPojo.class);
 
-                    if(!loadPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())){
+                    if (!loadPostPojo.getmPostersUid().equals(FirebaseAuth.getInstance().getUid())) {
                         Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
-                        intent.putExtra("docId",loadId);
+                        intent.putExtra("docId", loadId);
                         String title = "New Load Posted";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -311,7 +347,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 new NotificationCompat.Builder(getApplicationContext(), channelId)
                                         .setSmallIcon(R.drawable.ic_notification)
                                         .setContentTitle(title)
-                                        .setContentText(loadPostPojo.getmSourceCity()+" to "+loadPostPojo.getmDestinationCity())
+                                        .setContentText(loadPostPojo.getmSourceCity() + " to " + loadPostPojo.getmDestinationCity())
                                         .setAutoCancel(true)
                                         .setSound(defaultSoundUri)
                                         .setContentIntent(pendingIntent);
@@ -320,9 +356,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-                    }else {
+                    } else {
                         Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
-                        intent.putExtra("docId",loadId);
+                        intent.putExtra("docId", loadId);
                         String title = "Hi ILN User";
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -360,11 +396,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
+                        if (documentSnapshot.exists()) {
                             QuotePojo quotePojo = documentSnapshot.toObject(QuotePojo.class);
 
                             Intent intent = new Intent(getApplicationContext(), LoadBoardActivity.class);
-                            intent.putExtra("frag","3");
+                            intent.putExtra("frag", "3");
                             String title = "New Quote on your Fleetpost";
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -376,7 +412,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     new NotificationCompat.Builder(getApplicationContext(), channelId)
                                             .setSmallIcon(R.drawable.ic_notification)
                                             .setContentTitle(title)
-                                            .setContentText(quotePojo.getmQuoteAmount()+"₹ by : "+quotePojo.getmRMN())
+                                            .setContentText(quotePojo.getmQuoteAmount() + "₹ by : " + quotePojo.getmRMN())
                                             .setAutoCancel(true)
                                             .setSound(defaultSoundUri)
                                             .setContentIntent(pendingIntent);
@@ -386,7 +422,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
                         }
-
 
 
                     }
@@ -402,33 +437,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
+                        if (documentSnapshot.exists()) {
                             QuotePojo quotePojo = documentSnapshot.toObject(QuotePojo.class);
 
-                                Intent intent = new Intent(getApplicationContext(), LoadBoardActivity.class);
-                                intent.putExtra("frag","3");
-                                String title = "New Quote on your Loadpost";
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
-                                        PendingIntent.FLAG_ONE_SHOT);
+                            Intent intent = new Intent(getApplicationContext(), LoadBoardActivity.class);
+                            intent.putExtra("frag", "3");
+                            String title = "New Quote on your Loadpost";
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                    PendingIntent.FLAG_ONE_SHOT);
 
-                                String channelId = "ILN notification";
-                                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                NotificationCompat.Builder notificationBuilder =
-                                        new NotificationCompat.Builder(getApplicationContext(), channelId)
-                                                .setSmallIcon(R.drawable.ic_notification)
-                                                .setContentTitle(title)
-                                                .setContentText(quotePojo.getmQuoteAmount()+"₹ by : "+quotePojo.getmRMN())
-                                                .setAutoCancel(true)
-                                                .setSound(defaultSoundUri)
-                                                .setContentIntent(pendingIntent);
+                            String channelId = "ILN notification";
+                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            NotificationCompat.Builder notificationBuilder =
+                                    new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setContentTitle(title)
+                                            .setContentText(quotePojo.getmQuoteAmount() + "₹ by : " + quotePojo.getmRMN())
+                                            .setAutoCancel(true)
+                                            .setSound(defaultSoundUri)
+                                            .setContentIntent(pendingIntent);
 
-                                NotificationManager notificationManager =
-                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            NotificationManager notificationManager =
+                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-                            }
-
+                            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                        }
 
 
                     }
@@ -444,12 +478,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
+                        if (documentSnapshot.exists()) {
                             CommentPojo commentPojo = documentSnapshot.toObject(CommentPojo.class);
 
-                            if(!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())){
+                            if (!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())) {
                                 Intent intent = new Intent(getApplicationContext(), FleetDetailsActivity.class);
-                                intent.putExtra("docId",loadId);
+                                intent.putExtra("docId", loadId);
                                 String title = "New Comment on fleetpost :";
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -484,40 +518,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .document(docId)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    CommentPojo commentPojo = documentSnapshot.toObject(CommentPojo.class);
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            CommentPojo commentPojo = documentSnapshot.toObject(CommentPojo.class);
 
-                    if(!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())){
-                        Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
-                        intent.putExtra("docId",loadId);
-                        String title = "New Comment on loadpost:";
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
-                                PendingIntent.FLAG_ONE_SHOT);
+                            if (!commentPojo.getmUid().equals(FirebaseAuth.getInstance().getUid())) {
+                                Intent intent = new Intent(getApplicationContext(), LoadDetailsActivity.class);
+                                intent.putExtra("docId", loadId);
+                                String title = "New Comment on loadpost:";
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                                        PendingIntent.FLAG_ONE_SHOT);
 
-                        String channelId = "ILN notification";
-                        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        NotificationCompat.Builder notificationBuilder =
-                                new NotificationCompat.Builder(getApplicationContext(), channelId)
-                                        .setSmallIcon(R.drawable.ic_notification)
-                                        .setContentTitle(title)
-                                        .setContentText(commentPojo.getmCommentText())
-                                        .setAutoCancel(true)
-                                        .setSound(defaultSoundUri)
-                                        .setContentIntent(pendingIntent);
+                                String channelId = "ILN notification";
+                                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                NotificationCompat.Builder notificationBuilder =
+                                        new NotificationCompat.Builder(getApplicationContext(), channelId)
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setContentTitle(title)
+                                                .setContentText(commentPojo.getmCommentText())
+                                                .setAutoCancel(true)
+                                                .setSound(defaultSoundUri)
+                                                .setContentIntent(pendingIntent);
 
-                        NotificationManager notificationManager =
-                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                NotificationManager notificationManager =
+                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+                            }
+
+
+                        }
                     }
-
-
-                }
-            }
-        });
+                });
     }
 
     private void sendNewChatMsgNotification(final String chatroomId, String docId) {
@@ -526,18 +560,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         FirebaseFirestore.getInstance().collection("chats").document("chatrooms").collection(chatroomId).document(docId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
 
                     final ChatItemPojo chatItemPojo = documentSnapshot.toObject(ChatItemPojo.class);
 
                     FirebaseDatabase.getInstance().getReference().child("chatpresence").child("users").child(chatItemPojo.getmReciversUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
+                            if (dataSnapshot.exists()) {
                                 UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
-                                if(userPresensePojo!=null){
-                                    if(userPresensePojo.getmChatroomId()!=null){
-                                        if(userPresensePojo.getmChatroomId().equals(chatroomId)&&userPresensePojo.getActive()){
+                                if (userPresensePojo != null) {
+                                    if (userPresensePojo.getmChatroomId() != null) {
+                                        if (userPresensePojo.getmChatroomId().equals(chatroomId) && userPresensePojo.getActive()) {
                                             return;
                                         }
                                     }
@@ -546,15 +580,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             }
 
                             Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
-                            intent.putExtra("ouid",chatItemPojo.getmSendersUid());
-                            intent.putExtra("ormn",chatItemPojo.getmRMN());
-                            intent.putExtra("ofuid",chatItemPojo.getmSendersFuid());
+                            intent.putExtra("ouid", chatItemPojo.getmSendersUid());
+                            intent.putExtra("ormn", chatItemPojo.getmRMN());
+                            intent.putExtra("ofuid", chatItemPojo.getmSendersFuid());
 
                             String title = "";
-                            if(chatItemPojo.getmDisplayName().isEmpty()){
-                                title = chatItemPojo.getmRMN()+" :";
-                            }else {
-                                title = chatItemPojo.getmDisplayName()+" :";
+                            if (chatItemPojo.getmDisplayName().isEmpty()) {
+                                title = chatItemPojo.getmRMN() + " :";
+                            } else {
+                                title = chatItemPojo.getmDisplayName() + " :";
                             }
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
@@ -586,10 +620,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     });
 
 
-                }else {
+                } else {
                     Log.d(TAG, "new one to one msg doc dont exist1");
                 }
-
 
 
             }
@@ -603,41 +636,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                PendingIntent.FLAG_ONE_SHOT);
 //    }
 
-    private void sendLoadboardNotification (String messageBody, String messageTitle, String postId) {
+    private void sendLoadboardNotification(String messageBody, String messageTitle, String postId) {
         Intent intent;
-
-            //if user signed in
-            preferenceManager = PreferenceManager.getInstance(getApplicationContext());
-            if(preferenceManager.isOnNewLook()){
-                intent = new Intent(this, directory.tripin.com.tripindirectory.NewLookCode.activities.LoadBoardActivity.class);
-            }else {
-                if( postId != null){
-                    intent = new Intent(this,PostDetailActivity.class);
-                    intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
-                }else {
-                    intent = new Intent(this, directory.tripin.com.tripindirectory.forum.MainActivity.class);
-                }
+        //if user signed in
+        preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+        if (preferenceManager.isOnNewLook()) {
+            intent = new Intent(this, directory.tripin.com.tripindirectory.NewLookCode.activities.LoadBoardActivity.class);
+        } else {
+            if (postId != null) {
+                intent = new Intent(this, PostDetailActivity.class);
+                intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
+            } else {
+                intent = new Intent(this, directory.tripin.com.tripindirectory.forum.MainActivity.class);
             }
+        }
 
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                    PendingIntent.FLAG_ONE_SHOT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
 
-            String channelId = "ILN notification ";
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat.Builder(this, channelId)
-                            .setSmallIcon(R.drawable.ic_notification)
-                            .setContentTitle(messageTitle)
-                            .setContentText(messageBody)
-                            .setAutoCancel(true)
-                            .setSound(defaultSoundUri)
-                            .setContentIntent(pendingIntent);
+        String channelId = "ILN notification ";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(messageTitle)
+                        .setContentText(messageBody)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
 
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
     private void sendVerificationRejectedNotification() {
@@ -675,7 +707,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("ILN Company Verification")
-                        .setContentText("Congratulations "+mCompName+"! your company verification request s approved.")
+                        .setContentText("Congratulations " + mCompName + "! your company verification request s approved.")
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
@@ -822,7 +854,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        int random = (int)System.currentTimeMillis();
-        int random = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        int random = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, random /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

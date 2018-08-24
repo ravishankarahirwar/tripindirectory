@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +54,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
     private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
     private LottieAnimationView lottieAnimationView;
     private FirebaseAnalytics firebaseAnalytics;
+    private Menu mMenu;
 
 
 
@@ -80,6 +83,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
         buildAdapter();
         internetCheck();
+        //showIntro();
 
     }
 
@@ -117,7 +121,10 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
                 if(model.getmOpponentCompanyName()!=null){
                     if (!model.getmOpponentCompanyName().isEmpty()) {
-                        holder.title.setText(textUtils.toTitleCase(model.getmOpponentCompanyName()));
+                        holder.title.setText(model.getmOpponentCompanyName());
+                        if(model.getmOpponentCompanyName().equals("ILN Assistant")){
+                            holder.title.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.blue_grey_700));
+                        }
                     } else {
                         holder.title.setText(model.getmORMN());
                     }
@@ -254,6 +261,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_chatheads, menu);
+        mMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -285,5 +293,41 @@ public class ChatHeadsActivity extends AppCompatActivity {
         NoNet.monitor(this)
                 .poll()
                 .snackbar();
+    }
+
+    private  void  showIntro(){
+        TapTargetSequence tapTargetSequence = new TapTargetSequence(this)
+                .targets(
+                        TapTarget
+                                .forView(mMenu.findItem(R.id.action_help).getActionView(),
+                                        "Your ILN Assistant here",
+                                        "Any feedback, suggestion or need help? just chat with your ILN Assistant from here")
+                                .transparentTarget(true)
+                        .cancelable(true)
+                )
+
+
+
+                .listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        // Yay
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+
+                    }
+
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        // Boo
+                    }
+                });
+
+        tapTargetSequence.start();
     }
 }

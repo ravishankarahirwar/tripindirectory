@@ -1,13 +1,19 @@
 package directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import directory.tripin.com.tripindirectory.NewLookCode.activities.fragments.loadboard.models.Post;
 import directory.tripin.com.tripindirectory.R;
+import directory.tripin.com.tripindirectory.helper.CircleTransform;
+import directory.tripin.com.tripindirectory.helper.Logger;
 
 
 public class LoadPostViewHolder extends RecyclerView.ViewHolder {
@@ -69,26 +75,31 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
             auther.setText(post.getmAuthor());
         }
 
-        if(post.getmFuid()!=null){
-            chat.setAlpha(0.6f);
-        }else {
-            chat.setAlpha(1);
-        }
-
         date.setText(post.getmDate());
         source.setText(post.getmSource());
         destination.setText(post.getmDestination());
         material.setText(post.getmMeterial());
-        if(!post.getmTruckType().equals("Select Type of Vehicle")){
-            truckType.setText(post.getmTruckType());
+
+        if(post.getmTruckType()!=null){
+            if(!post.getmTruckType().equals("Select Type of Vehicle")){
+                truckType.setText(post.getmTruckType());
+            }else {
+                truckType.setText("");
+            }
         }else {
             truckType.setText("");
         }
-        if(!post.getmTruckBodyType().equals("Select Type of Body")){
-            bodyType.setText(post.getmTruckBodyType());
+
+        if(post.getmTruckBodyType()!=null){
+            if(!post.getmTruckBodyType().equals("Select Type of Body")){
+                bodyType.setText(post.getmTruckBodyType());
+            }else {
+                bodyType.setText("");
+            }
         }else {
-            bodyType.setText("");
+            truckType.setText("");
         }
+
         length.setText(post.getmTruckLength());
         weight.setText(post.getmPayload());
 
@@ -98,6 +109,8 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
         } else {
             postRequirement.setVisibility(View.INVISIBLE);
         }
+
+
 
     }
 }

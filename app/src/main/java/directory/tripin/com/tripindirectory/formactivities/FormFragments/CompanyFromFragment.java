@@ -353,6 +353,34 @@ public class CompanyFromFragment extends BaseFragment {
             hashMap10.put("mCompanyWebsite",partnerInfoPojo.getmCompanyWebsite());
             mUserDocRef.set(hashMap10, SetOptions.merge());
 
+
+
+            //from Facebool profile
+
+            if(preferenceManager.getFuid()!=null){
+                if(!preferenceManager.getFuid().isEmpty()){
+                    HashMap<String, String> hashMap12 = new HashMap<>();
+                    hashMap12.put("mFUID",preferenceManager.getFuid());
+                    mUserDocRef.set(hashMap12, SetOptions.merge());
+                }
+            }
+
+            if(preferenceManager.getDisplayName()!=null){
+                HashMap<String, String> hashMap11 = new HashMap<>();
+                hashMap11.put("mDisplayName",preferenceManager.getDisplayName());
+                mUserDocRef.set(hashMap11, SetOptions.merge());
+            }
+
+            if(preferenceManager.getImageUrl()!=null){
+                if(!preferenceManager.getImageUrl().isEmpty()){
+                    HashMap<String, String> hashMap13 = new HashMap<>();
+                    hashMap13.put("mPhotoUrl",preferenceManager.getImageUrl());
+                    mUserDocRef.set(hashMap13, SetOptions.merge());
+                }
+            }
+
+            //
+
             if(partnerInfoPojo.getmFcmToken()==null){
                 HashMap<String, String> hashMap7 = new HashMap<>();
                 hashMap7.put("mFcmToken",preferenceManager.getFcmToken());

@@ -222,7 +222,7 @@ public class Post {
         HashMap<String, Object> result = new HashMap<>();
         result.put("mUid", mUid);
         result.put("mFuid", mFuid);
-        result.put("mPhotoUrl", mFuid);
+        result.put("mPhotoUrl", mPhotoUrl);
 
         result.put("mAuthor", mAuthor);
         result.put("mFindOrPost", mFindOrPost);

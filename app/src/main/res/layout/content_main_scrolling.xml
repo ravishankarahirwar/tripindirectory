@@ -50,7 +50,7 @@
                     app:lottie_loop="true" />
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_transporters_at"
+                    android:id="@+id/rv_transporters_att"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
