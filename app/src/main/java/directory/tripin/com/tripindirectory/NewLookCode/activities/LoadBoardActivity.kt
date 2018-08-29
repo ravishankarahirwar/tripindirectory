@@ -357,16 +357,26 @@ class LoadBoardActivity : AppCompatActivity() {
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
-                    val place = PlaceAutocomplete.getPlace(context, data)
-                    select_source.text = ". ${place.name}"
-                    select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
-                    postpojo.mSource = place.name.toString()
+                    if(data!=null){
+                        val place = PlaceAutocomplete.getPlace(context, data)
+                        select_source.text = ". ${place.name}"
+                        select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        postpojo.mSource = place.name.toString()
+                    }else{
+                        Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
+                    }
+
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
-                    val place = PlaceAutocomplete.getPlace(context, data)
-                    select_destination.text = ". ${place.name}"
-                    select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
-                    postpojo.mDestination = place.name.toString()
+                    if(data!=null){
+                        val place = PlaceAutocomplete.getPlace(context, data)
+                        select_destination.text = ". ${place.name}"
+                        select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        postpojo.mDestination = place.name.toString()
+                    }else{
+                        Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
+                    }
+
 
                 }
 
