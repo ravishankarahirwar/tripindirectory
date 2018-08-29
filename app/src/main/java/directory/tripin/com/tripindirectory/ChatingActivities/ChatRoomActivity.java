@@ -527,6 +527,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                 finish();
             }
 
+//            if(bundle.getInt("nid",0)!=0){
+//                notificationManager.cancel(bundle.getInt("nid"));
+//            }
+
         } else {
             Logger.v("bundle null");
             finish();
@@ -759,13 +763,19 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     private void updateUserPresence(boolean b) {
-        UserPresensePojo userPresensePojo = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
-        databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Logger.v("onResume userpresence updated");
-            }
-        });
+        if(mAuth.getCurrentUser()!=null){
+            UserPresensePojo userPresensePojo = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
+            databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Logger.v("onResume userpresence updated");
+                }
+            });
+        }else {
+            Toast.makeText(getApplicationContext(),"Not Signed In!",Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
     }
 
     private void gotoDetailsActivity() {
@@ -989,6 +999,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             setOpponentPresenceListners();
         }
         notificationManager.cancel(6);
+
     }
 
     @Override

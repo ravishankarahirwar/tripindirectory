@@ -297,7 +297,10 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                 //get all partner data
                 if (documentSnapshot.exists()) {
                     partnerInfoPojo = documentSnapshot.toObject(PartnerInfoPojo.class);
-                    toolbarLayout.setTitle(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()));
+
+                    if(partnerInfoPojo.getmCompanyName()!=null){
+                        toolbarLayout.setTitle(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()));
+                    }
 
 
                     //set images stuff
@@ -330,36 +333,25 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                     }
 
                     //set rating
-                    mTitleRating.setText(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())+", Rated 3.7/5.0");
+//                    mTitleRating.setText(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())+", Rated 3.7/5.0");
 
                     //set address
-                    String addresstoset
-                            = partnerInfoPojo.getmCompanyAdderss().getAddress()
-                            +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getCity())
-                            +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getState());
-                    if(partnerInfoPojo.getmCompanyAdderss().getPincode()!=null){
-                        addresstoset = addresstoset + ", "+partnerInfoPojo.getmCompanyAdderss().getPincode();
-                    }
+                    if(partnerInfoPojo.getmCompanyAdderss()!=null){
+                        String addresstoset
+                                = partnerInfoPojo.getmCompanyAdderss().getAddress()
+                                +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getCity())
+                                +", "+textUtils.toTitleCase(partnerInfoPojo.getmCompanyAdderss().getState());
+                        if(partnerInfoPojo.getmCompanyAdderss().getPincode()!=null){
+                            addresstoset = addresstoset + ", "+partnerInfoPojo.getmCompanyAdderss().getPincode();
+                        }
 
-                    mAddress.setText(addresstoset);
+                        mAddress.setText(addresstoset);
 
-                    //set address marker
+                        //set address marker
 
-                    if(partnerInfoPojo.getmCompanyAdderss().isLatLongSet()){
-                        LatLng latLng = new LatLng(Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLatitude())
-                                ,Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLongitude()));
-                        map.addMarker(new MarkerOptions()
-                                .position(latLng).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                                .draggable(false).visible(true));
-                        // Updates the location and zoom of the MapView
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-                        map.animateCamera(cameraUpdate);
-                        Logger.v("camera should be updated");
-                    }else {
-
-                        LatLng latLng = getLocationFromAddress(getApplicationContext(),partnerInfoPojo.getmCompanyAdderss().getAddress());
-                        if(latLng!=null){
+                        if(partnerInfoPojo.getmCompanyAdderss().isLatLongSet()){
+                            LatLng latLng = new LatLng(Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLatitude())
+                                    ,Double.parseDouble(partnerInfoPojo.getmCompanyAdderss().getmLongitude()));
                             map.addMarker(new MarkerOptions()
                                     .position(latLng).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
@@ -367,27 +359,50 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                             // Updates the location and zoom of the MapView
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
                             map.animateCamera(cameraUpdate);
+                            Logger.v("camera should be updated");
                         }else {
-                            // Updates the location and zoom of the MapView
-                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(20,78), 20);
-                            map.animateCamera(cameraUpdate);
+
+                            LatLng latLng = getLocationFromAddress(getApplicationContext(),partnerInfoPojo.getmCompanyAdderss().getAddress());
+                            if(latLng!=null){
+                                map.addMarker(new MarkerOptions()
+                                        .position(latLng).title(textUtils.toTitleCase(partnerInfoPojo.getmCompanyName()))
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                                        .draggable(false).visible(true));
+                                // Updates the location and zoom of the MapView
+                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+                                map.animateCamera(cameraUpdate);
+                            }else {
+                                // Updates the location and zoom of the MapView
+                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(20,78), 20);
+                                map.animateCamera(cameraUpdate);
+                            }
                         }
                     }
+
+
                     //set source cities
                     mSourceList.clear();
-                    if(partnerInfoPojo.getmSourceCities() != null && partnerInfoPojo.getmSourceCities().keySet() != null) {
 
-                        mSourceList.addAll(partnerInfoPojo.getmSourceCities().keySet());
+                    if(partnerInfoPojo.getmSourceCities()!=null){
+                        if(partnerInfoPojo.getmSourceCities() != null && partnerInfoPojo.getmSourceCities().keySet() != null) {
+
+                            mSourceList.addAll(partnerInfoPojo.getmSourceCities().keySet());
+                        }
+                        capsulsRecyclarAdapter.notifyDataSetChanged();
                     }
-                    capsulsRecyclarAdapter.notifyDataSetChanged();
+
+
 
 
                     //set destination cities
                     mDestList.clear();
-                    if(partnerInfoPojo.getmDestinationCities() != null &&  partnerInfoPojo.getmDestinationCities().keySet() != null) {
-                        mDestList.addAll(partnerInfoPojo.getmDestinationCities().keySet());
+                    if(partnerInfoPojo.getmDestinationCities()!=null){
+                        if(partnerInfoPojo.getmDestinationCities() != null &&  partnerInfoPojo.getmDestinationCities().keySet() != null) {
+                            mDestList.addAll(partnerInfoPojo.getmDestinationCities().keySet());
+                        }
+                        capsulsRecyclarAdapter2.notifyDataSetChanged();
                     }
-                    capsulsRecyclarAdapter2.notifyDataSetChanged();
+
 
 
                     //set types of service

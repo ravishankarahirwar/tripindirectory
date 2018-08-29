@@ -196,6 +196,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                         if(preferenceManager.isFacebooked()){
                             bundle.putString("isFacebooked","Yes");
                             Toast.makeText(getApplicationContext(),"Creating User",Toast.LENGTH_LONG).show();
+                            loginwithphone.setVisibility(View.GONE);
+                            loginwithfacebbok.setVisibility(View.GONE);
                             UserProfile userProfile = new UserProfile(preferenceManager.getDisplayName(),
                                     preferenceManager.getRMN(),
                                     preferenceManager.getEmail(),
@@ -213,6 +215,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+                                    loginwithphone.setVisibility(View.VISIBLE);
+                                    loginwithfacebbok.setVisibility(View.VISIBLE);
                                     Toast.makeText(getApplicationContext(),"Failed to create, Try Again",Toast.LENGTH_LONG).show();
                                 }
                             });

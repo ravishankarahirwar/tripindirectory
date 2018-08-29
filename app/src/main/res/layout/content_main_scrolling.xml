@@ -4,19 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/categoriesbg3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".NewLookCode.activities.MainScrollingActivity"
     tools:showIn="@layout/activity_main_scrolling">
 
         <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_margin="@dimen/text_margin"-->
-            <!--android:text="@string/large_text" />-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="@dimen/text_margin"-->
+        <!--android:text="@string/large_text" />-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
                 <include
                     android:id="@+id/feedback"
@@ -29,7 +30,7 @@
                     layout="@layout/layout_route_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_margin="12dp"
                     android:visibility="visible" />
 
                 <include
@@ -62,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:background="@color/brown_50"
+                    android:background="@drawable/chat_in_bg"
                     android:gravity="center"
                     android:padding="15dp"
                     android:text="SHOW ALL"

@@ -18,6 +18,7 @@
         android:name=".TripinDirectoryApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
+        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -334,7 +335,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".Messaging.ChatList.ListChatActivity" />
-        <activity android:name=".NewLookCode.activities.MainNewIntroActivity" />
         <activity android:name=".NewLookCode.MainNewIntroActivity"></activity>
     </application>
 

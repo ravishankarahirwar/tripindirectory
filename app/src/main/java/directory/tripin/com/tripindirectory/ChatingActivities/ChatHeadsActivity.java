@@ -168,6 +168,8 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+                }else {
+                    holder.thumbnail.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_launcher_round));
                 }
 
                 FirebaseFirestore.getInstance().collection("chats")

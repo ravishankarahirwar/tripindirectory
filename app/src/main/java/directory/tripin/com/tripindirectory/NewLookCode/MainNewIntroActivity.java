@@ -36,8 +36,8 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
 
-        AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Directory", "Select route and get list of ILN trusted transporters.", R.drawable.route);
-        AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("Loadboard", "Post your requirements on Loadboard and get responces from interested people.", R.drawable.ic_developer_board_black_24dp);
+        AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Transport Directory", "Select route and get list of ILN trusted transporters.", R.drawable.route);
+        AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("LoadBoard", "Post your requirements on Loadboard and get responces from interested people.", R.drawable.ic_developer_board_black_24dp);
         AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("Chat", "Connect with transporters and proceed the further transaction on chat.", R.drawable.ic_chat_bubble_outline_black_24dp);
 
         ahoyOnboarderCard1.setBackgroundColor(R.color.black_transparent);
@@ -70,9 +70,7 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
 //        setColorBackground(colorList);
 
         //set the button style you created
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setFinishButtonDrawableStyle(ContextCompat.getDrawable(this, R.drawable.rounded_button));
-        }
+        setFinishButtonDrawableStyle(ContextCompat.getDrawable(this, R.drawable.rounded_button));
 
         Typeface face = Typeface.createFromAsset(getAssets(), "fonts/roboto.light.ttf");
         setFont(face);
@@ -82,6 +80,9 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
 
     @Override
     public void onFinishButtonPressed() {
+
+        Bundle bun = new Bundle();
+        firebaseAnalytics.logEvent("z_mainIntro_finished", bun);
 
         preferenceManager.setisMainIntroSeen(true);
 
@@ -115,13 +116,5 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
         finishAffinity();
     }
 
-    /**
-     * This method is use for checking internet connectivity
-     * If there is no internet it will show an snackbar to user
-     */
-    private void internetCheck() {
-        NoNet.monitor(this)
-                .poll()
-                .snackbar();
-    }
+
 }

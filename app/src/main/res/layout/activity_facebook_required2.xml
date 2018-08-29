@@ -39,6 +39,17 @@
         app:layout_constraintVertical_bias="0.53">
 
         <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_margin="8dp"
+            android:alpha="0.2"
+            android:text="recommended"
+            android:textColor="@color/active_indicator"
+            android:textSize="10sp" />
+
+        <TextView
             android:id="@+id/facebboklogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

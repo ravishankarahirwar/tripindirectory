@@ -80,6 +80,7 @@ class AllTransportersActivity : AppCompatActivity() {
         }
 
         fabfilter.setOnClickListener {
+            shownewlookfeedbackdialog()
             Toast.makeText(context,"Feature Coming Soon",Toast.LENGTH_SHORT).show()
         }
 
@@ -169,142 +170,169 @@ class AllTransportersActivity : AppCompatActivity() {
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
-                holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
-
-                if(model.getmPhotoUrl()!=null){
-                    if(!model.getmPhotoUrl().isEmpty()){
-                        Picasso.with(applicationContext)
-                                .load(model.getmPhotoUrl())
-                                .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
-                                .transform(CircleTransform())
-                                .fit()
-                                .into(holder.mThumbnail, object : Callback {
-
-                                    override fun onSuccess() {
-                                        Logger.v("image set: transporter thumb")
-                                    }
-
-                                    override fun onError() {
-                                        Logger.v("image transporter Error")
-                                    }
-                                })
-
-                    }
-
-                }else{
-                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.emoji_google_category_travel))
-                }
-
                 if (model != null) {
-                    if (model.getmCompanyAdderss() != null)
-                        holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
-                }
 
-                holder.itemView.setOnClickListener {
-
-                    val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                    i.putExtra("uid",getItem(position)!!.id)
-                    i.putExtra("cname",model.getmCompanyName())
-                    startActivity(i)
-                }
-
-                holder.mChat.setOnClickListener {
-
-                    val intent = Intent(context, ChatRoomActivity::class.java)
-                    intent.putExtra("imsg", basicQueryPojo.toString())
-                    intent.putExtra("ormn", model.getmRMN())
-                    intent.putExtra("ouid", getItem(position)!!.id)
-                    intent.putExtra("ofuid", model.getmFUID())
-                    Logger.v("Ofuid :" +model.getmFUID())
-                    startActivity(intent)
-
-                    val bundle = Bundle()
-                    if(preferenceManager.rmn!=null){
-                        bundle.putString("by_rmn",preferenceManager.rmn)
-                    }else{
-                        bundle.putString("by_rmn","Unknown")
+                    if (model.getmCompanyName() != null) {
+                        if (!model.getmCompanyName().isEmpty()) {
+                            holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                        } else {
+                            holder.mCompany.text = "Unknown Name"
+                        }
+                    } else {
+                        holder.mCompany.text = "Unknown Name"
                     }
-                    bundle.putString("to_rmn",model.getmRMN())
-                    if(model.getmFUID()!=null){
-                        bundle.putString("is_opponent_updated","Yes")
-                    }else{
-                        bundle.putString("is_opponent_updated","No")
+
+
+                    if (model.getmCompanyAdderss() != null){
+                        if(model.getmCompanyAdderss().city!=null){
+                            holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
+                        }
                     }
-                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
-                            basicQueryPojo.mSourceCity != "Select City" &&
-                            !basicQueryPojo.mDestinationCity.isEmpty() &&
-                            basicQueryPojo.mDestinationCity != "Select City"){
-                        bundle.putString("is_route_queried","Yes")
-                    }else{
-                        bundle.putString("is_route_queried","No")
-                    }
-                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
-                    firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
-
-                }
-
-                holder.mCall.setOnClickListener {
 
 
-                    val phoneNumbers = java.util.ArrayList<String>()
-                    val contactPersonPojos = model.getmContactPersonsList()
+                    if (model.getmPhotoUrl() != null) {
+                        if (!model.getmPhotoUrl().isEmpty()) {
+                            Picasso.with(applicationContext)
+                                    .load(model.getmPhotoUrl())
+                                    .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
+                                    .transform(CircleTransform())
+                                    .fit()
+                                    .into(holder.mThumbnail, object : Callback {
 
-                    if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
-                        for (i in contactPersonPojos!!.indices) {
-                            if (model.getmContactPersonsList()[i] != null) {
-                                val number = model.getmContactPersonsList()[i].getmContactPersonMobile
-                                phoneNumbers.add(number)
+                                        override fun onSuccess() {
+                                            Logger.v("image set: transporter thumb")
+                                        }
 
-                            }
+                                        override fun onError() {
+                                            Logger.v("image transporter Error")
+                                        }
+                                    })
                         }
 
-                        val builder = AlertDialog.Builder(context)
-                        builder.setTitle("Looks like there are multiple phone numbers.")
-                                .setCancelable(false)
-                                .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
-                                ) { dialog, item ->
-                                    Logger.v("Dialog number selected :" + phoneNumbers[item])
-
-                                    callNumber(phoneNumbers[item])
-                                }
-
-                        builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                            override fun onClick(dialog: DialogInterface, id: Int) {
-                                // User cancelled the dialog
-                            }
-                        })
-                        builder.create()
-                        builder.show()
-
-
                     } else {
-
-                        val number = model.getmContactPersonsList()[0].getmContactPersonMobile
-                        callNumber(number)
+                        holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                     }
 
-                    val bundle = Bundle()
-                    if(preferenceManager.rmn!=null){
-                        bundle.putString("by_rmn",preferenceManager.rmn)
-                    }else{
-                        bundle.putString("by_rmn","Unknown")
+                    if(model.getmAccountStatus()!=null){
+                        if(model.getmAccountStatus()>=2){
+                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
+                        }else{
+                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_stroke_bg)
+                        }
                     }
-                    bundle.putString("to_rmn",model.getmRMN())
-                    if(model.getmFUID()!=null){
-                        bundle.putString("is_opponent_updated","Yes")
-                    }else{
-                        bundle.putString("is_opponent_updated","No")
+
+
+                    holder.itemView.setOnClickListener {
+
+                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
+                        i.putExtra("uid", getItem(position)!!.id)
+                        i.putExtra("cname", model.getmCompanyName())
+                        startActivity(i)
                     }
-                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
-                            basicQueryPojo.mSourceCity != "Select City" &&
-                            !basicQueryPojo.mDestinationCity.isEmpty() &&
-                            basicQueryPojo.mDestinationCity != "Select City"){
-                        bundle.putString("is_route_queried","Yes")
-                    }else{
-                        bundle.putString("is_route_queried","No")
+
+                    holder.mCall.setOnClickListener {
+
+
+                        val phoneNumbers = java.util.ArrayList<String>()
+                        val contactPersonPojos = model.getmContactPersonsList()
+
+                        if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
+                            for (i in contactPersonPojos!!.indices) {
+                                if (model.getmContactPersonsList()[i] != null) {
+                                    val number = model.getmContactPersonsList()[i].getmContactPersonMobile
+                                    phoneNumbers.add(number)
+
+                                }
+                            }
+
+                            val builder = AlertDialog.Builder(context)
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
+                                    ) { dialog, item ->
+                                        Logger.v("Dialog number selected :" + phoneNumbers[item])
+
+                                        callNumber(phoneNumbers[item])
+                                    }
+
+                            builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                                override fun onClick(dialog: DialogInterface, id: Int) {
+                                    // User cancelled the dialog
+                                }
+                            })
+                            builder.create()
+                            builder.show()
+
+
+                        } else {
+
+                            val number = model.getmContactPersonsList()[0].getmContactPersonMobile
+                            callNumber(number)
+                        }
+                        val bundle = Bundle()
+
+                        if (preferenceManager.rmn != null) {
+                            bundle.putString("by_rmn", preferenceManager.rmn)
+                        } else {
+                            bundle.putString("by_rmn", "Unknown")
+                        }
+
+                        bundle.putString("to_rmn", model.getmRMN())
+
+                        if (model.getmFUID() != null) {
+                            bundle.putString("is_opponent_updated", "Yes")
+                        } else {
+                            bundle.putString("is_opponent_updated", "No")
+                        }
+
+                        if (!basicQueryPojo.mSourceCity.isEmpty() &&
+                                basicQueryPojo.mSourceCity != "Select City" &&
+                                !basicQueryPojo.mDestinationCity.isEmpty() &&
+                                basicQueryPojo.mDestinationCity != "Select City") {
+                            bundle.putString("is_route_queried", "Yes")
+                        } else {
+                            bundle.putString("is_route_queried", "No")
+                        }
+
+                        bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+
+                        firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
                     }
-                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
-                    firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
+
+                    holder.mChat.setOnClickListener {
+
+                        val intent = Intent(context, ChatRoomActivity::class.java)
+                        intent.putExtra("imsg", basicQueryPojo.toString())
+                        intent.putExtra("ormn", model.getmRMN())
+                        intent.putExtra("ouid", getItem(position)!!.id)
+                        intent.putExtra("ofuid", model.getmFUID())
+                        Logger.v("Ofuid :" + model.getmFUID())
+                        startActivity(intent)
+
+                        val bundle = Bundle()
+                        if (preferenceManager.rmn != null) {
+                            bundle.putString("by_rmn", preferenceManager.rmn)
+                        } else {
+                            bundle.putString("by_rmn", "Unknown")
+                        }
+                        bundle.putString("to_rmn", model.getmRMN())
+                        if (model.getmFUID() != null) {
+                            bundle.putString("is_opponent_updated", "Yes")
+                        } else {
+                            bundle.putString("is_opponent_updated", "No")
+                        }
+                        if (!basicQueryPojo.mSourceCity.isEmpty() &&
+                                basicQueryPojo.mSourceCity != "Select City" &&
+                                !basicQueryPojo.mDestinationCity.isEmpty() &&
+                                basicQueryPojo.mDestinationCity != "Select City") {
+                            bundle.putString("is_route_queried", "Yes")
+                        } else {
+                            bundle.putString("is_route_queried", "No")
+                        }
+                        bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+                        firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
+
+                    }
                 }
 
 
@@ -398,7 +426,7 @@ class AllTransportersActivity : AppCompatActivity() {
     private fun chatwithassistant() {
         val intent = Intent(this@AllTransportersActivity, ChatRoomActivity::class.java)
         intent.putExtra("ormn", "+919284089759")
-        intent.putExtra("imgs", "Hi, This is my suggestion/requirement for the filter/sor feature in transporters list.")
+        intent.putExtra("imsg", "Hi, This is my suggestion/requirement for the filter/sor feature in transporters list.")
         intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
         intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
         startActivity(intent)

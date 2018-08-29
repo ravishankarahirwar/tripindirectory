@@ -1,11 +1,14 @@
 package directory.tripin.com.tripindirectory.NewLookCode
 
 import android.content.Context
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import directory.tripin.com.tripindirectory.R
 import kotlinx.android.synthetic.main.item_truck_select.view.*
 
@@ -28,9 +31,17 @@ class FleetsSelectAdapter(val items: ArrayList<FleetSelectPojo>, val context: Co
             holder.ivFleetImage.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
             holder.ivFleetImage.setPadding(5,5,5,5)
             listner.onFleetSelected(items[position].name)
+            val matrix = ColorMatrix()
+            matrix.setSaturation(1f)
+            val filter = ColorMatrixColorFilter(matrix)
+            holder.ivFleetImage.colorFilter = filter
         }else{
             holder.ivFleetImage.background = null
             listner.onFleetDeslected(items[position].name)
+            val matrix = ColorMatrix()
+            matrix.setSaturation(0f)
+            val filter = ColorMatrixColorFilter(matrix)
+            holder.ivFleetImage.colorFilter = filter
         }
 
 
@@ -38,6 +49,7 @@ class FleetsSelectAdapter(val items: ArrayList<FleetSelectPojo>, val context: Co
             items[position].isSelected = !items[position].isSelected
             notifyItemChanged(position)
         }
+
     }
 
 

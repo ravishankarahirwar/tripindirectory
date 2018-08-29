@@ -562,7 +562,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
 
-                    final ChatItemPojo chatItemPojo = documentSnapshot.toObject(ChatItemPojo.class);
+                    ChatItemPojo chatItemPojo = documentSnapshot.toObject(ChatItemPojo.class);
 
                     FirebaseDatabase.getInstance().getReference().child("chatpresence").child("users").child(chatItemPojo.getmReciversUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -579,10 +579,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                             }
 
+//
+//                            int p = 0;
+//
+//                            try{
+//                                p = Integer.valueOf(chatItemPojo.getmRMN().substring(8));
+//                            }catch(NumberFormatException ex){
+//                                Log.d(TAG, "parsed int exception");
+//
+//                            }
+//
+//
+//                            Log.d(TAG, "parsed int "+p);
+//                            int m  = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+
                             Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                             intent.putExtra("ouid", chatItemPojo.getmSendersUid());
                             intent.putExtra("ormn", chatItemPojo.getmRMN());
                             intent.putExtra("ofuid", chatItemPojo.getmSendersFuid());
+//                            intent.putExtra("nid", m);
+
 
                             String title = "";
                             if (chatItemPojo.getmDisplayName().isEmpty()) {
@@ -602,13 +619,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                             .setContentTitle(title)
                                             .setContentText(chatItemPojo.getmChatMesssage())
                                             .setAutoCancel(true)
+                                            .setGroup("ILN Chats")
                                             .setSound(defaultSoundUri)
                                             .setContentIntent(pendingIntent);
 
                             NotificationManager notificationManager =
                                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                            notificationManager.notify(6 /* ID of notification */, notificationBuilder.build());
+
+                            notificationManager.notify(6/* ID of notification */, notificationBuilder.build());
                             Log.v(TAG, "new one to one msg notified");
 
                         }

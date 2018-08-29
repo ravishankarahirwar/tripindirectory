@@ -31,7 +31,7 @@ public class AppUtils {
             String sAux = "\nLet me recommend you this application\n\n";
             sAux = sAux + "https://play.google.com/store/apps/details?id=directory.tripin.com.tripindirectory \n\n";
             i.putExtra(Intent.EXTRA_TEXT, sAux);
-            mContext.startActivity(Intent.createChooser(i, "Share INL"));
+            mContext.startActivity(Intent.createChooser(i, "Share ILN"));
         } catch (Exception e) {
             //e.toString();
         }

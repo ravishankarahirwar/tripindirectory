@@ -227,10 +227,6 @@ public class CompanyFromFragment extends BaseFragment {
                         checkBoxRecyclarAdapter2.notifyDataSetChanged();
                     }
 
-                    if (partnerInfoPojo.getmCompanyAdderss().getmLatitude()!=null) {
-                    }
-
-
                     Logger.v("On Data Fetch and set Company Data");
                     mFormLin.setVisibility(View.VISIBLE);
                     mLoadingDataLin.setVisibility(View.GONE);

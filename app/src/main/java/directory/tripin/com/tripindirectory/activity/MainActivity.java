@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private TextView mTextCount;
     private TextView mTryNewLook;
-    private TextView mLoadBoardNews;
+//    private TextView mLoadBoardNews;
 
     private Dialog dialog;
     private boolean isApplyFilterPressed;
@@ -314,7 +314,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mNavYouTube  = findViewById(R.id.nev_footer_youtube);
         mNavWebsite  = findViewById(R.id.nev_footer_webstie);
 
-        mLoadBoardNews =  findViewById(R.id.loadboard_news);
+//        mLoadBoardNews =  findViewById(R.id.loadboard_news);
         mTryNewLook =  findViewById(R.id.trynewlook);
 
 
@@ -708,21 +708,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         });
 
-        mLoadBoardNews.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle params = new Bundle();
-                params.putString(Analytics.Event.GO_TO_FORUM_BYNEWS, Analytics.Value.CLICK);
-                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FORUM_BYNEWS, params);
-
-                if (mAuth.getCurrentUser() != null) {
-                    onAuthSuccess(mAuth.getCurrentUser());
-                } else {
-                    // not signed in
-                    startSignInFor(SIGN_IN_FOR_FORUM);
-                }
-            }
-        });
+//        mLoadBoardNews.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Bundle params = new Bundle();
+//                params.putString(Analytics.Event.GO_TO_FORUM_BYNEWS, Analytics.Value.CLICK);
+//                mFirebaseAnalytics.logEvent(Analytics.Event.GO_TO_FORUM_BYNEWS, params);
+//
+//                if (mAuth.getCurrentUser() != null) {
+//                    onAuthSuccess(mAuth.getCurrentUser());
+//                } else {
+//                    // not signed in
+//                    startSignInFor(SIGN_IN_FOR_FORUM);
+//                }
+//            }
+//        });
     }
 
     private void showIntro() {
@@ -1002,7 +1002,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (bookmarksAdapter != null)
             bookmarksAdapter.startListening();
 
-        mLoadBoardNews.setText("");
+//        mLoadBoardNews.setText("");
         mPostReference.limitToLast(10).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
@@ -1017,7 +1017,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     loadBoardNews += post.getmTruckBodyType() + " \u25AA ";
                     loadBoardNews += post.getmPayload() + " Ton ";
 
-                    mLoadBoardNews.append(loadBoardNews);
+//                    mLoadBoardNews.append(loadBoardNews);
                 }
 
             }

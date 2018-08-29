@@ -41,6 +41,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -56,6 +57,7 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.utils.AppUtils
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.content_main_scrolling.*
@@ -81,9 +83,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    var mMyIndicator : ChatIndicatorPojo? = null
+    var mMyIndicator: ChatIndicatorPojo? = null
     var pendingChatsvalueEventListener: ValueEventListener? = null
-
+    val REQUEST_INVITE = 1001
+    lateinit var appUtils: AppUtils
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,15 +95,16 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         setContentView(R.layout.activity_main_scrolling)
         context = this
         textUtils = TextUtils()
+        appUtils = AppUtils(context)
         preferenceManager = PreferenceManager.getInstance(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
         if (FirebaseAuth.getInstance().currentUser == null
                 || preferenceManager.rmn == null
-                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null ) {
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null) {
             val i = Intent(this, FacebookRequiredActivity::class.java)
-            i.putExtra("from","MainActivity")
-            startActivityForResult(i,3)
+            i.putExtra("from", "MainActivity")
+            startActivityForResult(i, 3)
         }
 
 
@@ -120,14 +124,22 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         internetCheck()
 
-        if(!preferenceManager.isMainScreenGuided){
+        if (!preferenceManager.isMainScreenGuided) {
             showIntro()
         }
+        notificationSubscried()
 
     }
 
+    private fun notificationSubscried() {
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates")
+        //For Testing
+        //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
+        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification")
+    }
+
     private fun setChatPendingIndicator() {
-        pendingChatsvalueEventListener = object: ValueEventListener {
+        pendingChatsvalueEventListener = object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                 chatloading.visibility = View.GONE
@@ -137,12 +149,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 chatloading.visibility = View.GONE
                 if (p0.exists()) {
                     mMyIndicator = p0.getValue(ChatIndicatorPojo::class.java)
-                    if(mMyIndicator!=null){
-                        if(mMyIndicator!!.getmMsgCount()>0){
+                    if (mMyIndicator != null) {
+                        if (mMyIndicator!!.getmMsgCount() > 0) {
                             chatbadge.visibility = View.VISIBLE
 
-                            if(mMyIndicator!!.getmLastMsgUserImageUrl()!=null){
-                                if(!mMyIndicator!!.getmLastMsgUserImageUrl().isEmpty()){
+                            if (mMyIndicator!!.getmLastMsgUserImageUrl() != null) {
+                                if (!mMyIndicator!!.getmLastMsgUserImageUrl().isEmpty()) {
                                     lastmsgimgurl.visibility = View.VISIBLE
                                     val url = mMyIndicator!!.getmLastMsgUserImageUrl()
                                     Picasso.with(applicationContext)
@@ -159,18 +171,18 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                                                     lastmsgimgurl.visibility = View.INVISIBLE
                                                 }
                                             })
-                            }
+                                }
 
                             }
-                        }else{
+                        } else {
                             chatbadge.visibility = View.INVISIBLE
                             lastmsgimgurl.visibility = View.INVISIBLE
                         }
-                    }else{
+                    } else {
                         chatbadge.visibility = View.INVISIBLE
                         lastmsgimgurl.visibility = View.INVISIBLE
                     }
-                }else{
+                } else {
                     chatbadge.visibility = View.INVISIBLE
                     lastmsgimgurl.visibility = View.INVISIBLE
                 }
@@ -182,64 +194,67 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     }
 
     override fun onStop() {
-        if(pendingChatsvalueEventListener!=null){
-            if(preferenceManager.userId!=null)
-            FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).removeEventListener(pendingChatsvalueEventListener!!)
+        if (pendingChatsvalueEventListener != null) {
+            if (preferenceManager.userId != null)
+                FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).removeEventListener(pendingChatsvalueEventListener!!)
         }
         super.onStop()
     }
 
     private fun showIntro() {
 
-        val tapTargetSequence : TapTargetSequence = TapTargetSequence(this)
+        val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(mainhumb, "Welcome to ILN Directory","Lets get through what you can explore here. Tap on the target!")
+                        TapTarget.forView(mainhumb, "Welcome to ILN Directory", "Lets get through what you can explore here. Tap on the target!")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(fromtitle, "Select Source City from here","Result will be filtered accordingly. Tap on the target.")
+                        TapTarget.forView(fromtitle, "Select Source City from here", "Type the source city and select from suggestion. Result will be filtered accordingly. Tap on the target.")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(totitle, "Select Destination City here","Transporters operating only between your selected route will be shown!")
+                        TapTarget.forView(totitle, "Select Destination City here", "Transporters operating only between your selected route will be shown!")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(rv_fleets, "Select Fleet Type","The result will be filtered accordingly. You can select multiple fleet types.")
+                        TapTarget.forView(rv_fleets, "Select Fleet Type", "The result will be filtered accordingly. You can select multiple fleet types.")
                                 .transparentTarget(true)
                                 .targetRadius(75)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(posttoselected, "Post To Selected Transporters","Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
+                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(posttolb, "Post to Loadboard","Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
+                        TapTarget.forView(posttolb, "Post to Loadboard", "Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(yourbusiness, "Your Business Here","Fill your company details and you are in the directory. Its Free! Tap on the target for next")
+                        TapTarget.forView(yourbusiness, "Your Business Here", "Fill your company details and you are in the directory. Its Free! Tap on the target for next")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(showchats, "Your Chats Here","All your chats are saved here, Now keep your business talks at one place. Tap the target!")
+                        TapTarget.forView(showchats, "Your Chats Here", "All your chats are saved here, Now keep your business talks at one place. Tap the target!")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)
 
-        )
-                .listener(object: TapTargetSequence.Listener {
+                )
+                .listener(object : TapTargetSequence.Listener {
                     override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
                     }
 
                     override fun onSequenceFinish() {
-                        Toast.makeText(applicationContext,"Use ILN wisely!",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Use ILN wisely!", Toast.LENGTH_SHORT).show()
                         preferenceManager.setisMainScreenGuided(true)
+                        val bundle = Bundle()
+                        firebaseAnalytics.logEvent("z_mainguidefifished", bundle)
                     }
-                    override fun onSequenceCanceled(lastTarget:TapTarget) {
+
+                    override fun onSequenceCanceled(lastTarget: TapTarget) {
                         // Boo
                         preferenceManager.setisMainScreenGuided(true)
-                        Toast.makeText(applicationContext,"You can restart the guide from menu!",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "You can restart the guide from menu!", Toast.LENGTH_SHORT).show()
                     }
                 })
 
@@ -249,7 +264,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     override fun onResume() {
         super.onResume()
 
-        if(preferenceManager.userId!=null){
+        if (preferenceManager.userId != null) {
             setChatPendingIndicator()
         }
 
@@ -311,6 +326,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 R.id.action_guide -> {
                     showIntro()
                 }
+                R.id.action_invite -> {
+                    invite()
+                }
                 R.id.action_feedback -> {
                     chatwithassistant()
                 }
@@ -333,7 +351,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
     }
 
-
+    private fun invite() {
+        val params = Bundle()
+        firebaseAnalytics.logEvent("z_share_clicked", params)
+        appUtils.shareApp()
+        //startActivityForResult(appUtils.getInviteIntent(), REQUEST_INVITE)
+    }
 
 
     private fun setListners() {
@@ -477,7 +500,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
             val i = Intent(this, LoadBoardActivity::class.java)
-            if(s != "BottomMenu"){
+            if (s != "BottomMenu") {
                 i.putExtra("query", basicQueryPojo)
             }
             startActivity(i)
@@ -559,21 +582,21 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 //            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
             baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
             isNoQiery = false
-            bundle.putString("source",basicQueryPojo.mSourceCity)
-        }else{
-            bundle.putString("source","Empty")
+            bundle.putString("source", basicQueryPojo.mSourceCity)
+        } else {
+            bundle.putString("source", "Empty")
         }
 
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
 //            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
             baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
             isNoQiery = false
-            bundle.putString("destination",basicQueryPojo.mDestinationCity)
-        }else{
-            bundle.putString("destination","Empty")
+            bundle.putString("destination", basicQueryPojo.mDestinationCity)
+        } else {
+            bundle.putString("destination", "Empty")
         }
 
-        var numberofFleets : Int = 0
+        var numberofFleets: Int = 0
 
         for (fleet in basicQueryPojo.mFleets!!) {
             baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
@@ -581,14 +604,14 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             numberofFleets++
         }
 
-        bundle.putInt("fleetsselected",numberofFleets)
+        bundle.putInt("fleetsselected", numberofFleets)
         firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
 
-
+//
         if (isNoQiery) {
             baseQuery = baseQuery.whereGreaterThan(DB.PartnerFields.COMPANY_NAME, "")
             baseQuery = baseQuery.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING)
-            baseQuery = baseQuery.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING)
+//            baseQuery = baseQuery.orderBy(DB.PartnerFields.ACCOUNT_STATUS, Query.Direction.ASCENDING)
         }
 
 
@@ -616,157 +639,171 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                                           position: Int,
                                           @NonNull model: PartnerInfoPojo) {
 
-                if (model.getmCompanyName() != null) {
-                    if (!model.getmCompanyName().isEmpty()) {
-                        holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                if (model != null) {
+
+                    if (model.getmCompanyName() != null) {
+                        if (!model.getmCompanyName().isEmpty()) {
+                            holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                        } else {
+                            holder.mCompany.text = "Unknown Name"
+                        }
                     } else {
                         holder.mCompany.text = "Unknown Name"
                     }
-                } else {
-                    holder.mCompany.text = "Unknown Name"
-                }
 
-                if (model.getmPhotoUrl() != null) {
-                    if (!model.getmPhotoUrl().isEmpty()) {
-                        Picasso.with(applicationContext)
-                                .load(model.getmPhotoUrl())
-                                .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
-                                .transform(CircleTransform())
-                                .fit()
-                                .into(holder.mThumbnail, object : Callback {
 
-                                    override fun onSuccess() {
-                                        Logger.v("image set: transporter thumb")
-                                    }
-
-                                    override fun onError() {
-                                        Logger.v("image transporter Error")
-                                    }
-                                })
-
+                    if (model.getmCompanyAdderss() != null){
+                        if(model.getmCompanyAdderss().city!=null){
+                            holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
+                        }
                     }
 
-                } else {
-                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
-                }
 
-                if (model != null) {
-                    if (model.getmCompanyAdderss() != null)
-                        holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
-                }
+                    if (model.getmPhotoUrl() != null) {
+                        if (!model.getmPhotoUrl().isEmpty()) {
+                            Picasso.with(applicationContext)
+                                    .load(model.getmPhotoUrl())
+                                    .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
+                                    .transform(CircleTransform())
+                                    .fit()
+                                    .into(holder.mThumbnail, object : Callback {
 
-                holder.itemView.setOnClickListener {
+                                        override fun onSuccess() {
+                                            Logger.v("image set: transporter thumb")
+                                        }
 
-                    val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                    i.putExtra("uid", getItem(position)!!.id)
-                    i.putExtra("cname", model.getmCompanyName())
-                    startActivity(i)
-                }
-
-                holder.mCall.setOnClickListener {
-
-
-                    val phoneNumbers = java.util.ArrayList<String>()
-                    val contactPersonPojos = model.getmContactPersonsList()
-
-                    if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
-                        for (i in contactPersonPojos!!.indices) {
-                            if (model.getmContactPersonsList()[i] != null) {
-                                val number = model.getmContactPersonsList()[i].getmContactPersonMobile
-                                phoneNumbers.add(number)
-
-                            }
+                                        override fun onError() {
+                                            Logger.v("image transporter Error")
+                                        }
+                                    })
                         }
 
-                        val builder = AlertDialog.Builder(context)
-                        builder.setTitle("Looks like there are multiple phone numbers.")
-                                .setCancelable(false)
-                                .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
-                                ) { dialog, item ->
-                                    Logger.v("Dialog number selected :" + phoneNumbers[item])
-
-                                    callNumber(phoneNumbers[item])
-                                }
-
-                        builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                            override fun onClick(dialog: DialogInterface, id: Int) {
-                                // User cancelled the dialog
-                            }
-                        })
-                        builder.create()
-                        builder.show()
-
-
-
-
                     } else {
-
-                        val number = model.getmContactPersonsList()[0].getmContactPersonMobile
-                        callNumber(number)
-                    }
-                    val bundle = Bundle()
-
-                    if(preferenceManager.rmn!=null){
-                        bundle.putString("by_rmn",preferenceManager.rmn)
-                    }else{
-                        bundle.putString("by_rmn","Unknown")
+                        holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                     }
 
-                    bundle.putString("to_rmn",model.getmRMN())
-
-                    if(model.getmFUID()!=null){
-                        bundle.putString("is_opponent_updated","Yes")
-                    }else{
-                        bundle.putString("is_opponent_updated","No")
+                    if(model.getmAccountStatus()!=null){
+                        if(model.getmAccountStatus()>=2){
+                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
+                        }else{
+                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_stroke_bg)
+                        }
                     }
 
-                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
-                            basicQueryPojo.mSourceCity != "Select City" &&
-                            !basicQueryPojo.mDestinationCity.isEmpty() &&
-                            basicQueryPojo.mDestinationCity != "Select City"){
-                        bundle.putString("is_route_queried","Yes")
-                    }else{
-                        bundle.putString("is_route_queried","No")
+
+                    holder.itemView.setOnClickListener {
+
+                        Toast.makeText(applicationContext, "Loading...", Toast.LENGTH_SHORT).show()
+                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
+                        i.putExtra("uid", getItem(position)!!.id)
+                        i.putExtra("cname", model.getmCompanyName())
+                        startActivity(i)
+
                     }
 
-                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+                    holder.mCall.setOnClickListener {
 
-                    firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
-                }
 
-                holder.mChat.setOnClickListener {
+                        val phoneNumbers = java.util.ArrayList<String>()
+                        val contactPersonPojos = model.getmContactPersonsList()
 
-                    val intent = Intent(context, ChatRoomActivity::class.java)
-                    intent.putExtra("imsg", basicQueryPojo.toString())
-                    intent.putExtra("ormn", model.getmRMN())
-                    intent.putExtra("ouid", getItem(position)!!.id)
-                    intent.putExtra("ofuid", model.getmFUID())
-                    Logger.v("Ofuid :" + model.getmFUID())
-                    startActivity(intent)
+                        if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
+                            for (i in contactPersonPojos!!.indices) {
+                                if (model.getmContactPersonsList()[i] != null) {
+                                    val number = model.getmContactPersonsList()[i].getmContactPersonMobile
+                                    phoneNumbers.add(number)
 
-                    val bundle = Bundle()
-                    if(preferenceManager.rmn!=null){
-                        bundle.putString("by_rmn",preferenceManager.rmn)
-                    }else{
-                        bundle.putString("by_rmn","Unknown")
+                                }
+                            }
+
+                            val builder = AlertDialog.Builder(context)
+                            builder.setTitle("Looks like there are multiple phone numbers.")
+                                    .setCancelable(false)
+                                    .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
+                                    ) { dialog, item ->
+                                        Logger.v("Dialog number selected :" + phoneNumbers[item])
+
+                                        callNumber(phoneNumbers[item])
+                                    }
+
+                            builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
+                                override fun onClick(dialog: DialogInterface, id: Int) {
+                                    // User cancelled the dialog
+                                }
+                            })
+                            builder.create()
+                            builder.show()
+
+
+                        } else {
+
+                            val number = model.getmContactPersonsList()[0].getmContactPersonMobile
+                            callNumber(number)
+                        }
+                        val bundle = Bundle()
+
+                        if (preferenceManager.rmn != null) {
+                            bundle.putString("by_rmn", preferenceManager.rmn)
+                        } else {
+                            bundle.putString("by_rmn", "Unknown")
+                        }
+
+                        bundle.putString("to_rmn", model.getmRMN())
+
+                        if (model.getmFUID() != null) {
+                            bundle.putString("is_opponent_updated", "Yes")
+                        } else {
+                            bundle.putString("is_opponent_updated", "No")
+                        }
+
+                        if (!basicQueryPojo.mSourceCity.isEmpty() &&
+                                basicQueryPojo.mSourceCity != "Select City" &&
+                                !basicQueryPojo.mDestinationCity.isEmpty() &&
+                                basicQueryPojo.mDestinationCity != "Select City") {
+                            bundle.putString("is_route_queried", "Yes")
+                        } else {
+                            bundle.putString("is_route_queried", "No")
+                        }
+
+                        bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+
+                        firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
                     }
-                    bundle.putString("to_rmn",model.getmRMN())
-                    if(model.getmFUID()!=null){
-                        bundle.putString("is_opponent_updated","Yes")
-                    }else{
-                        bundle.putString("is_opponent_updated","No")
-                    }
-                    if(!basicQueryPojo.mSourceCity.isEmpty() &&
-                            basicQueryPojo.mSourceCity != "Select City" &&
-                            !basicQueryPojo.mDestinationCity.isEmpty() &&
-                            basicQueryPojo.mDestinationCity != "Select City"){
-                        bundle.putString("is_route_queried","Yes")
-                    }else{
-                        bundle.putString("is_route_queried","No")
-                    }
-                    bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
-                    firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
 
+                    holder.mChat.setOnClickListener {
+
+                        val intent = Intent(context, ChatRoomActivity::class.java)
+                        intent.putExtra("imsg", basicQueryPojo.toString())
+                        intent.putExtra("ormn", model.getmRMN())
+                        intent.putExtra("ouid", getItem(position)!!.id)
+                        intent.putExtra("ofuid", model.getmFUID())
+                        Logger.v("Ofuid :" + model.getmFUID())
+                        startActivity(intent)
+
+                        val bundle = Bundle()
+                        if (preferenceManager.rmn != null) {
+                            bundle.putString("by_rmn", preferenceManager.rmn)
+                        } else {
+                            bundle.putString("by_rmn", "Unknown")
+                        }
+                        bundle.putString("to_rmn", model.getmRMN())
+                        if (model.getmFUID() != null) {
+                            bundle.putString("is_opponent_updated", "Yes")
+                        } else {
+                            bundle.putString("is_opponent_updated", "No")
+                        }
+                        if (!basicQueryPojo.mSourceCity.isEmpty() &&
+                                basicQueryPojo.mSourceCity != "Select City" &&
+                                !basicQueryPojo.mDestinationCity.isEmpty() &&
+                                basicQueryPojo.mDestinationCity != "Select City") {
+                            bundle.putString("is_route_queried", "Yes")
+                        } else {
+                            bundle.putString("is_route_queried", "No")
+                        }
+                        bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
+                        firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
+
+                    }
                 }
 
 
@@ -833,53 +870,62 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
-                    val place = PlaceAutocomplete.getPlace(context, data)
+                    if (data != null) {
+                        val place = PlaceAutocomplete.getPlace(context, data)
 
-                    textViewSource.text = ". ${place.name}"
-                    textViewSource.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        textViewSource.text = ". ${place.name}"
+                        textViewSource.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
 
 //                    basicQueryPojo.mSourceCity = place.name.toString()
 //                    setMainAdapter(basicQueryPojo)
 
-                    mSourceRouteCityPojo.setmCityName(place.name.toString())
-                    loading.visibility = View.VISIBLE
-                    val bundle = Bundle()
-                    bundle.putString("source",place.name.toString())
-                    firebaseAnalytics.logEvent("z_source_city", bundle)
+                        mSourceRouteCityPojo.setmLatLang(place.latLng)
+                        loading.visibility = View.VISIBLE
+                        val bundle = Bundle()
+                        bundle.putString("source", place.name.toString())
+                        firebaseAnalytics.logEvent("z_source_city", bundle)
+                    } else {
+                        Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show()
+                    }
 
 
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
-                    val place = PlaceAutocomplete.getPlace(context, data)
+                    if (data != null) {
+                        val place = PlaceAutocomplete.getPlace(context, data)
 
-                    textViewDestination.text = ". ${place.name}"
-                    textViewDestination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        textViewDestination.text = ". ${place.name}"
+                        textViewDestination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
 
 //                    basicQueryPojo.mDestinationCity = place.name.toString()
 //                    setMainAdapter(basicQueryPojo)
 
-                    mDestinationRouteCityPojo.setmCityName(place.name.toString())
-                    loading.visibility = View.VISIBLE
-                    val bundle = Bundle()
-                    bundle.putString("destination",place.name.toString())
-                    firebaseAnalytics.logEvent("z_destination_city", bundle)
+                        mDestinationRouteCityPojo.setmLatLang(place.latLng)
+                        loading.visibility = View.VISIBLE
+                        val bundle = Bundle()
+                        bundle.putString("destination", place.name.toString())
+                        firebaseAnalytics.logEvent("z_destination_city", bundle)
+                    } else {
+                        Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show()
+                    }
+
 
                 }
                 SIGN_IN_FOR_CREATE_COMPANY -> {
                     startYourBusinessActivity("AfterPhoneSignup")
                 }
 
-                3->{
-                    if(preferenceManager.userId!=null){
+                3 -> {
+                    if (preferenceManager.userId != null) {
                         setChatPendingIndicator()
                     }
-                    Toast.makeText(context,"Welcome",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Welcome", Toast.LENGTH_SHORT).show()
                 }
             }
-        }else{
+        } else {
             when (requestCode) {
 
-                3->{
+                3 -> {
                     val i = Intent(this, NewSplashActivity::class.java)
                     startActivity(i)
                     finishAffinity()
@@ -902,10 +948,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     private fun setRoutePickup() {
 
         lin_source.setOnClickListener {
+            Toast.makeText(context,"Select Source City",Toast.LENGTH_LONG).show()
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE)
         }
 
         lin_des.setOnClickListener {
+            Toast.makeText(context,"Select Destination City",Toast.LENGTH_LONG).show()
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION)
         }
 

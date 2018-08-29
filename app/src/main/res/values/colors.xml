@@ -11,6 +11,8 @@
     <color name="default_textview_color">#666464</color>
     <color name="categoriesbg">#dedada</color>
     <color name="categoriesbg2">#e7e6e7</color>
+    <color name="categoriesbg3">#efefef</color>
+
 
     <color name="shadow">#66000000</color>
     <color name="varify">#1BB2AC</color>
@@ -238,7 +240,7 @@
     <color name="purple_A400">#D500F9</color>
     <color name="purple_A700">#AA00FF</color>
 
-    <color name="blue_50">#E3F2FD</color>
+    <color name="blue_50">#e3f2fd</color>
     <color name="blue_100">#BBDEFB</color>
     <color name="blue_200">#90CAF9</color>
     <color name="blue_300">#64B5F6</color>

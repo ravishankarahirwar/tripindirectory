@@ -141,32 +141,31 @@
                         app:lottie_fileName="animation_loading.json"
                         app:lottie_loop="true" />
 
-                    <TextView
-                        android:id="@+id/loadboard_news"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/categoriesbg"
-                        android:ellipsize="marquee"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:fontFamily="sans-serif-condensed"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:repeatCount="infinite"
-                        android:repeatMode="restart"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="Loadboard"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                    <!--<TextView-->
+                        <!--android:id="@+id/loadboard_news"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:background="@color/categoriesbg"-->
+                        <!--android:ellipsize="marquee"-->
+                        <!--android:focusable="true"-->
+                        <!--android:focusableInTouchMode="true"-->
+                        <!--android:fontFamily="sans-serif-condensed"-->
+                        <!--android:marqueeRepeatLimit="marquee_forever"-->
+                        <!--android:paddingLeft="4dp"-->
+                        <!--android:paddingRight="4dp"-->
+                        <!--android:repeatCount="infinite"-->
+                        <!--android:repeatMode="restart"-->
+                        <!--android:scrollHorizontally="true"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:text="Loadboard"-->
+                        <!--android:textColor="@android:color/black"-->
+                        <!--android:textSize="14sp"-->
+                        <!--android:textStyle="bold" />-->
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/transporter_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@+id/loadboard_news"
                         android:layout_gravity="center_horizontal"
                         android:overScrollMode="ifContentScrolls"
                         app:fastScrollEnabled="true"
@@ -174,7 +173,6 @@
                         app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
                         app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
                         app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"
-                        app:layoutManager="LinearLayoutManager"
                         tools:context="directory.tripin.com.tripindirectory.activity.MainActivity"
                         tools:listitem="@layout/single_partner_row1" />
 
@@ -199,6 +197,7 @@
                         android:layout_margin="12dp"
                         android:background="@drawable/border_sreoke_yollo_bg"
                         android:padding="12dp"
+                        android:elevation="5dp"
                         android:text="TRY NEW LOOK"
                         android:textColor="@color/blue_grey_900"
                         android:textSize="14sp"
