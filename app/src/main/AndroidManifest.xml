@@ -61,7 +61,7 @@
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
 
         <activity
-            android:name=".NewLookCode.activities.MainScrollingActivity"
+            android:name=".newlookcode.activities.MainScrollingActivity"
             android:label="@string/title_activity_main_scrolling"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -71,18 +71,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewLookCode.activities.AllTransportersActivity" />
+        <activity android:name=".newlookcode.activities.AllTransportersActivity" />
         <activity
-            android:name=".NewLookCode.activities.LoadBoardActivity"
+            android:name=".newlookcode.activities.LoadBoardActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".NewLookCode.FacebookRequiredActivity"
+            android:name=".newlookcode.FacebookRequiredActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NewLookCode.activities.NewSplashActivity"
+            android:name=".newlookcode.activities.NewSplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -91,7 +91,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NewLookCode.activities.PostToSelectedActivity"
+            android:name=".newlookcode.activities.PostToSelectedActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -100,7 +100,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NewLookCode.activities.ILNRegisterAdActivity"
+            android:name=".newlookcode.activities.ILNRegisterAdActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -305,14 +305,14 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ChatingActivities.ChatRoomActivity"
+            android:name=".chatingactivities.ChatRoomActivity"
             android:label="ChatRoom"
-            android:parentActivityName=".ChatingActivities.ChatHeadsActivity"
+            android:parentActivityName=".chatingactivities.ChatHeadsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ChatingActivities.ChatHeadsActivity"
+            android:name=".chatingactivities.ChatHeadsActivity"
             android:label="ILN Chats"
             android:parentActivityName=".activity.MainActivity"
             android:screenOrientation="portrait"
@@ -335,7 +335,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".Messaging.ChatList.ListChatActivity" />
-        <activity android:name=".NewLookCode.MainNewIntroActivity"></activity>
+        <activity android:name=".newlookcode.MainNewIntroActivity"></activity>
     </application>
 
 </manifest>

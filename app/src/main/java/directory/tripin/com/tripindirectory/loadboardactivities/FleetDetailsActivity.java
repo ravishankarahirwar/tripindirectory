@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
+import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.CommentPojo;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.CommentsViewHolder;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.FleetPostPojo;

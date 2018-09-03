@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.NewLookCode.activities.ILNRegisterAdActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.ILNRegisterAdActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.adapters.ImagesRecyclarAdapter;
 import directory.tripin.com.tripindirectory.model.AddImage;

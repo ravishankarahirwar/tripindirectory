@@ -119,6 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackground"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_chat" />
 
             <ImageView

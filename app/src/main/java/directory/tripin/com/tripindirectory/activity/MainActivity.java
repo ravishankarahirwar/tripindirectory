@@ -10,15 +10,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -49,7 +46,6 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -84,11 +80,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
-import com.kobakei.ratethisapp.RateThisApp;
+//import com.kobakei.ratethisapp.RateThisApp;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.wooplr.spotlight.SpotlightConfig;
-import com.wooplr.spotlight.SpotlightView;
-import com.wooplr.spotlight.utils.SpotlightSequence;
+//import com.wooplr.spotlight.SpotlightConfig;
+//import com.wooplr.spotlight.SpotlightView;
+//import com.wooplr.spotlight.utils.SpotlightSequence;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -108,8 +104,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import directory.tripin.com.tripindirectory.ChatingActivities.ChatHeadsActivity;
-import directory.tripin.com.tripindirectory.NewLookCode.activities.MainScrollingActivity;
+import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
@@ -257,7 +252,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ImageView mNavYouTube;
     private ImageView mNavWebsite;
 
-    private SpotlightView spotLight;
     FloatingActionButton goToForum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,13 +261,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         init();
         viewSetup();
         FacebookSdk.sdkInitialize(getApplicationContext());
-        ratingDialogSetup();
+//        ratingDialogSetup();
         internetCheck();
         notificationSubscried();
         setAdapter("");
         setBookmarkListAdapter();
         setLastActiveTime();
-        showIntro();
+//        showIntro();
     }
 
 
@@ -574,7 +568,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 public void onSuccess(Void aVoid) {
                     mPreferenceManager.setisOnNewLook(true);
                     startActivity(new Intent(MainActivity.this,
-                            directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity.class));
+                            directory.tripin.com.tripindirectory.newlookcode.activities.NewSplashActivity.class));
                     finish();
                     Bundle bundle = new Bundle();
                     mFirebaseAnalytics.logEvent("z_try_new_look",bundle);
@@ -725,36 +719,36 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //        });
     }
 
-    private void showIntro() {
+//    private void showIntro() {
+//
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                SpotlightConfig config = new SpotlightConfig();
+//                config.setDismissOnTouch(true);
+//                config.setRevealAnimationEnabled(true);
+//                config.setLineAndArcColor(0xFFFFFFFF);
+//
+//                config.setMaskColor(Color.parseColor("#dc000000"));
+//
+//                SpotlightSequence.getInstance(MainActivity.this,config)
+//                        .addSpotlight(searchByRoute, "Search By", "Search by Route, \nCompany Name, City(Touch to Next)", INTRO_SEARCH)
+//                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard ", INTRO_LOADBOARD)
+//                        .addSpotlight(mTryNewLook,"Try New Look","We have redesigned the whole app just the way you want it, give it a try!",INTRO_NEWLOOK)
+//                        .startSequence();
+//            }
+//        }, 1000);
+//    }
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                SpotlightConfig config = new SpotlightConfig();
-                config.setDismissOnTouch(true);
-                config.setRevealAnimationEnabled(true);
-                config.setLineAndArcColor(0xFFFFFFFF);
-
-                config.setMaskColor(Color.parseColor("#dc000000"));
-
-                SpotlightSequence.getInstance(MainActivity.this,config)
-                        .addSpotlight(searchByRoute, "Search By", "Search by Route, \nCompany Name, City(Touch to Next)", INTRO_SEARCH)
-                        .addSpotlight(goToForum, "Loadboard ", "Post your requirement(Load/Truck) in Loadboard ", INTRO_LOADBOARD)
-                        .addSpotlight(mTryNewLook,"Try New Look","We have redesigned the whole app just the way you want it, give it a try!",INTRO_NEWLOOK)
-                        .startSequence();
-            }
-        }, 1000);
-    }
-
-    /**
-     * This method is use for showing an dialog for rate app in google play store
-     */
-    private void ratingDialogSetup() {
-        RateThisApp.onCreate(this);
-        RateThisApp.showRateDialogIfNeeded(this);
-        RateThisApp.Config config = new RateThisApp.Config(NO_OF_DAY, NO_OF_TIME_APP_OPEN);
-        RateThisApp.init(config);
-    }
+//    /**
+//     * This method is use for showing an dialog for rate app in google play store
+//     */
+//    private void ratingDialogSetup() {
+//        RateThisApp.onCreate(this);
+//        RateThisApp.showRateDialogIfNeeded(this);
+//        RateThisApp.Config config = new RateThisApp.Config(NO_OF_DAY, NO_OF_TIME_APP_OPEN);
+//        RateThisApp.init(config);
+//    }
 
     /**
      * This method is use for checking internet connectivity
@@ -1071,15 +1065,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 final Dialog dialogWait = new ProgressDialog(MainActivity.this);
                 dialogWait.show();
 
-                mUserDocRef = FirebaseFirestore.getInstance()
-                        .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
+                if(mAuth.getCurrentUser()!=null){
+                    if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                        mUserDocRef = FirebaseFirestore.getInstance()
+                                .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(),"Error, Try Again",Toast.LENGTH_LONG).show();
+                }
 
                 mUserDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                            Logger.v("document exist :" + mAuth.getCurrentUser().getPhoneNumber());
+                            if(mAuth.getCurrentUser()!=null){
+                                if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                                    Logger.v("document exist :" + mAuth.getCurrentUser().getPhoneNumber());
+                                }
+                            }
 
                             mUserDocRef = FirebaseFirestore.getInstance()
                                     .collection("partners").document(mAuth.getUid());
@@ -1088,58 +1092,72 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Logger.v("data set to :" + mAuth.getUid());
-                                    mUserDocRef = FirebaseFirestore.getInstance()
-                                            .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
-                                    mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            if (dialogWait.isShowing()) {
-                                                dialogWait.dismiss();
-                                            }
-                                            switch (signinginfor) {
-                                                case 1: {
-                                                    //for comp info
-                                                    startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
-                                                    break;
-                                                }
-                                                case 2: {
-                                                    //for bookmark
-                                                    FirebaseFirestore.getInstance()
-                                                            .collection("partners").document(mAuth.getUid()).collection("mQueryBookmarks").add(queryBookmarkPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                        @Override
-                                                        public void onSuccess(DocumentReference documentReference) {
-                                                            dialog.cancel();
-                                                            Toast.makeText(getApplicationContext(), "Bookmark Added!", Toast.LENGTH_LONG).show();
-                                                            isBookmarkSaved = true;
-                                                            setBookmarkListAdapter();
+                                    if(mAuth.getCurrentUser()!=null){
+                                        if(mAuth.getCurrentUser().getPhoneNumber()!=null){
+                                            mUserDocRef = FirebaseFirestore.getInstance()
+                                                    .collection("partners").document(mAuth.getCurrentUser().getPhoneNumber());
+                                            mUserDocRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    if (dialogWait.isShowing()) {
+                                                        dialogWait.dismiss();
+                                                    }
+                                                    switch (signinginfor) {
+                                                        case 1: {
+                                                            //for comp info
+                                                            startActivity(new Intent(MainActivity.this, CompanyInfoActivity.class));
+                                                            break;
                                                         }
-                                                    });
-                                                    break;
-                                                }
-                                                case 3: {
-                                                    //for loadboard
-                                                    startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
+                                                        case 2: {
+                                                            //for bookmark
+                                                            FirebaseFirestore.getInstance()
+                                                                    .collection("partners").document(mAuth.getUid()).collection("mQueryBookmarks").add(queryBookmarkPojo).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                @Override
+                                                                public void onSuccess(DocumentReference documentReference) {
+                                                                    dialog.cancel();
+                                                                    Toast.makeText(getApplicationContext(), "Bookmark Added!", Toast.LENGTH_LONG).show();
+                                                                    isBookmarkSaved = true;
+                                                                    setBookmarkListAdapter();
+                                                                }
+                                                            });
+                                                            break;
+                                                        }
+                                                        case 3: {
+                                                            //for loadboard
+                                                            startActivity(new Intent(MainActivity.this, LoadBoardActivity.class));
 
-                                                    break;
-                                                }
-                                                case 4: {
-                                                    //for Inbox
-                                                    startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
+                                                            break;
+                                                        }
+                                                        case 4: {
+                                                            //for Inbox
+                                                            startActivity(new Intent(MainActivity.this, ChatHeadsActivity.class));
 
-                                                    break;
+                                                            break;
+                                                        }
+                                                        case 0: {
+                                                            //nothing
+                                                        }
+                                                    }
+                                                    showSnackbar(R.string.sign_in_done);
                                                 }
-                                                case 0: {
-                                                    //nothing
-                                                }
-                                            }
-                                            showSnackbar(R.string.sign_in_done);
+                                            });
+                                        }else {
+                                            Toast.makeText(getApplicationContext(),"Error, Try Again!",Toast.LENGTH_LONG).show();
                                         }
-                                    });
+                                    }else {
+                                        Toast.makeText(getApplicationContext(),"Error, Try Again!",Toast.LENGTH_LONG).show();
+                                    }
+
 
                                 }
                             });
                         } else {
-                            Logger.v("document dosent exist :" + mAuth.getCurrentUser().getPhoneNumber());
+
+                            if(mAuth.getCurrentUser() != null){
+                                if(mAuth.getCurrentUser().getPhoneNumber() != null) {
+                                    Logger.v("document dosent exist :" + mAuth.getCurrentUser().getPhoneNumber());
+                                }
+                            }
                             if (dialogWait.isShowing()) {
                                 dialogWait.dismiss();
                             }
@@ -1927,10 +1945,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String uId;
         if(mAuth != null) {
             uId = mAuth.getUid();
-            if(mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getPhoneNumber() != null) {
-                String phone = mAuth.getCurrentUser().getPhoneNumber();
-                userQuery.setUserMobileNo(phone);
+            if(mAuth.getCurrentUser() != null){
+                if(mAuth.getCurrentUser().getPhoneNumber() != null) {
+                    String phone = mAuth.getCurrentUser().getPhoneNumber();
+                    userQuery.setUserMobileNo(phone);
+                }
             }
+
         } else {
             uId = "Anonimus";
         }

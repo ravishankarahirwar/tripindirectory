@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:animateLayoutChanges="true"
-    tools:context="directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity">
+    tools:context="directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity">
 
 
     <android.support.v7.widget.RecyclerView

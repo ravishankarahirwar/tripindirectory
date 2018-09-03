@@ -10,8 +10,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 67
-        versionName "9.1"
+        versionCode 72
+        versionName "9.6"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -123,7 +123,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.0.1'
     implementation 'com.google.firebase:firebase-invites:16.0.1'
 
-    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
 
     implementation 'com.google.android.gms:play-services-analytics:16.0.1'
 
@@ -133,8 +133,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     // event bus
     implementation 'org.greenrobot:eventbus:3.0.0'
-    implementation 'io.github.kobakei:ratethisapp:1.2.0'
-    implementation 'com.github.wooplr:Spotlight:1.2.3'
+//    implementation 'io.github.kobakei:ratethisapp:1.2.0'
+//    implementation 'com.github.wooplr:Spotlight:1.2.3'
 
     implementation 'com.vanniktech:emoji-google:0.5.1'
     implementation 'de.hdodenhof:circleimageview:2.1.0'

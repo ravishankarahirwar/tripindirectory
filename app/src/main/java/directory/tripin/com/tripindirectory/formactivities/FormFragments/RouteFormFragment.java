@@ -24,6 +24,7 @@ import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -186,7 +187,7 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
                     @Override
                     public void onSuccess(Void aVoid) {
                         for(String s: dropoffHM.keySet()){
-                            updateDestinationHubs(s,1);
+                            updateDestinationHubss(s,1);
                         }
                     }
                 });
@@ -210,7 +211,7 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
                     @Override
                     public void onSuccess(Void aVoid) {
                         for(String s: pickupHM.keySet()){
-                            updateSourceHubs(s,1);
+                            updateSourceHubss(s,1);
                         }
                     }
                 });
@@ -251,7 +252,7 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
                     //remove city
                     if (type == 1) {
                         //remove pickup
-                        updateSourceHubs(mData.get(position),2);
+                        updateSourceHubss(mData.get(position),2);
 
                         mUserDocRef.update("mSourceCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -266,7 +267,7 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
                     }
                     if (type == 2) {
                         //remove drop off
-                        updateDestinationHubs(mData.get(position),2);
+                        updateDestinationHubss(mData.get(position),2);
 
                         mUserDocRef.update("mDestinationCities." + mData.get(position),
                                 FieldValue.delete()).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -293,6 +294,8 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
 
     }
 
+
+
     private void starttheplacesfragment(){
         try {
 
@@ -316,37 +319,41 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                final Place place = PlaceAutocomplete.getPlace(getActivity(), data);
-                Logger.v("Place::: " + place.getName());
-                if(mPlaceCode==1){
-                    pickupHM.put(place.getName().toString().toUpperCase(),true);
-                    mUserDocRef.update("mSourceCities", pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
-                            addPickUpCity.setText("Add More");
-                            updateSourceHubs(place.getName().toString(),1);
-                        }
-                    });
+
+                if(data!=null){
+                    final Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                    Logger.v("Place::: " + place.getName());
+                    if(mPlaceCode==1){
+                        pickupHM.put(place.getName().toString().toUpperCase(),true);
+                        mUserDocRef.update("mSourceCities", pickupHM).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getActivity(),"Pick City Added",Toast.LENGTH_SHORT).show();
+                                addPickUpCity.setText("Add More");
+                                updateSourceHubs(place.getLatLng(),1);
+                            }
+                        });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
 //                    partnerInfoPojo.setmSourceCities(pickupHM);
 //                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
 
-                }
-                if(mPlaceCode==2){
-                    dropoffHM.put(place.getName().toString().toUpperCase(),true);
-                    mUserDocRef.update("mDestinationCities",dropoffHM).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Toast.makeText(getActivity(),"Drop City Added",Toast.LENGTH_SHORT).show();
-                            addDropOffCity.setText("Add More");
-                            updateDestinationHubs(place.getName().toString(),1);
-                        }
-                    });
+                    }
+                    if(mPlaceCode==2){
+                        dropoffHM.put(place.getName().toString().toUpperCase(),true);
+                        mUserDocRef.update("mDestinationCities",dropoffHM).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getActivity(),"Drop City Added",Toast.LENGTH_SHORT).show();
+                                addDropOffCity.setText("Add More");
+                                updateDestinationHubs(place.getLatLng(),1);
+                            }
+                        });
 //                    PartnerInfoPojo partnerInfoPojo = new PartnerInfoPojo();
 //                    partnerInfoPojo.setDestinationCities(dropoffHM);
 //                    mUserDocRef.set(partnerInfoPojo, SetOptions.merge());
+                    }
                 }
+
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
@@ -362,13 +369,21 @@ public class RouteFormFragment extends BaseFragment implements HubFetchedCallbac
         }
     }
 
-    private void updateDestinationHubs(String city, int operation) {
+    private void updateDestinationHubs(LatLng city, int operation) {
            RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),2, operation,this);
-           routeCityPojo.setmCityName(city);
+           routeCityPojo.setmLatLang(city);
+    }
+    private void updateDestinationHubss(String city, int operation) {
+        RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),2, operation,this);
+        routeCityPojo.setmCityName(city);
     }
 
-    private void updateSourceHubs(String city, int operation) {
+    private void updateSourceHubs(LatLng city, int operation) {
             RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),1, operation,this);
-            routeCityPojo.setmCityName(city);
+            routeCityPojo.setmLatLang(city);
    }
+    private void updateSourceHubss(String city, int operation) {
+        RouteCityPojo routeCityPojo = new RouteCityPojo(getActivity(),1, operation,this);
+        routeCityPojo.setmCityName(city);
+    }
 }

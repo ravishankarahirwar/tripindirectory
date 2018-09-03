@@ -28,7 +28,7 @@
 
         </LinearLayout>
 
-        <directory.tripin.com.tripindirectory.NewLookCode.ui.WrapContentViewPager
+        <directory.tripin.com.tripindirectory.newlookcode.ui.WrapContentViewPager
             android:id="@+id/mViewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

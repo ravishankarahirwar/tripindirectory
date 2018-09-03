@@ -36,7 +36,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/avgrating"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/image_upload"
@@ -47,6 +48,18 @@
                 android:layout_margin="16dp"
                 android:text="@string/image_upload"
                 android:textColor="@color/background"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/image_upload"
+                android:layout_margin="16dp"
+                android:text="This Feature is disabled, New Profile Will be Up soon on ILN. Stay Tuned!"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
         </RelativeLayout>

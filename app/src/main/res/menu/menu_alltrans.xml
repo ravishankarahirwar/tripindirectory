@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".NewLookCode.activities.AllTransportersActivity">
+    tools:context=".newlookcode.activities.AllTransportersActivity">
 
     <item
         android:id="@+id/action_cancel"

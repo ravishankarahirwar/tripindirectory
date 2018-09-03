@@ -39,11 +39,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
-import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
-import directory.tripin.com.tripindirectory.ChatingActivities.models.ChatItemPojo;
-import directory.tripin.com.tripindirectory.ChatingActivities.models.UserPresensePojo;
+import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
+import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPojo;
+import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.Messaging.Activity.ChatActivity;
-import directory.tripin.com.tripindirectory.NewLookCode.activities.NewSplashActivity;
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.FleetDetailsActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.LoadBoardActivity;
@@ -660,7 +659,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //if user signed in
         preferenceManager = PreferenceManager.getInstance(getApplicationContext());
         if (preferenceManager.isOnNewLook()) {
-            intent = new Intent(this, directory.tripin.com.tripindirectory.NewLookCode.activities.LoadBoardActivity.class);
+            intent = new Intent(this, directory.tripin.com.tripindirectory.newlookcode.activities.LoadBoardActivity.class);
         } else {
             if (postId != null) {
                 intent = new Intent(this, PostDetailActivity.class);

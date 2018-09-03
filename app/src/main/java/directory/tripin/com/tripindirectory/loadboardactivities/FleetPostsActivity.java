@@ -36,7 +36,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import directory.tripin.com.tripindirectory.ChatingActivities.ChatRoomActivity;
+import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.FleetPostPojo;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.FleetPostViewHolder;
 import directory.tripin.com.tripindirectory.loadboardactivities.models.QuotePojo;

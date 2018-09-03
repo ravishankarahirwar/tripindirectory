@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
@@ -148,42 +149,50 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                 mFirebaseAnalytics.logEvent("ClickOnCall", params);
 
                 final ArrayList<String> phoneNumbers = new ArrayList<>();
-                List<ContactPersonPojo> contactPersonPojos = partnerInfoPojo.getmContactPersonsList();
 
-                if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
-                    for (int i = 0; i < contactPersonPojos.size(); i++) {
-                        if (partnerInfoPojo.getmContactPersonsList() != null && partnerInfoPojo.getmContactPersonsList().get(i) != null) {
-                            String number = partnerInfoPojo.getmContactPersonsList().get(i).getGetmContactPersonMobile();
-                            phoneNumbers.add(number);
+                if(partnerInfoPojo.getmContactPersonsList()!=null){
+                    List<ContactPersonPojo> contactPersonPojos = partnerInfoPojo.getmContactPersonsList();
+
+                    if (contactPersonPojos != null && contactPersonPojos.size() > 1) {
+                        for (int i = 0; i < contactPersonPojos.size(); i++) {
+                            if (partnerInfoPojo.getmContactPersonsList() != null && partnerInfoPojo.getmContactPersonsList().get(i) != null) {
+                                String number = partnerInfoPojo.getmContactPersonsList().get(i).getGetmContactPersonMobile();
+                                phoneNumbers.add(number);
+                            }
+                        }
+
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle("Looks like there are multiple phone numbers.")
+                                .setCancelable(false)
+                                .setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int item) {
+
+                                                Logger.v("Dialog number selected :" + phoneNumbers.get(item));
+
+                                                callNumber(phoneNumbers.get(item));
+                                            }
+                                        });
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+
+                        builder.create();
+                        builder.show();
+                    } else {
+                        if (partnerInfoPojo.getmContactPersonsList() != null && partnerInfoPojo.getmContactPersonsList().get(0) != null) {
+                            String number = partnerInfoPojo.getmContactPersonsList().get(0).getGetmContactPersonMobile();
+                            callNumber(number);
                         }
                     }
-
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle("Looks like there are multiple phone numbers.")
-                            .setCancelable(false)
-                            .setAdapter(new ArrayAdapter<>(getApplicationContext(), R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int item) {
-
-                                            Logger.v("Dialog number selected :" + phoneNumbers.get(item));
-
-                                            callNumber(phoneNumbers.get(item));
-                                        }
-                                    });
-
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
-                        }
-                    });
-
-                    builder.create();
-                    builder.show();
-                } else {
-                    String number = partnerInfoPojo.getmContactPersonsList().get(0).getGetmContactPersonMobile();
-                    callNumber(number);
+                }else {
+                    Toast.makeText(getApplicationContext(),"No Contact Available!",Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
@@ -472,6 +481,8 @@ public class PartnerDetailScrollingActivity extends AppCompatActivity implements
                         mContactPersonsAdapter.notifyDataSetChanged();
                     }
                 } else {
+                    finish();
+                    Toast.makeText(getApplicationContext(),"Not Available",Toast.LENGTH_SHORT).show();
                 }
             }
         });

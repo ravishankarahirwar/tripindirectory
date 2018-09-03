@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import directory.tripin.com.tripindirectory.NewLookCode.activities.ILNRegisterAdActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.ILNRegisterAdActivity;
 import directory.tripin.com.tripindirectory.formactivities.CheckBoxRecyclarAdapter;
 import directory.tripin.com.tripindirectory.formactivities.CompanyLandLineNumbersAdapter;
 import directory.tripin.com.tripindirectory.formactivities.ContactPersonsAdapter;
