@@ -1,6 +1,7 @@
 package directory.tripin.com.tripindirectory.model;
 
 
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
@@ -28,6 +29,15 @@ public class PartnerInfoPojo {
     private String mFUID;
     private String mPhotoUrl;
     private String mDisplayName;
+    private List<String> mOperationCities;
+    private List<String> mOperationHubs;
+    private String mBio;
+    private String mCity;
+    private GeoPoint mLocation;
+
+
+
+
 
     private boolean isVerified = true;
 
@@ -72,6 +82,46 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public GeoPoint getmLocation() {
+        return mLocation;
+    }
+
+    public void setmLocation(GeoPoint mLocation) {
+        this.mLocation = mLocation;
+    }
+
+    public String getmCity() {
+        return mCity;
+    }
+
+    public void setmCity(String mCity) {
+        this.mCity = mCity;
+    }
+
+    public String getmBio() {
+        return mBio;
+    }
+
+    public void setmBio(String mBio) {
+        this.mBio = mBio;
+    }
+
+    public List<String> getmOperationCities() {
+        return mOperationCities;
+    }
+
+    public void setmOperationCities(List<String> mOperationCities) {
+        this.mOperationCities = mOperationCities;
+    }
+
+    public List<String> getmOperationHubs() {
+        return mOperationHubs;
+    }
+
+    public void setmOperationHubs(List<String> mOperationHubs) {
+        this.mOperationHubs = mOperationHubs;
     }
 
     public String getmDisplayName() {

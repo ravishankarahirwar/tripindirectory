@@ -30,6 +30,9 @@
         android:id="@+id/rv_fleets"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@color/brown_50"
+        android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView18" />
@@ -59,11 +62,11 @@
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="3dp"
         android:background="@color/brown_100"
-        android:fadingEdgeLength="1dp"
         android:orientation="horizontal"
         android:padding="6dp"
+        android:elevation="2dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -103,15 +106,5 @@
 
 
     </LinearLayout>
-
-    <View
-        android:id="@+id/border2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:alpha="0.25"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

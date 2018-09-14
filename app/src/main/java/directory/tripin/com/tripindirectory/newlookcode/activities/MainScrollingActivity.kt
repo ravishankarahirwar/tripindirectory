@@ -57,6 +57,8 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
+import directory.tripin.com.tripindirectory.newprofiles.activities.UserEditProfileActivity
 import directory.tripin.com.tripindirectory.utils.AppUtils
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
@@ -531,17 +533,20 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     }
 
     private fun startYourBusinessActivity(s: String) {
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            // already signed in
-            val i = Intent(this, CompanyInfoActivity::class.java)
-            startActivity(i)
-            val bundle = Bundle()
-            bundle.putString("from", s)
-            firebaseAnalytics.logEvent("z_selfcompanyprofile", bundle)
-        } else {
-            // not signed in
-            startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
-        }
+//        if (FirebaseAuth.getInstance().currentUser != null) {
+//            // already signed in
+//            val i = Intent(this, CompanyInfoActivity::class.java)
+//            startActivity(i)
+//            val bundle = Bundle()
+//            bundle.putString("from", s)
+//            firebaseAnalytics.logEvent("z_selfcompanyprofile", bundle)
+//        } else {
+//            // not signed in
+//            startSignInFor(SIGN_IN_FOR_CREATE_COMPANY)
+//        }
+
+        val i = Intent(this, UserEditProfileActivity::class.java)
+        startActivity(i)
 
     }
 
@@ -581,6 +586,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
 //            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
             baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
+//            baseQuery = baseQuery.whereArrayContains("mOperationHubs", basicQueryPojo.mSourceCity.toUpperCase())
             isNoQiery = false
             bundle.putString("source", basicQueryPojo.mSourceCity)
         } else {
@@ -590,6 +596,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
 //            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
             baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
+//            baseQuery = baseQuery.whereArrayContains("mOperationCities", basicQueryPojo.mSourceCity.toUpperCase())
             isNoQiery = false
             bundle.putString("destination", basicQueryPojo.mDestinationCity)
         } else {
@@ -694,9 +701,14 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     holder.itemView.setOnClickListener {
 
                         Toast.makeText(applicationContext, "Loading...", Toast.LENGTH_SHORT).show()
-                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                        i.putExtra("uid", getItem(position)!!.id)
-                        i.putExtra("cname", model.getmCompanyName())
+//                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
+//                        i.putExtra("uid", getItem(position)!!.id)
+//                        i.putExtra("cname", model.getmCompanyName())
+//                        startActivity(i)
+                        val i = Intent(context, CompanyProfileDisplayActivity::class.java)
+                        i.putExtra("uid",getItem(position)!!.id)
+                        i.putExtra("rmn",model.getmRMN())
+                        i.putExtra("fuid",model.getmFUID())
                         startActivity(i)
 
                     }
@@ -1020,7 +1032,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 }
             }
 
-        })
+        },0)
     }
 
     private fun addFleets() {

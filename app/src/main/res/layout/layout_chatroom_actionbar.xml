@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/blue_grey_100"
-    app:elevation="8dp">
+    android:minHeight="0dp"
+    android:elevation="4dp">
 
     <ImageView
         android:id="@+id/back"
@@ -29,27 +30,31 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:drawableRight="@drawable/ic_keyboard_arrow_right_black_24dp"
         android:text="ILN User"
+        android:maxLines="1"
         android:textColor="@color/blue_grey_900"
         android:textSize="16sp"
         android:textStyle="bold"
         android:visibility="visible"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/call"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/mainhumb"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainhumb"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/mainhumb"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/white_circle_bg"
+        android:padding="2dp"
+        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/back"
         app:layout_constraintTop_toTopOf="parent"
@@ -60,12 +65,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
         android:text="Fetching Status..."
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mainhumb"
+        app:layout_constraintStart_toStartOf="@+id/opponentname"
         app:layout_constraintTop_toBottomOf="@+id/opponentname"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -75,25 +79,24 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/border_sreoke_orange_bg"
+        android:elevation="2dp"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/opponentname"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_call_black" />
 
-    <View
-        android:id="@+id/devider"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:alpha="0.2"
-        android:background="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+    <!--<View-->
+        <!--android:id="@+id/devider"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="2dp"-->
+        <!--android:alpha="0.2"-->
+        <!--android:background="@color/colorAccent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:layout_constraintVertical_bias="1.0" />-->
 
 
 </android.support.constraint.ConstraintLayout>

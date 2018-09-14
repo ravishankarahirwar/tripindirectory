@@ -34,29 +34,41 @@
     <!--</android.support.design.widget.CollapsingToolbarLayout>-->
     <!--</android.support.design.widget.AppBarLayout>-->
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
         android:clipToPadding="false"
         android:orientation="vertical">
 
+
         <include
-            android:id="@+id/titlee"
+            android:id="@+id/maintitle"
             layout="@layout/layout_main_actionbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/blue_grey_200" />
+            android:background="@color/blue_grey_200"
+            android:visibility="gone" />
+
 
         <include
+            android:id="@+id/mainbody"
             layout="@layout/content_main_scrolling"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/maintitle" />
+
+
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -88,7 +100,7 @@
         app:menuTitleTextColor="@color/background"
         app:overlayBackground="@color/cardview_shadow_start_color"
         app:showOverlay="true"
-        app:showTitle="true" >
+        app:showTitle="true">
 
     </com.hlab.fabrevealmenu.view.FABRevealMenu>
 
@@ -105,7 +117,6 @@
         android:textSize="10sp"
         android:textStyle="bold"
         android:visibility="gone" />
-
 
 
 </android.support.design.widget.CoordinatorLayout>

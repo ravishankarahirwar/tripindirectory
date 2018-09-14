@@ -23,6 +23,7 @@ public class PreferenceManager {
 
 
     public static final String PREF_DISPLAY_NAME = "displayneame";
+    public static final String PREF_COMPANY_NAME = "companyname";
     public static final String PREF_IMAGE_URL = "imageurl";
     public static final String PREF_FACEBOOKED = "isfacebooked";
     public static final String PREF_REG_MOBILE = "mobile";
@@ -213,6 +214,16 @@ public class PreferenceManager {
 
     public void setDisplayName(String name) {
         editor.putString(PREF_DISPLAY_NAME, name);
+        editor.commit();
+    }
+
+    public String getComapanyName() {
+        String name = sInstance.getString(PREF_COMPANY_NAME, null);
+        return name;
+    }
+
+    public void setCompanyName(String name) {
+        editor.putString(PREF_COMPANY_NAME, name);
         editor.commit();
     }
 

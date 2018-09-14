@@ -41,12 +41,14 @@
 
             <ImageView
                 android:id="@+id/transporter_thumbnail"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/border_stroke_bg"
+                android:background="@drawable/white_circle_bg"
+                android:padding="3dp"
+                android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

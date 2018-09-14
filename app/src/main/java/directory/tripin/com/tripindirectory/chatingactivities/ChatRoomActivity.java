@@ -1147,7 +1147,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     public void setThumbnail(String mOpponentImageUrl) {
         Picasso.with(getApplicationContext())
-                .load(mOpponentImageUrl)
+                .load(mOpponentImageUrl+ "?width=100&width=100")
                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
                         , R.mipmap.ic_launcher_round))
                 .transform(new CircleTransform())
@@ -1166,7 +1166,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                 });
         Picasso.with(getApplicationContext())
-                .load(mOpponentImageUrl)
+                .load(mOpponentImageUrl+ "?width=80&width=80")
                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
                         , R.mipmap.ic_launcher_round))
                 .transform(new CircleTransform())
