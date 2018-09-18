@@ -20,7 +20,6 @@ import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
-import com.google.firebase.firestore.FirebaseFirestore
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import directory.tripin.com.tripindirectory.newprofiles.CompanyRatingsPojo
 import android.view.LayoutInflater
@@ -29,9 +28,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.keiferstone.nonet.NoNet
 import com.stepstone.apprating.AppRatingDialog
 import com.stepstone.apprating.listener.RatingDialogListener
@@ -180,6 +178,14 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                             connect.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
                             connect.setPadding(left, top, right, bottom)
 
+//                            val bottom1 = chatwithcomp.paddingBottom
+//                            val top1 = chatwithcomp.paddingTop
+//                            val right1 = chatwithcomp.paddingRight
+//                            val left1 = chatwithcomp.paddingLeft
+//                            chatwithcomp.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
+//                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
+
+
                         } else {
                             //You are Diconnected
                             isConnected = false
@@ -191,6 +197,12 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                             connect.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
                             connect.setPadding(left, top, right, bottom)
 
+//                            val bottom1 = chatwithcomp.paddingBottom
+//                            val top1 = chatwithcomp.paddingTop
+//                            val right1 = chatwithcomp.paddingRight
+//                            val left1 = chatwithcomp.paddingLeft
+//                            chatwithcomp.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
+//                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
                         }
                     }
                 }
@@ -277,6 +289,11 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                     addCities(nocity)
                     operators.text = "0"
                 }
+            }else{
+                val nocity: ArrayList<String> = ArrayList()
+                nocity.add("No Cities Added Yet")
+                addCities(nocity)
+                operators.text = "0"
             }
 
             if (partnerInfoPojo.fleetVehicle != null) {
@@ -502,6 +519,9 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         for (city: String in getmOperationCities) {
             cities.add(city)
         }
+        if(cities.isEmpty()){
+            cities.add("No Cities Added Yet")
+        }
         rv_cities.adapter.notifyDataSetChanged()
     }
 
@@ -509,7 +529,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
         val query = FirebaseFirestore.getInstance()
                 .collection("partners").document(mCompUid).collection("mRatings")
-                .orderBy("serverTimestamp")
+                .orderBy("serverTimestamp",Query.Direction.DESCENDING)
 
         val options = FirestoreRecyclerOptions.Builder<CompanyRatingsPojo>()
                 .setQuery(query, CompanyRatingsPojo::class.java)

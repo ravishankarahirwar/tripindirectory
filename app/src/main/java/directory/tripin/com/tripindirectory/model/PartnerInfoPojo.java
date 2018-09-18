@@ -29,13 +29,21 @@ public class PartnerInfoPojo {
     private String mFUID;
     private String mPhotoUrl;
     private String mDisplayName;
+
     private List<String> mOperationCities;
-    private List<String> mOperationHubs;
+    private Map<String,Boolean> mOperationHubs;
     private String mBio;
     private String mCity;
     private GeoPoint mLocation;
+    private Date mOperationAreaUpdateDate;
+    private Double mAvgRating;
+    private Double mNumRatings;
 
-
+    private Map<String,Boolean> mSourceHubs ;
+    private Map<String,Boolean> mDestinationHubs ;
+    private Double mLastActive;
+    public Boolean isActive;
+    private List<String> mFleetsSort;
 
 
 
@@ -60,14 +68,7 @@ public class PartnerInfoPojo {
     @ServerTimestamp
     private Date mLastActiveTime;
 
-    @ServerTimestamp
-    private Date mMemberSince;
 
-    @ServerTimestamp
-    private Date mLastModifiedTime;
-
-    private long mAcSubmitForApproval;
-    private long mAcApproved;
     public boolean isSelected;
 
     public PartnerInfoPojo() {
@@ -82,6 +83,63 @@ public class PartnerInfoPojo {
         this.isVerified = isVerified;
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
+    }
+
+    public Double getmAvgRating() {
+        return mAvgRating;
+    }
+
+    public void setmAvgRating(Double mAvgRating) {
+        this.mAvgRating = mAvgRating;
+    }
+
+    public Double getmNumRatings() {
+        return mNumRatings;
+    }
+
+    public void setmNumRatings(Double mNumRatings) {
+        this.mNumRatings = mNumRatings;
+    }
+
+    public List<String> getmFleetsSort() {
+        return mFleetsSort;
+    }
+
+    public void setmFleetsSort(List<String> mFleetsSort) {
+        this.mFleetsSort = mFleetsSort;
+    }
+
+    public Double getmLastActive() {
+        return mLastActive;
+    }
+
+    public void setmLastActive(Double mLastActive) {
+        this.mLastActive = mLastActive;
+    }
+
+
+    public Map<String, Boolean> getmDestinationHubs() {
+        return mDestinationHubs;
+    }
+
+    public void setmDestinationHubs(Map<String, Boolean> mDestinationHubs) {
+        this.mDestinationHubs = mDestinationHubs;
+    }
+
+    public Map<String, Boolean> getmSourceHubs() {
+        return mSourceHubs;
+    }
+
+    public void setmSourceHubs(Map<String, Boolean> mSourceHubs) {
+        this.mSourceHubs = mSourceHubs;
+    }
+
+    public Date getmOperationAreaUpdateDate() {
+        return mOperationAreaUpdateDate;
+    }
+
+    public void setmOperationAreaUpdateDate(Date mOperationAreaUpdateDate) {
+        this.mOperationAreaUpdateDate = mOperationAreaUpdateDate;
     }
 
     public GeoPoint getmLocation() {
@@ -116,11 +174,11 @@ public class PartnerInfoPojo {
         this.mOperationCities = mOperationCities;
     }
 
-    public List<String> getmOperationHubs() {
+    public Map<String, Boolean> getmOperationHubs() {
         return mOperationHubs;
     }
 
-    public void setmOperationHubs(List<String> mOperationHubs) {
+    public void setmOperationHubs(Map<String, Boolean> mOperationHubs) {
         this.mOperationHubs = mOperationHubs;
     }
 

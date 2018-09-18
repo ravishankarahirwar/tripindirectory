@@ -39,7 +39,8 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
     lateinit var auth: FirebaseAuth
     lateinit var mUserDocRef: DocumentReference
     lateinit var cities: MutableList<String>
-    lateinit var hubs: MutableList<String>
+    lateinit var hubs: HashMap<String,Boolean>
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +49,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
         context = this
 
         cities = ArrayList<String>()
-        hubs = ArrayList<String>()
+        hubs = HashMap()
 
         rv_cities_manage.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_cities_manage.adapter = OperationCitiesAdapter(cities, this, this)
@@ -75,7 +76,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
                             if (partnerInfoPojo.getmOperationHubs() != null) {
                                 if (partnerInfoPojo.getmOperationHubs().size > 0) {
                                     hubs.clear()
-                                    hubs.addAll(partnerInfoPojo.getmOperationHubs())
+                                    hubs.putAll(partnerInfoPojo.getmOperationHubs())
                                 }
                             }
 
@@ -87,6 +88,10 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
                     } else {
                         citiesemptyinfo.visibility = View.VISIBLE
                         Logger.v("list cities null")
+                    }
+                    if(partnerInfoPojo!!.getmOperationHubs() != null){
+                        hubs.clear()
+                        hubs.putAll(partnerInfoPojo!!.getmOperationHubs())
                     }
                 }
             }
@@ -111,9 +116,22 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
         ocities_done.setOnClickListener {
 
             savingcities.visibility = View.VISIBLE
-            Handler().postDelayed(({
-                finish()
-            }), 1000)
+
+            val hubsss = ArrayList<String>()
+            for(hub in hubs){
+                if(hub.value){
+                    hubsss.add(hub.key)
+                }
+            }
+
+            val hashMap = HashMap<String, Any>()
+            hashMap.put("mHubs",hubsss)
+            FirebaseFirestore.getInstance().collection("hubslookup").document(auth.uid!!).set(hashMap).addOnCompleteListener {
+                Handler().postDelayed(({
+                    finish()
+                }), 500)
+            }
+
 
         }
     }
@@ -134,13 +152,13 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
         when (operation) {
             1 -> {
                 //add
-                hubs.add(sourcehub.toString().toUpperCase())
+                hubs[sourcehub.toString().toUpperCase()] = true
                 mUserDocRef.update("mOperationHubs", hubs)
 
             }
             2 -> {
                 //remove
-                hubs.remove(sourcehub.toString().toUpperCase())
+                hubs[sourcehub.toString().toUpperCase()] = false
                 mUserDocRef.update("mOperationHubs", hubs)
             }
         }

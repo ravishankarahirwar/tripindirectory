@@ -1,7 +1,7 @@
 package directory.tripin.com.tripindirectory.newprofiles.activities
 
 import android.app.Activity
-import android.app.PendingIntent.getActivity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -18,6 +19,7 @@ import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.firebase.firestore.*
+import com.google.gson.Gson
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -26,15 +28,17 @@ import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.model.CompanyAddressPojo
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
+import directory.tripin.com.tripindirectory.newprofiles.models.ProfileData
+import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_company_profile_edit.*
 import java.util.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 class CompanyProfileEditActivity : AppCompatActivity() {
 
@@ -47,16 +51,26 @@ class CompanyProfileEditActivity : AppCompatActivity() {
     val fleets: ArrayList<FleetSelectPojo> = ArrayList()
     val cities: ArrayList<String> = ArrayList()
     lateinit var reference: DocumentReference
+    lateinit var db : FirebaseFirestore
+    lateinit var refinedHubs: HashMap<String, Boolean>
+    private var dialog: AlertDialog? = null
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_company_profile_edit)
         context = this
+        dialog = SpotsDialog.Builder()
+                .setContext(this)
+                .setCancelable(false)
+                .setMessage("Hold On! This may take a while.")
+                .build()
+        db = FirebaseFirestore.getInstance()
         preferenceManager = PreferenceManager.getInstance(context)
         partnerInfoPojo = PartnerInfoPojo()
-        reference = FirebaseFirestore.getInstance()
-                .collection("partners")
+        reference = db.collection("partners")
                 .document(preferenceManager.userId)
         setSelectFleetAdapter()
         setCitiesAdapter()
@@ -105,18 +119,65 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                 hashMap2.put("mBio", bioedit.text.toString().trim())
                 reference.set(hashMap2 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
                     preferenceManager.setCompanyName(compnametext.text.toString().toUpperCase().trim())
-                    finish()
+
+                   //update fleets sorter
+                    val arr = ArrayList<String>()
+                    for(fleets in partnerInfoPojo.fleetVehicle){
+                        if(fleets.value){
+                            arr.add(fleets.key)
+                        }
+                    }
+                    arr.sort()
+                    Logger.v(arr.toString())
+
+                    var fleetss = ArrayList<String>()
+                    partnerInfoPojo.setmFleetsSort(fleetss)
+                    printSubsets(arr)
+                    val hashMap3 = HashMap<String, Any>()
+                    hashMap3.put("mFleetsSort", partnerInfoPojo.getmFleetsSort())
+                    reference.set(hashMap3 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
+                        Toast.makeText(context,"Updated Successfully",Toast.LENGTH_SHORT).show()
+                        finish()
+                    }.addOnCanceledListener {
+                        saving.visibility = View.GONE
+                        Toast.makeText(context,"Error, Try Again",Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }.addOnCanceledListener {
+                saving.visibility = View.GONE
+                Toast.makeText(context,"Error, Try Again",Toast.LENGTH_SHORT).show()
+            }.addOnCanceledListener {
+                saving.visibility = View.GONE
                 Toast.makeText(context,"Error, Try Again",Toast.LENGTH_SHORT).show()
             }
-
 
 
         }
 
 
     }
+
+    fun printSubsets(set: ArrayList<String>) {
+        val n = set.size
+
+        // Run a loop for printing all 2^n
+        // subsets one by obe
+        for (i in 0 until (1 shl n)) {
+
+            // Print current subset
+            var possiblity = ""
+            for (j in 0 until n){
+                if (i and (1 shl j) > 0){
+                    possiblity =  possiblity + set[j] + "_"
+                }
+            }
+            partnerInfoPojo.getmFleetsSort().add(possiblity)
+
+        }
+        Logger.v(partnerInfoPojo.getmFleetsSort().toString())
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -254,6 +315,10 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                 nocity.add("No Cities Added Yet, tap on manage cities.")
                 addCities(nocity)
             }
+        }else{
+            val nocity: java.util.ArrayList<String> = java.util.ArrayList()
+            nocity.add("No Cities Added Yet, tap on Manage Cities.")
+            addCities(nocity)
         }
         mainscrolledit.visibility = View.VISIBLE
 
@@ -265,6 +330,9 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         cities.clear()
         for (city: String in getmOperationCities) {
             cities.add(city)
+        }
+        if(cities.isEmpty()){
+            cities.add("No Cities Added, Tap On Manage Cities")
         }
         rv_citiess.adapter.notifyDataSetChanged()
     }
@@ -362,7 +430,6 @@ class CompanyProfileEditActivity : AppCompatActivity() {
 
     private fun setCitiesAdapter() {
 
-        addCities()
         rv_citiess.layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
 
         // You can use GridLayoutManager if you want multiple columns. Enter the number of columns as a parameter.
@@ -372,23 +439,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         rv_citiess.adapter = CapsulsRecyclarAdapter(cities)
     }
 
-    private fun addCities() {
-        cities.add("Mumbai")
-        cities.add("Nagpur")
-        cities.add("Kolkata")
-        cities.add("Nagpur")
-        cities.add("Mumbai")
-        cities.add("Nagpur")
-        cities.add("Kolkata")
-        cities.add("Mumbai")
-        cities.add("Nagpur")
-        cities.add("Kolkata")
-        cities.add("Nagpur")
-        cities.add("Kolkata")
-        cities.add("Mumbai")
-        cities.add("Nagpur")
-        cities.add("Kolkata")
-    }
+
 
     private fun startPickupfragment() {
 
@@ -423,5 +474,126 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         NoNet.monitor(this)
                 .poll()
                 .snackbar()
+    }
+
+    private fun itirateBatches(refsToProcess: ConcurrentHashMap<String, Boolean>, hashMapp: Map<String, Any>, fleetsAvailable: ArrayList<String>) {
+
+        val batch = db.batch()
+
+        var count = 400
+
+        for(process in refsToProcess){
+            if(process.value){
+                //update
+                val updateRef = db.collection("denormalised")
+                        .document("routes")
+                        .collection(process.key)
+                        .document(preferenceManager.userId)
+                val hashMappp = mapOf<String, Any>(
+                        "mFleets" to fleetsAvailable
+                )
+                batch.set(updateRef,hashMapp, SetOptions.merge())
+                batch.set(updateRef,hashMappp, SetOptions.merge())
+                count -= 2
+
+            }else{
+                //delete
+                val delRef = db.collection("denormalised")
+                        .document("routes")
+                        .collection(process.key)
+                        .document(preferenceManager.userId)
+                batch.delete(delRef)
+                count--
+            }
+            refsToProcess.remove(process.key)
+            if(count<=0){
+                break
+            }
+            Logger.v("Count $count")
+            saving.text = "Loading Batch $count"
+
+
+        }
+
+
+        saving.text = "Denormalising Data. Please Wait..."
+        dialog!!.show()
+        batch.commit().addOnCompleteListener {
+            if(refsToProcess.size==0){
+                saving.text = "Clearing Junk Data..."
+                reference.update("mOperationHubs", refinedHubs).addOnCompleteListener {
+                    dialog!!.dismiss()
+                    Toast.makeText(context,"Updated Successfully",Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }else{
+                itirateBatches(refsToProcess, hashMapp, fleetsAvailable)
+            }
+
+        }.addOnCanceledListener {
+            saving.visibility = View.GONE
+            Toast.makeText(context,"Error, Try Again",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun uploadinbatched(hubs: Map<String, Boolean>) {
+
+        saving.text = "Verifying Routes..."
+        //generate profile data obj
+        val fleetsAvailable : ArrayList<String> = ArrayList()
+        for(fleet in partnerInfoPojo.fleetVehicle){
+            if(fleet.value){
+                fleetsAvailable.add(fleet.key)
+            }
+        }
+        val mProfileData = ProfileData(partnerInfoPojo.getmCompanyName(),
+                partnerInfoPojo.getmDisplayName(),
+                partnerInfoPojo.getmCity(),
+                partnerInfoPojo.getmPhotoUrl(),
+                fleetsAvailable,preferenceManager.rmn,preferenceManager.userId,preferenceManager.fuid)
+
+        val gson : Gson = Gson()
+        val mProfileDataString = gson.toJson(mProfileData)
+        val hashMapp = mapOf<String, Any>(
+                "mProfileData" to mProfileDataString
+        )
+
+        //Denormalise
+        refinedHubs = HashMap<String,Boolean>()
+        val refsToProcess = ConcurrentHashMap<String,Boolean>()
+        for(hub  in hubs){
+
+            for(hubb  in hubs){
+                if(hub.value){
+                    //update
+                    if(hubb.value){
+
+                        refsToProcess.put("${hub.key}_${hubb.key}",true)
+                        Logger.v("${hub.key}_${hubb.key} Add")
+                    }else{
+                        //Delete
+
+                        refsToProcess.put("${hub.key}_${hubb.key}",false)
+
+                        Logger.v("${hub.key}_${hubb.key} Remove")
+                    }
+
+                    refinedHubs[hub.key] = true
+                }else{
+                    //delete
+
+                    refsToProcess.put("${hub.key}_${hubb.key}",false)
+
+                    Logger.v("${hub.key}_${hubb.key} Remove")
+
+                }
+            }
+
+        }
+        refsToProcess.put("ALL",true)
+
+        itirateBatches(refsToProcess, hashMapp , fleetsAvailable)
+
+
     }
 }
