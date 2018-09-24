@@ -7,6 +7,21 @@
     android:background="@drawable/main_newactionbar_bg"
     android:elevation="4dp">
 
+    <TextView
+        android:id="@+id/profilenew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:elevation="1dp"
+        android:padding="2dp"
+        android:text="NEW"
+        android:textColor="@color/amber_50"
+        android:textSize="8sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/yourbusiness"
+        app:layout_constraintTop_toTopOf="@+id/yourbusiness" />
+
     <ImageView
         android:id="@+id/yourbusiness"
         android:layout_width="35dp"
@@ -73,7 +88,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

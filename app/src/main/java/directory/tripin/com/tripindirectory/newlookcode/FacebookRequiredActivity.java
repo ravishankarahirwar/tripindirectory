@@ -58,7 +58,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
             if(getIntent().getExtras().get("from")!=null){
                 from = getIntent().getExtras().getString("from");
                 if(from.equals("MainActivity")){
-                    mNote.setText("Hi, You are almost there! Log in with Facebook for a more personalised experience in the new look.");
+                    mNote.setText("Hi, You are almost there! Log in with Facebook for a more personalised experience.");
                 }
                 if(from.equals("Chat")){
                     mNote.setText("Hi, Log in once with Facebook to use the chat feature of Indian Logistics Network.");

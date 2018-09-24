@@ -70,6 +70,12 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
                             citiesemptyinfo.visibility = View.GONE
                             cities.clear()
                             cities.addAll(partnerInfoPojo.getmOperationCities())
+                            countcity.text = cities.size.toString()
+                            if(cities.size>20){
+                                limitcity.visibility = View.VISIBLE
+                            }else{
+                                limitcity.visibility = View.GONE
+                            }
                             cities.sort()
                             rv_cities_manage.adapter.notifyDataSetChanged()
 

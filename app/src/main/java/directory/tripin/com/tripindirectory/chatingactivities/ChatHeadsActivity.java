@@ -199,6 +199,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
+                mChatHeadsList.smoothScrollToPosition(0);
                 lottieAnimationView.setVisibility(View.GONE);
                 if(getItemCount()==0){
                     mTextNoChats.setVisibility(View.VISIBLE);

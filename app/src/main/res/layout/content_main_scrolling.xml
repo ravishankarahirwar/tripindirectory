@@ -27,18 +27,21 @@
                     android:layout_height="wrap_content" />
 
                 <include
-                    android:id="@+id/routeinput"
-                    layout="@layout/layout_route_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:visibility="visible" />
-
-                <include
                     android:id="@+id/fleetinput"
                     layout="@layout/layout_choose_vehicle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible" />
+
+                <include
+                    android:id="@+id/routeinput"
+                    layout="@layout/layout_route_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="12dp"
                     android:visibility="visible" />
 
                 <com.airbnb.lottie.LottieAnimationView
@@ -81,6 +84,30 @@
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/posttoselected2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/chat_in_bg"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="POST TO SELECTED"
+                    android:textColor="@color/blue_grey_800"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/posttolb2"
+                    android:textColor="@color/blue_grey_800"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/chat_in_bg"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="POST TO LOADBOARD" />
 
 
         </LinearLayout>

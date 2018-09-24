@@ -23,6 +23,7 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.support.annotation.NonNull
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,12 +55,14 @@ import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActiv
 import directory.tripin.com.tripindirectory.formactivities.CompanyInfoActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.activities.UserEditProfileActivity
+import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyProfilePojo
 import directory.tripin.com.tripindirectory.newprofiles.models.ProfileData
 import directory.tripin.com.tripindirectory.utils.AppUtils
@@ -81,7 +84,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     lateinit var context: Context
     var fabrotation = 0f
     lateinit var adapter2: FirestorePagingAdapter<CompanyProfilePojo, PartnersViewHolder>
-    lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
+    lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
+//    lateinit var adapter3: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
+
 
     lateinit var basicQueryPojo: BasicQueryPojo
     private val SIGN_IN_FOR_CREATE_COMPANY = 123
@@ -95,6 +100,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     val REQUEST_INVITE = 1001
     lateinit var appUtils: AppUtils
     lateinit var  gson: Gson
+    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +113,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         appUtils = AppUtils(context)
         preferenceManager = PreferenceManager.getInstance(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        recyclerViewAnimator = RecyclerViewAnimator(rv_transporters_att)
 
         if (FirebaseAuth.getInstance().currentUser == null
                 || preferenceManager.rmn == null
@@ -136,6 +143,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         if (!preferenceManager.isMainScreenGuided) {
             showIntro()
         }
+
         notificationSubscried()
 
     }
@@ -218,6 +226,11 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(rv_fleets, "Select Fleet Type", "The list of top 12 transport companies who can provide you the fleets will be shown. You can select multiple fleet types.")
+                                .transparentTarget(true)
+                                .targetRadius(75)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
                         TapTarget.forView(fromtitle, "Select Source City from here", "Type the source city and select from suggestion. Result will be filtered accordingly. Tap on the target.")
                                 .transparentTarget(true)
                                 .drawShadow(true)
@@ -226,20 +239,16 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(rv_fleets, "Select Fleet Type", "The result will be filtered accordingly. You can select multiple fleet types.")
-                                .transparentTarget(true)
-                                .targetRadius(75)
-                                .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
-                                .transparentTarget(true)
-                                .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(posttolb, "Post to Loadboard", "Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
-                                .transparentTarget(true)
-                                .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(yourbusiness, "Your Business Here", "Fill your company details and you are in the directory. Its Free! Tap on the target for next")
+
+//                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
+//                                .transparentTarget(true)
+//                                .drawShadow(true)
+//                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+//                        TapTarget.forView(posttolb, "Post to Loadboard", "Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
+//                                .transparentTarget(true)
+//                                .drawShadow(true)
+//                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(yourbusiness, "Your Profile Here", "See your Network, Wallet and Add your own business on ILN. For Free!")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
@@ -275,6 +284,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         if (preferenceManager.userId != null) {
             setChatPendingIndicator()
+        }
+
+        if(!preferenceManager.isProfileIntroSeen){
+            profilenew.visibility = View.VISIBLE
         }
 
         if (preferenceManager.displayName != null) {
@@ -341,19 +354,19 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 R.id.action_feedback -> {
                     chatwithassistant()
                 }
-                R.id.action_logout -> {
-                    AuthUI.getInstance().signOut(context).addOnSuccessListener {
-                        Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
-                        preferenceManager.setisFacebboked(false)
-                        preferenceManager.rmn = null
-                        val i = Intent(this, NewSplashActivity::class.java)
-                        startActivity(i)
-                        finish()
-                        val bundle = Bundle()
-                        firebaseAnalytics.logEvent("z_logout", bundle)
-                    }
-
-                }
+//                R.id.action_logout -> {
+//                    AuthUI.getInstance().signOut(context).addOnSuccessListener {
+//                        Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
+//                        preferenceManager.setisFacebboked(false)
+//                        preferenceManager.rmn = null
+//                        val i = Intent(this, NewSplashActivity::class.java)
+//                        startActivity(i)
+//                        finish()
+//                        val bundle = Bundle()
+//                        firebaseAnalytics.logEvent("z_logout", bundle)
+//                    }
+//
+//                }
             }
         }
 
@@ -394,11 +407,11 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             setChatHeadsActivity("ActionBar")
         }
 
-        posttolb.setOnClickListener {
+        posttolb2.setOnClickListener {
             startLoadboardActivity("ActionBar")
         }
 
-        posttoselected.setOnClickListener {
+        posttoselected2.setOnClickListener {
             startPostToSelectedActivity()
         }
 
@@ -580,35 +593,30 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
 
         val bundle = Bundle()
-
         Logger.v(basicQueryPojo.toString())
 
-        var baseQuery: Query = FirebaseFirestore.getInstance()
-                .collection("partners")
-
-        //sort by last active
-
-        var isNoQiery: Boolean = true
-
+        var source = "ANYWHERE"
         if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-//            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-//            baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-            baseQuery = baseQuery.whereEqualTo("mOperationHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-            isNoQiery = false
             bundle.putString("source", basicQueryPojo.mSourceCity)
+            source = basicQueryPojo.mSourceCity.toUpperCase()
         } else {
             bundle.putString("source", "Empty")
         }
 
+        var destination = "ANYWHERE"
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-//            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-//            baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-            baseQuery = baseQuery.whereEqualTo("mOperationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-            isNoQiery = false
             bundle.putString("destination", basicQueryPojo.mDestinationCity)
+            destination = basicQueryPojo.mDestinationCity.toUpperCase()
         } else {
             bundle.putString("destination", "Empty")
         }
+
+        var baseQuery: Query = FirebaseFirestore.getInstance()
+                .collection("denormalised")
+                .document("routes")
+                .collection(source)
+                .document(destination)
+                .collection("companies")
 
         var numberofFleets: Int = 0
 
@@ -618,18 +626,17 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         Logger.v("Selected Fleets : $list")
         for (fleet in list) {
             fleetssorter = fleetssorter+fleet+"_"
-//            baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
-//            isNoQiery = false
-//            numberofFleets++
         }
         Logger.v("mFleetsSorter: $fleetssorter")
-        baseQuery = baseQuery.whereArrayContains("mFleetsSort",fleetssorter)
         bundle.putInt("fleetsselected", numberofFleets)
         firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
 
-        baseQuery =  baseQuery.orderBy("mLastActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mAvgRating",Query.Direction.DESCENDING)
-
+        //fitler and sort
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
+        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
 
 
         val config = PagedList.Config.Builder()
@@ -638,48 +645,64 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 .setPageSize(4)
                 .build()
 
-        val options = FirestorePagingOptions.Builder<PartnerInfoPojo>()
+        val options = FirestorePagingOptions.Builder<CompanyCardPojo>()
                 .setLifecycleOwner(this)
-                .setQuery(baseQuery, config, PartnerInfoPojo::class.java)
+                .setQuery(baseQuery, config, CompanyCardPojo::class.java)
                 .build()
-        adapter = object : FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
-
+        adapter = object : FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>(options) {
 
             @NonNull
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): PartnersViewHolder {
                 val view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.item_new_transporter, parent, false)
+                recyclerViewAnimator.onCreateViewHolder(view)
                 return PartnersViewHolder(view)
             }
 
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
-                                          @NonNull model: PartnerInfoPojo) {
+                                          @NonNull model: CompanyCardPojo) {
 
                 if (model != null) {
+                    recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
 
-                    if (model.getmCompanyName() != null) {
-                        if (!model.getmCompanyName().isEmpty()) {
-                            holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                    //CompName
+                    if (model.getmDetails().getmCompanyName() != null) {
+                        if (!model.getmDetails().getmCompanyName().isEmpty()) {
+                            holder.mCompany.text = textUtils.toTitleCase(model.getmDetails().getmCompanyName())
                         } else {
-                            holder.mCompany.text = "Unknown Name"
+                            if(model.getmDetails().getmDisplayName()!=null){
+                                if(!model.getmDetails().getmDisplayName().isEmpty()){
+                                    holder.mCompany.text = model.getmDetails().getmDisplayName()
+                                }else{
+                                    holder.mCompany.text = "Unknown Name"
+                                }
+                            }
                         }
                     } else {
-                        holder.mCompany.text = "Unknown Name"
-                    }
-
-
-                    if (model.getmCompanyAdderss() != null){
-                        if(model.getmCompanyAdderss().city!=null){
-                            holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
+                        if(model.getmDetails().getmDisplayName()!=null){
+                            if(!model.getmDetails().getmDisplayName().isEmpty()){
+                                holder.mCompany.text = model.getmDetails().getmDisplayName()
+                            }else{
+                                holder.mCompany.text = "Unknown Name"
+                            }
                         }
                     }
 
 
-                    if (model.getmPhotoUrl() != null) {
-                        if (!model.getmPhotoUrl().isEmpty()) {
+                    //City
+                    if (model.getmDetails().getmLocationCity() != null){
+                        if(model.getmDetails().getmLocationCity()!=null){
+                            holder.mAddress.text = textUtils.toTitleCase(model.getmDetails().getmLocationCity())
+                        }
+                    }
+
+
+                    //Photo
+                    if (model.getmDetails().getmPhotoUrl() != null) {
+                        if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
                             Picasso.with(applicationContext)
-                                    .load(model.getmPhotoUrl()+ "?width=100&width=100")
+                                    .load(model.getmDetails().getmPhotoUrl()+ "?width=100&width=100")
                                     .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                                     .transform(CircleTransform())
                                     .fit()
@@ -707,8 +730,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 //                        }
 //                    }
 
-                    if(model.isActive!=null){
-                        if(model.isActive){
+                    if(model.getmDetails().isActive!=null){
+                        if(model.getmDetails().isActive){
                             Logger.v("active..")
                             holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context,R.color.green_A200),android.graphics.PorterDuff.Mode.SRC_IN)
                         }else{
@@ -721,85 +744,47 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
                     }
 
-                    if(model.getmAvgRating()!=null){
-                        holder.mRatings.text = model.getmAvgRating().toString()
+                    if(model.getmDetails().getmAvgRating()!=null){
+                        if(model.getmDetails().getmAvgRating()==0.0){
+                            holder.mRatings.text = "New"
+                        }else{
+                            holder.mRatings.text = model.getmDetails().getmAvgRating().toString()
+                        }
                     }
 
-                    if(model.getmNumRatings()!=null){
-                        holder.mReviews.text = model.getmNumRatings().toInt().toString() + " reviews"
+                    if(model.getmDetails().getmNumRatings()!=null){
+                        holder.mReviews.text = model.getmDetails().getmNumRatings().toInt().toString() + " reviews"
+                    }
+
+                    if(model.getmBidValue()!=null){
+                        if(model.getmBidValue() != 0.0){
+                            holder.mIsPromoted.visibility = View.VISIBLE
+                        }else{
+                            holder.mIsPromoted.visibility = View.GONE
+                        }
                     }
 
 
 
                     holder.itemView.setOnClickListener {
 
-                        Toast.makeText(applicationContext, "Loading...", Toast.LENGTH_SHORT).show()
-//                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-//                        i.putExtra("uid", getItem(position)!!.id)
-//                        i.putExtra("cname", model.getmCompanyName())
-//                        startActivity(i)
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
                         i.putExtra("uid",getItem(position)!!.id)
-                        i.putExtra("rmn",model.getmRMN())
-                        i.putExtra("fuid",model.getmFUID())
+                        i.putExtra("rmn",model.getmDetails().getmRMN())
+                        i.putExtra("fuid",model.getmDetails().getmFUID())
                         startActivity(i)
 
                     }
 
                     holder.mCall.setOnClickListener {
 
-
-                        val phoneNumbers = java.util.ArrayList<String>()
-                        val contactPersonPojos = model.getmContactPersonsList()
-
-                        if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
-                            for (i in contactPersonPojos!!.indices) {
-                                if (model.getmContactPersonsList()[i] != null) {
-                                    val number = model.getmContactPersonsList()[i].getmContactPersonMobile
-                                    phoneNumbers.add(number)
-
-                                }
-                            }
-
-                            val builder = AlertDialog.Builder(context)
-                            builder.setTitle("Looks like there are multiple phone numbers.")
-                                    .setCancelable(false)
-                                    .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
-                                    ) { dialog, item ->
-                                        Logger.v("Dialog number selected :" + phoneNumbers[item])
-
-                                        callNumber(phoneNumbers[item])
-                                    }
-
-                            builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                                override fun onClick(dialog: DialogInterface, id: Int) {
-                                    // User cancelled the dialog
-                                }
-                            })
-                            builder.create()
-                            builder.show()
-
-
-                        } else {
-
-                            val number = model.getmContactPersonsList()[0].getmContactPersonMobile
-                            callNumber(number)
+                        if(model.getmDetails().getmRMN()!=null) {
+                            callNumber(model.getmDetails().getmRMN())
+                        }else {
+                            Toast.makeText(context,"No RMN, Visit Profile!",Toast.LENGTH_SHORT).show()
                         }
+
                         val bundle = Bundle()
-
-                        if (preferenceManager.rmn != null) {
-                            bundle.putString("by_rmn", preferenceManager.rmn)
-                        } else {
-                            bundle.putString("by_rmn", "Unknown")
-                        }
-
-                        bundle.putString("to_rmn", model.getmRMN())
-
-                        if (model.getmFUID() != null) {
-                            bundle.putString("is_opponent_updated", "Yes")
-                        } else {
-                            bundle.putString("is_opponent_updated", "No")
-                        }
 
                         if (!basicQueryPojo.mSourceCity.isEmpty() &&
                                 basicQueryPojo.mSourceCity != "Select City" &&
@@ -819,10 +804,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
                         val intent = Intent(context, ChatRoomActivity::class.java)
                         intent.putExtra("imsg", basicQueryPojo.toString())
-                        intent.putExtra("ormn", model.getmRMN())
+                        intent.putExtra("ormn", model.getmDetails().getmRMN())
                         intent.putExtra("ouid", getItem(position)!!.id)
-                        intent.putExtra("ofuid", model.getmFUID())
-                        Logger.v("Ofuid :" + model.getmFUID())
+                        intent.putExtra("ofuid", model.getmDetails().getmFUID())
+                        Logger.v("Ofuid :" + model.getmDetails().getmFUID())
                         startActivity(intent)
 
                         val bundle = Bundle()
@@ -831,8 +816,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                         } else {
                             bundle.putString("by_rmn", "Unknown")
                         }
-                        bundle.putString("to_rmn", model.getmRMN())
-                        if (model.getmFUID() != null) {
+                        bundle.putString("to_rmn", model.getmDetails().getmRMN())
+                        if (model.getmDetails().getmFUID() != null) {
                             bundle.putString("is_opponent_updated", "Yes")
                         } else {
                             bundle.putString("is_opponent_updated", "No")
@@ -901,7 +886,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             }
         }
 
-        rv_transporters_att.layoutManager = LinearLayoutManager(this)
+        rv_transporters_att.layoutManager = LinearLayoutManager(this) as RecyclerView.LayoutManager?
         rv_transporters_att.adapter = adapter
 
 
@@ -1314,12 +1299,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     private fun setRoutePickup() {
 
         lin_source.setOnClickListener {
-            Toast.makeText(context,"Select Source City",Toast.LENGTH_LONG).show()
+//            Toast.makeText(context,"Select Source City",Toast.LENGTH_LONG).show()
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE)
         }
 
         lin_des.setOnClickListener {
-            Toast.makeText(context,"Select Destination City",Toast.LENGTH_LONG).show()
+//            Toast.makeText(context,"Select Destination City",Toast.LENGTH_LONG).show()
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION)
         }
 

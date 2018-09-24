@@ -13,6 +13,7 @@ import com.google.firebase.firestore.SetOptions
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerPojo
 import kotlinx.android.synthetic.main.activity_company_profile_edit.*
 
 
@@ -165,6 +166,31 @@ class DataModifierActivity : AppCompatActivity() {
 
                     FirebaseFirestore.getInstance().collection("partners").document(doc.id).set(partnerPojo).addOnCompleteListener {
                         Logger.v("doc updated")
+                    }.addOnCanceledListener {
+                        Logger.v("doc update cenceled")
+                    }
+
+                    val denormPojo = DenormalizerPojo(partnerPojo.getmCompanyName(),
+                            partnerPojo.getmDisplayName(),
+                            partnerPojo.getmRMN(),
+                            doc.id,
+                            partnerPojo.getmFUID(),
+                            partnerPojo.getmPhotoUrl(),
+                            partnerPojo.getmCity(),
+                            partnerPojo.getmFcmToken(),
+                            partnerPojo.getmFleetsSort(),
+                            partnerPojo.getmOperationHubs(),
+                            partnerPojo.getmLastActive(),
+                            partnerPojo.isActive,
+                            partnerPojo.getmAvgRating(),
+                            partnerPojo.getmNumRatings()
+                    )
+
+                    //denormaliser update
+                    FirebaseFirestore.getInstance().collection("denormalizers").document(doc.id).set(denormPojo).addOnCompleteListener {
+                        Logger.v("denormaliser updated")
+                    }.addOnCanceledListener {
+                        Logger.v("denormaliser update canceled")
                     }
 
                 }else{

@@ -205,10 +205,10 @@ public abstract class LoadsListBaseFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if (model.mFindOrPost == 1) {
-                            shareMesssages(getActivity(), "Need Truck", model.toString());
+                            shareMesssages(getActivity(), "I Need Truck", model.toString());
 
                         }else if (model.mFindOrPost == 2) {
-                            shareMesssages(getActivity(), "Need LOAD", model.toString());
+                            shareMesssages(getActivity(), "I Need LOAD", model.toString());
                         }
 
                         Bundle bundle = new Bundle();

@@ -5,8 +5,11 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
@@ -18,6 +21,9 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.newlookcode.activities.NewSplashActivity
 import directory.tripin.com.tripindirectory.utils.AppUtils
 import kotlinx.android.synthetic.main.activity_user_edit_profile.*
+import kotlinx.android.synthetic.main.layout_choose_vehicle.*
+import kotlinx.android.synthetic.main.layout_main_actionbar.*
+import kotlinx.android.synthetic.main.layout_route_input.*
 
 class UserEditProfileActivity : AppCompatActivity() {
 
@@ -37,6 +43,14 @@ class UserEditProfileActivity : AppCompatActivity() {
         preferenceManager = PreferenceManager.getInstance(context)
         setListners()
         internetCheck()
+
+        if(!preferenceManager.isFacebooked){
+            facebbokk.visibility = View.VISIBLE
+        }
+
+        if(!preferenceManager.isProfileIntroSeen){
+            showIntro()
+        }
 
     }
 
@@ -64,6 +78,20 @@ class UserEditProfileActivity : AppCompatActivity() {
                 firebaseAnalytics.logEvent("z_logout", bundle)
             }
         }
+        facebbokk.setOnClickListener {
+            AuthUI.getInstance().signOut(context).addOnSuccessListener {
+                Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
+                preferenceManager.setisFacebboked(false)
+                preferenceManager.rmn = null
+                val i = Intent(this, NewSplashActivity::class.java)
+                startActivity(i)
+                finish()
+                val bundle = Bundle()
+                firebaseAnalytics.logEvent("z_logout", bundle)
+            }
+        }
+
+
         mybusinessll.setOnClickListener {
             val i = Intent(this, CompanyProfileDisplayActivity::class.java)
             i.putExtra("uid",preferenceManager.userId)
@@ -135,6 +163,40 @@ class UserEditProfileActivity : AppCompatActivity() {
         NoNet.monitor(this)
                 .poll()
                 .snackbar()
+    }
+
+    private fun showIntro() {
+
+        val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(imagemynet, "Your Logistics Network here", "See the List of Transporters you have added in your network, Tap on Target")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(false).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(imageViewmb, "Your Business Here", "Add and Manage your business profile from here. ")
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor)
+
+
+                )
+                .listener(object : TapTargetSequence.Listener {
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                    }
+
+                    override fun onSequenceFinish() {
+                        preferenceManager.setisProfileIntroSeen(true)
+                        val bundle = Bundle()
+                        firebaseAnalytics.logEvent("z_profileguidefinished", bundle)
+                    }
+
+                    override fun onSequenceCanceled(lastTarget: TapTarget) {
+                        // Boo
+                        preferenceManager.setisProfileIntroSeen(true)
+                    }
+                })
+
+        tapTargetSequence.start()
     }
 
 }

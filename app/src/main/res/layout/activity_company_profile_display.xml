@@ -54,7 +54,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -285,18 +285,18 @@
 
                 <ImageView
                     android:id="@+id/statusindicator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
-                    android:tint="@color/cyan_500"
+                    android:tint="@color/app_version"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="@+id/compname"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/compname"
                     app:layout_constraintTop_toTopOf="@+id/compname"
-                    app:srcCompat="@drawable/ic_online_15_0_alizarin" />
+                    app:srcCompat="@drawable/ic_brightness_1_black_24dp" />
 
                 <TextView
                     android:id="@+id/compname"
@@ -459,7 +459,7 @@
                     android:drawableLeft="@drawable/ic_person_black_24dp"
                     android:gravity="center_vertical"
                     android:padding="8dp"
-                    android:text=" Ratings and Reviews" />
+                    android:text=" Ratings and Reviews (0)" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_ratingsrecent"

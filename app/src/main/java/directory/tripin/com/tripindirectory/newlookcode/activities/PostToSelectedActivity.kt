@@ -35,14 +35,17 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
+import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_post_to_selected.*
 
 class PostToSelectedActivity : AppCompatActivity() {
 
-    lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
+    lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
     lateinit var hashmap: HashMap<String, ChatItemPojo>
@@ -52,6 +55,7 @@ class PostToSelectedActivity : AppCompatActivity() {
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var mAuth : FirebaseAuth
+    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
 
 
 
@@ -61,6 +65,8 @@ class PostToSelectedActivity : AppCompatActivity() {
         setContentView(R.layout.activity_post_to_selected)
         context = this
         textUtils = TextUtils()
+        recyclerViewAnimator = RecyclerViewAnimator(rv_transporterss)
+
 
         textUtils = TextUtils()
         hashmap = HashMap<String, ChatItemPojo>()
@@ -242,57 +248,106 @@ class PostToSelectedActivity : AppCompatActivity() {
 
     private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
 
+        val bundle = Bundle()
         Logger.v(basicQueryPojo.toString())
 
-        var baseQuery: Query = FirebaseFirestore.getInstance()
-                .collection("partners")
-
+        var source = "ANYWHERE"
         if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-
+            bundle.putString("source", basicQueryPojo.mSourceCity)
+            source = basicQueryPojo.mSourceCity.toUpperCase()
+        } else {
+            bundle.putString("source", "Empty")
         }
+
+        var destination = "ANYWHERE"
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-            baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-
+            bundle.putString("destination", basicQueryPojo.mDestinationCity)
+            destination = basicQueryPojo.mDestinationCity.toUpperCase()
+        } else {
+            bundle.putString("destination", "Empty")
         }
 
-        for (fleet in basicQueryPojo.mFleets!!) {
-            baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
+        var baseQuery: Query = FirebaseFirestore.getInstance()
+                .collection("denormalised")
+                .document("routes")
+                .collection(source)
+                .document(destination)
+                .collection("companies")
+
+        var numberofFleets: Int = 0
+
+        var fleetssorter = ""
+        var list = basicQueryPojo.mFleets!!
+        list.sort()
+        Logger.v("Selected Fleets : $list")
+        for (fleet in list) {
+            fleetssorter = fleetssorter+fleet+"_"
         }
+        Logger.v("mFleetsSorter: $fleetssorter")
+        bundle.putInt("fleetsselected", numberofFleets)
+        firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
+
+        //fitler and sort
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
+
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)
                 .setPageSize(5)
                 .build()
 
-        val options = FirestorePagingOptions.Builder<PartnerInfoPojo>()
+        val options = FirestorePagingOptions.Builder<CompanyCardPojo>()
                 .setLifecycleOwner(this)
-                .setQuery(baseQuery, config, PartnerInfoPojo::class.java)
+                .setQuery(baseQuery, config, CompanyCardPojo::class.java)
                 .build()
-        adapter = object : FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+
+        adapter = object : FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>(options) {
             @NonNull
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): PartnersViewHolder {
-
-                val view: View = if (viewType == 1) {
-                    LayoutInflater.from(parent.context)
-                            .inflate(R.layout.item_transporter_loading, parent, false)
-                } else {
-                    LayoutInflater.from(parent.context)
-                            .inflate(R.layout.item_new_select_transporter, parent, false)
-                }
+                val view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_new_select_transporter, parent, false)
+                recyclerViewAnimator.onCreateViewHolder(view)
                 return PartnersViewHolder(view)
             }
 
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
-                                          @NonNull model: PartnerInfoPojo) {
-                holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                                          @NonNull model: CompanyCardPojo) {
+
+                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                //CompName
+                if (model.getmDetails().getmCompanyName() != null) {
+                    if (!model.getmDetails().getmCompanyName().isEmpty()) {
+                        holder.mCompany.text = textUtils.toTitleCase(model.getmDetails().getmCompanyName())
+                    } else {
+                        if(model.getmDetails().getmDisplayName()!=null){
+                            if(!model.getmDetails().getmDisplayName().isEmpty()){
+                                holder.mCompany.text = model.getmDetails().getmDisplayName()
+                            }else{
+                                holder.mCompany.text = "Unknown Name"
+                            }
+                        }
+                    }
+                } else {
+                    if(model.getmDetails().getmDisplayName()!=null){
+                        if(!model.getmDetails().getmDisplayName().isEmpty()){
+                            holder.mCompany.text = model.getmDetails().getmDisplayName()
+                        }else{
+                            holder.mCompany.text = "Unknown Name"
+                        }
+                    }
+                }
+
                 updatebottomview()
 
-                if(model.getmPhotoUrl()!=null){
-                    if(!model.getmPhotoUrl().isEmpty()){
+
+                if(model.getmDetails().getmPhotoUrl()!=null){
+                    if(!model.getmDetails().getmPhotoUrl().isEmpty()){
                         Picasso.with(applicationContext)
-                                .load(model.getmPhotoUrl())
+                                .load(model.getmDetails().getmPhotoUrl())
                                 .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                                 .transform(CircleTransform())
                                 .fit()
@@ -315,14 +370,30 @@ class PostToSelectedActivity : AppCompatActivity() {
 
 
                 if (model != null) {
-                    if (model.getmCompanyAdderss() != null)
-                        holder.mAddress.text = model.getmCompanyAdderss().city
+                    if (model.getmDetails().getmLocationCity() != null)
+                        holder.mAddress.text = model.getmDetails().getmLocationCity()
                 }
 
-                if (hashmap.contains(model.getmRMN())) {
-                    if (hashmap[model.getmRMN()]!!.selected == true) {
-                        holder.mIsSelectedImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_readred_24dp))
+                if(model.getmDetails().getmAvgRating()!=null){
+                    holder.mRatings.text = model.getmDetails().getmAvgRating().toString()
+                }
+
+                if(model.getmDetails().getmNumRatings()!=null){
+                    holder.mReviews.text = model.getmDetails().getmNumRatings().toInt().toString() + " reviews"
+                }
+
+                if(model.getmBidValue()!=null){
+                    if(model.getmBidValue() != 0.0){
+                        holder.mIsPromoted.visibility = View.VISIBLE
+                    }else{
+                        holder.mIsPromoted.visibility = View.GONE
+                    }
+                }
+
+                if (hashmap.contains(model.getmDetails().getmRMN())) {
+                    if (hashmap[model.getmDetails().getmRMN()]!!.selected == true) {
                         holder.mCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.blue_grey_100))
+                        holder.mIsSelectedImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_readred_24dp))
                     } else {
                         holder.mIsSelectedImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_readgrey_24dp))
                         holder.mCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
@@ -338,107 +409,69 @@ class PostToSelectedActivity : AppCompatActivity() {
 
                     val i = Intent(context, PartnerDetailScrollingActivity::class.java)
                     i.putExtra("uid", getItem(position)!!.id)
-                    i.putExtra("cname", model.getmCompanyName())
+                    i.putExtra("cname", model.getmDetails().getmCompanyName())
                     startActivity(i)
                 }
 
+
                 holder.mIsSelectedImg.setOnClickListener { it ->
-                    if (hashmap.contains(model.getmRMN())) {
+                    if (hashmap.contains(model.getmDetails().getmRMN())) {
                         Logger.v("Containts....")
-                        if (hashmap[model.getmRMN()]!!.selected == true) {
+                        if (hashmap[model.getmDetails().getmRMN()]!!.selected == true) {
                             val chatItemPojo = ChatItemPojo(preferenceManager.userId, preferenceManager.fuid, preferenceManager.imageUrl,
-                                    model.getmPhotoUrl(),
+                                    model.getmDetails().getmPhotoUrl(),
                                     getItem(position)!!.id,
                                     preferenceManager.fcmToken,
-                                    model.getmFcmToken(),
+                                    model.getmDetails().getmFcmToken(),
                                     preferenceManager.rmn,
-                                    model.getmRMN(),
-                                    model.getmFUID(),
+                                    model.getmDetails().getmRMN(),
+                                    model.getmDetails().getmFUID(),
                                     preferenceManager.displayName,
-                                    model.getmDisplayName(),
+                                    model.getmDetails().getmDisplayName(),
                                     basicQueryPojo.toString(), "",
                                     0, 2)
                             chatItemPojo.selected = false
-                            hashmap[model.getmRMN()] = chatItemPojo
+                            hashmap[model.getmDetails().getmRMN()] = chatItemPojo
                         } else {
                             val chatItemPojo = ChatItemPojo(preferenceManager.userId, preferenceManager.fuid, preferenceManager.imageUrl,
-                                    model.getmPhotoUrl(),
+                                    model.getmDetails().getmPhotoUrl(),
                                     getItem(position)!!.id,
                                     preferenceManager.fcmToken,
-                                    model.getmFcmToken(),
+                                    model.getmDetails().getmFcmToken(),
                                     preferenceManager.rmn,
-                                    model.getmRMN(),
-                                    model.getmFUID(),
+                                    model.getmDetails().getmRMN(),
+                                    model.getmDetails().getmFUID(),
                                     preferenceManager.displayName,
-                                    model.getmDisplayName(),
+                                    model.getmDetails().getmDisplayName(),
                                     basicQueryPojo.toString(), "",
                                     0, 2)
                             chatItemPojo.selected = true
-                            hashmap[model.getmRMN()] = chatItemPojo
+                            hashmap[model.getmDetails().getmRMN()] = chatItemPojo
                         }
-                        Logger.v("selected: ${hashmap[model.getmRMN()]!!.selected}")
+                        Logger.v("selected: ${hashmap[model.getmDetails().getmRMN()]!!.selected}")
                     } else {
 
                         val chatItemPojo = ChatItemPojo(preferenceManager.userId, preferenceManager.fuid, preferenceManager.imageUrl,
-                                model.getmPhotoUrl(),
+                                model.getmDetails().getmPhotoUrl(),
                                 getItem(position)!!.id,
                                 preferenceManager.fcmToken,
-                                model.getmFcmToken(),
+                                model.getmDetails().getmFcmToken(),
                                 preferenceManager.rmn,
-                                model.getmRMN(),
-                                model.getmFUID(),
+                                model.getmDetails().getmRMN(),
+                                model.getmDetails().getmFUID(),
                                 preferenceManager.displayName,
-                                model.getmDisplayName(),
+                                model.getmDetails().getmDisplayName(),
                                 basicQueryPojo.toString(), "",
                                 0, 2)
                         chatItemPojo.selected = true
-                        hashmap[model.getmRMN()] = chatItemPojo
+                        hashmap[model.getmDetails().getmRMN()] = chatItemPojo
                     }
 
                     notifyItemChanged(position)
 
                 }
 
-                holder.mCall.setOnClickListener {
 
-
-                    val phoneNumbers = java.util.ArrayList<String>()
-                    val contactPersonPojos = model.getmContactPersonsList()
-
-                    if (contactPersonPojos != null && contactPersonPojos.size > 1) {
-                        for (i in contactPersonPojos.indices) {
-                            if (model.getmContactPersonsList()[i] != null) {
-                                val number = model.getmContactPersonsList()[i].getmContactPersonMobile
-                                phoneNumbers.add(number)
-
-                            }
-                        }
-
-                        val builder = AlertDialog.Builder(context)
-                        builder.setTitle("Looks like there are multiple phone numbers.")
-                                .setCancelable(false)
-                                .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
-                                ) { dialog, item ->
-                                    Logger.v("Dialog number selected :" + phoneNumbers[item])
-
-                                    callNumber(phoneNumbers[item])
-                                }
-
-                        builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                            override fun onClick(dialog: DialogInterface, id: Int) {
-                                // User cancelled the dialog
-                            }
-                        })
-                        builder.create()
-                        builder.show()
-
-
-                    } else {
-
-                        val number = model.getmContactPersonsList()[0].getmContactPersonMobile
-                        callNumber(number)
-                    }
-                }
 
 
             }
@@ -474,7 +507,7 @@ class PostToSelectedActivity : AppCompatActivity() {
                     }
 
                     LoadingState.FINISHED -> {
-
+                        loadingpts.visibility = View.GONE
                     }
 
                     LoadingState.ERROR -> {

@@ -14,8 +14,10 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/splash_new" />
 
     <android.support.v7.widget.CardView
@@ -47,7 +49,8 @@
             android:alpha="0.2"
             android:text="recommended"
             android:textColor="@color/active_indicator"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/facebboklogin"
@@ -59,7 +62,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:padding="10dp"
-            android:text="LOG IN WITH FACEBOOK"
+            android:text="LOG IN WITH FACEBOOK + MOBILE"
             android:textColor="@color/background"
             android:textStyle="bold" />
     </android.support.v7.widget.CardView>
@@ -73,6 +76,7 @@
         android:layout_marginStart="8dp"
         android:alpha="0.8"
         android:animateLayoutChanges="true"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/blue_grey_200"
         app:cardCornerRadius="20dp"
         app:cardElevation="1dp"
@@ -147,7 +151,26 @@
         android:text="Back to Old App"
         android:textSize="10sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="Facebook Login is just to Authenticate you on ILN. We do not  use any of your data or post on your Facebook account without permission."
+        android:textAlignment="center"
+        android:textColor="@color/amber_50"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/facebbok" />
 
 </android.support.constraint.ConstraintLayout>

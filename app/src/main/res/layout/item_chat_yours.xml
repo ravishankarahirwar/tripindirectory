@@ -46,6 +46,7 @@
             android:layout_height="wrap_content"
             android:text="The Text Inside"
             android:textColor="@color/app_title"
+            android:textIsSelectable="true"
             android:textSize="15sp" />
 
     </LinearLayout>

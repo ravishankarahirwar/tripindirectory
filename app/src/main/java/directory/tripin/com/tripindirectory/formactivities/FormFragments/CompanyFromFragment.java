@@ -351,7 +351,7 @@ public class CompanyFromFragment extends BaseFragment {
 
 
 
-            //from Facebool profile
+            //from Facebook profile
 
             if(preferenceManager.getFuid()!=null){
                 if(!preferenceManager.getFuid().isEmpty()){

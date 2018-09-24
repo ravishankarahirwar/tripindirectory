@@ -57,9 +57,9 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
 
         if (post.mFindOrPost == 1) {
-            postType.setText("Need Truck");
+            postType.setText("I Need Truck");
         }else if (post.mFindOrPost == 2) {
-            postType.setText("Need Load");
+            postType.setText("I Need Load");
         }
         if(post.getmAuthor()==null){
             auther.setVisibility(View.GONE);

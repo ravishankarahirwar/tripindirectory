@@ -61,6 +61,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/fui_done_check_mark" />
+
+        <TextView
+            android:id="@+id/countcity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/chat_in_bg"
+            android:padding="5dp"
+            android:text="0"
+            app:layout_constraintBottom_toBottomOf="@+id/ocities_done"
+            app:layout_constraintEnd_toStartOf="@+id/ocities_done"
+            app:layout_constraintTop_toTopOf="@+id/ocities_done" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -119,6 +133,20 @@
         android:text="Saving to server..."
         android:textColor="@color/blue_grey_900"
         android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/limitcity" />
+
+    <TextView
+        android:id="@+id/limitcity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="It is recommended to keep only top 20 cities you are currently operating in this list."
+        android:textColor="@color/alizarin"
+        android:textSize="10sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

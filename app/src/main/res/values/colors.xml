@@ -114,7 +114,7 @@
     <color name="yellow_A700">#FFD600</color>
 
     <color name="deep_orange_50">#FBE9E7</color>
-    <color name="deep_orange_100">#FFCCBC</color>
+    <color name="deep_orange_100">#ffccbc</color>
     <color name="deep_orange_200">#FFAB91</color>
     <color name="deep_orange_300">#FF8A65</color>
     <color name="deep_orange_400">#FF7043</color>
@@ -286,7 +286,7 @@
     <color name="lime_A700">#AEEA00</color>
 
     <color name="orange_50">#FFF3E0</color>
-    <color name="orange_100">#FFE0B2</color>
+    <color name="orange_100">#ffe0b2</color>
     <color name="orange_200">#FFCC80</color>
     <color name="orange_300">#FFB74D</color>
     <color name="orange_400">#FFA726</color>

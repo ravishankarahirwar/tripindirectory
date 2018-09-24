@@ -53,9 +53,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:layout_marginTop="8dp"
         android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_fileName="loading.json"
-        app:lottie_loop="true"
-        tools:layout_editor_absoluteX="20dp" />
+        app:lottie_loop="true" />
 </android.support.constraint.ConstraintLayout>

@@ -24,7 +24,7 @@
             android:layout_marginTop="8dp"
             android:clickable="true"
             android:focusable="true"
-            app:backgroundTint="@color/blue_grey_100"
+            app:backgroundTint="@color/blue_grey_50"
             app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

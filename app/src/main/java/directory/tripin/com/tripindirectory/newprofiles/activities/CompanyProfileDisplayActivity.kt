@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.newprofiles.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.text.util.Linkify
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -28,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import com.keiferstone.nonet.NoNet
@@ -37,6 +40,8 @@ import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
+import libs.mjn.prettydialog.PrettyDialog
+import libs.mjn.prettydialog.PrettyDialogCallback
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,6 +55,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
     val cities: ArrayList<String> = ArrayList()
     lateinit var mAuth: FirebaseAuth
     lateinit var partnerInfoPojo: PartnerInfoPojo
+    lateinit var firebaseAnalytics : FirebaseAnalytics
 
 
     var mCompUid: String = ""
@@ -69,6 +75,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         context = this
         preferenceManager = PreferenceManager.getInstance(context)
         mAuth = FirebaseAuth.getInstance()
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         textUtils = TextUtils()
         if (mAuth.currentUser == null) {
             finish()
@@ -118,7 +125,6 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             Toast.makeText(context, "Try Again!", Toast.LENGTH_SHORT).show()
         } else {
             adjustIfYourProfile()
-            fetchData(mCompUid)
         }
 
 
@@ -142,7 +148,12 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                         bindData(partnerInfoPojo)
 
                     } else {
-                        Toast.makeText(context, "Create Your Profile!", Toast.LENGTH_SHORT).show()
+                        if(mCompUid.equals(preferenceManager.userId)){
+                            adjustIfYourProfile()
+                        }else{
+                            Toast.makeText(context, "Not Available", Toast.LENGTH_SHORT).show()
+                            comptitle.text = "Not Available"
+                        }
                         Logger.v("Current data: null")
                     }
                 })
@@ -261,12 +272,32 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                 setUpImage(partnerInfoPojo.getmPhotoUrl())
             }
 
+            //status statusindicator
+
+            if(partnerInfoPojo.isActive!=null){
+                if(partnerInfoPojo.isActive){
+                    Logger.v("active..")
+                    statusindicator.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_brightness_1_black_24dp))
+                    statusindicator.setColorFilter(ContextCompat.getColor(context,R.color.green_A200),android.graphics.PorterDuff.Mode.SRC_IN)
+                }else{
+                    Logger.v("inactive..")
+                    statusindicator.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_panorama_fish_eye_black_24dp))
+                }
+            }else{
+                Logger.v("null..")
+                statusindicator.setColorFilter(ContextCompat.getColor(context,R.color.gray2),android.graphics.PorterDuff.Mode.SRC_IN)
+
+            }
+
             //Company Name
             if (partnerInfoPojo.getmCompanyName() != null) {
                 if (!partnerInfoPojo.getmCompanyName().isEmpty()) {
                     compname.text = partnerInfoPojo.getmCompanyName().toUpperCase()
                     comptitle.text = textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())
                 }
+            }else{
+                Toast.makeText(context,"Not Available",Toast.LENGTH_SHORT).show()
+                finish()
             }
 
             //city
@@ -277,6 +308,8 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             //bio
             if (partnerInfoPojo.getmBio() != null) {
                 biodisplay.text = partnerInfoPojo.getmBio()
+                Linkify.addLinks(biodisplay, Linkify.ALL)
+
             }
 
             if (partnerInfoPojo.getmOperationCities() != null) {
@@ -312,10 +345,19 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
     private fun adjustIfYourProfile() {
         if (mCompUid.equals(mAuth.currentUser!!.uid)) {
             //your profile
-            connect.visibility = View.GONE
-            rate.visibility = View.GONE
-            editprofile.visibility = View.VISIBLE
-            promote.visibility = View.VISIBLE
+            if(preferenceManager.comapanyName!=null){
+                connect.visibility = View.GONE
+                rate.visibility = View.GONE
+                editprofile.visibility = View.VISIBLE
+                promote.visibility = View.VISIBLE
+
+                fetchData(mCompUid)
+
+            }else{
+                val i = Intent(this, CompanyProfileEditActivity::class.java)
+                startActivityForResult(i,1)
+            }
+
         } else {
             //others profile
             connect.visibility = View.VISIBLE
@@ -323,8 +365,29 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             editprofile.visibility = View.GONE
             promote.visibility = View.GONE
 
+            fetchData(mCompUid)
+
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode==1){
+            if(resultCode== Activity.RESULT_OK){
+                //saved successfully
+                Toast.makeText(context, "Updated Successfully", Toast.LENGTH_SHORT).show()
+            }else{
+                //back from edit activity
+                if(preferenceManager.comapanyName==null){
+                    finish()
+                    Toast.makeText(context, "Canceled Creation", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(context, "Canceled Edit", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 
@@ -340,7 +403,13 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
         editprofile.setOnClickListener {
             val i = Intent(this, CompanyProfileEditActivity::class.java)
-            startActivity(i)
+            startActivityForResult(i,1)
+        }
+
+        promote.setOnClickListener {
+            showpromotedialog()
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_promote_clicked", bundle)
         }
 
         connect.setOnClickListener {
@@ -349,6 +418,8 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                     .collection("partners")
                     .document(mCompUid)
                     .collection("mConnections")
+
+            val bundle = Bundle()
 
             if (isConnected) {
 
@@ -375,7 +446,10 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                             partnerInfoPojo.getmCompanyName()
                     )
                     mycollection.document(partnerInfoPojo.getmRMN()).set(connectPojo2).addOnCompleteListener {
-                        Toast.makeText(context, "Disconnected", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Removed from Your Network", Toast.LENGTH_SHORT).show()
+                        bundle.putInt("connect_status",0)
+                        firebaseAnalytics.logEvent("z_profile_connected",bundle)
+
                     }
                 }
 
@@ -404,10 +478,14 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                             partnerInfoPojo.getmCompanyName()
                     )
                     mycollection.document(partnerInfoPojo.getmRMN()).set(connectPojo2).addOnCompleteListener {
-                        Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Added to your Network", Toast.LENGTH_SHORT).show()
+                        bundle.putInt("connect_status",1)
+                        firebaseAnalytics.logEvent("z_profile_connected",bundle)
                     }
                 }
             }
+
+
 
         }
 
@@ -672,7 +750,11 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                 .collection("partners")
                 .document(mCompUid)
                 .collection("mRatings")
-                .document(preferenceManager.userId).set(companyRatingsPojo)
+                .document(preferenceManager.userId).set(companyRatingsPojo).addOnCompleteListener {
+                    val bundle = Bundle()
+                    bundle.putInt("rating",rate)
+                    firebaseAnalytics.logEvent("z_profile_rated",bundle)
+                }
 
     }
 
@@ -681,5 +763,46 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                 .poll()
                 .snackbar()
     }
+
+    private fun showpromotedialog() {
+
+        val prettyDialog: PrettyDialog = PrettyDialog(this)
+
+        prettyDialog
+                .setTitle("Promote My Business")
+                .setMessage("This feature is still in development. For now, You can ask for promotion personally to ILN Assistant.")
+                .addButton(
+                        "Yes, Talk to Assistant",
+                        R.color.pdlg_color_white,
+                        R.color.green_400
+                ) {
+                    prettyDialog.dismiss()
+                    chatwithassistant()
+
+                }.addButton(
+                        "Cancel",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100,
+                        PrettyDialogCallback {
+                            prettyDialog.dismiss()
+
+                        }
+                )
+        prettyDialog.show()
+
+
+    }
+
+    private fun chatwithassistant() {
+        val intent = Intent(this@CompanyProfileDisplayActivity, ChatRoomActivity::class.java)
+        intent.putExtra("ormn", "+919284089759")
+        intent.putExtra("imsg", "Hi, I want to know more about my Company Promotion on ILN.")
+        intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
+        intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
+        startActivity(intent)
+        val bundle = Bundle()
+        firebaseAnalytics.logEvent("z_assistant", bundle)
+    }
+
 
 }

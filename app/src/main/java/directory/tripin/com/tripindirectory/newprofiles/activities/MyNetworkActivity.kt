@@ -29,6 +29,7 @@ import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActiv
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.PartnersViewHolder
@@ -47,6 +48,7 @@ class MyNetworkActivity : AppCompatActivity() {
     lateinit var textUtils: TextUtils
     lateinit var preferenceManager: PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,11 +58,20 @@ class MyNetworkActivity : AppCompatActivity() {
         textUtils = TextUtils()
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        recyclerViewAnimator = RecyclerViewAnimator(rv_mynetwork)
+
 
         back_mynetwork.setOnClickListener {
             finish()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        setAdapter()
+    }
+
+    private fun setAdapter() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("networks").document(preferenceManager.userId).collection("mNetwork").whereEqualTo("mStatus",true)
 
@@ -83,6 +94,9 @@ class MyNetworkActivity : AppCompatActivity() {
                         LayoutInflater.from(parent.context)
                                 .inflate(R.layout.item_new_transporter, parent, false)
 
+                recyclerViewAnimator.onCreateViewHolder(view)
+
+
                 return PartnersViewHolder(view)
             }
 
@@ -90,6 +104,13 @@ class MyNetworkActivity : AppCompatActivity() {
                                           position: Int,
                                           @NonNull model: ConnectPojo) {
                 if (model != null) {
+
+                    recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+
+                    holder.mIsPromoted.visibility = View.GONE
+                    holder.mReviews.visibility = View.GONE
+                    holder.mRatings.visibility = View.GONE
+                    holder.mOnlineStatus.visibility = View.GONE
 
                     if (model.getmCompanyName() != null) {
                         if (!model.getmCompanyName().isEmpty()) {
@@ -201,6 +222,17 @@ class MyNetworkActivity : AppCompatActivity() {
 
                     }
 
+                    LoadingState.FINISHED -> {
+                        Logger.v("onLoadingStateChanged ${state.name} $itemCount")
+                        loadingmn.visibility = View.GONE
+                        if (itemCount != 0) {
+                            networkemptyinfo.visibility = View.GONE
+                        }else{
+                            networkemptyinfo.visibility = View.VISIBLE
+                        }
+
+                    }
+
                     LoadingState.ERROR -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                     }
@@ -210,8 +242,7 @@ class MyNetworkActivity : AppCompatActivity() {
         }
 
         rv_mynetwork.layoutManager = LinearLayoutManager(this)
-        rv_mynetwork.adapter = adapter
-    }
+        rv_mynetwork.adapter = adapter    }
 
     private fun callNumber(number: String) {
         val callIntent = Intent(Intent.ACTION_DIAL)

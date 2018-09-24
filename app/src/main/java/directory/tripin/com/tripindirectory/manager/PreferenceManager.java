@@ -17,6 +17,7 @@ public class PreferenceManager {
     public static final String PREF_IS_LOADBOARD_GUIDED = "isloadboardguided";
     public static final String PREF_IS_POSTTOSELECTED_GUIDED = "isposttoselectedguided";
     public static final String PREF_IS_MAININTRO_SEEN = "ismainintroseen";
+    public static final String PREF_IS_PROFILEINTRO_SEEN = "isprofileintroseen";
 
 
 
@@ -33,9 +34,6 @@ public class PreferenceManager {
     public static final String PREF_TO_SHOW_REG_AD = "toshowregad";
 
     public static final String PREF_ISNEWLOOKACCEPTED = "isnewlookaccepted";
-
-
-
 
 
 
@@ -118,7 +116,7 @@ public class PreferenceManager {
     }
 
     public boolean isNewLookAccepted() {
-        return sInstance.getBoolean(PREF_ISNEWLOOKACCEPTED, false);
+        return sInstance.getBoolean(PREF_ISNEWLOOKACCEPTED, true);
     }
 
     public void setisMainScreenGuided(boolean b) {
@@ -154,6 +152,15 @@ public class PreferenceManager {
 
     public void setisMainIntroSeen(boolean b) {
         editor.putBoolean(PREF_IS_MAININTRO_SEEN, b);
+        editor.commit();
+    }
+
+    public boolean isProfileIntroSeen() {
+        return sInstance.getBoolean(PREF_IS_PROFILEINTRO_SEEN, false);
+    }
+
+    public void setisProfileIntroSeen(boolean b) {
+        editor.putBoolean(PREF_IS_PROFILEINTRO_SEEN, b);
         editor.commit();
     }
 

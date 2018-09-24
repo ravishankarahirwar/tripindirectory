@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
+import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
@@ -566,6 +567,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     FirebaseDatabase.getInstance().getReference().child("chatpresence").child("users").child(chatItemPojo.getmReciversUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+
                             if (dataSnapshot.exists()) {
                                 UserPresensePojo userPresensePojo = dataSnapshot.getValue(UserPresensePojo.class);
                                 if (userPresensePojo != null) {
@@ -575,30 +577,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                         }
                                     }
                                 }
-
                             }
 
-//
-//                            int p = 0;
-//
-//                            try{
-//                                p = Integer.valueOf(chatItemPojo.getmRMN().substring(8));
-//                            }catch(NumberFormatException ex){
-//                                Log.d(TAG, "parsed int exception");
-//
-//                            }
-//
-//
-//                            Log.d(TAG, "parsed int "+p);
-//                            int m  = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
-
-
-                            Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
-                            intent.putExtra("ouid", chatItemPojo.getmSendersUid());
-                            intent.putExtra("ormn", chatItemPojo.getmRMN());
-                            intent.putExtra("ofuid", chatItemPojo.getmSendersFuid());
-//                            intent.putExtra("nid", m);
-
+                            Intent intent = new Intent(getApplicationContext(), ChatHeadsActivity.class);
 
                             String title = "";
                             if (chatItemPojo.getmDisplayName().isEmpty()) {
@@ -614,7 +595,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                             NotificationCompat.Builder notificationBuilder =
                                     new NotificationCompat.Builder(getApplicationContext(), channelId)
-                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setSmallIcon(R.mipmap.ic_launcher_round)
                                             .setContentTitle(title)
                                             .setContentText(chatItemPojo.getmChatMesssage())
                                             .setAutoCancel(true)

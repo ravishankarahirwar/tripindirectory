@@ -209,13 +209,11 @@ exports.facebookprofilecreated =  functions.database.ref('/user_profiles/{pushId
       const newValue = snapshot.val();
       console.log('new facebook user created', context.params.pushId, newValue);
 
-      admin.firestore().collection('partners').doc(newValue.mUid).get().then(doc => {
+      return fsdb.collection('partners').doc(newValue.mUid).get().then(doc => {
                                                                          if (!doc.exists) {
                                                                            return console.log('No such document!');
                                                                          } else {
-                                                                           admin.firestore().collection('partners').doc(newValue.mUid).update({ mFUID: context.params.pushId });
-                                                                           admin.firestore().collection('partners').doc(newValue.mUid).update({ mDisplayName: newValue.mDisplayName });
-                                                                           return admin.firestore().collection('partners').doc(newValue.mUid).update({ mPhotoUrl: newValue.mImageUrl });
+                                                                           return admin.firestore().collection('partners').doc(newValue.mUid).update({ mDisplayName: newValue.mDisplayName, mFUID: context.params.pushId, mPhotoUrl: newValue.mImageUrl});
                                                                          }
                                                                        })
                                                                        .catch(err => {
@@ -244,6 +242,8 @@ exports.newRatings = functions.firestore
           // Compute new average rating
           var oldRatingTotal = partnerpojo.mAvgRating * partnerpojo.mNumRatings;
           var newAvgRating = (oldRatingTotal + ratingPojo.mRitings) / newNumRatings;
+
+          fsdb.collection('denormalizers').doc(context.params.uid).update({ mAvgRating: newAvgRating, mNumRatings: newNumRatings });
 
           // Update restaurant info
           return transaction.update(partnerRef, {
@@ -294,11 +294,20 @@ exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
     .onWrite((change, context) => {
 
      const newValue =  change.after.val();
+     const oldValue =  change.before.val();
+
      const uid = context.params.pushId
      console.log('chat presence updated : updating doc', context.params.pushId, newValue);
 
-     admin.firestore().collection('partners').doc(context.params.pushId).update({ mLastActive: newValue.mTimeStamp });
-     return admin.firestore().collection('partners').doc(context.params.pushId).update({ isActive: newValue.active });
+     if(newValue.active !== oldValue.active){
+      fsdb.collection('partners').doc(context.params.pushId).update({ mLastActive: newValue.mTimeStamp, isActive: newValue.active });
+      return fsdb.collection('denormalizers').doc(context.params.pushId).update({ mLastActive: newValue.mTimeStamp, isActive: newValue.active });
+     }else{
+        return fsdb.collection('partners').doc(context.params.pushId).update({ mLastActive: newValue.mTimeStamp, isActive: newValue.active });
+     }
+
+
+
 
     });
 
@@ -338,7 +347,7 @@ exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
 //
 //
 //    });
-
+//
 //    function itirateThroughBatch(routes,newValue,uid){
 //
 //         var batch = admin.firestore().batch();
@@ -353,9 +362,9 @@ exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
 //          return batch.commit().then(function () {
 //            throw console.log('Batching Done');
 //         });
-
-
-
+//
+//
+//
 //    console.log('itirateThroughBatch started '+routes.length+' '+newValue.data+' '+uid);
 //
 //     var batch = admin.firestore().batch();
@@ -385,8 +394,320 @@ exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
 //
 //       }
 //     });
-
+//
 //    }
+
+    exports.updateDenormalizedDocument = functions.firestore
+        .document('denormalizers/{uid}')
+        .onUpdate((change, context) => {
+          // Get pojo of the newly modified doc
+          var newdenormalizerPojo =  change.after.data();
+          var oldDenormalizerPojo =  change.before.data();
+
+          const uid = context.params.uid
+          console.log('updateDenormalizedDocument', context.params.uid, newdenormalizerPojo);
+
+          var newhubslist = newdenormalizerPojo.mOperationHubs;
+          newhubslist['ANYWHERE'] = true;
+
+          var oldhubslist = oldDenormalizerPojo.mOperationHubs;
+          oldhubslist['ANYWHERE'] = true;
+
+
+
+
+
+          var newlyaddedhubs = new Object();
+          newlyaddedhubs = newhubslist;
+          for(var hub1 in newhubslist){
+          //if old hubs contain, remove it from newly added
+           if(hub1 in oldhubslist){
+            newlyaddedhubs[hub1]=false;
+           }
+          }
+
+          var hubstoupdate = new Object();
+          for(var hub3 in newhubslist){
+          hubstoupdate[hub3] = true;
+          }
+          for(var hub2 in newhubslist){
+          //if old hubs contain, remove it from newly added
+           if(!(hub2 in oldhubslist)){
+             delete hubstoupdate[hub2];
+           }
+          }
+
+          //deleted hubs//todo
+          var hubstodelete = new Object();
+                    for(var hub4 in oldhubslist){
+                    hubstodelete[hub4] = true;
+                    }
+                    for(var hub5 in oldhubslist){
+                    //if old hubs contain, remove it from newly added
+                     if(hub5 in newhubslist){
+                       hubstodelete[hub5] = false;
+                     }
+                    }
+
+
+          return recursiveTillAllUpdateAreDone(newdenormalizerPojo,hubstoupdate,newlyaddedhubs,hubstodelete,uid);
+
+        });
+
+function recursiveTillAllUpdateAreDone(newdenormalizerPojo,hubstoupdate,newlyaddedhubs,hubstodelete,uid){
+
+    console.log('recursivee update');
+
+    var hubx = "";
+    for(var hub in hubstoupdate){
+
+      if(hubstoupdate[hub]){
+
+         hubx = hub;
+         break;
+
+      }
+
+    }
+
+    if(hubx === ""){
+
+    //update recursion done , create newly added
+    return recursiveTillAllBiCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,hubstodelete,uid);
+
+    }
+
+     var batch = admin.firestore().batch();
+
+     for(hubb in hubstoupdate){
+
+       var docRef = fsdb
+       .collection('denormalised')
+       .doc('routes')
+       .collection(hub)
+       .doc(hubb)
+       .collection('companies')
+       .doc(uid);
+
+        batch.set(docRef,{mDetails: newdenormalizerPojo},{ merge: true })
+
+     }
+
+     return batch.commit().then(function () {
+
+                hubstoupdate[hub] = false
+                console.log('update batch commited');
+                return recursiveTillAllUpdateAreDone(newdenormalizerPojo,hubstoupdate,newlyaddedhubs,hubstodelete,uid);
+
+              });
+
+}
+
+function recursiveTillAllBiCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,hubstodelete,uid){
+
+    console.log('recursive Bi create');
+
+    var hubx = "";
+    for(var hub in newlyaddedhubs){
+
+      if(newlyaddedhubs[hub]){
+
+         hubx = hub;
+         break;
+
+      }
+
+    }
+
+    if(hubx === ""){
+
+    //recursion done
+    return recursiveTillAllBiDeletesAreDone(hubstodelete,uid);
+
+    }
+
+     var batch = admin.firestore().batch();
+
+     for(hubb in newlyaddedhubs){
+
+       var docRef = fsdb
+       .collection('denormalised')
+       .doc('routes')
+       .collection(hub)
+       .doc(hubb)
+       .collection('companies')
+       .doc(uid);
+
+        batch.set(docRef,{mDetails: newdenormalizerPojo, mBidValue : 0})
+
+     }
+
+     return batch.commit().then(function () {
+
+     var batch2 = admin.firestore().batch();
+
+          for(hubb2 in newlyaddedhubs){
+
+            var docRef = fsdb
+            .collection('denormalised')
+            .doc('routes')
+            .collection(hubb2)
+            .doc(hub)
+            .collection('companies')
+            .doc(uid);
+
+             batch2.set(docRef,{mDetails: newdenormalizerPojo, mBidValue : 0})
+
+          }
+
+          return batch2.commit().then(function () {
+
+                newlyaddedhubs[hub] = false
+                console.log('reverse batch commited');
+                return recursiveTillAllBiCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,hubstodelete,uid);
+
+              });
+
+});
+}
+
+function recursiveTillAllBiDeletesAreDone(hubstodelete,uid){
+
+    console.log('recursive Bi delete');
+
+    var hubx = "";
+    for(var hub in hubstodelete){
+
+      if(hubstodelete[hub]){
+
+         hubx = hub;
+         break;
+
+      }
+
+    }
+
+    if(hubx === ""){
+
+    //recursion done
+    console.log('Update Recursion Done');
+
+    return 0;
+
+    }
+
+     var batch = admin.firestore().batch();
+
+     for(hubb in hubstodelete){
+
+       var docRef = fsdb
+       .collection('denormalised')
+       .doc('routes')
+       .collection(hub)
+       .doc(hubb)
+       .collection('companies')
+       .doc(uid);
+
+        batch.delete(docRef);
+
+     }
+
+     return batch.commit().then(function () {
+
+     var batch2 = admin.firestore().batch();
+
+          for(hubb2 in hubstodelete){
+
+            var docRef = fsdb
+            .collection('denormalised')
+            .doc('routes')
+            .collection(hubb2)
+            .doc(hub)
+            .collection('companies')
+            .doc(uid);
+
+             batch2.delete(docRef);
+
+          }
+
+          return batch2.commit().then(function () {
+
+                hubstodelete[hub] = false;
+                console.log('reverse delete batch commited');
+                return recursiveTillAllBiDeletesAreDone(hubstodelete,uid);
+
+              });
+
+});
+}
+
+ exports.createDenormalizeDocument = functions.firestore
+        .document('denormalizers/{uid}')
+        .onCreate((snap, context) => {
+          // Get pojo of the newly modified doc
+          var newdenormalizerPojo =  snap.data();
+          const uid = context.params.uid
+          console.log('createDenormalizeDocument', context.params.uid, newdenormalizerPojo);
+
+          var newlyaddedhubs = newdenormalizerPojo.mOperationHubs;
+          newlyaddedhubs['ANYWHERE'] = true;
+
+
+          return recursiveTillAllCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,uid);
+
+
+        });
+
+function recursiveTillAllCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,uid){
+
+    console.log('recursive create');
+
+    var hubx = "";
+    for(var hub in newlyaddedhubs){
+
+      if(newlyaddedhubs[hub]){
+
+         hubx = hub;
+         break;
+
+      }
+
+    }
+
+    if(hubx === ""){
+
+    //recursion done
+    return 0;
+
+    }
+
+     var batch = admin.firestore().batch();
+
+     for(hubb in newlyaddedhubs){
+
+       var docRef = fsdb
+       .collection('denormalised')
+       .doc('routes')
+       .collection(hub)
+       .doc(hubb)
+       .collection('companies')
+       .doc(uid);
+
+        batch.set(docRef,{mDetails: newdenormalizerPojo, mBidValue : 0})
+
+     }
+
+     return batch.commit().then(function () {
+
+                newlyaddedhubs[hub] = false
+                console.log('batch commited');
+                return recursiveTillAllCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,uid);
+
+              });
+
+}
+
+
 
 
 

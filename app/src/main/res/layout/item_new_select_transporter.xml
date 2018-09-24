@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/partner_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="5dp"
+    app:cardCornerRadius="4dp"
     app:cardElevation="2dp"
-    app:cardUseCompatPadding="true"
-    app:contentPadding="2dp">
+    app:cardUseCompatPadding="true">
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,73 +25,125 @@
             android:layout_margin="5dp">
 
             <ImageView
-                android:id="@+id/transporter_thumbnail"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ischecked"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/emoji_google_category_travel" />
-
-            <TextView
-                android:id="@+id/company_name1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:drawableRight="@drawable/ic_keyboard_arrow_right_black_24dp"
-                android:gravity="left|center"
-                android:text="TRIPIN TRANSPORT"
-                android:textColor="@color/blue_grey_800"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/transporter_thumbnail"
-                app:layout_constraintTop_toTopOf="@+id/transporter_thumbnail" />
-
-            <TextView
-                android:id="@+id/company_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Mumbai"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/company_name1"
-                app:layout_constraintTop_toBottomOf="@+id/company_name1"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <ImageButton
-                android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:padding="5dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_more_vert_black_24dp" />
-
-            <ImageView
                 android:id="@+id/ischecked"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:contentDescription="TODO"
+                android:padding="5dp"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_readgrey_24dp" />
+
+            <TextView
+                android:id="@+id/promoted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/orange_100"
+                android:elevation="2dp"
+                android:padding="5dp"
+                android:text="PROMOTED"
+                android:textColor="@color/bg"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/company_address"
+                app:layout_constraintTop_toBottomOf="@+id/company_address" />
+
+            <LinearLayout
+                android:id="@+id/ratings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_weight="1"
+                    android:tint="@color/green_500"
+                    app:srcCompat="@drawable/ic_star_full_48dp" />
+
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0.0"
+                    android:textColor="@color/green_500"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/transporter_thumbnail"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/white_circle_bg"
+                android:elevation="2dp"
+                android:padding="1dp"
+                app:layout_constraintBottom_toBottomOf="@+id/ischecked"
+                app:layout_constraintStart_toEndOf="@+id/ischecked"
+                app:layout_constraintTop_toTopOf="@+id/ischecked"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/emoji_google_category_travel" />
+
+            <TextView
+                android:id="@+id/company_name1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:text="TRIPIN TRANSPORT"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ratings"
+                app:layout_constraintStart_toEndOf="@+id/transporter_thumbnail"
+                app:layout_constraintTop_toTopOf="@+id/transporter_thumbnail"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/company_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:text="Mumbai"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@+id/company_name1"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/company_name1"
+                app:layout_constraintTop_toBottomOf="@+id/company_name1" />
+
+            <TextView
+                android:id="@+id/reviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 reviews"
+                android:textSize="8sp"
+                app:layout_constraintEnd_toEndOf="@+id/ratings"
+                app:layout_constraintStart_toStartOf="@+id/ratings"
+                app:layout_constraintTop_toBottomOf="@+id/ratings" />
 
 
         </android.support.constraint.ConstraintLayout>
@@ -112,26 +164,63 @@
             android:id="@+id/actions"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
+            android:background="@color/browser_actions_bg_grey"
+            android:elevation="2dp"
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/chat"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/chatconstrain"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="CHAT"
-                android:textColor="@color/blue_grey_900"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/chatacc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/onlinestatus"
+                        android:layout_width="15dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:alpha="0.8"
+                        app:srcCompat="@drawable/ic_brightness_1_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/chat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:padding="2dp"
+                        android:text="CHAT"
+                        android:textColor="@color/blue_grey_900"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </LinearLayout>
+
+
+            </android.support.constraint.ConstraintLayout>
 
             <View
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:background="@color/colorLightBg"></View>
+                android:background="@color/arrow_white"></View>
 
             <TextView
                 android:id="@+id/call"
@@ -139,7 +228,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:text="CALL"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="12sp"

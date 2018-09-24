@@ -30,22 +30,28 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
+import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
+import kotlinx.android.synthetic.main.content_main_scrolling.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 
 class AllTransportersActivity : AppCompatActivity() {
 
-    lateinit var adapter: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
+    lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
     lateinit var textUtils: TextUtils
     lateinit var preferenceManager :PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
+
 
 
 
@@ -56,7 +62,7 @@ class AllTransportersActivity : AppCompatActivity() {
         textUtils = TextUtils()
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
-
+        recyclerViewAnimator = RecyclerViewAnimator(rv_transporters_at)
 
         if(intent.extras!=null){
             if(intent.extras.getSerializable("query")!=null){
@@ -110,38 +116,50 @@ class AllTransportersActivity : AppCompatActivity() {
 
     private fun setMainAdapter( basicQueryPojo: BasicQueryPojo) {
 
+        val bundle = Bundle()
         Logger.v(basicQueryPojo.toString())
 
-        var baseQuery: Query = FirebaseFirestore.getInstance()
-                .collection("partners")
-
-        //sort by last active
-
-        var isNoQiery : Boolean = true
-
+        var source = "ANYWHERE"
         if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-//            baseQuery = baseQuery.whereEqualTo("mSourceCities.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-            baseQuery = baseQuery.whereEqualTo("mSourceHubs.${basicQueryPojo.mSourceCity.toUpperCase()}", true)
-            isNoQiery = false
+            bundle.putString("source", basicQueryPojo.mSourceCity)
+            source = basicQueryPojo.mSourceCity.toUpperCase()
+        } else {
+            bundle.putString("source", "Empty")
         }
 
+        var destination = "ANYWHERE"
         if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-//            baseQuery = baseQuery.whereEqualTo("mDestinationCities.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-            baseQuery = baseQuery.whereEqualTo("mDestinationHubs.${basicQueryPojo.mDestinationCity.toUpperCase()}", true)
-            isNoQiery = false
-
+            bundle.putString("destination", basicQueryPojo.mDestinationCity)
+            destination = basicQueryPojo.mDestinationCity.toUpperCase()
+        } else {
+            bundle.putString("destination", "Empty")
         }
 
-        for (fleet in basicQueryPojo.mFleets!!) {
-            baseQuery = baseQuery.whereEqualTo("fleetVehicle.$fleet", true)
-            isNoQiery = false
-        }
+        var baseQuery: Query = FirebaseFirestore.getInstance()
+                .collection("denormalised")
+                .document("routes")
+                .collection(source)
+                .document(destination)
+                .collection("companies")
 
-        if(isNoQiery){
-            baseQuery = baseQuery.whereGreaterThan(DB.PartnerFields.COMPANY_NAME,"")
-            baseQuery = baseQuery.orderBy(DB.PartnerFields.COMPANY_NAME, Query.Direction.ASCENDING)
-            baseQuery = baseQuery.orderBy(DB.PartnerFields.LASTACTIVETIME, Query.Direction.DESCENDING)
+        var numberofFleets: Int = 0
+
+        var fleetssorter = ""
+        var list = basicQueryPojo.mFleets!!
+        list.sort()
+        Logger.v("Selected Fleets : $list")
+        for (fleet in list) {
+            fleetssorter = fleetssorter+fleet+"_"
         }
+        Logger.v("mFleetsSorter: $fleetssorter")
+        bundle.putInt("fleetsselected", numberofFleets)
+        firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
+
+        //fitler and sort
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
@@ -149,51 +167,63 @@ class AllTransportersActivity : AppCompatActivity() {
                 .setPageSize(5)
                 .build()
 
-        val options = FirestorePagingOptions.Builder<PartnerInfoPojo>()
+        val options = FirestorePagingOptions.Builder<CompanyCardPojo>()
                 .setLifecycleOwner(this)
-                .setQuery(baseQuery, config, PartnerInfoPojo::class.java)
+                .setQuery(baseQuery, config, CompanyCardPojo::class.java)
                 .build()
-        adapter = object : FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>(options) {
+        adapter = object : FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>(options) {
             @NonNull
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): PartnersViewHolder {
-
-                val view: View = if (viewType == 1) {
-                    LayoutInflater.from(parent.context)
-                            .inflate(R.layout.item_transporter_loading, parent, false)
-                } else {
-                    LayoutInflater.from(parent.context)
-                            .inflate(R.layout.item_new_transporter, parent, false)
-                }
+                val view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_new_transporter, parent, false)
+                recyclerViewAnimator.onCreateViewHolder(view)
                 return PartnersViewHolder(view)
             }
 
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
-                                          @NonNull model: PartnerInfoPojo) {
-                if (model != null) {
+                                          @NonNull model: CompanyCardPojo) {
 
-                    if (model.getmCompanyName() != null) {
-                        if (!model.getmCompanyName().isEmpty()) {
-                            holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
+                if (model != null) {
+                    recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+
+                    //CompName
+                    if (model.getmDetails().getmCompanyName() != null) {
+                        if (!model.getmDetails().getmCompanyName().isEmpty()) {
+                            holder.mCompany.text = textUtils.toTitleCase(model.getmDetails().getmCompanyName())
                         } else {
-                            holder.mCompany.text = "Unknown Name"
+                            if(model.getmDetails().getmDisplayName()!=null){
+                                if(!model.getmDetails().getmDisplayName().isEmpty()){
+                                    holder.mCompany.text = model.getmDetails().getmDisplayName()
+                                }else{
+                                    holder.mCompany.text = "Unknown Name"
+                                }
+                            }
                         }
                     } else {
-                        holder.mCompany.text = "Unknown Name"
-                    }
-
-
-                    if (model.getmCompanyAdderss() != null){
-                        if(model.getmCompanyAdderss().city!=null){
-                            holder.mAddress.text = textUtils.toTitleCase(model.getmCompanyAdderss().city)
+                        if(model.getmDetails().getmDisplayName()!=null){
+                            if(!model.getmDetails().getmDisplayName().isEmpty()){
+                                holder.mCompany.text = model.getmDetails().getmDisplayName()
+                            }else{
+                                holder.mCompany.text = "Unknown Name"
+                            }
                         }
                     }
 
 
-                    if (model.getmPhotoUrl() != null) {
-                        if (!model.getmPhotoUrl().isEmpty()) {
+                    //City
+                    if (model.getmDetails().getmLocationCity() != null){
+                        if(model.getmDetails().getmLocationCity()!=null){
+                            holder.mAddress.text = textUtils.toTitleCase(model.getmDetails().getmLocationCity())
+                        }
+                    }
+
+
+                    //Photo
+                    if (model.getmDetails().getmPhotoUrl() != null) {
+                        if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
                             Picasso.with(applicationContext)
-                                    .load(model.getmPhotoUrl())
+                                    .load(model.getmDetails().getmPhotoUrl()+ "?width=100&width=100")
                                     .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                                     .transform(CircleTransform())
                                     .fit()
@@ -213,77 +243,65 @@ class AllTransportersActivity : AppCompatActivity() {
                         holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                     }
 
-                    if(model.getmAccountStatus()!=null){
-                        if(model.getmAccountStatus()>=2){
-                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
+//                    if(model.getmAccountStatus()!=null){
+//                        if(model.getmAccountStatus()>=2){
+//                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
+//                        }else{
+//                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_stroke_bg)
+//                        }
+//                    }
+
+                    if(model.getmDetails().isActive!=null){
+                        if(model.getmDetails().isActive){
+                            Logger.v("active..")
+                            holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context,R.color.green_A200),android.graphics.PorterDuff.Mode.SRC_IN)
                         }else{
-                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_stroke_bg)
+                            Logger.v("inactive..")
+                            holder.mOnlineStatus.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_panorama_fish_eye_black_24dp))
+                        }
+                    }else{
+                        Logger.v("null..")
+                        holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context,R.color.gray2),android.graphics.PorterDuff.Mode.SRC_IN)
+
+                    }
+
+                    if(model.getmDetails().getmAvgRating()!=null){
+                        holder.mRatings.text = model.getmDetails().getmAvgRating().toString()
+                    }
+
+                    if(model.getmDetails().getmNumRatings()!=null){
+                        holder.mReviews.text = model.getmDetails().getmNumRatings().toInt().toString() + " reviews"
+                    }
+
+                    if(model.getmBidValue()!=null){
+                        if(model.getmBidValue() != 0.0){
+                            holder.mIsPromoted.visibility = View.VISIBLE
+                        }else{
+                            holder.mIsPromoted.visibility = View.GONE
                         }
                     }
+
 
 
                     holder.itemView.setOnClickListener {
 
-                        val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                        i.putExtra("uid", getItem(position)!!.id)
-                        i.putExtra("cname", model.getmCompanyName())
+                        val i = Intent(context, CompanyProfileDisplayActivity::class.java)
+                        i.putExtra("uid",getItem(position)!!.id)
+                        i.putExtra("rmn",model.getmDetails().getmRMN())
+                        i.putExtra("fuid",model.getmDetails().getmFUID())
                         startActivity(i)
+
                     }
 
                     holder.mCall.setOnClickListener {
 
-
-                        val phoneNumbers = java.util.ArrayList<String>()
-                        val contactPersonPojos = model.getmContactPersonsList()
-
-                        if (contactPersonPojos != null && contactPersonPojos!!.size > 1) {
-                            for (i in contactPersonPojos!!.indices) {
-                                if (model.getmContactPersonsList()[i] != null) {
-                                    val number = model.getmContactPersonsList()[i].getmContactPersonMobile
-                                    phoneNumbers.add(number)
-
-                                }
-                            }
-
-                            val builder = AlertDialog.Builder(context)
-                            builder.setTitle("Looks like there are multiple phone numbers.")
-                                    .setCancelable(false)
-                                    .setAdapter(ArrayAdapter(context, R.layout.dialog_multiple_no_row, R.id.dialog_number, phoneNumbers)
-                                    ) { dialog, item ->
-                                        Logger.v("Dialog number selected :" + phoneNumbers[item])
-
-                                        callNumber(phoneNumbers[item])
-                                    }
-
-                            builder.setNegativeButton("Cancel", object : DialogInterface.OnClickListener {
-                                override fun onClick(dialog: DialogInterface, id: Int) {
-                                    // User cancelled the dialog
-                                }
-                            })
-                            builder.create()
-                            builder.show()
-
-
-                        } else {
-
-                            val number = model.getmContactPersonsList()[0].getmContactPersonMobile
-                            callNumber(number)
+                        if(model.getmDetails().getmRMN()!=null) {
+                            callNumber(model.getmDetails().getmRMN())
+                        }else {
+                            Toast.makeText(context,"No RMN, Visit Profile!",Toast.LENGTH_SHORT).show()
                         }
+
                         val bundle = Bundle()
-
-                        if (preferenceManager.rmn != null) {
-                            bundle.putString("by_rmn", preferenceManager.rmn)
-                        } else {
-                            bundle.putString("by_rmn", "Unknown")
-                        }
-
-                        bundle.putString("to_rmn", model.getmRMN())
-
-                        if (model.getmFUID() != null) {
-                            bundle.putString("is_opponent_updated", "Yes")
-                        } else {
-                            bundle.putString("is_opponent_updated", "No")
-                        }
 
                         if (!basicQueryPojo.mSourceCity.isEmpty() &&
                                 basicQueryPojo.mSourceCity != "Select City" &&
@@ -299,14 +317,14 @@ class AllTransportersActivity : AppCompatActivity() {
                         firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
                     }
 
-                    holder.mChat.setOnClickListener {
+                    holder.mChatParent.setOnClickListener {
 
                         val intent = Intent(context, ChatRoomActivity::class.java)
                         intent.putExtra("imsg", basicQueryPojo.toString())
-                        intent.putExtra("ormn", model.getmRMN())
+                        intent.putExtra("ormn", model.getmDetails().getmRMN())
                         intent.putExtra("ouid", getItem(position)!!.id)
-                        intent.putExtra("ofuid", model.getmFUID())
-                        Logger.v("Ofuid :" + model.getmFUID())
+                        intent.putExtra("ofuid", model.getmDetails().getmFUID())
+                        Logger.v("Ofuid :" + model.getmDetails().getmFUID())
                         startActivity(intent)
 
                         val bundle = Bundle()
@@ -315,8 +333,8 @@ class AllTransportersActivity : AppCompatActivity() {
                         } else {
                             bundle.putString("by_rmn", "Unknown")
                         }
-                        bundle.putString("to_rmn", model.getmRMN())
-                        if (model.getmFUID() != null) {
+                        bundle.putString("to_rmn", model.getmDetails().getmRMN())
+                        if (model.getmDetails().getmFUID() != null) {
                             bundle.putString("is_opponent_updated", "Yes")
                         } else {
                             bundle.putString("is_opponent_updated", "No")
@@ -337,7 +355,7 @@ class AllTransportersActivity : AppCompatActivity() {
 
 
             }
-            
+
 
             override fun getItemViewType(position: Int): Int {
 
@@ -366,6 +384,10 @@ class AllTransportersActivity : AppCompatActivity() {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loadingat.visibility = View.GONE
 
+                    }
+
+                    LoadingState.FINISHED ->{
+                        loadingat.visibility = View.GONE
                     }
 
                     LoadingState.ERROR -> {

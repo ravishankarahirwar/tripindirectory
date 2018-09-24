@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -764,13 +765,31 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private void updateUserPresence(boolean b) {
         if(mAuth.getCurrentUser()!=null){
-            UserPresensePojo userPresensePojo = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
-            databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Logger.v("onResume userpresence updated");
-                }
-            });
+            if(b){
+                UserPresensePojo userPresensePojo = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
+                databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Logger.v("onResume userpresence updated");
+                    }
+                });
+            }else {
+                UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), "");
+                databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).setValue(userPresensePojo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Logger.v("onResume userpresence updated1");
+                    }
+                });
+                UserPresensePojo userPresensePojo2 = new UserPresensePojo(b, new Date().getTime(), mChatRoomId);
+                databaseReference.child("chatpresence").child("users").child(mAuth.getUid()).onDisconnect().setValue(userPresensePojo2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Logger.v("onResume userpresence updated");
+                    }
+                });
+            }
+
         }else {
             Toast.makeText(getApplicationContext(),"Not Signed In!",Toast.LENGTH_SHORT).show();
             finish();
@@ -859,8 +878,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                 final String docId = snapshot.getId();
 
                 holder.msg.setText(model.getmChatMesssage());
-                if (model.getmTimeStamp() != null)
+                Linkify.addLinks(holder.msg, Linkify.ALL);
+
+                if (model.getmTimeStamp() != null){
                     holder.time.setText(simpleDateFormat.format(model.getmTimeStamp()));
+
+                }
 
 
                 if (model.getmMessageType() == 2) {
@@ -1008,10 +1031,10 @@ public class ChatRoomActivity extends AppCompatActivity {
         if (mChatRoomId != null) {
             if (!mChatRoomId.isEmpty()) {
 
+                updateUserPendings();
                 updateUserPresence(false);
                 updateTypingStatus(false);
                 removeuserpresencelistners();
-                updateUserPendings();
             }
         }
     }
