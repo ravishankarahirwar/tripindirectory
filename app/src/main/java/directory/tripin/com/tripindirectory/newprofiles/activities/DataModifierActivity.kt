@@ -32,11 +32,11 @@ class DataModifierActivity : AppCompatActivity() {
         docname.text = oppName
 
 
-        status.text = "Getting Docs... Hold On!"
-        FirebaseFirestore.getInstance().collection("partners").get().addOnCompleteListener {
-            status.text = it.result.size().toString()
-            doclist = it.result
-        }
+//        status.text = "Getting Docs... Hold On!"
+//        FirebaseFirestore.getInstance().collection("partners").get().addOnCompleteListener {
+//            status.text = it.result.size().toString()
+//            doclist = it.result
+//        }
 
         startmodif.setOnClickListener {
             if(doclist!=null){

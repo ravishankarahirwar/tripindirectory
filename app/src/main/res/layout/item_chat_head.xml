@@ -44,6 +44,7 @@
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:drawable/list_selector_background"
             android:text="My Company Name"
             android:textSize="16sp"
             android:textStyle="bold"

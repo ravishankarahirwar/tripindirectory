@@ -336,26 +336,26 @@ public class ChatActivity extends BaseActivity {
 
                 User user = dataSnapshot.getValue(User.class);
 
-                if ((user != null ? user.photoUrl : null) != null){
-
-                    Glide.with(getApplicationContext())
-                            .load(user.photoUrl)
-                            .placeholder(R.drawable.profile_default_photo)
-                            .dontAnimate()
-                            .fitCenter()
-                            .into(mProfile);
-
-                } else {
-
-
-                    Glide.with(getApplicationContext())
-                            .load(R.drawable.profile_default_photo)
-                            .placeholder(R.drawable.profile_default_photo)
-                            .dontAnimate()
-                            .fitCenter()
-                            .into(mProfile);
-
-                }
+//                if ((user != null ? user.photoUrl : null) != null){
+//
+//                    Glide.with(getApplicationContext())
+//                            .load(user.photoUrl)
+//                            .placeholder(R.drawable.profile_default_photo)
+//                            .dontAnimate()
+//                            .fitCenter()
+//                            .into(mProfile);
+//
+//                } else {
+//
+//
+//                    Glide.with(getApplicationContext())
+//                            .load(R.drawable.profile_default_photo)
+//                            .placeholder(R.drawable.profile_default_photo)
+//                            .dontAnimate()
+//                            .fitCenter()
+//                            .into(mProfile);
+//
+//                }
 
                 if (user != null) {
                     if (user.getName() != null){

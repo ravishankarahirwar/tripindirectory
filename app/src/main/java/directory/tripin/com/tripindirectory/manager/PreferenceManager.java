@@ -18,6 +18,8 @@ public class PreferenceManager {
     public static final String PREF_IS_POSTTOSELECTED_GUIDED = "isposttoselectedguided";
     public static final String PREF_IS_MAININTRO_SEEN = "ismainintroseen";
     public static final String PREF_IS_PROFILEINTRO_SEEN = "isprofileintroseen";
+    public static final String PREF_RATE_REMINDER = "ratereminder";
+
 
 
 
@@ -201,6 +203,16 @@ public class PreferenceManager {
 
     public void setFuid(String fuid) {
         editor.putString(PREF_FACEBOOK_UID, fuid);
+        editor.commit();
+    }
+
+    public String getPrefRateReminder() {
+        String fuid = sInstance.getString(PREF_RATE_REMINDER, "");
+        return fuid;
+    }
+
+    public void setPrefRateReminder(String fuid) {
+        editor.putString(PREF_RATE_REMINDER, fuid);
         editor.commit();
     }
 

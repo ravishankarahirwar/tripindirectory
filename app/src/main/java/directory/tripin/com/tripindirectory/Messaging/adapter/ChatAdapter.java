@@ -124,24 +124,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null){
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.mProfilePhoto);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.mProfilePhoto);
-                    }
+//                    if (user.getPhotoUrl() != null){
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.mProfilePhoto);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.mProfilePhoto);
+//                    }
                 }
 
                 @Override
@@ -179,24 +179,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null){
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.AudiomProfilePhoto);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.AudiomProfilePhoto);
-                    }
+//                    if (user.getPhotoUrl() != null){
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.AudiomProfilePhoto);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.AudiomProfilePhoto);
+//                    }
                 }
 
                 @Override
@@ -301,24 +301,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null){
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.mProfilePhotoImage);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(myChatViewHolder.mProfilePhotoImage);
-                    }
+//                    if (user.getPhotoUrl() != null){
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.mProfilePhotoImage);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(myChatViewHolder.mProfilePhotoImage);
+//                    }
                 }
 
                 @Override
@@ -362,26 +362,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 }
             });
-
-            if (chat.getImageUrl() != null){
-
-                Glide.with(getApplicationContext())
-                        .load(chat.getImageUrl())
-                        .placeholder(R.color.gray)
-                        .error(R.color.gray)
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(myChatViewHolder.mImageUrl);
-
-            } else {
-
-                Glide.with(getApplicationContext())
-                        .load(R.color.gray)
-                        .placeholder(R.color.gray)
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(myChatViewHolder.mImageUrl);
-            }
+//
+//            if (chat.getImageUrl() != null){
+//
+//                Glide.with(getApplicationContext())
+//                        .load(chat.getImageUrl())
+//                        .placeholder(R.color.gray)
+//                        .error(R.color.gray)
+//                        .dontAnimate()
+//                        .centerCrop()
+//                        .into(myChatViewHolder.mImageUrl);
+//
+//            } else {
+//
+//                Glide.with(getApplicationContext())
+//                        .load(R.color.gray)
+//                        .placeholder(R.color.gray)
+//                        .dontAnimate()
+//                        .centerCrop()
+//                        .into(myChatViewHolder.mImageUrl);
+//            }
         }
 
 
@@ -557,26 +557,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null) {
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.mProfilePhoto);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.mProfilePhoto);
-
-
-                    }
+//                    if (user.getPhotoUrl() != null) {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.mProfilePhoto);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.mProfilePhoto);
+//
+//
+//                    }
                 }
 
                 @Override
@@ -605,24 +605,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null){
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.AudiomProfilePhoto);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.AudiomProfilePhoto);
-                    }
+//                    if (user.getPhotoUrl() != null){
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.AudiomProfilePhoto);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.AudiomProfilePhoto);
+//                    }
                 }
 
                 @Override
@@ -717,26 +717,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     User user = dataSnapshot.getValue(User.class);
 
                     assert user != null;
-                    if (user.getPhotoUrl() != null) {
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.mProfilePhotoImage);
-
-                    } else {
-
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherChatViewHolder.mProfilePhotoImage);
-
-
-                    }
+//                    if (user.getPhotoUrl() != null) {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.mProfilePhotoImage);
+//
+//                    } else {
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherChatViewHolder.mProfilePhotoImage);
+//
+//
+//                    }
                 }
 
                 @Override
@@ -745,29 +745,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
-            if (chat.getImageUrl() != null){
-
-                Glide.with(getApplicationContext())
-                        .load(chat.getImageUrl())
-                        .placeholder(R.color.gray)
-                        .error(R.color.gray)
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(otherChatViewHolder.mImageUrl);
-
-
-
-
-
-            } else {
-
-                Glide.with(getApplicationContext())
-                        .load(R.color.gray)
-                        .placeholder(R.color.gray)
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(otherChatViewHolder.mImageUrl);
-            }
+//            if (chat.getImageUrl() != null){
+//
+//                Glide.with(getApplicationContext())
+//                        .load(chat.getImageUrl())
+//                        .placeholder(R.color.gray)
+//                        .error(R.color.gray)
+//                        .dontAnimate()
+//                        .centerCrop()
+//                        .into(otherChatViewHolder.mImageUrl);
+//
+//
+//
+//
+//
+//            } else {
+//
+//                Glide.with(getApplicationContext())
+//                        .load(R.color.gray)
+//                        .placeholder(R.color.gray)
+//                        .dontAnimate()
+//                        .centerCrop()
+//                        .into(otherChatViewHolder.mImageUrl);
+//            }
 
             DateTime senttime = new DateTime(chat.getTimestamp());
             String time = new PrettyTime().format(senttime.toDate());

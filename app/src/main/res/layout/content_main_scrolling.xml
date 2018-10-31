@@ -9,108 +9,120 @@
     tools:context=".newlookcode.activities.MainScrollingActivity"
     tools:showIn="@layout/activity_main_scrolling">
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="@dimen/text_margin"-->
-        <!--android:text="@string/large_text" />-->
-        <LinearLayout
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_margin="@dimen/text_margin"-->
+    <!--android:text="@string/large_text" />-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <include
+            android:id="@+id/feedback"
+            layout="@layout/newlookfeedback"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content" />
+
+        <include
+            android:id="@+id/fleetinput"
+            layout="@layout/layout_choose_vehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" />
+
+        <include
+            android:id="@+id/routeinput"
+            layout="@layout/layout_route_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="2dp"
+            android:visibility="visible" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:visibility="visible"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="loading.json"
+            app:lottie_loop="true" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_transporters_att"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:padding="10dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/showall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/chat_in_bg"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="SHOW ALL"
+            android:textColor="@color/blue_grey_800"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/noresult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="No Results Found, Try Nearby Route"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/posttoselected2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/chat_in_bg"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="POST TO SELECTED"
+            android:textColor="@color/blue_grey_800"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/posttolb2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/chat_in_bg"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="POST TO LOADBOARD"
+            android:textColor="@color/blue_grey_800"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/searchbyname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/chat_in_bg"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="SEARCH A COMPANY"
+            android:textColor="@color/blue_A200"
+            android:textStyle="bold" />
 
 
-                <include
-                    android:id="@+id/feedback"
-                    layout="@layout/newlookfeedback"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <include
-                    android:id="@+id/fleetinput"
-                    layout="@layout/layout_choose_vehicle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible" />
-
-                <include
-                    android:id="@+id/routeinput"
-                    layout="@layout/layout_route_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginTop="12dp"
-                    android:visibility="visible" />
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/loading"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:visibility="visible"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="loading.json"
-                    app:lottie_loop="true" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_transporters_att"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:padding="10dp"
-                    android:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/showall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/chat_in_bg"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:text="SHOW ALL"
-                    android:textColor="@color/blue_grey_800"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/noresult"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="No Results Found, Try Nearby Route"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/posttoselected2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/chat_in_bg"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:text="POST TO SELECTED"
-                    android:textColor="@color/blue_grey_800"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/posttolb2"
-                    android:textColor="@color/blue_grey_800"
-                    android:textStyle="bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/chat_in_bg"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:text="POST TO LOADBOARD" />
-
-
-        </LinearLayout>
+    </LinearLayout>
 
 
 </android.support.v4.widget.NestedScrollView>

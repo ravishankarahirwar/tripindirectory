@@ -64,17 +64,14 @@ class MyNetworkActivity : AppCompatActivity() {
         back_mynetwork.setOnClickListener {
             finish()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
         setAdapter()
     }
+
+
 
     private fun setAdapter() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("networks").document(preferenceManager.userId).collection("mNetwork").whereEqualTo("mStatus",true)
-
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)

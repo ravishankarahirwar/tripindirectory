@@ -21,7 +21,9 @@ class OperationCitiesAdapter(val cities : List<String>, val context: Context, va
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvCirtName.text = cities[position]
         holder.tvRemove.setOnClickListener {
-            callback.onCityRemoved(cities[position])
+            if(cities.isNotEmpty()){
+                callback.onCityRemoved(cities[position])
+            }
         }
     }
 

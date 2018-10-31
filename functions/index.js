@@ -3,6 +3,11 @@ const admin = require('firebase-admin');
 const request = require('request');
 const urlencode = require('urlencode');
 const rawurlencode = require('locutus/php/url/rawurlencode')
+const algoliasearch = require('algoliasearch');
+
+const ALGOLIA_APP_ID = "RHELQ0ROWI"
+const ALGOLIA_API_KEY = "f16e5b97ebc784e1aebf4679a150941b"
+const ALGOLIA_INDEX_NAME = 'partners'
 
 admin.initializeApp();
 var fsdb = admin.firestore();
@@ -237,11 +242,29 @@ exports.newRatings = functions.firestore
         return transaction.get(partnerRef).then(partnerDoc => {
           // Compute new number of ratings
           var partnerpojo = partnerDoc.data()
-          var newNumRatings = partnerpojo.mNumRatings + 1;
+
+          var oldNumRatings = 0;
+
+          if(partnerpojo.mNumRatings!==null && partnerpojo.mNumRatings!== undefined ){
+             oldNumRatings = partnerpojo.mNumRatings;
+          }
+          console.log('oldNumRating: ', oldNumRatings);
+
+          var newNumRatings = oldNumRatings + 1;
 
           // Compute new average rating
-          var oldRatingTotal = partnerpojo.mAvgRating * partnerpojo.mNumRatings;
+          var oldRating = 0;
+
+          if(partnerpojo.mAvgRating!==null && partnerpojo.mAvgRating!== undefined){
+             oldRating =  partnerpojo.mAvgRating;
+          }
+          console.log('oldRating: ', oldRating);
+
+
+          var oldRatingTotal = oldRating * oldNumRatings;
           var newAvgRating = (oldRatingTotal + ratingPojo.mRitings) / newNumRatings;
+          console.log('new avg rating : ', newAvgRating);
+
 
           fsdb.collection('denormalizers').doc(context.params.uid).update({ mAvgRating: newAvgRating, mNumRatings: newNumRatings });
 
@@ -254,40 +277,81 @@ exports.newRatings = functions.firestore
       });
     });
 
-//    exports.ratingsUpdated = functions.firestore
-//        .document('partners/{uid}/mRatings/{ratingId}')
-//        .onUpdate((change, context) => {
-//          // Get pojo of the newly added rating
-//          var newRatingPojo =  change.after.data();
-//          var oldRatingPojo =  change.before.data();
-//
-//          // Get a reference to the restaurant
-//          var partnerRef = fsdb.collection('partners').doc(context.params.uid);
-//
-//          // Update aggregations in a transaction
-//          return fsdb.runTransaction(transaction => {
-//            return transaction.get(partnerRef).then(partnerDoc => {
-//              // Compute new number of ratings
-//              var partnerpojo = partnerDoc.data()
-//
-//              var numRatings = partnerpojo.mNumRatings;
-//
-//              // Compute new average rating
-//              var oldRatingTotal = partnerpojo.mAvgRating * numRatings;
-//              var oldR = oldRatingPojo.mRitings * numRatings;
-//              var newR = newRatingPojo.mRitings * numRatings;
-//
-//
-//
-//              var newAvgRating = (oldRatingTotal + newRatingPojo.mRitings - oldRatingPojo.mRitings) / numRatings;
-//
-//              // Update restaurant info
-//              return transaction.update(partnerRef, {
-//                mAvgRating: newAvgRating
-//              });
-//            });
-//          });
-//        });
+    exports.newRatingsNotification = functions.firestore
+        .document('partners/{uid}/mRatings/{ratingId}')
+        .onCreate((snapshot, context) => {
+
+         var ratingPojo =  snapshot.data();
+         const payload = {
+                            data: {
+                             type: "100",
+                     		rating: ratingPojo.mRitings + "",
+                             displayname: ratingPojo.mUserName
+                           }
+                         };
+                     	 console.log('Sending rate notification', ratingPojo.mUserName, ratingPojo);
+
+                         return admin.messaging().sendToDevice(ratingPojo.mReciversFCMToken, payload);
+
+
+        });
+
+
+
+         exports.updateRatingsNotification = functions.firestore
+                .document('partners/{uid}/mRatings/{ratingId}')
+               .onUpdate((change, context) => {
+
+                 var ratingPojo =  change.after.data();
+                 const payload = {
+                                    data: {
+                                     type: "101",
+                             		rating: ratingPojo.mRitings + "",
+                                     displayname: ratingPojo.mUserName
+                                   }
+                                 };
+
+                             	 console.log('Sending rate update notification', ratingPojo.mUserName, ratingPojo);
+
+                                 return admin.messaging().sendToDevice(ratingPojo.mReciversFCMToken, payload);
+
+
+                });
+
+
+    exports.ratingsUpdated = functions.firestore
+        .document('partners/{uid}/mRatings/{ratingId}')
+        .onUpdate((change, context) => {
+          // Get pojo of the newly added rating
+          var newRatingPojo =  change.after.data();
+          var oldRatingPojo =  change.before.data();
+
+          // Get a reference to the restaurant
+          var partnerRef = fsdb.collection('partners').doc(context.params.uid);
+
+          // Update aggregations in a transaction
+          return fsdb.runTransaction(transaction => {
+            return transaction.get(partnerRef).then(partnerDoc => {
+              // Compute new number of ratings
+              var partnerpojo = partnerDoc.data()
+
+              var numRatings = partnerpojo.mNumRatings;
+
+              // Compute new average rating
+              var oldRatingTotal = partnerpojo.mAvgRating * numRatings;
+
+
+              var newAvgRating = (oldRatingTotal + newRatingPojo.mRitings - oldRatingPojo.mRitings) / numRatings;
+              console.log('new avg rating : ', newAvgRating);
+              fsdb.collection('denormalizers').doc(context.params.uid).update({ mAvgRating: newAvgRating});
+
+              // Update restaurant info
+              return transaction.update(partnerRef, {
+                mAvgRating: newAvgRating
+              });
+            });
+          });
+        });
 
 
 exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
@@ -707,6 +771,89 @@ function recursiveTillAllCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,uid){
 
 }
 
+exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
+
+   var arr = [];
+   return admin.firestore().collection("denormalizers").get().then((docs) => {
+
+
+           docs.forEach((doc) => {
+
+             let user = doc.data();
+             user.objectID = doc.id;
+             arr.push(user);
+             console.log(doc.id,user);
+
+
+           })
+
+           var client = algoliasearch(ALGOLIA_APP_ID,ALGOLIA_API_KEY);
+           var index = client.initIndex(ALGOLIA_INDEX_NAME);
+
+           return index.saveObjects(arr,function(err,content){
+            if (err) {
+                   console.log(err.stack);
+               }
+            res.status(200).send(content);
+           })
+
+
+   })
+
+});
+
+ exports.UpdateAlgoliaPartners = functions.firestore
+        .document('denormalizers/{uid}')
+        .onUpdate((change, context) => {
+          // Get pojo of the newly modified doc
+          let newdenormalizerPojo =  change.after.data();
+          newdenormalizerPojo.objectID = context.params.uid;
+
+          console.log('UpdateAlgoliaPartners', context.params.uid, newdenormalizerPojo);
+
+          var client = algoliasearch(ALGOLIA_APP_ID,ALGOLIA_API_KEY);
+          var index = client.initIndex(ALGOLIA_INDEX_NAME);
+
+          return index
+               .saveObject(newdenormalizerPojo)
+               .then(() => {
+                return console.log('Firebase object indexed in Algolia', newdenormalizerPojo.objectID);
+              })
+              .catch(error => {
+                console.error('Error when indexing contact into Algolia', error);
+                return process.exit(1);
+              });
+
+
+        });
+
+
+ exports.AddAlgoliaPartners = functions.firestore
+        .document('denormalizers/{uid}')
+        .onCreate((snap, context) => {
+          // Get pojo of the newly modified doc
+          // Get pojo of the newly modified doc
+          let newdenormalizerPojo =  snap.data();
+          newdenormalizerPojo.objectID = context.params.uid;
+
+          console.log('AddAlgoliaPartners', context.params.uid, newdenormalizerPojo);
+
+          var client = algoliasearch(ALGOLIA_APP_ID,ALGOLIA_API_KEY);
+          var index = client.initIndex(ALGOLIA_INDEX_NAME);
+
+          return index
+               .saveObject(newdenormalizerPojo)
+               .then(() => {
+                return console.log('Firebase object indexed in Algolia', newdenormalizerPojo.objectID);
+              })
+              .catch(error => {
+                console.error('Error when indexing contact into Algolia', error);
+                return process.exit(1);
+              });
+
+
+
+        });
 
 
 

@@ -27,6 +27,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import com.google.gson.Gson
 import com.keiferstone.nonet.NoNet
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
@@ -39,6 +40,7 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
+import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormUpdateListner
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerPojo
@@ -46,6 +48,8 @@ import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerUpdat
 import directory.tripin.com.tripindirectory.newprofiles.models.ProfileData
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_company_profile_edit.*
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -53,7 +57,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE = 1
     internal var PLACE_PICKER_REQUEST = 2
-
+    lateinit var mixpanelAPI: MixpanelAPI
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var partnerInfoPojo: PartnerInfoPojo
@@ -78,6 +82,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
 //                .build()
         db = FirebaseFirestore.getInstance()
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        mixpanelAPI = MixpanelAPI.getInstance(context,MixPanelConstants.MIXPANEL_TOKEN)
         preferenceManager = PreferenceManager.getInstance(context)
         partnerInfoPojo = PartnerInfoPojo()
 
@@ -96,9 +101,10 @@ class CompanyProfileEditActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        if(preferenceManager.imageUrl!=null){
+            setUpImage(preferenceManager.imageUrl)
+        }
         fetchData()
-        setUpImage(preferenceManager.imageUrl)
-
 
     }
 
@@ -107,6 +113,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         val i = Intent()
         setResult(Activity.RESULT_CANCELED, i)
         finish()
+        editprofilePageAction("back")
     }
 
 
@@ -115,15 +122,19 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             val i = Intent()
             setResult(Activity.RESULT_CANCELED, i)
             finish()
+            editprofilePageAction("back")
         }
         managecities.setOnClickListener {
             val i = Intent(this, ManageCitiesActivity::class.java)
             startActivity(i)
+            editprofilePageAction("manage_cities")
         }
 
         manageoperators.setOnClickListener {
             val i = Intent(this, ManageOperatorsActivity::class.java)
             startActivity(i)
+            editprofilePageAction("manage_operators")
+
         }
         cityedit.setOnClickListener {
             //remove focus
@@ -131,21 +142,27 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             bioedit.isSelected = false
             startPickupfragment()
             Toast.makeText(context, "Type City Name", Toast.LENGTH_SHORT).show()
+            editprofilePageAction("pick_city")
 
         }
 
         changelogo.setOnClickListener {
             Toast.makeText(context, "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+            editprofilePageAction("change_logo")
+
         }
 
         pinpoint.setOnClickListener {
             startPlacePicker()
+            editprofilePageAction("pick_location")
         }
 
         doneeditprofile.setOnClickListener {
 
+            editprofilePageAction("submit_form")
 
             mainscrolledit.scrollTo(0, 0)
+            mixpanelAPI.timeEvent(MixPanelConstants.EVENT_UPLOAD_COMPANY_FORM)
 
             if (compnametext.text.toString().isEmpty()) {
                 Toast.makeText(context, "Company Name Cant be empty", Toast.LENGTH_SHORT).show()
@@ -186,11 +203,14 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                     reference.set(hashMap3 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
 
                         val operationHubsHash = HashMap<String, Boolean>()
-                        for (map in partnerInfoPojo.getmOperationHubs()) {
-                            if (map.value) {
-                                operationHubsHash.put(map.key, true)
+                        if(partnerInfoPojo.getmOperationHubs()!=null){
+                            for (map in partnerInfoPojo.getmOperationHubs()) {
+                                if (map.value) {
+                                    operationHubsHash.put(map.key, true)
+                                }
                             }
                         }
+
 
                         val denormPojo = DenormalizerPojo(partnerInfoPojo.getmCompanyName(),
                                 partnerInfoPojo.getmDisplayName(),
@@ -216,14 +236,16 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                                 .child(preferenceManager.userId)
                                 .onDisconnect()
                                 .setValue(userPresensePojo2)
-                                .addOnSuccessListener(OnSuccessListener<Void> {
+                                .addOnSuccessListener {
                                     Logger.v("onResume userpresence updated")
                                     db.collection("denormalizers").document(preferenceManager.userId).set(denormPojo).addOnCompleteListener {
                                         preferenceManager.setCompanyName(compnametext.text.toString().toUpperCase().trim())
 
+                                        //form saved
                                         val bundle = Bundle()
                                         firebaseAnalytics.logEvent("z_form_uploaded",bundle)
-
+                                        mixpanelAPI.track(MixPanelConstants.EVENT_UPLOAD_COMPANY_FORM)
+                                        mixpanelAPI.people.set("CompanyName",preferenceManager.comapanyName)
                                         val i = Intent()
                                         setResult(Activity.RESULT_OK, i)
                                         finish()
@@ -232,7 +254,11 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                                         doneeditprofile.visibility = View.VISIBLE
                                         Toast.makeText(context, "Error, Try Again", Toast.LENGTH_SHORT).show()
                                     }
-                                })
+                                }.addOnCanceledListener {
+                                    saving.visibility = View.GONE
+                                    doneeditprofile.visibility = View.VISIBLE
+                                    Toast.makeText(context, "Error, Try Again", Toast.LENGTH_SHORT).show()
+                                }
 
 
                     }.addOnCanceledListener {
@@ -296,7 +322,9 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                         //Upload
                         val hashMap3 = HashMap<String, String>()
                         hashMap3.put("mCity", place.name.toString().toUpperCase())
-                        reference.set(hashMap3 as Map<String, Any>, SetOptions.merge())
+                        reference.set(hashMap3 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
+                            mixpanelAPI.people.set("CompanyCity",place.name.toString().toUpperCase())
+                        }
 
                     } else {
                         Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show()
@@ -484,14 +512,14 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         if (getmPhotoUrl != null) {
             if (!getmPhotoUrl.isEmpty()) {
                 Picasso.with(applicationContext)
-                        .load(preferenceManager.imageUrl + "?width=160&width=160")
+                        .load("$getmPhotoUrl?width=160&width=160")
                         .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                         .transform(CircleTransform())
                         .into(compimagee, object : Callback {
 
                             override fun onSuccess() {
                                 Logger.v("image set: profile thumb")
-                                Logger.v(preferenceManager.imageUrl)
+                                Logger.v(getmPhotoUrl)
                             }
 
                             override fun onError() {
@@ -523,6 +551,14 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                     partnerInfoPojo.fleetVehicle[mFleetName] = true
                     reference.update("fleetVehicle", partnerInfoPojo.fleetVehicle).addOnCompleteListener {
                         Logger.v("++ $mFleetName")
+                        editprofilePageAction("fleet_select")
+                        val props = JSONObject()
+                        try {
+                            props.put("fleet_selected", mFleetName)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                        mixpanelAPI.track(MixPanelConstants.EVENT_AVAILABLE_FLEETS, props)
                     }
                 }else{
                     Logger.v("null $mFleetName")
@@ -534,6 +570,14 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                     partnerInfoPojo.fleetVehicle[mFleetName] = false
                     reference.update("fleetVehicle", partnerInfoPojo.fleetVehicle).addOnCompleteListener {
                         Logger.v("-- $mFleetName")
+                        editprofilePageAction("fleet_deselect")
+                        val props = JSONObject()
+                        try {
+                            props.put("fleet_deselected", mFleetName)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                        mixpanelAPI.track(MixPanelConstants.EVENT_AVAILABLE_FLEETS, props)
                     }
                 }else{
                     Logger.v("null $mFleetName")
@@ -732,4 +776,15 @@ class CompanyProfileEditActivity : AppCompatActivity() {
 //
 //
 //    }
+
+    private fun editprofilePageAction(action: String) {
+        val props = JSONObject()
+        try {
+            props.put("action", action)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+        mixpanelAPI.track(MixPanelConstants.EVENT_EDIT_COMPANY_PAGE_ACTION, props)
+    }
 }

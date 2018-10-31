@@ -34,6 +34,8 @@ public class TripinDirectoryApp extends Application {
         EmojiManager.install(new GoogleEmojiProvider());
     }
 
+
+
     /**
      * Gets the default {@link Tracker} for this {@link Application}.
      * @return tracker
@@ -46,6 +48,7 @@ public class TripinDirectoryApp extends Application {
 
         return sTracker;
     }
+
 
     public static boolean isChatActivityOpen() {
         return sIsChatActivityOpen;

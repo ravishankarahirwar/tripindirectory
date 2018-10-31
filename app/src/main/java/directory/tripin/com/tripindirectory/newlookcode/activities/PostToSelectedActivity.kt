@@ -38,6 +38,7 @@ import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
@@ -290,6 +291,7 @@ class PostToSelectedActivity : AppCompatActivity() {
         //fitler and sort
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
         baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
 
@@ -407,9 +409,10 @@ class PostToSelectedActivity : AppCompatActivity() {
 
                 holder.mCompany.setOnClickListener {
 
-                    val i = Intent(context, PartnerDetailScrollingActivity::class.java)
-                    i.putExtra("uid", getItem(position)!!.id)
-                    i.putExtra("cname", model.getmDetails().getmCompanyName())
+                    val i = Intent(context, CompanyProfileDisplayActivity::class.java)
+                    i.putExtra("uid",getItem(position)!!.id)
+                    i.putExtra("rmn",model.getmDetails().getmRMN())
+                    i.putExtra("fuid",model.getmDetails().getmFUID())
                     startActivity(i)
                 }
 

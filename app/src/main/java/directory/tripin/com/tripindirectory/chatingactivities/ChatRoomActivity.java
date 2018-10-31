@@ -42,9 +42,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.gson.Gson;
 import com.keiferstone.nonet.NoNet;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -70,6 +75,9 @@ import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;
 import directory.tripin.com.tripindirectory.helper.Logger;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants;
+import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity;
+import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo;
 import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class ChatRoomActivity extends AppCompatActivity {
@@ -99,6 +107,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     ImageButton mCancelImsg;
     SimpleDateFormat simpleDateFormat;
     private FirebaseAnalytics firebaseAnalytics;
+    private MixpanelAPI mixpanelAPI;
     NotificationManager notificationManager;
 
 
@@ -148,6 +157,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mixpanelAPI = MixpanelAPI.getInstance(this,MixPanelConstants.MIXPANEL_TOKEN);
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Checking Auth, Finish if not logged in
@@ -341,6 +351,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                                 bundle.putString("msg_type", "InfoMsg");
                                 firebaseAnalytics.logEvent("z_chat_send_action", bundle);
+                                trackSendeventonMixPanel();
                                 iMsg = "";
                                 mSendAction.setClickable(false);
 
@@ -374,6 +385,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                         }
                                         bundle.putString("msg_type", "Normal");
                                         firebaseAnalytics.logEvent("z_chat_send_action", bundle);
+                                        trackSendeventonMixPanel();
 
                                         mSendAction.setClickable(true);
                                         ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
@@ -448,6 +460,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 }
                                 bundle.putString("msg_type", "Normal");
                                 firebaseAnalytics.logEvent("z_chat_send_action", bundle);
+                                trackSendeventonMixPanel();
 
                                 mSendAction.setClickable(true);
                                 ChatHeadPojo chatHeadPojo = new ChatHeadPojo(mChatRoomId,
@@ -493,6 +506,19 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
         getIntentData();
+    }
+
+    private void trackSendeventonMixPanel() {
+
+        JSONObject props = new JSONObject();
+        try {
+            props.put("ormn", mORMN);
+            props.put("ostatus", mSubTitleText);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track(MixPanelConstants.EVENT_CHAT_SEND, props);
     }
 
 
@@ -567,6 +593,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                         Logger.v("DisplayName : " + mOpponentCompName);
                         if (!mOpponentCompName.isEmpty())
                             mTitle.setText(mOpponentCompName);
+
+                        if(mAuth.getUid()==null){
+                            Toast.makeText(getApplicationContext(),"Some Error Occured, Try Login Again!",Toast.LENGTH_LONG).show();
+                            finish();
+                        }
 
 
                         FirebaseFirestore.getInstance().collection("chats").document("chatheads").collection(mAuth.getUid()).document(mOUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -683,6 +714,16 @@ public class ChatRoomActivity extends AppCompatActivity {
                         if (userPresensePojo.getActive()) {
                             mSubTitleText = "Active Now";
                             mSubtitle.setText(mSubTitleText);
+                            if(mChatRoomId!=null){
+                                if(userPresensePojo.getmChatroomId().equals(mChatRoomId)){
+                                    //with you
+                                    mSubtitle.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.cyan_700));
+                                }else {
+                                    //not with you
+                                    mSubtitle.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.blue_grey_600));
+                                }
+                            }
+
                         } else {
                             Date date = new Date(userPresensePojo.getmTimeStamp());
                             mSubTitleText = "Active " + gettimeDiff(date);
@@ -799,8 +840,11 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     private void gotoDetailsActivity() {
 
-        Intent intent = new Intent(ChatRoomActivity.this, PartnerDetailScrollingActivity.class);
+        Intent intent = new Intent(ChatRoomActivity.this, CompanyProfileDisplayActivity.class);
         intent.putExtra("uid", mOUID);
+        intent.putExtra("fuid", mOFUID);
+        intent.putExtra("rmn", mORMN);
+        intent.putExtra("fromchat",true);
         startActivity(intent);
 
         Bundle bundle = new Bundle();
@@ -1216,6 +1260,17 @@ public class ChatRoomActivity extends AppCompatActivity {
         startActivity(callIntent);
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("z_chat_callopponent", bundle);
+
+        RateReminderPojo rateReminderPojo =  new RateReminderPojo(mOpponentCompName,
+                "mull",
+                mORMN,
+                mOUID,
+                mOFUID,
+                "call",
+                new Date().getTime() + "",
+                0.0,true);
+
+        preferenceManager.setPrefRateReminder(new Gson().toJson(rateReminderPojo));
     }
 
     private String sendSMS(String mORMN) {

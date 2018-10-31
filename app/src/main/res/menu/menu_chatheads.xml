@@ -17,7 +17,7 @@
         <!--app:showAsAction="always" />-->
     <item
         android:id="@+id/action_help"
-        android:icon="@drawable/ic_assistant_black_24dp"
+        android:icon="@drawable/ic_woman_with_headset"
         android:orderInCategory="70"
         android:title="Help"
         app:showAsAction="always" />

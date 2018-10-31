@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+//import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
+//import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.greysonparrelli.permiso.Permiso;
@@ -64,63 +64,63 @@ public class ImageViewerActivity extends BaseActivity {
 
         progressBar.setVisibility(View.VISIBLE);
 
-
-        if (url != null && !url.isEmpty()) {
-            Glide.with(ImageViewerActivity.this)
-                    .load(url)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            progressBar.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(mImage);
-        }
+//
+//        if (url != null && !url.isEmpty()) {
+//            Glide.with(ImageViewerActivity.this)
+//                    .load(url)
+//                    .listener(new RequestListener<String, GlideDrawable>() {
+//                        @Override
+//                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                            return false;
+//                        }
+//
+//                        @Override
+//                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                            progressBar.setVisibility(View.GONE);
+//                            return false;
+//                        }
+//                    })
+//                    .into(mImage);
+//        }
 
         fabShare.setImageResource(R.drawable.ic_share);
         String finalUrl = url;
-        fabShare.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override public void onClick(View v) {
-                        Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
-                            @Override
-                            public void onPermissionResult(Permiso.ResultSet resultSet) {
-                                if (resultSet.areAllPermissionsGranted()) {
-                                    try {
-                                        progressBar.setVisibility(View.VISIBLE);
-                                        Glide.with(getApplicationContext())
-                                                .load(finalUrl)
-                                                .asBitmap()
-                                                .into(new SimpleTarget<Bitmap>() {
-                                                    @Override
-                                                    public void onResourceReady(final Bitmap bmp, GlideAnimation glideAnimation) {initializeShareIntent(bmp, progressBar);
-                                                    }
-                                                });
-                                    } catch (Exception e) {
-                                        progressBar.setVisibility(View.GONE);
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    Toast.makeText(ImageViewerActivity.this, getString(R.string.msg_permission_required), Toast.LENGTH_LONG).show();
-                                }
-                            }
-
-                            @Override
-                            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                                Permiso.getInstance().showRationaleInDialog(null,
-                                        getString(R.string.msg_permission_required),
-                                        null, callback);
-                            }
-                        }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    }
-                }
-        );
+//        fabShare.setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override public void onClick(View v) {
+//                        Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+//                            @Override
+//                            public void onPermissionResult(Permiso.ResultSet resultSet) {
+//                                if (resultSet.areAllPermissionsGranted()) {
+//                                    try {
+//                                        progressBar.setVisibility(View.VISIBLE);
+//                                        Glide.with(getApplicationContext())
+//                                                .load(finalUrl)
+//                                                .asBitmap()
+//                                                .into(new SimpleTarget<Bitmap>() {
+//                                                    @Override
+//                                                    public void onResourceReady(final Bitmap bmp, GlideAnimation glideAnimation) {initializeShareIntent(bmp, progressBar);
+//                                                    }
+//                                                });
+//                                    } catch (Exception e) {
+//                                        progressBar.setVisibility(View.GONE);
+//                                        e.printStackTrace();
+//                                    }
+//                                } else {
+//                                    Toast.makeText(ImageViewerActivity.this, getString(R.string.msg_permission_required), Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+//                                Permiso.getInstance().showRationaleInDialog(null,
+//                                        getString(R.string.msg_permission_required),
+//                                        null, callback);
+//                            }
+//                        }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//                    }
+//                }
+//        );
 
 
         /*mButtonClose.setOnClickListener(new Button.OnClickListener() {

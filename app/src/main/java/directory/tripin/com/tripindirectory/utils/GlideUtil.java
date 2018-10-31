@@ -27,12 +27,12 @@ public class GlideUtil {
     public static void loadImage(String url, ImageView imageView) {
         Context context = imageView.getContext();
         //ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(context, R.color.gray));
-        Glide.with(getApplicationContext())
-                .load(url)
-                .placeholder(R.drawable.profile_default_photo)
-                .crossFade()
-                .centerCrop()
-                .into(imageView);
+//        Glide.with(getApplicationContext())
+//                .load(url)
+//                .placeholder(R.drawable.profile_default_photo)
+//                .crossFade()
+//                .centerCrop()
+//                .into(imageView);
     }
 
     public static void loadImageBlur(String url, ImageView imageView) {
@@ -49,41 +49,41 @@ public class GlideUtil {
 
     public static void loadProfileIcon(String url, ImageView imageView) {
         Context context = imageView.getContext();
-        Glide.with(getApplicationContext())
-                .load(url)
-                .placeholder(R.drawable.profile_default_photo)
-                .dontAnimate()
-                .fitCenter()
-                .into(imageView);
+//        Glide.with(getApplicationContext())
+//                .load(url)
+//                .placeholder(R.drawable.profile_default_photo)
+//                .dontAnimate()
+//                .fitCenter()
+//                .into(imageView);
     }
         public static void checkOnline(String url, ImageView imageView) {
             Context context = imageView.getContext();
-            Glide.with(getApplicationContext())
-                    .load(R.drawable.ic_online_15_0_alizarin)
-                    .placeholder(R.drawable.ic_online_15_0_alizarin)
-                    .crossFade()
-                    .centerCrop()
-                    .into(imageView);
+//            Glide.with(getApplicationContext())
+//                    .load(R.drawable.ic_online_15_0_alizarin)
+//                    .placeholder(R.drawable.ic_online_15_0_alizarin)
+//                    .crossFade()
+//                    .centerCrop()
+//                    .into(imageView);
         }
 
     public static void checkOffline(String url, ImageView imageView) {
         Context context = imageView.getContext();
-        Glide.with(getApplicationContext())
-                .load(R.drawable.ic_offline_15_0_alizarin)
-                .placeholder(R.drawable.ic_offline_15_0_alizarin)
-                .crossFade()
-                .centerCrop()
-                .into(imageView);
+//        Glide.with(getApplicationContext())
+//                .load(R.drawable.ic_offline_15_0_alizarin)
+//                .placeholder(R.drawable.ic_offline_15_0_alizarin)
+//                .crossFade()
+//                .centerCrop()
+//                .into(imageView);
     }
 
     public static void checkSoon(String url, ImageView imageView) {
         Context context = imageView.getContext();
-        Glide.with(getApplicationContext())
-                .load(R.drawable.last_min)
-                .placeholder(R.drawable.last_min)
-                .crossFade()
-                .centerCrop()
-                .into(imageView);
+//        Glide.with(getApplicationContext())
+//                .load(R.drawable.last_min)
+//                .placeholder(R.drawable.last_min)
+//                .crossFade()
+//                .centerCrop()
+//                .into(imageView);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

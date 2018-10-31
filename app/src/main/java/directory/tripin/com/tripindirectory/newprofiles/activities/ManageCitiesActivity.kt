@@ -17,18 +17,22 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
 import directory.tripin.com.tripindirectory.newlookcode.activities.NewSplashActivity
+import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.CityInteractionCallbacks
 import directory.tripin.com.tripindirectory.newprofiles.OperationCitiesAdapter
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_manage_cities.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import kotlinx.android.synthetic.main.layout_route_input.*
+import org.json.JSONException
+import org.json.JSONObject
 import kotlin.collections.ArrayList
 
 class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubFetchedCallback {
@@ -40,6 +44,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
     lateinit var mUserDocRef: DocumentReference
     lateinit var cities: MutableList<String>
     lateinit var hubs: HashMap<String,Boolean>
+    lateinit var mixpanelAPI: MixpanelAPI
 
 
 
@@ -47,6 +52,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_cities)
         context = this
+        mixpanelAPI = MixpanelAPI.getInstance(context,MixPanelConstants.MIXPANEL_TOKEN)
 
         cities = ArrayList<String>()
         hubs = HashMap()
@@ -112,17 +118,24 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        manageCitiesAction("back")
+    }
+
     private fun setListners() {
         fabaddcity.setOnClickListener {
             startPickupfragment()
         }
         back_managecity.setOnClickListener {
             finish()
+            manageCitiesAction("back")
+
         }
         ocities_done.setOnClickListener {
 
             savingcities.visibility = View.VISIBLE
-
+            manageCitiesAction("done")
             val hubsss = ArrayList<String>()
             for(hub in hubs){
                 if(hub.value){
@@ -147,6 +160,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
         mUserDocRef.update("mOperationCities", cities).addOnCompleteListener {
             Toast.makeText(context, "$city removing", Toast.LENGTH_SHORT).show()
             updateSourceHubss(city, 2)
+            manageCitiesAction("city_removed")
         }
     }
 
@@ -185,7 +199,7 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
                         mUserDocRef.update("mOperationCities", cities).addOnCompleteListener {
                             Toast.makeText(context, place.name.toString() + " added", Toast.LENGTH_SHORT).show()
                             updateSourceHubs(place.latLng, 1)
-
+                            manageCitiesAction("city_added")
                         }
 
                     } else {
@@ -225,5 +239,16 @@ class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubF
     private fun updateSourceHubss(city: String, operation: Int) {
         val routeCityPojo = RouteCityPojo(context, 1, operation, this)
         routeCityPojo.setmCityName(city)
+    }
+
+    private fun manageCitiesAction(action: String) {
+        val props = JSONObject()
+        try {
+            props.put("action", action)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+        mixpanelAPI.track(MixPanelConstants.EVENT_MANAGE_CITIES_ACTION, props)
     }
 }

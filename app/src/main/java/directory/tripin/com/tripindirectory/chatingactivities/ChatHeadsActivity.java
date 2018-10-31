@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatHeadItemViewHolder;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatHeadPojo;
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
 import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
@@ -52,6 +53,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
     private LottieAnimationView lottieAnimationView;
     private FirebaseAnalytics firebaseAnalytics;
     private Menu mMenu;
+    private RecyclerViewAnimator recyclerViewAnimator;
 
 
 
@@ -67,6 +69,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         textUtils = new TextUtils();
         preferenceManager = PreferenceManager.getInstance(this);
+        recyclerViewAnimator = new RecyclerViewAnimator(mChatHeadsList);
 
         if(mAuth.getCurrentUser()==null
                 || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
@@ -107,7 +110,6 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 .orderBy("mTimeStamp", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions<ChatHeadPojo> options = new FirestoreRecyclerOptions.Builder<ChatHeadPojo>()
                 .setQuery(query, ChatHeadPojo.class)
-                .setLifecycleOwner(this)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder>(options) {
@@ -116,6 +118,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final ChatHeadItemViewHolder holder, final int position, final ChatHeadPojo model) {
 
+                recyclerViewAnimator.onBindViewHolder(holder.itemView,position);
                 if(model.getmOpponentCompanyName()!=null){
                     if (!model.getmOpponentCompanyName().isEmpty()) {
                         holder.title.setText(model.getmOpponentCompanyName());
@@ -164,9 +167,10 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                     public void onError() {
                                     }
                                 });
+                    }else {
+                        holder.thumbnail.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_launcher_round));
                     }
                 }else {
-                    holder.thumbnail.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_launcher_round));
                 }
 
                 FirebaseFirestore.getInstance().collection("chats")
@@ -193,6 +197,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
             public ChatHeadItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_chat_head, parent, false);
+                recyclerViewAnimator.onCreateViewHolder(view);
                 return new ChatHeadItemViewHolder(view);
             }
 
@@ -210,12 +215,21 @@ public class ChatHeadsActivity extends AppCompatActivity {
         };
 
         mChatHeadsList.setAdapter(adapter);
+        adapter.startListening();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(adapter!=null){
+            adapter.stopListening();
+        }
+        super.onDestroy();
     }
 
     @Override

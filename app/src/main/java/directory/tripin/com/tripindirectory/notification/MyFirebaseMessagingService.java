@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
+import br.com.goncalves.pugnotification.notification.PugNotification;
 import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity;
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPojo;
@@ -57,6 +59,7 @@ import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.forum.PostDetailActivity;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
+import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity;
 import directory.tripin.com.tripindirectory.utils.Constants;
 
 
@@ -69,6 +72,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private PreferenceManager preferenceManager;
     DocumentReference mUserDocRef;
 
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+    }
 
     @Override
     public void onNewToken(String s) {
@@ -150,7 +159,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     sendVerificationRejectedNotification();
 
                 } else if (type.equals("5")) {
-                    String body = remoteMessage.getNotification().getBody();
+                    String body = Objects.requireNonNull(remoteMessage.getNotification()).getBody();
                     String title = remoteMessage.getNotification().getTitle();
                     String postId = remoteMessage.getData().get("postId");
 
@@ -164,6 +173,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     if (chatroomId != null && docId != null) {
                         sendNewChatMsgNotification(chatroomId, docId);
 
+                    } else {
+                        Log.d(TAG, "ids null");
+                    }
+                }else if (type.equals("100")) {
+                    //OneToOneChat New Message Notification
+                    String rating = remoteMessage.getData().get("rating");
+                    String dispmayname = remoteMessage.getData().get("displayname");
+                    Log.d(TAG, "new rating");
+
+                    if (rating != null && dispmayname != null) {
+                        sendNewRatingNotification(rating, dispmayname);
+
+                    } else {
+                        Log.d(TAG, "ids null");
+                    }
+                }else if (type.equals("101")) {
+                    //OneToOneChat New Message Notification
+                    String rating = remoteMessage.getData().get("rating");
+                    String dispmayname = remoteMessage.getData().get("displayname");
+                    Log.d(TAG, "edited rating");
+
+                    if (rating != null && dispmayname != null) {
+                        sendEditRatingNotification(rating, dispmayname);
                     } else {
                         Log.d(TAG, "ids null");
                     }
@@ -635,40 +667,53 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                PendingIntent.FLAG_ONE_SHOT);
 //    }
 
+//    private void sendLoadboardNotification(String messageBody, String messageTitle, String postId) {
+//        Intent intent;
+//        //if user signed in
+//        preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+//        intent = new Intent(this, directory.tripin.com.tripindirectory.newlookcode.activities.LoadBoardActivity.class);
+//
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+//
+//        String channelId = "ILN notification ";
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, channelId)
+//                        .setSmallIcon(R.drawable.ic_notification)
+//                        .setContentTitle(messageTitle)
+//                        .setContentText(messageBody)
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setContentIntent(pendingIntent);
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        notificationManager.notify(5 /* ID of notification */, notificationBuilder.build());
+//    }
+
     private void sendLoadboardNotification(String messageBody, String messageTitle, String postId) {
-        Intent intent;
-        //if user signed in
-        preferenceManager = PreferenceManager.getInstance(getApplicationContext());
-        if (preferenceManager.isOnNewLook()) {
-            intent = new Intent(this, directory.tripin.com.tripindirectory.newlookcode.activities.LoadBoardActivity.class);
-        } else {
-            if (postId != null) {
-                intent = new Intent(this, PostDetailActivity.class);
-                intent.putExtra(PostDetailActivity.EXTRA_POST_KEY, postId);
-            } else {
-                intent = new Intent(this, directory.tripin.com.tripindirectory.forum.MainActivity.class);
-            }
-        }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.d(TAG, "new loadboard doc");
 
-        String channelId = "ILN notification ";
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentTitle(messageTitle)
-                        .setContentText(messageBody)
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        PugNotification.with(getApplicationContext())
+                .load()
+                .identifier(5)
+                .title(messageTitle)
+                .message(messageBody)
+                .smallIcon(R.drawable.ic_notification)
+                .largeIcon(R.mipmap.ic_launcher_round)
+                .flags(Notification.DEFAULT_ALL)
+                .click(directory.tripin.com.tripindirectory.newlookcode.activities.LoadBoardActivity.class)
+                .color(R.color.primaryColor)
+                .lights(Color.RED, 1, 1)
+                .sound(defaultRingtoneUri)
+                .autoCancel(true)
+                .simple()
+                .build();
     }
 
     private void sendVerificationRejectedNotification() {
@@ -952,5 +997,65 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
+    }
+
+    private void sendNewRatingNotification(final String rating, final String displayname) {
+
+        Intent intent = new Intent(getApplicationContext(), CompanyProfileDisplayActivity.class);
+        intent.putExtra("uid",preferenceManager.getUserId());
+        intent.putExtra("rmn",preferenceManager.getRMN());
+        intent.putExtra("fuid",preferenceManager.getFuid());
+        String title = "New Rating: "+rating;
+        String subtitle = "by "+displayname;
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        String channelId = "ILN notification";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(title)
+                        .setContentText(subtitle)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(100 /* ID of notification */, notificationBuilder.build());
+
+    }
+
+    private void sendEditRatingNotification(final String rating, final String displayname) {
+
+        Intent intent = new Intent(getApplicationContext(), CompanyProfileDisplayActivity.class);
+        intent.putExtra("uid",preferenceManager.getUserId());
+        intent.putExtra("rmn",preferenceManager.getRMN());
+        intent.putExtra("fuid",preferenceManager.getFuid());
+        String title = "Rating Edited: "+rating;
+        String subtitle = "by "+displayname;
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        String channelId = "ILN notification";
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext(), channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle(title)
+                        .setContentText(subtitle)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(101 /* ID of notification */, notificationBuilder.build());
+
     }
 }

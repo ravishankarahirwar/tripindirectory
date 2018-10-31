@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.flipboard.bottomsheet.commons.ImagePickerSheetView;
@@ -631,34 +630,34 @@ public class ChatFragment extends Fragment implements ChatContract.View {
                     String photo = user.getPhotoUrl();
 
                     if (!photo.isEmpty()){
-
-                        Glide.with(getApplicationContext())
-                                .load(user.photoUrl)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherProfile);
+//
+//                        Glide.with(getApplicationContext())
+//                                .load(user.photoUrl)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherProfile);
 
                     } else {
 
 
-                        Glide.with(getApplicationContext())
-                                .load(R.drawable.profile_default_photo)
-                                .placeholder(R.drawable.profile_default_photo)
-                                .dontAnimate()
-                                .fitCenter()
-                                .into(otherProfile);
+//                        Glide.with(getApplicationContext())
+//                                .load(R.drawable.profile_default_photo)
+//                                .placeholder(R.drawable.profile_default_photo)
+//                                .dontAnimate()
+//                                .fitCenter()
+//                                .into(otherProfile);
 
                     }
 
                 } else {
 
-                    Glide.with(getApplicationContext())
-                            .load(R.drawable.profile_default_photo)
-                            .placeholder(R.drawable.profile_default_photo)
-                            .dontAnimate()
-                            .fitCenter()
-                            .into(otherProfile);
+//                    Glide.with(getApplicationContext())
+//                            .load(R.drawable.profile_default_photo)
+//                            .placeholder(R.drawable.profile_default_photo)
+//                            .dontAnimate()
+//                            .fitCenter()
+//                            .into(otherProfile);
 
                 }
                 // Error here
@@ -1188,38 +1187,38 @@ public class ChatFragment extends Fragment implements ChatContract.View {
 
     public void processUpload(){
 
-        ImagePickerSheetView imagePickerSheetView = new ImagePickerSheetView.Builder(getApplicationContext())
-                .setMaxItems(30)
-                .setShowCameraOption(true)
-                .setShowPickerOption(true)
-                .setTitle(getString(R.string.dialog_title_select_image))
-                .setOnTileSelectedListener(selectedTile -> {
-                    if (selectedTile.isCameraTile()) {
-                        initializeCameraIntent();
-                    } else if (selectedTile.isPickerTile()) {
-                        initializeGalleryPickerIntent();
-                    } else if (selectedTile.isImageTile()) {
-                        if (selectedTile.getImageUri() != null) {
+//        ImagePickerSheetView imagePickerSheetView = new ImagePickerSheetView.Builder(getApplicationContext())
+//                .setMaxItems(30)
+//                .setShowCameraOption(true)
+//                .setShowPickerOption(true)
+//                .setTitle(getString(R.string.dialog_title_select_image))
+//                .setOnTileSelectedListener(selectedTile -> {
+//                    if (selectedTile.isCameraTile()) {
+//                        initializeCameraIntent();
+//                    } else if (selectedTile.isPickerTile()) {
+//                        initializeGalleryPickerIntent();
+//                    } else if (selectedTile.isImageTile()) {
+//                        if (selectedTile.getImageUri() != null) {
+//
+//                            startCropActivity(selectedTile.getImageUri());
+//                        }
+//                    }
+//
+//                    bottomSheetLayout.dismissSheet();
+//                })
+//                .setImageProvider((imageView, imageUri, size) -> Glide.with(getApplicationContext())
+//                        .load(imageUri)
+//                        .asBitmap()
+//                        .fitCenter()
+//                        .into(new SimpleTarget<Bitmap>(480, 480) {
+//                            @Override
+//                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                                imageView.setImageBitmap(resource);
+//                            }
+//                        }))
+//                .create();
 
-                            startCropActivity(selectedTile.getImageUri());
-                        }
-                    }
-
-                    bottomSheetLayout.dismissSheet();
-                })
-                .setImageProvider((imageView, imageUri, size) -> Glide.with(getApplicationContext())
-                        .load(imageUri)
-                        .asBitmap()
-                        .fitCenter()
-                        .into(new SimpleTarget<Bitmap>(480, 480) {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                imageView.setImageBitmap(resource);
-                            }
-                        }))
-                .create();
-
-        bottomSheetLayout.showWithSheetView(imagePickerSheetView);
+//        bottomSheetLayout.showWithSheetView(imagePickerSheetView);
     }
 
 

@@ -13,20 +13,30 @@ public class CompanyRatingsPojo {
     private Double mRitings;
     private String mReview;
     private String mUid;
+    private String mReciversFCMToken;
 
     @ServerTimestamp
     private Date serverTimestamp;
 
-    public CompanyRatingsPojo(String mUserName, String mImageUrl, String mRMN, String mUid, Double mRitings, String mReview) {
+    public CompanyRatingsPojo(String mUserName, String mImageUrl, String mRMN, String mUid, Double mRitings, String mReview, String mReciversFCMToken) {
         this.mUserName = mUserName;
         this.mImageUrl = mImageUrl;
         this.mRMN = mRMN;
         this.mRitings = mRitings;
         this.mReview = mReview;
         this.mUid = mUid;
+        this.mReciversFCMToken = mReciversFCMToken;
     }
 
     public CompanyRatingsPojo() {
+    }
+
+    public String getmReciversFCMToken() {
+        return mReciversFCMToken;
+    }
+
+    public void setmReciversFCMToken(String mReciversFCMToken) {
+        this.mReciversFCMToken = mReciversFCMToken;
     }
 
     public String getmUid() {

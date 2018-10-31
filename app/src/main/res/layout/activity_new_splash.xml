@@ -15,17 +15,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.23000002"
+        app:layout_constraintVertical_bias="0.41000003"
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
         android:id="@+id/textView33"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:alpha="0.2"
         android:text="Indian Logistics Network"
         android:textSize="18sp"
@@ -34,5 +34,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/splashimg"
-        app:layout_constraintVertical_bias="0.85" />
+        app:layout_constraintVertical_bias="0.63" />
+
+    <TextView
+        android:id="@+id/splashinfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/amber_50"
+        android:elevation="1dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Loading..."
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

@@ -11,15 +11,20 @@ import android.support.annotation.NonNull
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
+import com.andrognito.flashbar.Flashbar
+import com.andrognito.flashbar.anim.FlashAnim
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.gson.Gson
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -35,12 +40,15 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
+import java.math.RoundingMode
+import java.util.*
 
 class AllTransportersActivity : AppCompatActivity() {
 
@@ -51,6 +59,7 @@ class AllTransportersActivity : AppCompatActivity() {
     lateinit var preferenceManager :PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var  recyclerViewAnimator: RecyclerViewAnimator
+    var isRatePopuped = false
 
 
 
@@ -93,6 +102,11 @@ class AllTransportersActivity : AppCompatActivity() {
         internetCheck()
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showCompanyRatingSnackBar(preferenceManager.prefRateReminder)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -158,6 +172,7 @@ class AllTransportersActivity : AppCompatActivity() {
         //fitler and sort
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
         baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
 
@@ -266,7 +281,13 @@ class AllTransportersActivity : AppCompatActivity() {
                     }
 
                     if(model.getmDetails().getmAvgRating()!=null){
-                        holder.mRatings.text = model.getmDetails().getmAvgRating().toString()
+                        if(model.getmDetails().getmAvgRating().toInt()==0){
+                            holder.mRatings.text = "New"
+                        }else{
+                            holder.mRatings.text = model.getmDetails().getmAvgRating().toBigDecimal().setScale(1, RoundingMode.UP).toString()
+                        }
+                    }else{
+                        holder.mRatings.text = "New"
                     }
 
                     if(model.getmDetails().getmNumRatings()!=null){
@@ -280,6 +301,7 @@ class AllTransportersActivity : AppCompatActivity() {
                             holder.mIsPromoted.visibility = View.GONE
                         }
                     }
+
 
 
 
@@ -315,6 +337,17 @@ class AllTransportersActivity : AppCompatActivity() {
                         bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
 
                         firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
+
+                        val rateReminderPojo =  RateReminderPojo(model.getmDetails().getmCompanyName(),
+                                model.getmDetails().getmDisplayName(),
+                                model.getmDetails().getmRMN(),
+                                model.getmDetails().getmUID(),
+                                model.getmDetails().getmFUID(),
+                                "call",
+                                Date().time.toString(),
+                                model.getmDetails().getmAvgRating(),true)
+
+                        preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojo)
                     }
 
                     holder.mChatParent.setOnClickListener {
@@ -349,6 +382,8 @@ class AllTransportersActivity : AppCompatActivity() {
                         }
                         bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
                         firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
+
+
 
                     }
                 }
@@ -408,6 +443,131 @@ class AllTransportersActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
+    }
+
+    private fun showCompanyRatingSnackBar(prefRateReminder: String) {
+
+        if(!prefRateReminder.isEmpty()){
+            val rateReminderPojo = Gson().fromJson(prefRateReminder,RateReminderPojo::class.java)
+
+            if(rateReminderPojo.getmIsActive()){
+                if(!isRatePopuped){
+
+                    var title = ""
+                    if(rateReminderPojo.getmRatings()!=null){
+                        if(rateReminderPojo.getmCompanyName()!=null){
+                            title = rateReminderPojo.getmCompanyName() + " || "+ rateReminderPojo.getmRatings().toBigDecimal().setScale(1,RoundingMode.UP).toString()
+                        }else{
+                            title = rateReminderPojo.getmDisplayName() + " || "+ rateReminderPojo.getmRatings().toBigDecimal().setScale(1,RoundingMode.UP).toString()
+                        }
+
+                    }else{
+                        if(rateReminderPojo.getmCompanyName()!=null){
+                            title = rateReminderPojo.getmCompanyName() + " || New"
+                        }else{
+                            title = rateReminderPojo.getmDisplayName() + " || New"
+                        }
+                    }
+
+                    var subTitle = ""
+                    if(rateReminderPojo.getmAction() == "call"){
+                        subTitle = "You called this company, How was your experience? Visit & Rate now or swipe to dismiss."
+                    }else{
+                        subTitle = "You chatted with this company, How was your experience? Visit & Rate now or swipe to dismiss."
+                    }
+
+                    Flashbar.Builder(this)
+                            .gravity(Flashbar.Gravity.BOTTOM)
+                            .title(title)
+                            .message(subTitle)
+                            .positiveActionText("Visit and Rate Now!")
+                            .backgroundDrawable(R.drawable.thrid_bg)
+                            .positiveActionTextColorRes(R.color.amber_50)
+                            .negativeActionTextColorRes(R.color.colorAccent)
+                            .showIcon(0.8f, ImageView.ScaleType.CENTER_CROP)
+                            .icon(R.drawable.abc_ratingbar_material)
+                            .iconColorFilterRes(R.color.white)
+                            .enterAnimation(FlashAnim.with(this)
+                                    .animateBar()
+                                    .duration(750)
+                                    .alpha()
+                                    .overshoot())
+                            .exitAnimation(FlashAnim.with(this)
+                                    .animateBar()
+                                    .duration(400)
+                                    .accelerateDecelerate())
+                            .iconAnimation(FlashAnim.with(this)
+                                    .animateIcon()
+                                    .pulse()
+                                    .alpha()
+                                    .duration(750)
+                                    .accelerate())
+                            .enableSwipeToDismiss()
+                            .barDismissListener(object : Flashbar.OnBarDismissListener {
+                                override fun onDismissing(bar: Flashbar, isSwiped: Boolean) {
+                                    Log.d("Directory", "Flashbar is dismissing with $isSwiped")
+                                }
+
+                                override fun onDismissProgress(bar: Flashbar, progress: Float) {
+                                    Log.d("Directory", "Flashbar is dismissing with progress $progress")
+                                }
+
+                                override fun onDismissed(bar: Flashbar, event: Flashbar.DismissEvent) {
+                                    Log.d("Directory", "Flashbar is dismissed with event $event")
+                                    //not interested
+                                    val rateReminderPojoNew =  RateReminderPojo(rateReminderPojo.getmCompanyName(),
+                                            rateReminderPojo.getmDisplayName(),
+                                            rateReminderPojo.getmRMN(),
+                                            rateReminderPojo.getmUID(),
+                                            rateReminderPojo.getmFUID(),
+                                            "call",
+                                            rateReminderPojo.getmTimeStamp(),
+                                            rateReminderPojo.getmRatings(),false)
+
+                                    preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojoNew)
+                                    val bundle = Bundle()
+                                    bundle.putInt("isRated",0)
+                                    firebaseAnalytics.logEvent("z_rate_bottom_snackbar", bundle)
+                                    isRatePopuped = false
+                                }
+                            })
+                            .positiveActionTapListener(object : Flashbar.OnActionTapListener {
+                                override fun onActionTapped(bar: Flashbar) {
+                                    bar.dismiss()
+
+                                    val bundle = Bundle()
+                                    bundle.putInt("isRated",1)
+                                    firebaseAnalytics.logEvent("z_rate_bottom_snackbar", bundle)
+
+                                    val rateReminderPojoNew =  RateReminderPojo(rateReminderPojo.getmCompanyName(),
+                                            rateReminderPojo.getmDisplayName(),
+                                            rateReminderPojo.getmRMN(),
+                                            rateReminderPojo.getmUID(),
+                                            rateReminderPojo.getmFUID(),
+                                            "call",
+                                            rateReminderPojo.getmTimeStamp(),
+                                            rateReminderPojo.getmRatings(),false)
+
+                                    preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojoNew)
+
+                                    val i = Intent(context, CompanyProfileDisplayActivity::class.java)
+                                    i.putExtra("uid",rateReminderPojo.getmUID())
+                                    i.putExtra("rmn",rateReminderPojo.getmRMN())
+                                    i.putExtra("fuid",rateReminderPojo.getmFUID())
+                                    i.putExtra("action","direct_rate")
+                                    startActivity(i)
+                                    isRatePopuped = false
+
+                                }
+                            })
+                            .build().show()
+                    isRatePopuped = true
+                }
+
+            }
+
+        }
+
     }
 
     private fun shownewlookfeedbackdialog() {

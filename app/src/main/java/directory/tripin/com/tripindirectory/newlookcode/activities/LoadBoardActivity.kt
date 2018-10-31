@@ -40,6 +40,8 @@ import directory.tripin.com.tripindirectory.forum.MainActivity
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import kotlinx.android.synthetic.main.activity_load_board2.*
 import kotlinx.android.synthetic.main.item_loadpost_input.*
+import libs.mjn.prettydialog.PrettyDialog
+import libs.mjn.prettydialog.PrettyDialogCallback
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -140,7 +142,6 @@ class LoadBoardActivity : AppCompatActivity() {
             finish()
         }
         post.setOnClickListener {
-            post.text = "..."
             if(postpojo.mSource==null||postpojo.mDestination==null){
                 Toast.makeText(context,"Please Enter Route",Toast.LENGTH_LONG).show()
                 post.text = "POST NOW"
@@ -183,13 +184,15 @@ class LoadBoardActivity : AppCompatActivity() {
                 postpojo.setmAuthor(preferenceManager.displayName)
                 postpojo.mFindOrPost = POST_TYPE
 
-                Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show()
 
                 // [START single_value_read]
                 val userId = getUid()
 
-                if(FirebaseAuth.getInstance().currentUser!=null)
-                writeNewPost(userId, postpojo)
+                if(FirebaseAuth.getInstance().currentUser!=null){
+                    showaggrementdialog()
+                }else{
+                    Toast.makeText(context,"Error, Not Signed in",Toast.LENGTH_SHORT).show()
+                }
 
 
 
@@ -205,6 +208,9 @@ class LoadBoardActivity : AppCompatActivity() {
     }
 
     private fun writeNewPost(userId: String, postpojo: Post) {
+        post.text = "..."
+        Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show()
+
         val key = mDatabase!!.child("posts").push().getKey()
         val postValues = postpojo.toMap()
 
@@ -481,5 +487,41 @@ class LoadBoardActivity : AppCompatActivity() {
                 .poll()
                 .snackbar()
     }
+
+    private fun showaggrementdialog() {
+
+        val prettyDialog: PrettyDialog = PrettyDialog(this)
+
+        prettyDialog
+                .setTitle("Loadboard Agreement")
+                .setMessage("By posting your requirement on Loadboard we cant give you the guarantee of getting any useful responses. It completely depends on how many and who are interested in this deal at this time. We just make sure This post is notified and visible to all transporters.")
+                .addButton(
+                        "I agree, Post now!",
+                        R.color.pdlg_color_white,
+                        R.color.green_400
+                ) {
+                    prettyDialog.dismiss()
+                    writeNewPost(getUid(), postpojo)
+
+                }.addButton(
+                        "No, Find on directory",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100
+                ) {
+                    prettyDialog.dismiss()
+                    finish()
+                }.addButton(
+                        "Cancel",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100
+                ) {
+                    prettyDialog.dismiss()
+
+                }
+        prettyDialog.show()
+
+
+    }
+
 
 }

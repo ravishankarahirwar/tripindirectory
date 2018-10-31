@@ -21,6 +21,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.keiferstone.nonet.NoNet;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +32,8 @@ import java.util.Collections;
 import directory.tripin.com.tripindirectory.newlookcode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants;
+import directory.tripin.com.tripindirectory.utils.Constants;
 
 public class FacebookRequiredActivity extends AppCompatActivity {
 
@@ -36,6 +42,7 @@ public class FacebookRequiredActivity extends AppCompatActivity {
     CardView loginwithfacebbok;
     CardView loginwithphone;
     private FirebaseAnalytics firebaseAnalytics;
+    private MixpanelAPI mixpanelAPI;
 
 
     private TextView mNameWelcome;
@@ -52,7 +59,10 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_required2);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mixpanelAPI = MixpanelAPI.getInstance(this,MixPanelConstants.MIXPANEL_TOKEN);
         init();
+
+
 
         if(getIntent().getExtras()!=null){
             if(getIntent().getExtras().get("from")!=null){
@@ -153,6 +163,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
 
         firebaseAnalytics.logEvent("z_back_from_authland",bundle);
 
+        authlandingAction("back");
+
     }
 
     @Override
@@ -164,7 +176,11 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 if(user!=null){
                     Log.v("onActivityResult: ",user.getDisplayName()+" "+user.getPhoneNumber()+" "+user.getProviderId());
 
-                    preferenceManager.setDisplayName(user.getDisplayName());
+                    if(user.getDisplayName().toLowerCase().equals("tanya kapoor")){
+                        preferenceManager.setDisplayName("ILN Assistant");
+                    }else {
+                        preferenceManager.setDisplayName(user.getDisplayName());
+                    }
                     Toast.makeText(getApplicationContext(),"Hello "+user.getDisplayName()+"!", Toast.LENGTH_LONG).show();
 
                     preferenceManager.setImageUrl(user.getPhotoUrl().toString());
@@ -203,6 +219,25 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     //Toast.makeText(getApplicationContext(),"Connected with Facebook",Toast.LENGTH_LONG).show();
+
+                                    //mixpanel identify
+                                    mixpanelAPI.identify(preferenceManager.getRMN());
+                                    mixpanelAPI.getPeople().identify(preferenceManager.getRMN());
+                                    mixpanelAPI.getPeople().set("UserName",preferenceManager.getDisplayName());
+                                    mixpanelAPI.getPeople().set("RMN",preferenceManager.getRMN());
+
+                                    //mixpanel super properties
+//                                    JSONObject props = new JSONObject();
+//                                    try {
+//                                        props.put("UserName", preferenceManager.getDisplayName());
+//                                        props.put("RMN", preferenceManager.getRMN());
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    mixpanelAPI.registerSuperProperties(props);
+
+                                    //mixpanel login event
+                                    mixpanelAPI.track(MixPanelConstants.EVENT_LOGGED_IN);
                                     setResult(RESULT_OK);
                                     finish();
                                 }
@@ -270,6 +305,8 @@ public class FacebookRequiredActivity extends AppCompatActivity {
 
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("z_facebook_clicked",bundle);
+        authlandingAction("facebook_clicked");
+
 
 
     }
@@ -282,5 +319,15 @@ public class FacebookRequiredActivity extends AppCompatActivity {
         NoNet.monitor(this)
                 .poll()
                 .snackbar();
+    }
+
+    private void authlandingAction(String action){
+        JSONObject props = new JSONObject();
+        try {
+            props.put("action", action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track(MixPanelConstants.EVENT_AUTH_PAGE_ACTION, props);
     }
 }

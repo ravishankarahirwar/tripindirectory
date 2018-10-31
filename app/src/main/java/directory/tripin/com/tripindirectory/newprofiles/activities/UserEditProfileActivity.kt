@@ -12,6 +12,7 @@ import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.keiferstone.nonet.NoNet
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
@@ -19,11 +20,14 @@ import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.newlookcode.activities.NewSplashActivity
+import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.utils.AppUtils
 import kotlinx.android.synthetic.main.activity_user_edit_profile.*
 import kotlinx.android.synthetic.main.layout_choose_vehicle.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
 import kotlinx.android.synthetic.main.layout_route_input.*
+import org.json.JSONException
+import org.json.JSONObject
 
 class UserEditProfileActivity : AppCompatActivity() {
 
@@ -31,6 +35,7 @@ class UserEditProfileActivity : AppCompatActivity() {
     lateinit var context: Context
     lateinit var appUtils: AppUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var mixpanelAPI: MixpanelAPI
 
 
 
@@ -41,6 +46,7 @@ class UserEditProfileActivity : AppCompatActivity() {
         appUtils = AppUtils(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         preferenceManager = PreferenceManager.getInstance(context)
+        mixpanelAPI = MixpanelAPI.getInstance(context,MixPanelConstants.MIXPANEL_TOKEN)
         setListners()
         internetCheck()
 
@@ -76,6 +82,7 @@ class UserEditProfileActivity : AppCompatActivity() {
                 finish()
                 val bundle = Bundle()
                 firebaseAnalytics.logEvent("z_logout", bundle)
+                myprofileAction("logout")
             }
         }
         facebbokk.setOnClickListener {
@@ -98,11 +105,14 @@ class UserEditProfileActivity : AppCompatActivity() {
             i.putExtra("rmn",preferenceManager.rmn)
             i.putExtra("fuid",preferenceManager.fuid)
             startActivity(i)
+            myprofileAction("my_business")
         }
 
         mynetworkll.setOnClickListener {
             val i = Intent(this, MyNetworkActivity::class.java)
             startActivity(i)
+            myprofileAction("my_network")
+
         }
     }
 
@@ -188,6 +198,7 @@ class UserEditProfileActivity : AppCompatActivity() {
                         preferenceManager.setisProfileIntroSeen(true)
                         val bundle = Bundle()
                         firebaseAnalytics.logEvent("z_profileguidefinished", bundle)
+                        myprofileAction("intro_done")
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
@@ -197,6 +208,17 @@ class UserEditProfileActivity : AppCompatActivity() {
                 })
 
         tapTargetSequence.start()
+    }
+
+    private fun myprofileAction(action: String) {
+        val props = JSONObject()
+        try {
+            props.put("action", action)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+        mixpanelAPI.track(MixPanelConstants.EVENT_MYPROFILE_ACTION, props)
     }
 
 }

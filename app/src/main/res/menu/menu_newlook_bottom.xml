@@ -30,6 +30,13 @@
         <!--app:showAsAction="always" />-->
 
     <item
+        android:id="@+id/action_about"
+        android:icon="@drawable/pdlg_icon_info"
+        android:orderInCategory="80"
+        android:title="About ILN"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_guide"
         android:icon="@drawable/ic_live_help_black_24dp"
         android:orderInCategory="80"
