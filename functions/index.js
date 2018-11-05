@@ -856,6 +856,125 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
         });
 
 
+  exports.newProfileVisit = functions.firestore
+      .document('partners/{uid}/mProfileVisits/{date}/interactors/{visitorId}')
+      .onCreate((snapshot, context) => {
+        // Get pojo of the newly added visit interaction document
+        var interactionPojo =  snapshot.data();
+
+        // Get a date snapshot
+        var dateSnapshotRef = fsdb.collection('partners').doc(context.params.uid).collection('mProfileVisits').doc(context.params.date);
+        console.log('date: ', context.params.date);
+
+        // Update aggregations in a transaction
+        return fsdb.runTransaction(transaction => {
+          return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+            // Compute new number of views this day
+            var datesnapshotpojo = dateSnapshotDoc.data()
+            console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+            var oldNumVisits = 0;
+
+
+
+            if(datesnapshotpojo !== undefined){
+             if(datesnapshotpojo.mNumVisits!== undefined ){
+                           oldNumVisits = datesnapshotpojo.mNumVisits;
+                        }
+            }
+
+            console.log('oldNumVisits: ', oldNumVisits);
+
+            var newNumVisits = oldNumVisits + 1;
+
+            // Update date snapshot
+            return transaction.set(dateSnapshotRef, {
+              mNumVisits: newNumVisits
+            });
+          });
+        });
+      });
+
+      exports.newCallinDump = functions.firestore
+            .document('partners/{uid}/mCallsDump/{date}/interactors/{visitorId}')
+            .onCreate((snapshot, context) => {
+              // Get pojo of the newly added visit interaction document
+              var interactionPojo =  snapshot.data();
+
+              // Get a date snapshot
+              var dateSnapshotRef = fsdb.collection('partners').doc(context.params.uid).collection('mCallsDump').doc(context.params.date);
+              console.log('date: ', context.params.date);
+
+              // Update aggregations in a transaction
+              return fsdb.runTransaction(transaction => {
+                return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                  // Compute new number of views this day
+                  var datesnapshotpojo = dateSnapshotDoc.data()
+                  console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                  var oldNumVisits = 0;
+
+
+
+                  if(datesnapshotpojo !== undefined){
+                   if(datesnapshotpojo.mNumVisits!== undefined ){
+                                 oldNumVisits = datesnapshotpojo.mNumVisits;
+                              }
+                  }
+
+                  console.log('oldNumCalls: ', oldNumVisits);
+
+                  var newNumVisits = oldNumVisits + 1;
+
+                  // Update date snapshot
+                  return transaction.set(dateSnapshotRef, {
+                    mNumDocs: newNumVisits
+                  });
+                });
+              });
+            });
+
+
+    exports.newChatinDump = functions.firestore
+              .document('partners/{uid}/mChatsDump/{date}/interactors/{visitorId}')
+              .onCreate((snapshot, context) => {
+                // Get pojo of the newly added visit interaction document
+                var interactionPojo =  snapshot.data();
+
+                // Get a date snapshot
+                var dateSnapshotRef = fsdb.collection('partners').doc(context.params.uid).collection('mChatsDump').doc(context.params.date);
+                console.log('date: ', context.params.date);
+
+                // Update aggregations in a transaction
+                return fsdb.runTransaction(transaction => {
+                  return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                    // Compute new number of views this day
+                    var datesnapshotpojo = dateSnapshotDoc.data()
+                    console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                    var oldNumVisits = 0;
+
+
+
+                    if(datesnapshotpojo !== undefined){
+                     if(datesnapshotpojo.mNumDocs!== undefined ){
+                                   oldNumVisits = datesnapshotpojo.mNumDocs;
+                                }
+                    }
+
+                    console.log('oldNumChats: ', oldNumVisits);
+
+                    var newNumVisits = oldNumVisits + 1;
+
+                    // Update date snapshot
+                    return transaction.set(dateSnapshotRef, {
+                      mNumDocs: newNumVisits
+                    });
+                  });
+                });
+              });
+
+
 
 
 

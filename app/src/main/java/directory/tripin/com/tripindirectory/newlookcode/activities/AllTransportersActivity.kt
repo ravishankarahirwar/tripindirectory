@@ -38,6 +38,7 @@ import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.content_main_scrolling.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AllTransportersActivity : AppCompatActivity() {
@@ -317,6 +319,27 @@ class AllTransportersActivity : AppCompatActivity() {
 
                     holder.mCall.setOnClickListener {
 
+                        val interactionPojo = InteractionPojo(preferenceManager.userId,
+                                preferenceManager.fuid,
+                                preferenceManager.rmn,
+                                preferenceManager.comapanyName, preferenceManager.displayName,
+                                preferenceManager.fcmToken,
+                                model.getmDetails().getmUID(),
+                                model.getmDetails().getmFUID(),model.getmDetails().getmRMN(),model.getmDetails().getmCompanyName(),model.getmDetails().getmDisplayName(),model.getmDetails().getmFcmToken())
+
+                        FirebaseFirestore.getInstance().collection("partners")
+                                .document(model.getmDetails().getmUID()).collection("mCallsDump").document(getDateString())
+                                .collection("interactors").document(preferenceManager.userId).set(interactionPojo)
+
+                        FirebaseFirestore.getInstance().collection("partners")
+                                .document(model.getmDetails().getmUID())
+                                .collection("mCalls").document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
+                                    FirebaseFirestore.getInstance().collection("partners")
+                                            .document(preferenceManager.userId)
+                                            .collection("mCalls").document((model.getmDetails().getmUID())).set(interactionPojo)
+                                }
+
+
                         if(model.getmDetails().getmRMN()!=null) {
                             callNumber(model.getmDetails().getmRMN())
                         }else {
@@ -436,6 +459,12 @@ class AllTransportersActivity : AppCompatActivity() {
         rv_transporters_at.layoutManager = LinearLayoutManager(this)
         rv_transporters_at.adapter = adapter
 
+    }
+
+
+
+    private fun getDateString(): String {
+        return SimpleDateFormat("dd-MM-yyyy").format(Date())
     }
 
     private fun callNumber(number: String) {

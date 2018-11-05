@@ -29,8 +29,10 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -68,6 +70,7 @@ import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemVie
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity;
+import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo;
 import directory.tripin.com.tripindirectory.newlookcode.pojos.UserProfile;
 import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.R;
@@ -612,6 +615,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                                     mChatRoomId = mAuth.getUid() + mOUID;
                                 }
                                 Logger.v("mChatRoomId: " + mChatRoomId);
+
+                                //chat profile analytics
+                                updateUserProfileAnalytics();
+
+
                                 buildAdapter(mChatRoomId);
 
                             }
@@ -622,6 +630,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                                 Logger.v("onFailure: Checking Chat Heads");
                                 mChatRoomId = mAuth.getUid() + mOUID;
                                 Logger.v("mChatRoomId: " + mChatRoomId);
+
+                                //chat profile analytics
+                                updateUserProfileAnalytics();
+
                                 buildAdapter(mChatRoomId);
 
                             }
@@ -639,6 +651,8 @@ public class ChatRoomActivity extends AppCompatActivity {
 //            Toast.makeText(getApplicationContext(),"SMS will be sent",Toast.LENGTH_SHORT).show();
 
             mChatRoomId = mAuth.getUid() + mOUID;
+            //chat profile analytics
+            updateUserProfileAnalytics();
             buildAdapter(mChatRoomId);
 
 
@@ -700,6 +714,26 @@ public class ChatRoomActivity extends AppCompatActivity {
 //        });
 
 
+    }
+
+    private void updateUserProfileAnalytics() {
+        //chat profile analytics
+        InteractionPojo interactionPojo = new  InteractionPojo(preferenceManager.getUserId(),
+                preferenceManager.getFuid(),
+                preferenceManager.getRMN(),
+                preferenceManager.getComapanyName(), preferenceManager.getDisplayName(),
+                preferenceManager.getFcmToken(), mOUID,mOFUID,mORMN,mOpponentCompName,mOpponentCompName,mOpponentFcm);
+
+
+
+        FirebaseFirestore.getInstance().collection("partners")
+                .document(mOUID)
+                .collection("mChatsDump").document(getDateString())
+                .collection("interactors").document(preferenceManager.getUserId()).set(interactionPojo);
+    }
+
+    private String getDateString() {
+        return new SimpleDateFormat("dd-MM-yyyy").format(new Date());
     }
 
 
@@ -1254,6 +1288,29 @@ public class ChatRoomActivity extends AppCompatActivity {
     }
 
     private void callNumber(String number) {
+
+        InteractionPojo interactionPojo = new  InteractionPojo(preferenceManager.getUserId(),
+                preferenceManager.getFuid(),
+                preferenceManager.getRMN(),
+                preferenceManager.getComapanyName(), preferenceManager.getDisplayName(),
+                preferenceManager.getFcmToken(), mOUID,mOFUID,mORMN,mOpponentCompName,mOpponentCompName,mOpponentFcm);
+
+        FirebaseFirestore.getInstance().collection("partners")
+                .document(mOUID).collection("mCallsDump").document(getDateString())
+                .collection("interactors").document(preferenceManager.getUserId()).set(interactionPojo);
+
+
+        FirebaseFirestore.getInstance().collection("partners")
+                .document(mOUID)
+                .collection("mCalls").document(preferenceManager.getUserId()).set(interactionPojo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                FirebaseFirestore.getInstance().collection("partners")
+                        .document(preferenceManager.getUserId())
+                        .collection("mCalls").document(mOUID).set(interactionPojo);
+            }
+        });
+
         Intent callIntent = new Intent(Intent.ACTION_DIAL);
         callIntent.setData(Uri.parse("tel:" + Uri.encode(number.trim())));
         callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

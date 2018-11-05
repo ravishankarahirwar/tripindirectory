@@ -72,6 +72,7 @@ class UserEditProfileActivity : AppCompatActivity() {
         shareapp.setOnClickListener {
             appUtils.shareApp()
         }
+
         logout.setOnClickListener {
             AuthUI.getInstance().signOut(context).addOnSuccessListener {
                 Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
@@ -85,6 +86,7 @@ class UserEditProfileActivity : AppCompatActivity() {
                 myprofileAction("logout")
             }
         }
+
         facebbokk.setOnClickListener {
             AuthUI.getInstance().signOut(context).addOnSuccessListener {
                 Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
@@ -112,6 +114,19 @@ class UserEditProfileActivity : AppCompatActivity() {
             val i = Intent(this, MyNetworkActivity::class.java)
             startActivity(i)
             myprofileAction("my_network")
+
+        }
+
+        calls.setOnClickListener {
+            val i = Intent(this, RecentCallsActivity::class.java)
+            startActivity(i)
+        }
+
+        wallet.setOnClickListener {
+
+        }
+
+        settings.setOnClickListener {
 
         }
     }

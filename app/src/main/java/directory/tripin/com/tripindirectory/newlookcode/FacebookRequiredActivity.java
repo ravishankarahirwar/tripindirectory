@@ -176,6 +176,11 @@ public class FacebookRequiredActivity extends AppCompatActivity {
                 if(user!=null){
                     Log.v("onActivityResult: ",user.getDisplayName()+" "+user.getPhoneNumber()+" "+user.getProviderId());
 
+                    if(user.getDisplayName()==null){
+                        Toast.makeText(getApplicationContext(),"Error, Try Again",Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+
                     if(user.getDisplayName().toLowerCase().equals("tanya kapoor")){
                         preferenceManager.setDisplayName("ILN Assistant");
                     }else {

@@ -12,6 +12,8 @@
     <color name="categoriesbg">#dedada</color>
     <color name="categoriesbg2">#e7e6e7</color>
     <color name="categoriesbg3">#efefef</color>
+    <color name="defaultbg">#EEEEEE</color>
+
 
 
     <color name="shadow">#66000000</color>
@@ -243,10 +245,10 @@
     <color name="blue_50">#e3f2fd</color>
     <color name="blue_100">#bbdefb</color>
     <color name="blue_200">#90CAF9</color>
-    <color name="blue_300">#64B5F6</color>
+    <color name="blue_300">#64b5f6</color>
     <color name="blue_400">#42a5f5</color>
     <color name="blue_500">#2196f3</color>
-    <color name="blue_600">#1E88E5</color>
+    <color name="blue_600">#1e88e5</color>
     <color name="blue_700">#1976D2</color>
     <color name="blue_800">#1565C0</color>
     <color name="blue_900">#0d47a1</color>

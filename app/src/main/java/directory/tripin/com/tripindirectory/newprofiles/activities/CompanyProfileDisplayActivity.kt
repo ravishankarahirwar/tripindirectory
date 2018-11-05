@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.text.Html
 import android.text.util.Linkify
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Callback
@@ -40,10 +41,12 @@ import com.stepstone.apprating.AppRatingDialog
 import com.stepstone.apprating.listener.RatingDialogListener
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
+import kotlinx.android.synthetic.main.company_hits_item.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 import org.json.JSONException
@@ -68,6 +71,10 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
     var mCompUid: String = ""
     var mCompRmn: String = ""
     var mCompFuid: String = ""
+    var mCompName: String = ""
+    var mCompPhotourl: String = ""
+
+
     var isDirectRateShown = false
 
     lateinit var textUtils: TextUtils
@@ -140,10 +147,26 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             finish()
             Toast.makeText(context, "Try Again!", Toast.LENGTH_SHORT).show()
         } else {
+
+            //Profile Analytics: Profile visit
+            val interactionPojo = InteractionPojo(preferenceManager.userId,
+                    preferenceManager.fuid,
+                    preferenceManager.rmn,
+                    preferenceManager.comapanyName, preferenceManager.displayName,
+                    preferenceManager.fcmToken, mCompUid, mCompFuid, mCompRmn, "", "", "")
+
+            FirebaseFirestore.getInstance().collection("partners")
+                    .document(mCompUid).collection("mProfileVisits").document(getDateString())
+                    .collection("interactors").document(preferenceManager.userId).set(interactionPojo)
+
             adjustIfYourProfile()
         }
 
 
+    }
+
+    private fun getDateString(): String {
+        return SimpleDateFormat("dd-MM-yyyy").format(Date())
     }
 
     private fun fetchData(mCompUid: String) {
@@ -179,31 +202,35 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
     }
 
     private fun fetchConnections() {
-        FirebaseFirestore.getInstance().collection("partners").document(mCompUid).collection("mConnections").addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
-            if (e != null) {
-                finish()
-                Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
-                return@EventListener
-            }
-            if (snapshot != null && !snapshot.isEmpty) {
-                var connections: Int = 0
-                snapshot.forEach {
-                    val connectPojo: ConnectPojo = it.toObject(ConnectPojo::class.java)
-                    if (connectPojo.getmStatus() == true) {
-                        connections++
+        FirebaseFirestore.getInstance()
+                .collection("partners")
+                .document(mCompUid)
+                .collection("mConnections")
+                .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
+                    if (e != null) {
+                        finish()
+                        Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
+                        return@EventListener
                     }
-                    if (connectPojo.getmUid() == preferenceManager.userId) {
-                        if (connectPojo.getmStatus()) {
-                            //You are Connected
-                            isConnected = true
-                            connect.text = "Disconnect"
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        var connections: Int = 0
+                        snapshot.forEach {
+                            val connectPojo: ConnectPojo = it.toObject(ConnectPojo::class.java)
+                            if (connectPojo.getmStatus() == true) {
+                                connections++
+                            }
+                            if (connectPojo.getmUid() == preferenceManager.userId) {
+                                if (connectPojo.getmStatus()) {
+                                    //You are Connected
+                                    isConnected = true
+                                    connect.text = "Disconnect"
 
-                            val bottom = connect.paddingBottom
-                            val top = connect.paddingTop
-                            val right = connect.paddingRight
-                            val left = connect.paddingLeft
-                            connect.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
-                            connect.setPadding(left, top, right, bottom)
+                                    val bottom = connect.paddingBottom
+                                    val top = connect.paddingTop
+                                    val right = connect.paddingRight
+                                    val left = connect.paddingLeft
+                                    connect.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
+                                    connect.setPadding(left, top, right, bottom)
 
 //                            val bottom1 = chatwithcomp.paddingBottom
 //                            val top1 = chatwithcomp.paddingTop
@@ -213,16 +240,16 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 //                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
 
 
-                        } else {
-                            //You are Diconnected
-                            isConnected = false
-                            connect.text = "Connect"
-                            val bottom = connect.paddingBottom
-                            val top = connect.paddingTop
-                            val right = connect.paddingRight
-                            val left = connect.paddingLeft
-                            connect.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
-                            connect.setPadding(left, top, right, bottom)
+                                } else {
+                                    //You are Diconnected
+                                    isConnected = false
+                                    connect.text = "Connect"
+                                    val bottom = connect.paddingBottom
+                                    val top = connect.paddingTop
+                                    val right = connect.paddingRight
+                                    val left = connect.paddingLeft
+                                    connect.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
+                                    connect.setPadding(left, top, right, bottom)
 
 //                            val bottom1 = chatwithcomp.paddingBottom
 //                            val top1 = chatwithcomp.paddingTop
@@ -230,15 +257,15 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 //                            val left1 = chatwithcomp.paddingLeft
 //                            chatwithcomp.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
 //                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
+                                }
+                            }
                         }
-                    }
-                }
-                innet.text = connections.toString()
+                        innet.text = connections.toString()
 
-            } else {
-                innet.text = "0"
-            }
-        })
+                    } else {
+                        innet.text = "0"
+                    }
+                })
     }
 
 //    private fun fetchRatings() {
@@ -286,6 +313,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
             if (partnerInfoPojo.getmPhotoUrl() != null) {
                 setUpImage(partnerInfoPojo.getmPhotoUrl())
+                mCompPhotourl = partnerInfoPojo.getmPhotoUrl()
             }
 
             //status statusindicator
@@ -310,6 +338,8 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                 if (!partnerInfoPojo.getmCompanyName().isEmpty()) {
                     compname.text = partnerInfoPojo.getmCompanyName().toUpperCase()
                     comptitle.text = textUtils.toTitleCase(partnerInfoPojo.getmCompanyName())
+                    mCompName = partnerInfoPojo.getmCompanyName()
+
                 }
             } else {
                 Toast.makeText(context, "Not Available", Toast.LENGTH_SHORT).show()
@@ -351,8 +381,52 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
             mainscrollprofile.visibility = View.VISIBLE
 
+            FetchProfileVisits()
+
 
         }
+
+    }
+
+    private fun FetchProfileVisits() {
+
+        val oldDate = Date(Date().time - 604800000L)
+        FirebaseFirestore.getInstance()
+                .collection("partners")
+                .document(mCompUid)
+                .collection("mProfileVisits").limit(7)
+                .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
+                    if (e != null) {
+                        finish()
+                        Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
+                        return@EventListener
+                    }
+
+                    if (snapshot != null) {
+
+                        var visits: Long = 0
+
+                        snapshot.forEach {
+                            if (it.id.length == 10) {
+                                val count: Long = it.getLong("mNumVisits")!!
+                                visits += count
+                            }
+                        }
+                        val s = "<b>$visits</b> profile visits in last 7 days"
+                        visits_text.text = Html.fromHtml(s)
+//                      visits_text.text = visits.toString()+" profile visits in last 7 days"
+
+                    } else {
+
+                        visits_text.text = "No profile visits yet!"
+
+//                      Toast.makeText(context, "Snapshot ${mCompUid}", Toast.LENGTH_SHORT).show()
+//                      var s = "<b>" + 53 + "</b> " + "profile visits in last 7 days"
+//                      visits_text.text = Html.fromHtml(s)
+//                      see_insight.visibility = View.GONE
+
+                    }
+                })
 
     }
 
@@ -507,11 +581,25 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         }
 
         chatwithcomp.setOnClickListener {
+
+
             val intent = Intent(context, ChatRoomActivity::class.java)
             intent.putExtra("imsg", "From Your Company Profile")
             intent.putExtra("ormn", mCompRmn)
             intent.putExtra("ouid", mCompUid)
             intent.putExtra("ofuid", mCompFuid)
+            startActivity(intent)
+        }
+
+        see_insight.setOnClickListener {
+            val intent = Intent(context, MainProfileInsightActivity::class.java)
+            intent.putExtra("uid",mCompUid)
+            intent.putExtra("name",mCompName)
+            intent.putExtra("rmn",mCompRmn)
+            intent.putExtra("photourl",mCompPhotourl)
+
+
+
             startActivity(intent)
         }
     }
@@ -785,7 +873,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                     bundle.putInt("rating", rate)
                     firebaseAnalytics.logEvent("z_profile_rated", bundle)
                     mixpanelRate(rate)
-                    Toast.makeText(context,"Review Submitted. Thankyou!",Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Review Submitted. Thankyou!", Toast.LENGTH_LONG).show()
                     if (!preferenceManager.prefRateReminder.isEmpty()) {
                         val rateReminderPojo = Gson().fromJson(preferenceManager.prefRateReminder, RateReminderPojo::class.java)
 

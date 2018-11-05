@@ -33,12 +33,15 @@ import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.PartnersViewHolder
+import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
 import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_my_network.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MyNetworkActivity : AppCompatActivity() {
@@ -170,6 +173,26 @@ class MyNetworkActivity : AppCompatActivity() {
                     }
 
                     holder.mCall.setOnClickListener {
+                        val interactionPojo = InteractionPojo(preferenceManager.userId,
+                                preferenceManager.fuid,
+                                preferenceManager.rmn,
+                                preferenceManager.comapanyName, preferenceManager.displayName,
+                                preferenceManager.fcmToken,
+                                model.getmUid(),
+                                model.getmFuid(),model.getmRmn(),model.getmCompanyName(),model.getmDisplayName(),"")
+
+                        FirebaseFirestore.getInstance().collection("partners")
+                                .document(model.getmUid()).collection("mCallsDump").document(getDateString())
+                                .collection("interactors").document(preferenceManager.userId).set(interactionPojo)
+
+                        FirebaseFirestore.getInstance().collection("partners")
+                                .document(model.getmUid())
+                                .collection("mCalls").document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
+                                    FirebaseFirestore.getInstance().collection("partners")
+                                            .document(preferenceManager.userId)
+                                            .collection("mCalls").document(model.getmUid()).set(interactionPojo)
+                                }
+
                         if (model.getmRmn() != null) {
                             callNumber(model.getmRmn())
                         }
@@ -242,10 +265,16 @@ class MyNetworkActivity : AppCompatActivity() {
         rv_mynetwork.adapter = adapter    }
 
     private fun callNumber(number: String) {
+
         val callIntent = Intent(Intent.ACTION_DIAL)
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
     }
+
+    private fun getDateString(): String {
+        return SimpleDateFormat("dd-MM-yyyy").format(Date())
+    }
+
 
 }
