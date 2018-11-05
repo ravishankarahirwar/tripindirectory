@@ -30,7 +30,7 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
 
-        AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Transport Directory", "Select route and get list of ILN trusted transporters.", R.drawable.route);
+        AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Transport Directory", "Select route and get list of registered transporters.", R.drawable.route);
         AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("LoadBoard", "Post your requirements on Loadboard and get responces from interested people.", R.drawable.ic_developer_board_black_24dp);
         AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("Chat", "Connect with transporters and proceed the further transaction on chat.", R.drawable.ic_chat_bubble_outline_black_24dp);
 

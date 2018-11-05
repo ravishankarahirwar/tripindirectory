@@ -96,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="      ILN is a platform for fleet providers and load providers to connect with each other for business in a profound way. Load providers can use directory feature to get a list of top available and trusted transport companies, or can post the requirement on loadboard and get responses when a transporter is interested. Fleet Providers can register there company and become visible to all on directory. Transport companies can then collect ratings and connections to improve credibility and get more leads. A company can also use promote feature to stay top on the result list for a particular route."
+                android:text="      ILN is a platform for fleet providers and load providers to connect with each other for business in a profound way. Load providers can use directory feature to get a list of top available transport companies, or can post the requirement on loadboard and get responses when a transporter is interested. Fleet Providers can register there company and become visible to all on directory. Transport companies can then collect ratings and connections to improve credibility and get more leads. A company can also use promote feature to stay top on the result list for a particular route."
                 android:textSize="12sp" />
 
             <LinearLayout
@@ -365,7 +365,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:gravity="center"
-                android:text="v10.2" />
+                android:text="v10.3" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
