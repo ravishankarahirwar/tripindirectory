@@ -20,6 +20,9 @@ public class PreferenceManager {
     public static final String PREF_IS_PROFILEINTRO_SEEN = "isprofileintroseen";
     public static final String PREF_RATE_REMINDER = "ratereminder";
 
+    public static final String PREF_SETTING_LB_NOTIF = "loadboard_allnotifications";
+
+
 
 
 
@@ -36,6 +39,7 @@ public class PreferenceManager {
     public static final String PREF_TO_SHOW_REG_AD = "toshowregad";
 
     public static final String PREF_ISNEWLOOKACCEPTED = "isnewlookaccepted";
+    public static final String PREF_ISINSURANCERESPONDED = "isinsuranceresponded";
 
 
 
@@ -119,6 +123,15 @@ public class PreferenceManager {
 
     public boolean isNewLookAccepted() {
         return sInstance.getBoolean(PREF_ISNEWLOOKACCEPTED, true);
+    }
+
+    public void setisInsuranceResponded(boolean b) {
+        editor.putBoolean(PREF_ISINSURANCERESPONDED, b);
+        editor.commit();
+    }
+
+    public boolean isInsuranceResponded() {
+        return sInstance.getBoolean(PREF_ISINSURANCERESPONDED, false);
     }
 
     public void setisMainScreenGuided(boolean b) {
@@ -213,6 +226,15 @@ public class PreferenceManager {
 
     public void setPrefRateReminder(String fuid) {
         editor.putString(PREF_RATE_REMINDER, fuid);
+        editor.commit();
+    }
+
+    public Boolean getSettingLoadboardNotif() {
+        return sInstance.getBoolean(PREF_SETTING_LB_NOTIF, true);
+    }
+
+    public void setSettingLoadboardNotif(Boolean islbntifactive) {
+        editor.putBoolean(PREF_SETTING_LB_NOTIF, islbntifactive);
         editor.commit();
     }
 

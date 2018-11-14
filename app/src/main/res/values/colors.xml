@@ -56,7 +56,7 @@
     <color name="red_A700">#D50000</color>
 
     <color name="deep_purple_50">#EDE7F6</color>
-    <color name="deep_purple_100">#D1C4E9</color>
+    <color name="deep_purple_100">#d1c4e9</color>
     <color name="deep_purple_200">#B39DDB</color>
     <color name="deep_purple_300">#9575CD</color>
     <color name="deep_purple_400">#7E57C2</color>
@@ -115,9 +115,9 @@
     <color name="yellow_A400">#FFEA00</color>
     <color name="yellow_A700">#FFD600</color>
 
-    <color name="deep_orange_50">#FBE9E7</color>
+    <color name="deep_orange_50">#fbe9e7</color>
     <color name="deep_orange_100">#ffccbc</color>
-    <color name="deep_orange_200">#FFAB91</color>
+    <color name="deep_orange_200">#ffab91</color>
     <color name="deep_orange_300">#FF8A65</color>
     <color name="deep_orange_400">#FF7043</color>
     <color name="deep_orange_500">#FF5722</color>
@@ -289,7 +289,7 @@
 
     <color name="orange_50">#FFF3E0</color>
     <color name="orange_100">#ffe0b2</color>
-    <color name="orange_200">#FFCC80</color>
+    <color name="orange_200">#ffcc80</color>
     <color name="orange_300">#FFB74D</color>
     <color name="orange_400">#FFA726</color>
     <color name="orange_500">#FF9800</color>
@@ -314,7 +314,7 @@
     <color name="grey_900">#212121</color>
 
     <!-- Screens background color-->
-    <color name="bg_screen1">#FBC02D</color>
+    <color name="bg_screen1">#fbc02d</color>
     <color name="bg_screen2">#f64c73</color>
     <color name="bg_screen3">#3395ff</color>
     <color name="bg_screen4">#20d2bb</color>

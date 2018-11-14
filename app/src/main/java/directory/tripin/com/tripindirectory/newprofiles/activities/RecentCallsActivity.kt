@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -20,6 +21,7 @@ import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentCallsV
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_recent_calls.*
+import java.text.SimpleDateFormat
 
 class RecentCallsActivity : AppCompatActivity() {
 
@@ -105,6 +107,7 @@ class RecentCallsActivity : AppCompatActivity() {
 
                 }
 
+                holder.time.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
             }
 
@@ -119,6 +122,7 @@ class RecentCallsActivity : AppCompatActivity() {
 
             override fun onDataChanged() {
                 super.onDataChanged()
+                recencalls_msg.visibility = View.GONE
             }
 
         }

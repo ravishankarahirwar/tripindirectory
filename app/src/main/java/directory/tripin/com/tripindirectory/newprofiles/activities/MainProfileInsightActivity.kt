@@ -27,6 +27,8 @@ import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentCallsViewHolder
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_user_edit_profile.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainProfileInsightActivity : AppCompatActivity() {
@@ -93,8 +95,8 @@ lateinit var preferenceManager: PreferenceManager
 
     private fun setSpinner() {
         val spinnerTime = findViewById<MaterialSpinner>(R.id.spinneranalyticsdate)
-        spinnerTime.setItems("Last 7 days",
-                "Last 30 days")
+        spinnerTime.setItems("Last 7 active days",
+                "Last 30 active days")
         spinnerTime.setOnItemSelectedListener { view, position, id, item ->
             // handle click
             when(position){
@@ -165,20 +167,32 @@ lateinit var preferenceManager: PreferenceManager
                     if (snapshot != null) {
 
                         var visits: Long = 0
+                        var c: Long = 0
+                        var cvisits: Long = 0
 
                         snapshot.forEach {
                             if (it.id.length == 10) {
-                                val count: Long = it.getLong("mNumDocs")!!
-                                visits += count
+
+                                if(c<mDays){
+                                    val count: Long = it.getLong("mNumDocs")!!
+                                    visits += count
+                                }else{
+                                    val count: Long = it.getLong("mNumDocs")!!
+                                    cvisits += count
+                                }
+                                c++
                             }
                         }
                         chats_count.text = " $visits"
+                        if((visits-cvisits>0)){
+                            chats_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }else{
+                            chats_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }
 
                     } else {
 
                         chats_count.text = " New"
-
-
 
                     }
                 })
@@ -199,14 +213,29 @@ lateinit var preferenceManager: PreferenceManager
                     if (snapshot != null) {
 
                         var visits: Long = 0
+                        var c: Long = 0
+                        var cvisits: Long = 0
 
                         snapshot.forEach {
                             if (it.id.length == 10) {
-                                val count: Long = it.getLong("mNumDocs")!!
-                                visits += count
+
+                                if(c<mDays){
+                                    val count: Long = it.getLong("mNumDocs")!!
+                                    visits += count
+                                }else{
+                                    val count: Long = it.getLong("mNumDocs")!!
+                                    cvisits += count
+                                }
+                                c++
                             }
                         }
+
                         calls_count.text = " $visits"
+                        if((visits-cvisits>0)){
+                            calls_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }else{
+                            calls_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }
 
                     } else {
 
@@ -221,7 +250,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mProfileVisits").limit(mDays)
+                .collection("mProfileVisits").limit(mDays*2)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -232,14 +261,30 @@ lateinit var preferenceManager: PreferenceManager
                     if (snapshot != null) {
 
                         var visits: Long = 0
+                        var c: Long = 0
+                        var cvisits: Long = 0
+
 
                         snapshot.forEach {
                             if (it.id.length == 10) {
-                                val count: Long = it.getLong("mNumVisits")!!
-                                visits += count
+
+                                if(c<mDays){
+                                    val count: Long = it.getLong("mNumVisits")!!
+                                    visits += count
+                                }else{
+                                    val count: Long = it.getLong("mNumVisits")!!
+                                    cvisits += count
+                                }
+                                c++
+
                             }
                         }
                         visits_count.text = " $visits"
+                        if((visits-cvisits>0)){
+                            visits_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }else{
+                            visits_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        }
 
 
                     } else {
@@ -248,5 +293,13 @@ lateinit var preferenceManager: PreferenceManager
 
                     }
                 })
+    }
+
+    private fun getComparisonDateString(): String {
+        var compDate : String
+        compDate = "${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays*2*86400000L)))}" +
+                " - ${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays*86400000L)))}"
+
+        return compDate
     }
 }

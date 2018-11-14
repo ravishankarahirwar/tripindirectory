@@ -108,26 +108,37 @@ class UserEditProfileActivity : AppCompatActivity() {
             i.putExtra("fuid",preferenceManager.fuid)
             startActivity(i)
             myprofileAction("my_business")
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_my_profile", bundle)
         }
 
         mynetworkll.setOnClickListener {
             val i = Intent(this, MyNetworkActivity::class.java)
             startActivity(i)
             myprofileAction("my_network")
-
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_my_network", bundle)
         }
 
         calls.setOnClickListener {
             val i = Intent(this, RecentCallsActivity::class.java)
             startActivity(i)
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_recent_calls", bundle)
         }
 
         wallet.setOnClickListener {
-
+            val i = Intent(this, WalletActivity::class.java)
+            startActivity(i)
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_wallet", bundle)
         }
 
         settings.setOnClickListener {
-
+            val i = Intent(this, SettingsActivity::class.java)
+            startActivity(i)
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_settings", bundle)
         }
     }
 

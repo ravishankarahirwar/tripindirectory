@@ -232,13 +232,6 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                                     connect.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
                                     connect.setPadding(left, top, right, bottom)
 
-//                            val bottom1 = chatwithcomp.paddingBottom
-//                            val top1 = chatwithcomp.paddingTop
-//                            val right1 = chatwithcomp.paddingRight
-//                            val left1 = chatwithcomp.paddingLeft
-//                            chatwithcomp.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
-//                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
-
 
                                 } else {
                                     //You are Diconnected
@@ -251,12 +244,6 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                                     connect.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
                                     connect.setPadding(left, top, right, bottom)
 
-//                            val bottom1 = chatwithcomp.paddingBottom
-//                            val top1 = chatwithcomp.paddingTop
-//                            val right1 = chatwithcomp.paddingRight
-//                            val left1 = chatwithcomp.paddingLeft
-//                            chatwithcomp.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
-//                            chatwithcomp.setPadding(left1, top1, right1, bottom1)
                                 }
                             }
                         }
@@ -412,18 +399,17 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                                 visits += count
                             }
                         }
-                        val s = "<b>$visits</b> profile visits in last 7 days"
+
+                        val s = "<b>$visits</b> profile visits in last 7 active days"
                         visits_text.text = Html.fromHtml(s)
-//                      visits_text.text = visits.toString()+" profile visits in last 7 days"
+
+                        if(snapshot.size()<7){
+                            insightll.visibility = View.GONE
+                        }
 
                     } else {
 
                         visits_text.text = "No profile visits yet!"
-
-//                      Toast.makeText(context, "Snapshot ${mCompUid}", Toast.LENGTH_SHORT).show()
-//                      var s = "<b>" + 53 + "</b> " + "profile visits in last 7 days"
-//                      visits_text.text = Html.fromHtml(s)
-//                      see_insight.visibility = View.GONE
 
                     }
                 })
@@ -435,13 +421,12 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         if (mCompUid == preferenceManager.userId) {
             //your profile
             if (preferenceManager.comapanyName != null) {
+
                 connect.visibility = View.GONE
                 rate.visibility = View.GONE
                 editprofile.visibility = View.VISIBLE
                 promote.visibility = View.VISIBLE
-
                 fetchData(mCompUid)
-
             } else {
                 val i = Intent(this, CompanyProfileEditActivity::class.java)
                 startActivityForResult(i, 1)
@@ -453,9 +438,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             rate.visibility = View.VISIBLE
             editprofile.visibility = View.GONE
             promote.visibility = View.GONE
-
             fetchData(mCompUid)
-
         }
 
     }

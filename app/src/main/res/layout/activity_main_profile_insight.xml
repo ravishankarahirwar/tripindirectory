@@ -96,7 +96,7 @@
                     android:layout_height="80dp"
                     android:background="@drawable/white_circle_bg"
                     android:elevation="2dp"
-                    android:padding="2dp"
+                    android:padding="4dp"
                     app:srcCompat="@mipmap/ic_launcher_round" />
 
                 <TextView
@@ -104,8 +104,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:background="@drawable/chat_in_bg"
+                    android:padding="8dp"
                     android:text="Company Name"
                     android:textColor="@color/blue_grey_800"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -160,7 +163,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="10dp"
                         android:padding="8dp"
-                        android:text="Visits on your profile."
+                        android:text="Visits on this profile."
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/visits_details"
@@ -178,7 +181,7 @@
                         android:textColor="@color/blue_grey_800"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="@+id/visits_count"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/visits_count" />
@@ -245,7 +248,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="10dp"
                         android:padding="8dp"
-                        android:text="Calls on your business."
+                        android:text="Calls on this business."
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/calls_details"
@@ -263,7 +266,7 @@
                         android:textColor="@color/blue_grey_800"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="@+id/calls_count"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/calls_count" />
@@ -330,7 +333,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="10dp"
                         android:padding="8dp"
-                        android:text="Chats with you."
+                        android:text="Chats with this user."
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/chats_details"
@@ -348,7 +351,7 @@
                         android:textColor="@color/blue_grey_800"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="@+id/chats_count"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/chats_count" />

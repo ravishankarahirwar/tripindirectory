@@ -335,10 +335,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             profilenew.visibility = View.VISIBLE
         }
 
-        if (preferenceManager.displayName != null) {
-            var name = preferenceManager.displayName.substringBefore(" ")
-            lookque.text = "Hello $name, how is the new look?"
-        }
+//        if (preferenceManager.displayName != null) {
+//            var name = preferenceManager.displayName.substringBefore(" ")
+//            lookque.text = "Hello $name, how is the new look?"
+//        }
 
 //        if(preferenceManager.isInboxRead){
 //            chatbadge.visibility = View.INVISIBLE
@@ -347,11 +347,13 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 //        }
 
 
-        if (preferenceManager.isNewLookAccepted) {
+        if (preferenceManager.isInsuranceResponded) {
             feedback.visibility = View.GONE
         } else {
             feedback.visibility = View.VISIBLE
         }
+
+
 
         showCompanyRatingSnackBar(preferenceManager.prefRateReminder)
     }
@@ -596,7 +598,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             startOldActivity()
         }
         givefeedback.setOnClickListener {
-            shownewlookfeedbackdialog()
+//            shownewlookfeedbackdialog()
+            openOfferActivity()
         }
 
         mainhumb.setOnClickListener {
@@ -703,6 +706,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         val i = Intent(this, NewSplashActivity::class.java)
         startActivity(i)
         finishAffinity()
+    }
+    private fun openOfferActivity() {
+        val i = Intent(this, NewOfferActivity::class.java)
+        startActivity(i)
     }
 
     private fun startInfoActivity() {
