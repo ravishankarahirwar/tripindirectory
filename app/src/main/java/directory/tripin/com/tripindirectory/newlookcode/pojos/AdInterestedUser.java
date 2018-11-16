@@ -6,6 +6,7 @@ public class AdInterestedUser {
     private String mUserRMN;
     private String mUserName = "";
     private String mUserEmail = "";
+    private String mUserCompName = "";
 
     public AdInterestedUser() {
     }
@@ -47,5 +48,13 @@ public class AdInterestedUser {
 
     public void setmUserEmail(String mUserEmail) {
         this.mUserEmail = mUserEmail;
+    }
+
+    public String getmUserCompName() {
+        return mUserCompName;
+    }
+
+    public void setmUserCompName(String mUserCompName) {
+        this.mUserCompName = mUserCompName;
     }
 }

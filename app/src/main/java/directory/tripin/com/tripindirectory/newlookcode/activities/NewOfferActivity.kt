@@ -31,10 +31,9 @@ class NewOfferActivity : AppCompatActivity() {
         setContentView(R.layout.activity_new_offer)
         preferenceManager = PreferenceManager.getInstance(this)
         insuranceinterested.setOnClickListener {
-            //preferenceManager.setisInsuranceResponded(true)
+            preferenceManager.setisInsuranceResponded(true)
             gotosignuplink()
             val bundle = Bundle()
-
             bundle.putString("responce","Interested")
             firebaseAnalytics.logEvent("z_offer_insurance", bundle)
         }
@@ -75,10 +74,11 @@ class NewOfferActivity : AppCompatActivity() {
     private fun gotosignuplink() {
 
         val adInterestedUser : AdInterestedUser = AdInterestedUser()
-        adInterestedUser.setmAdname("ILN Register")
+        adInterestedUser.setmAdname("Insurance offer")
         adInterestedUser.setmUserRMN(preferenceManager.rmn)
         adInterestedUser.setmUserEmail(preferenceManager.email)
         adInterestedUser.setmUserName(preferenceManager.displayName)
+        adInterestedUser.setmUserCompName(preferenceManager.comapanyName)
         FirebaseFirestore.getInstance().collection("insurance_offer_interested").add(adInterestedUser).addOnSuccessListener {
             Toast.makeText(context,"You will get a call soon!",Toast.LENGTH_SHORT).show()
             finish()

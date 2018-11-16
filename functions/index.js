@@ -889,7 +889,8 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
 
             // Update date snapshot
             return transaction.set(dateSnapshotRef, {
-              mNumVisits: newNumVisits
+              mNumVisits: newNumVisits,
+              mDate: context.params.date
             });
           });
         });
@@ -928,7 +929,8 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
 
                   // Update date snapshot
                   return transaction.set(dateSnapshotRef, {
-                    mNumDocs: newNumVisits
+                    mNumDocs: newNumVisits,
+                    mDate: context.params.date
                   });
                 });
               });
@@ -968,7 +970,9 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
 
                     // Update date snapshot
                     return transaction.set(dateSnapshotRef, {
-                      mNumDocs: newNumVisits
+                      mNumDocs: newNumVisits,
+                      mDate: context.params.date
+
                     });
                   });
                 });

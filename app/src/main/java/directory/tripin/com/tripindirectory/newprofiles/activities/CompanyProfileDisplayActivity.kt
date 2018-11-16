@@ -381,10 +381,12 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(mCompUid)
-                .collection("mProfileVisits").limit(7)
+                .collection("mProfileVisits").orderBy("mDate",Query.Direction.DESCENDING).limit(7)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
+
                     if (e != null) {
                         finish()
+                        Logger.v(e.toString())
                         Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
                         return@EventListener
                     }
@@ -397,6 +399,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                             if (it.id.length == 10) {
                                 val count: Long = it.getLong("mNumVisits")!!
                                 visits += count
+                                Logger.v(visits.toString())
                             }
                         }
 
@@ -580,9 +583,6 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             intent.putExtra("name",mCompName)
             intent.putExtra("rmn",mCompRmn)
             intent.putExtra("photourl",mCompPhotourl)
-
-
-
             startActivity(intent)
         }
     }

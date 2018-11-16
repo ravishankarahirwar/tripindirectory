@@ -9,15 +9,14 @@ import directory.tripin.com.tripindirectory.R
 import kotlinx.android.synthetic.main.activity_main_profile_insight.*
 import directory.tripin.com.tripindirectory.Messaging.Class.Chat
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.QuerySnapshot
 import com.jaredrummler.materialspinner.MaterialSpinner
+import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.helper.CircleTransform
@@ -50,6 +49,7 @@ lateinit var preferenceManager: PreferenceManager
         context = this
         preferenceManager = PreferenceManager.getInstance(context)
         getIntentData()
+        internetCheck()
 
 
     }
@@ -156,7 +156,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mChatsDump").limit(mDays)
+                .collection("mChatsDump").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -202,7 +202,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mCallsDump").limit(mDays)
+                .collection("mCallsDump").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -250,7 +250,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mProfileVisits").limit(mDays*2)
+                .collection("mProfileVisits").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays*2)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -301,5 +301,15 @@ lateinit var preferenceManager: PreferenceManager
                 " - ${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays*86400000L)))}"
 
         return compDate
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 }
