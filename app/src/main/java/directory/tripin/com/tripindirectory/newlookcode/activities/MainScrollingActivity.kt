@@ -169,7 +169,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         if (!preferenceManager.isMainScreenGuided) {
             showIntro()
+        }else{
+            if(preferenceManager.settingPopupinvite){
+                showInvitesScreen()
+            }
         }
+
 
         notificationSubscried()
 
@@ -802,6 +807,11 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         mainPageAction("see_all")
         val bundle = Bundle()
         firebaseAnalytics.logEvent("z_seeall_transporters", bundle)
+    }
+
+    private fun showInvitesScreen() {
+        val i = Intent(this, InvitePhonebookActivity::class.java)
+        startActivity(i)
     }
 
 

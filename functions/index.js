@@ -11,6 +11,8 @@ const ALGOLIA_INDEX_NAME = 'partners'
 
 admin.initializeApp();
 var fsdb = admin.firestore();
+var rtdb = admin.database();
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -937,46 +939,126 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
             });
 
 
-    exports.newChatinDump = functions.firestore
-              .document('partners/{uid}/mChatsDump/{date}/interactors/{visitorId}')
+            exports.newChatinDump = functions.firestore
+                          .document('partners/{uid}/mChatsDump/{date}/interactors/{visitorId}')
+                          .onCreate((snapshot, context) => {
+                            // Get pojo of the newly added visit interaction document
+                            var interactionPojo =  snapshot.data();
+
+                            // Get a date snapshot
+                            var dateSnapshotRef = fsdb.collection('partners').doc(context.params.uid).collection('mChatsDump').doc(context.params.date);
+                            console.log('date: ', context.params.date);
+
+                            // Update aggregations in a transaction
+                            return fsdb.runTransaction(transaction => {
+                              return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                                // Compute new number of views this day
+                                var datesnapshotpojo = dateSnapshotDoc.data()
+                                console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                                var oldNumVisits = 0;
+
+
+
+                                if(datesnapshotpojo !== undefined){
+                                 if(datesnapshotpojo.mNumDocs!== undefined ){
+                                               oldNumVisits = datesnapshotpojo.mNumDocs;
+                                            }
+                                }
+
+                                console.log('oldNumChats: ', oldNumVisits);
+
+                                var newNumVisits = oldNumVisits + 1;
+
+                                // Update date snapshot
+                                return transaction.set(dateSnapshotRef, {
+                                  mNumDocs: newNumVisits,
+                                  mDate: context.params.date
+
+                                });
+                              });
+                            });
+            });
+
+
+    exports.newContactAdded = functions.firestore
+              .document('partners/{uid}/phonebook/{mobile}')
               .onCreate((snapshot, context) => {
                 // Get pojo of the newly added visit interaction document
-                var interactionPojo =  snapshot.data();
+                var contactPojo =  snapshot.data();
 
-                // Get a date snapshot
-                var dateSnapshotRef = fsdb.collection('partners').doc(context.params.uid).collection('mChatsDump').doc(context.params.date);
-                console.log('date: ', context.params.date);
 
-                // Update aggregations in a transaction
-                return fsdb.runTransaction(transaction => {
-                  return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
-                    // Compute new number of views this day
-                    var datesnapshotpojo = dateSnapshotDoc.data()
-                    console.log('datesnapshotpojo: ', datesnapshotpojo);
+                var reff = rtdb.ref("user_profiles");
 
-                    var oldNumVisits = 0;
+                return reff.orderByChild("mRMN").equalTo(contactPojo.mContactNumber).once("value", function(data) {
+                  // do some stuff once
+                  if(data.exists()){
+
+                  console.log('contact data exists: ',contactPojo.mContactNumber, data);
 
 
 
-                    if(datesnapshotpojo !== undefined){
-                     if(datesnapshotpojo.mNumDocs!== undefined ){
-                                   oldNumVisits = datesnapshotpojo.mNumDocs;
-                                }
-                    }
+                         return fsdb
+                         .collection('partners')
+                         .doc(context.params.uid)
+                         .collection('phonebook')
+                         .doc(context.params.mobile).update({ alreadyonILN: true});
 
-                    console.log('oldNumChats: ', oldNumVisits);
 
-                    var newNumVisits = oldNumVisits + 1;
 
-                    // Update date snapshot
-                    return transaction.set(dateSnapshotRef, {
-                      mNumDocs: newNumVisits,
-                      mDate: context.params.date
+                  }else{
 
-                    });
-                  });
+                   return console.log('contact dont exists: ',contactPojo.mContactNumber, data);
+
+                  }
+
                 });
+
+
+
+
+
               });
+
+exports.newContactUpdated = functions.firestore
+              .document('partners/{uid}/phonebook/{mobile}')
+              .onUpdate((change, context) => {
+                // Get pojo of the newly added visit interaction document
+                var contactPojo =  change.after.data();
+
+                   if(contactPojo.invited){
+
+                     console.log('invited: ',contactPojo.mContactNumber, contactPojo);
+
+                     //Hit SMS API
+                     const hashkey = rawurlencode('hLGz8/yJ4bI-GS5XO3Pr8b3V7W2Nvoxiz3A3Kh6IWA');
+                     const rmn = rawurlencode(contactPojo.mContactNumber.replace('+91',''));
+                     const sender = rawurlencode('TRIPIN');
+                     const appurl = rawurlencode('bit.ly/2m8n54N')
+                     console.log('Sending SMS to :', contactPojo.mContactName, rmn);
+                     const msg = rawurlencode('Hello. '+contactPojo.mProviderName+' have sent you this Invitation. Join Indian Logistics Network, install ILN app now. '+appurl)
+                     request.get('https://api.textlocal.in/send/?apikey='+hashkey+'&numbers='+rmn+'&message='+msg+'&sender='+sender, function (error, response, body) {
+                     console.log('error:', error); // Print the error if one occurred
+                     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+                     return console.log('body:', body); //Prints the response of the request.
+                     });
+                     return console.log("Sms api processing: ", msg)
+
+
+
+                   }else{
+
+                    return console.log('not invited: ',contactPojo.mContactNumber);
+
+
+                   }
+
+
+
+                });
+
+
+
 
 
 

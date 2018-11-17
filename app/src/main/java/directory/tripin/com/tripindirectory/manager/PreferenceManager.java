@@ -21,6 +21,8 @@ public class PreferenceManager {
     public static final String PREF_RATE_REMINDER = "ratereminder";
 
     public static final String PREF_SETTING_LB_NOTIF = "loadboard_allnotifications";
+    public static final String PREF_SETTING_INVITEPOPUP = "invite_popup";
+
 
 
 
@@ -235,6 +237,15 @@ public class PreferenceManager {
 
     public void setSettingLoadboardNotif(Boolean islbntifactive) {
         editor.putBoolean(PREF_SETTING_LB_NOTIF, islbntifactive);
+        editor.commit();
+    }
+
+    public Boolean getSettingPopupinvite() {
+        return sInstance.getBoolean(PREF_SETTING_INVITEPOPUP, true);
+    }
+
+    public void setSettingPopupinvite(Boolean islbntifactive) {
+        editor.putBoolean(PREF_SETTING_INVITEPOPUP, islbntifactive);
         editor.commit();
     }
 

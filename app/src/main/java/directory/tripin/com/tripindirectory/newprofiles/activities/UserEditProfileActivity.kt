@@ -19,6 +19,7 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
+import directory.tripin.com.tripindirectory.newlookcode.activities.InvitePhonebookActivity
 import directory.tripin.com.tripindirectory.newlookcode.activities.NewSplashActivity
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.utils.AppUtils
@@ -139,6 +140,11 @@ class UserEditProfileActivity : AppCompatActivity() {
             startActivity(i)
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_settings", bundle)
+        }
+
+        invirephonebook.setOnClickListener {
+            val i = Intent(this, InvitePhonebookActivity::class.java)
+            startActivity(i)
         }
     }
 
