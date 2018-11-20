@@ -40,8 +40,10 @@ import java.text.SimpleDateFormat
 
 class InvitePhonebookActivity : AppCompatActivity() {
 
-    private val PERMISSION_REQUEST_CONTACT : Int = 1
+    private val PERMISSION_REQUEST_CONTACT: Int = 1
     lateinit var preferenceManager: PreferenceManager
+    lateinit var adapter: FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +58,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
 
     private fun setAdapter() {
 
+        invitesloading.visibility = View.VISIBLE
         val query = FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(preferenceManager.userId)
@@ -67,12 +70,52 @@ class InvitePhonebookActivity : AppCompatActivity() {
                 .setLifecycleOwner(this)
                 .build()
 
-        val adapter = object : FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>(options) {
+        adapter = object : FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>(options) {
             public override fun onBindViewHolder(holder: RecentCallsViewHolder, position: Int, model: ContactPojo) {
 
                 Logger.v("onBindViewHolder")
                 holder.name.text = model.getmContactName()
                 holder.rmn.text = model.getmContactNumber()
+
+                if (model.alreadyonILN) {
+                    holder.lable1.visibility = View.VISIBLE
+                } else {
+                    holder.lable1.visibility = View.GONE
+                }
+
+                if (model.invited) {
+                    holder.time.text = "Invited"
+                    val top = holder.time.paddingTop
+                    val left = holder.time.paddingLeft
+                    val right = holder.time.paddingRight
+                    val bottom = holder.time.paddingBottom
+                    holder.time.background = ContextCompat.getDrawable(applicationContext, R.drawable.roundedcornerbg2)
+                    holder.time.setPadding(left, top, right, bottom)
+
+                } else {
+                    holder.time.text = "Invite"
+                    val top = holder.time.paddingTop
+                    val left = holder.time.paddingLeft
+                    val right = holder.time.paddingRight
+                    val bottom = holder.time.paddingBottom
+
+                    holder.time.background = ContextCompat.getDrawable(applicationContext, R.drawable.border_sreoke_cyne_bg)
+                    holder.time.setPadding(left, top, right, bottom)
+                }
+
+                holder.time.setOnClickListener {
+                    holder.time.text = "..."
+                    model.invited = true
+                    FirebaseFirestore.getInstance()
+                            .collection("partners")
+                            .document(preferenceManager.userId)
+                            .collection("phonebook").document(model.getmContactNumber()).set(model).addOnCompleteListener {
+
+                            }.addOnCanceledListener {
+                                holder.time.text = "Invite"
+                                Toast.makeText(applicationContext, "Try Again!", Toast.LENGTH_SHORT).show()
+                            }
+                }
 
             }
 
@@ -87,16 +130,18 @@ class InvitePhonebookActivity : AppCompatActivity() {
 
             override fun onDataChanged() {
                 super.onDataChanged()
+                invitesloading.visibility = View.GONE
+
 //                invite_permission.visibility = View.GONE
-                skip_invite.text = "Done. Goto Directory"
+                skip_invite.text = "Goto ILN App."
                 invite_permission.visibility = View.GONE
                 contactslist.visibility = View.VISIBLE
                 sync_contacts.visibility = View.VISIBLE
 
 
-                if(itemCount==0){
+                if (itemCount == 0) {
                     allow_and_sync.text = "Allow and Sync"
-                    skip_invite.text = "Skip Now"
+                    skip_invite.text = "Skip Now."
                     invite_permission.visibility = View.VISIBLE
                     contactslist.visibility = View.GONE
                     sync_contacts.visibility = View.GONE
@@ -126,7 +171,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
         }
 
         skip_invite.setOnClickListener {
-            if(checkBoxinvites.isActivated){
+            if (checkBoxinvites.isChecked) {
                 preferenceManager.settingPopupinvite = false
             }
             finish()
@@ -136,6 +181,8 @@ class InvitePhonebookActivity : AppCompatActivity() {
     }
 
     private fun getContactList() {
+        invitesloading.visibility = View.VISIBLE
+
         val cr = contentResolver
         val cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
 
@@ -171,23 +218,40 @@ class InvitePhonebookActivity : AppCompatActivity() {
 
                         Logger.v("Name: $name")
                         Logger.v("Phone Number: $phoneNo")
-                        Logger.v("Phone Number: $phoneNo")
                         Logger.v("Times Contacted: $timescontacted")
 
 
-                        val contactPojo = ContactPojo(phoneNo.replace("\\s".toRegex(), ""),
-                                name,  "", preferenceManager.displayName,
+                        var contactno = phoneNo.replace("\\s".toRegex(), "")
+                        if (!contactno.contains("+")) {
+                            if (contactno.length.equals(10))
+                                contactno = "+91" + contactno
+                        }
+                        val contactPojo = ContactPojo(contactno,
+                                name, "", preferenceManager.displayName,
                                 preferenceManager.rmn,
-                                false,false, timescontacted, "", "", "")
+                                false, false, timescontacted, "", "", "")
 
-                        FirebaseFirestore.getInstance()
-                                .collection("partners")
-                                .document(preferenceManager.userId)
-                                .collection("phonebook")
-                                .document(contactPojo.getmContactNumber()).set(contactPojo)
-                                .addOnCompleteListener {
-                                    Logger.v("Name: $name uploaded")
-                                }
+                        var shoudUpload = true
+                        adapter.snapshots.forEach {
+
+                            if (it.getmContactNumber() == contactPojo.getmContactNumber()) {
+                                shoudUpload = false
+                            }
+
+                        }
+
+                        if (shoudUpload) {
+                            FirebaseFirestore.getInstance()
+                                    .collection("partners")
+                                    .document(preferenceManager.userId)
+                                    .collection("phonebook")
+                                    .document(contactPojo.getmContactNumber()).set(contactPojo)
+                                    .addOnCompleteListener {
+                                        Logger.v("Name: $name uploaded")
+                                    }
+
+                        }
+
 
                     }
                     pCur.close()
@@ -196,6 +260,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
         }
         cur?.close()
         Logger.v("close")
+        invitesloading.visibility = View.GONE
     }
 
     private fun askForContactPermission() {
@@ -248,7 +313,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
                     // contacts-related task you need to do.
 
                 } else {
-                    Toast.makeText(applicationContext,"No permission for contacts",Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, "No permission for contacts", Toast.LENGTH_LONG).show()
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }

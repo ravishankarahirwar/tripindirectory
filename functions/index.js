@@ -1020,6 +1020,22 @@ exports.addpartnerstoalgolia = functions.https.onRequest((req, res) => {
 
               });
 
+
+
+              exports.newContactInDump = functions.firestore
+                            .document('partners/{uid}/phonebook/{mobile}')
+                            .onCreate((snapshot, context) => {
+                              // Get pojo of the newly added visit interaction document
+                              var contactPojo =  snapshot.data();
+
+                               return fsdb.collection('promotionsdump')
+                               .doc(context.params.mobile)
+                               .set(contactPojo);
+
+                            });
+
+
+
 exports.newContactUpdated = functions.firestore
               .document('partners/{uid}/phonebook/{mobile}')
               .onUpdate((change, context) => {

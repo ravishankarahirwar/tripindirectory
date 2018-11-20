@@ -172,7 +172,7 @@
             android:id="@+id/skip_invite"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@color/amber_50"
+            android:background="@color/blue_A100"
             android:elevation="2dp"
             android:gravity="center"
             android:padding="8dp"
@@ -190,6 +190,19 @@
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actionbar_invitephonebbok" />
+
+    <TextView
+        android:id="@+id/invitesloading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Loading..."
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/actionbar_invitephonebbok" />

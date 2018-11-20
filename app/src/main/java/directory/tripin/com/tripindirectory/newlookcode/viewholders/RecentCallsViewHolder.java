@@ -13,6 +13,7 @@ public class RecentCallsViewHolder extends RecyclerView.ViewHolder {
     public TextView rmn;
     public TextView time;
     public ImageView calltype_icon;
+    public  TextView lable1;
 
     public RecentCallsViewHolder(View itemView) {
         super(itemView);
@@ -21,5 +22,6 @@ public class RecentCallsViewHolder extends RecyclerView.ViewHolder {
         name = itemView.findViewById(R.id.caller_compname);
         rmn = itemView.findViewById(R.id.caller_rmn);
         time = itemView.findViewById(R.id.callingtime);
+        lable1 = itemView.findViewById(R.id.lable1);
     }
 }

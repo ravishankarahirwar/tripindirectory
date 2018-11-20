@@ -10,7 +10,7 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 92
+        versionCode 93
         versionName "10.6"
         multiDexEnabled true
         dataBinding.enabled true
