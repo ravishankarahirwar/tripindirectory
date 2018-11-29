@@ -172,6 +172,7 @@ class AllTransportersActivity : AppCompatActivity() {
         firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
 
         //fitler and sort
+        baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)

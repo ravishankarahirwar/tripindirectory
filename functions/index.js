@@ -1075,6 +1075,83 @@ exports.newContactUpdated = functions.firestore
 
 
 
+exports.setdefaultspamvalue = functions.https.onRequest((req, res) => {
+
+   return admin.firestore().collection("denormalizers").get().then((docs) => {
+
+
+           return docs.forEach((doc) => {
+
+             let profile = doc.data();
+
+              fsdb.collection('denormalizers')
+                        .doc(doc.id)
+                        .set({ isSpammed: false},  {merge: true});
+
+              fsdb.collection('partners')
+                                     .doc(doc.id)
+                                     .set({ isSpammed: false},  {merge: true});
+
+              console.log(doc.id,profile);
+
+
+           })
+
+
+   })
+
+});
+
+
+  exports.newReportSubmitted = functions.firestore
+      .document('adminappdata/reports/reportedcomps/{reportedUid}/reportslist/{reporterUid}')
+      .onCreate((snapshot, context) => {
+        // Get pojo of the newly added visit interaction document
+        var submittedReportPojo =  snapshot.data();
+
+        // Get a reported company snapshot
+        var dateSnapshotRef = fsdb.collection('adminappdata').doc('reports').collection('reportedcomps')
+        .doc(context.params.reportedUid);
+        console.log('comp reported: ', context.params.reportedUid);
+
+        // Update aggregations in a transaction
+        return fsdb.runTransaction(transaction => {
+          return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+            // Compute new number of views this day
+            var datesnapshotpojo = dateSnapshotDoc.data()
+            console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+            var oldmNumReportsCounts = 0;
+
+
+
+            if(datesnapshotpojo !== undefined){
+             if(datesnapshotpojo.mReportsCount!== undefined ){
+                           oldmNumReportsCounts = datesnapshotpojo.mReportsCount;
+                        }
+            }
+
+            console.log('oldmNumReportsCounts: ', oldmNumReportsCounts);
+
+            var newReportsCount = oldmNumReportsCounts + 1;
+
+            var FieldValue = require("firebase-admin").firestore.FieldValue;
+
+
+            // Update date snapshot
+            return transaction.set(dateSnapshotRef, {
+              mReportsCount: newReportsCount,
+              mReportStatus: 0,
+              mCompanyName: submittedReportPojo.mReportedCompName,
+              mCompanyUserName : submittedReportPojo.mReportedDisplayName,
+              mCompanyRmn : submittedReportPojo.mReportedRmn,
+              mCompanyUid : submittedReportPojo.mReportedUid,
+              mCompanyFuid : submittedReportPojo.mReportedFuid,
+              mTimeStamp : FieldValue.serverTimestamp()
+            });
+          });
+        });
+      });
 
 
 

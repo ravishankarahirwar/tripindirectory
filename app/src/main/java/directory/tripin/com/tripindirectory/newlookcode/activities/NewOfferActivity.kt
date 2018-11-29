@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.keiferstone.nonet.NoNet
 import directory.tripin.com.tripindirectory.R
+import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.newlookcode.pojos.AdInterestedUser
 import kotlinx.android.synthetic.main.activity_ilnregister_ad.*
@@ -44,6 +46,29 @@ class NewOfferActivity : AppCompatActivity() {
             firebaseAnalytics.logEvent("z_offer_insurance", bundle)
             finish()
         }
+
+//        howmanyinterested.setOnClickListener {
+//            FirebaseFirestore.getInstance().collection("insurance_offer_interested").addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
+//                if (e != null) {
+//                    finish()
+//                    Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
+//                    return@EventListener
+//                }
+//
+//                if (snapshot != null) {
+//                    val mDatabse = FirebaseDatabase.getInstance().reference
+//                    var count = 0
+//                    snapshot.forEach {
+//                        val adInterestedUser  = it.toObject(AdInterestedUser::class.java)
+//                        mDatabse.child("offerinterested").child("first140").push().setValue(adInterestedUser)
+//                        count += 1
+//                        Logger.v("count:"+count)
+//                    }
+//                } else {
+//                    howmanyinterested.text = "counting..."
+//                }
+//            })
+//        }
 
         internetCheck()
 

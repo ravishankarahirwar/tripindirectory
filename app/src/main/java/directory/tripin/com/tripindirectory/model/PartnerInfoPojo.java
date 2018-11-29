@@ -48,6 +48,8 @@ public class PartnerInfoPojo {
 
 
     private boolean isVerified = true;
+    public Boolean isSpammed = false;
+
 
     private List<String> mCompanyLandLineNumbers;
     private List<String> mImagesUrl;
@@ -84,6 +86,7 @@ public class PartnerInfoPojo {
         this.mSourceCities = mSourceCities;
         this.mDestinationCities = mDestinationCities;
     }
+
 
     public Double getmAvgRating() {
         return mAvgRating;

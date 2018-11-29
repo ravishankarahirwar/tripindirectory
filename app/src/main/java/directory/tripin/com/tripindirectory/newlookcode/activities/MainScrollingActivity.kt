@@ -875,11 +875,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         mainPageAction("search")
 
         //fitler and sort
-        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort", fleetssorter)
-        baseQuery = baseQuery.orderBy("mBidValue", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.isActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.mAvgRating", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
+        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
 
 
         val config = PagedList.Config.Builder()

@@ -303,6 +303,22 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                 mCompPhotourl = partnerInfoPojo.getmPhotoUrl()
             }
 
+            //is spammed
+            if(partnerInfoPojo.isSpammed){
+                blockedui.visibility = View.VISIBLE
+                Logger.v("spammed")
+                if(mCompUid==preferenceManager.userId){
+                    unblockrequest.visibility = View.VISIBLE
+                }else{
+                    unblockrequest.visibility = View.GONE
+                }
+
+            }else{
+                blockedui.visibility = View.GONE
+                unblockrequest.visibility = View.GONE
+                Logger.v("not spammed")
+            }
+
             //status statusindicator
 
             if (partnerInfoPojo.isActive != null) {
@@ -585,6 +601,28 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             intent.putExtra("photourl",mCompPhotourl)
             startActivity(intent)
         }
+
+        reportprofile.setOnClickListener {
+            val intent = Intent(context, SubmitReportActivity::class.java)
+            intent.putExtra("uid",mCompUid)
+            intent.putExtra("name",mCompName)
+            intent.putExtra("rmn",mCompRmn)
+            intent.putExtra("photourl",mCompPhotourl)
+            intent.putExtra("fuid",mCompFuid)
+
+            startActivity(intent)
+
+        }
+
+        unblockrequest.setOnClickListener {
+            val intent = Intent(this@CompanyProfileDisplayActivity, ChatRoomActivity::class.java)
+            intent.putExtra("ormn", "+919284089759")
+            intent.putExtra("imsg", "Hi, I am requesting to unblock my profile.")
+            intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
+            intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
+            startActivity(intent)
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_assistant", bundle)        }
     }
 
     private fun setUpImage(getmPhotoUrl: String) {
