@@ -622,7 +622,8 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
             startActivity(intent)
             val bundle = Bundle()
-            firebaseAnalytics.logEvent("z_assistant", bundle)        }
+            firebaseAnalytics.logEvent("z_assistant", bundle)
+        }
     }
 
     private fun setUpImage(getmPhotoUrl: String) {

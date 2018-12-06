@@ -1,0 +1,242 @@
+package directory.tripin.com.tripindirectory.newlookcode.activities
+
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.widget.Toast
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.location.places.AutocompleteFilter
+import com.google.android.gms.location.places.ui.PlaceAutocomplete
+import com.google.gson.Gson
+import com.jaredrummler.materialspinner.MaterialSpinner
+import directory.tripin.com.tripindirectory.R
+import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.manager.PreferenceManager
+import directory.tripin.com.tripindirectory.model.HubFetchedCallback
+import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.LoadPostPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
+import kotlinx.android.synthetic.main.activity_load_filters.*
+import kotlinx.android.synthetic.main.item_loadpost_input.*
+import kotlinx.android.synthetic.main.layout_fsfilterloads_actionbar.*
+
+class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
+
+    internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE = 3
+    internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION = 4
+    lateinit var context: Context
+    lateinit var postpojo: LoadPostPojo
+    lateinit var mSourceRouteCityPojo: RouteCityPojo
+    lateinit var mDestinationRouteCityPojo: RouteCityPojo
+    lateinit var preferenceManager : PreferenceManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_load_filters)
+        context = this
+        preferenceManager = PreferenceManager.getInstance(context)
+        mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
+        mDestinationRouteCityPojo = RouteCityPojo(context, 2, 0, this)
+
+        setListners()
+        setSpinners()
+        setRoutePickup()
+        postpojo = LoadPostPojo()
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(preferenceManager.prefLBFilter.isNotEmpty()){
+            setInitialFilters()
+        }
+    }
+
+    private fun setInitialFilters() {
+        postpojo = Gson().fromJson(preferenceManager.prefLBFilter, LoadPostPojo::class.java)
+        if(postpojo.getmSourceCity()!=null){
+            select_source.text = postpojo.getmSourceCity()
+        }
+        if(postpojo.getmDestinationCity()!=null){
+            select_destination.text = postpojo.getmDestinationCity()
+        }
+        if(postpojo.getmPayload()!=null){
+            weightf.setText(postpojo.getmPayload())
+        }
+        if(postpojo.getmVehichleLenght()!=null){
+            lengthf.setText(postpojo.getmVehichleLenght())
+        }
+
+    }
+
+
+    private fun setListners() {
+        backfslbf.setOnClickListener {
+            finish()
+        }
+
+        setfilters.setOnClickListener {
+            setFilters()
+        }
+    }
+
+    private fun setFilters() {
+        if(weightf.text != null){
+            //add unit
+            if(!weightf.text.isEmpty()){
+                val list = spinnerweightf.getItems<String>()
+                postpojo.setmPayload(weightf.text.toString())
+                postpojo.setmPayloadUnit(list.get(spinnerweightf.selectedIndex))
+            }else{
+                postpojo.setmPayload("")
+            }
+
+        }
+        if(lengthf.text != null){
+            //add unit
+            if(!lengthf.text.isEmpty()){
+                val list = spinnerlengthf.getItems<String>()
+                postpojo.setmVehichleLenght(lengthf.text.toString())
+                postpojo.setmVehichleLenghtUnit(list.get(spinnerlengthf.selectedIndex))
+            }else{
+                postpojo.setmVehichleLenght("")
+            }
+
+        }
+
+        preferenceManager.prefLBFilter = Gson().toJson(postpojo)
+
+
+        Logger.v(postpojo.toString())
+        finish()
+
+    }
+
+    private fun setRoutePickup() {
+
+        select_source.setOnClickListener {
+            starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE)
+        }
+
+        select_destination.setOnClickListener {
+            starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION)
+        }
+
+    }
+
+    private fun setSpinners() {
+        val spinnervehicle = findViewById<MaterialSpinner>(R.id.spinnervtypef)
+        spinnervehicle.setItems("Select",
+                "LCV",
+                "Truck",
+                "Tusker",
+                "Taurus",
+                "Trailers",
+                "Container Body",
+                "Refrigerated Van",
+                "Tankers",
+                "Tippers",
+                "Bulkers",
+                "Car Carriers",
+                "Scooter Body",
+                "Hydraulic Axles")
+        spinnervehicle.setOnItemSelectedListener { view, position, id, item ->
+            postpojo.setmVehicleType(item.toString())
+        }
+
+        val spinnerbody = findViewById<MaterialSpinner>(R.id.spinnerbtypef)
+        spinnerbody.setItems("Select",
+                "Normal",
+                "Full Body",
+                "Half Body",
+                "Open Body",
+                "Platform",
+                "Skeleton",
+                "Semi-low",
+                "Low",
+                "Trolla/Body Trailer",
+                "Refer",
+                "High Cube")
+        spinnerbody.setOnItemSelectedListener { view, position, id, item ->
+            postpojo.setmBodyType(item.toString())
+        }
+        val spinnerweight = findViewById<MaterialSpinner>(R.id.spinnerweightf)
+        spinnerweight.setItems("KG", "Tons", "MT")
+        spinnerweight.setOnItemSelectedListener { view, position, id, item -> }
+        val spinnerlength = findViewById<MaterialSpinner>(R.id.spinnerlengthf)
+        spinnerlength.setItems("Meters", "Feets")
+        spinnerlength.setOnItemSelectedListener { view, position, id, item -> }
+    }
+
+    override fun onDestinationHubFetched(destinationhub: String?, operaion: Int) {
+        postpojo.setmDestinationHub(destinationhub)
+    }
+
+    override fun onSourceHubFetched(sourcehub: String?, operation: Int) {
+        postpojo.setmSourceHub(sourcehub)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+
+            when (requestCode) {
+
+                PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
+                    if(data!=null){
+                        val place = PlaceAutocomplete.getPlace(context, data)
+                        select_source.text = ". ${place.name}"
+                        mSourceRouteCityPojo.setmLatLang(place.latLng)
+                        select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        postpojo.setmSourceCity(place.name.toString())
+                    }else{
+                        Toast.makeText(context,"Try Again!", Toast.LENGTH_LONG).show()
+                    }
+
+                }
+                PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
+                    if(data!=null){
+                        val place = PlaceAutocomplete.getPlace(context, data)
+                        select_destination.text = ". ${place.name}"
+                        mDestinationRouteCityPojo.setmLatLang(place.latLng)
+                        select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        postpojo.setmDestinationCity(place.name.toString())
+                    }else{
+                        Toast.makeText(context,"Try Again!", Toast.LENGTH_LONG).show()
+                    }
+
+
+                }
+
+
+
+            }
+        }else{
+            when (requestCode) {
+                3->{
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun starttheplacesfragment(code: Int) = try {
+        val typeFilter = AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                .setCountry("IN")
+                .build()
+        val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                .setFilter(typeFilter)
+                .build(this)
+        startActivityForResult(intent, code)
+    } catch (e: GooglePlayServicesRepairableException) {
+        // TODO: Handle the error.
+    } catch (e: GooglePlayServicesNotAvailableException) {
+        // TODO: Handle the error.
+    }
+}

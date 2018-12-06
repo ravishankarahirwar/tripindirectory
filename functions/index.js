@@ -83,12 +83,56 @@ exports.newLoadpost = functions.database.ref('/posts/{pushId}')
          return admin.messaging().sendToTopic("loadboardNotification", payload, options);
     });
 
+
+
+
 //Make the initial mAccountStatusValue 0
 exports.emptyCompanyCreated = functions.firestore
   .document('partners/{documentId}')
   .onCreate(event => {
       return event.data.ref.update({ mAccountStatus: 0 });
 });
+
+exports.duplicateloadpost = functions.database.ref('/posts/{pushId}')
+    .onCreate((snapshot, context) => {
+      // Grab the current value of what was written to the Realtime Database.
+      const loadpost = snapshot.val();
+      console.log('New Loadpost', context.params.pushId, loadpost);
+
+      myPayLoadArray = loadpost.mPayload.split(/([0-9]+)/)
+      myLengthArray = loadpost.mTruckLength.split(/([0-9]+)/)
+      console.log('myPayLoadArray', myPayLoadArray);
+      console.log('myLengthArray', myLengthArray);
+
+      var FieldValue = require("firebase-admin").firestore.FieldValue;
+
+      var newloadpost = {
+           mSourceCity : loadpost.mSource,
+           mDestinationCity : loadpost.mDestination,
+           mSourceHub : loadpost.mSource.toUpperCase(),
+           mDestinationHub : loadpost.mDestination.toUpperCase(),
+           mVehicleType : loadpost.mTruckType,
+           mBodyType : loadpost.mTruckBodyType,
+           mPayload : myPayLoadArray[1],
+           mPayloadUnit : myPayLoadArray[2],
+           mVehichleLenght : myLengthArray[1],
+           mVehichleLenghtUnit : myLengthArray[2],
+           mMaterial : loadpost.mMeterial,
+           mRemark : loadpost.mRemark,
+           mDisplayName : loadpost.mAuthor,
+           mCompanyName : loadpost.mAuthor,
+           mUid : loadpost.mUid,
+           mFuid : loadpost.mFuid,
+           mRmn : loadpost.mContactNo,
+           mPhotoUrl : loadpost.mPhotoUrl,
+           mTimeStamp : FieldValue.serverTimestamp()
+        };
+
+      return fsdb.collection("loadposts").doc().set(newloadpost);
+
+    });
+
+
 
 
 //exports.newVerifiedCompany = functions.database.ref('/userCategories/companyVerifiedUsers/{pushId}')

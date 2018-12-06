@@ -41,7 +41,6 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import kotlinx.android.synthetic.main.activity_load_board2.*
 import kotlinx.android.synthetic.main.item_loadpost_input.*
 import libs.mjn.prettydialog.PrettyDialog
-import libs.mjn.prettydialog.PrettyDialogCallback
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -96,15 +95,15 @@ class LoadBoardActivity : AppCompatActivity() {
 
                 val basicQueryPojo:BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
                 if(!basicQueryPojo.mSourceCity.isEmpty()){
-                    select_source.text = basicQueryPojo.mSourceCity
-                    select_source.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
+                    select_sourcef.text = basicQueryPojo.mSourceCity
+                    select_sourcef.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
                     postpojo.mSource = basicQueryPojo.mSourceCity
                     newload.visibility = View.GONE
                     loadpost_input.visibility = View.VISIBLE
                 }
                 if(!basicQueryPojo.mDestinationCity.isEmpty()){
-                    select_destination.text = basicQueryPojo.mDestinationCity
-                    select_destination.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
+                    select_destinationf.text = basicQueryPojo.mDestinationCity
+                    select_destinationf.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
                     postpojo.mDestination = basicQueryPojo.mDestinationCity
                     newload.visibility = View.GONE
                     loadpost_input.visibility = View.VISIBLE
@@ -244,10 +243,10 @@ class LoadBoardActivity : AppCompatActivity() {
     }
 
     private fun cleanUpPostInput() {
-        select_destination.text = "Destination"
-        select_destination.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_200))
-        select_source.text = "Source"
-        select_source.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_200))
+        select_destinationf.text = "Destination"
+        select_destinationf.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_200))
+        select_sourcef.text = "Source"
+        select_sourcef.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_200))
         postpojo.mSource = null
         postpojo.mDestination = null
         postpojo.mMeterial = null
@@ -279,11 +278,11 @@ class LoadBoardActivity : AppCompatActivity() {
         if(postpojo.mSource==null||postpojo.mDestination==null){
             Toast.makeText(context,"Please Enter Route",Toast.LENGTH_LONG).show()
         }else{
-            val t1 = select_source.text.toString()
-            val t2 = select_destination.text.toString()
+            val t1 = select_sourcef.text.toString()
+            val t2 = select_destinationf.text.toString()
 
-            select_source.text = t2
-            select_destination.text = t1
+            select_sourcef.text = t2
+            select_destinationf.text = t1
             postpojo.mDestination = t1.substring(2)
             postpojo.mSource = t2.substring(2)
         }
@@ -358,8 +357,8 @@ class LoadBoardActivity : AppCompatActivity() {
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
                     if(data!=null){
                         val place = PlaceAutocomplete.getPlace(context, data)
-                        select_source.text = ". ${place.name}"
-                        select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        select_sourcef.text = ". ${place.name}"
+                        select_sourcef.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.mSource = place.name.toString()
                     }else{
                         Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
@@ -369,8 +368,8 @@ class LoadBoardActivity : AppCompatActivity() {
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
                     if(data!=null){
                         val place = PlaceAutocomplete.getPlace(context, data)
-                        select_destination.text = ". ${place.name}"
-                        select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
+                        select_destinationf.text = ". ${place.name}"
+                        select_destinationf.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.mDestination = place.name.toString()
                     }else{
                         Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
@@ -395,11 +394,11 @@ class LoadBoardActivity : AppCompatActivity() {
 
     private fun setRoutePickup() {
 
-        select_source.setOnClickListener {
+        select_sourcef.setOnClickListener {
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE)
         }
 
-        select_destination.setOnClickListener {
+        select_destinationf.setOnClickListener {
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION)
         }
 

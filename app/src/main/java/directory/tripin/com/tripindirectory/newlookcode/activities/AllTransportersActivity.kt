@@ -136,17 +136,17 @@ class AllTransportersActivity : AppCompatActivity() {
         Logger.v(basicQueryPojo.toString())
 
         var source = "ANYWHERE"
-        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-            bundle.putString("source", basicQueryPojo.mSourceCity)
-            source = basicQueryPojo.mSourceCity.toUpperCase()
+        if (!basicQueryPojo.mSourceHub.isEmpty() && basicQueryPojo.mSourceHub != "Select City") {
+            bundle.putString("source", basicQueryPojo.mSourceHub)
+            source = basicQueryPojo.mSourceHub.toUpperCase()
         } else {
             bundle.putString("source", "Empty")
         }
 
         var destination = "ANYWHERE"
-        if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-            bundle.putString("destination", basicQueryPojo.mDestinationCity)
-            destination = basicQueryPojo.mDestinationCity.toUpperCase()
+        if (!basicQueryPojo.mDestinationHub.isEmpty() && basicQueryPojo.mDestinationHub != "Select City") {
+            bundle.putString("destination", basicQueryPojo.mDestinationHub)
+            destination = basicQueryPojo.mDestinationHub.toUpperCase()
         } else {
             bundle.putString("destination", "Empty")
         }

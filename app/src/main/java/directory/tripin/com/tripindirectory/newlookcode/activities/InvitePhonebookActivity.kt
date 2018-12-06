@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.keiferstone.nonet.NoNet
@@ -43,12 +44,14 @@ class InvitePhonebookActivity : AppCompatActivity() {
     private val PERMISSION_REQUEST_CONTACT: Int = 1
     lateinit var preferenceManager: PreferenceManager
     lateinit var adapter: FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>
+    lateinit var firebaseAnalytics :FirebaseAnalytics
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_invite_phonebook)
         preferenceManager = PreferenceManager.getInstance(this)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setListners()
         setAdapter()
         internetCheck()
@@ -110,7 +113,8 @@ class InvitePhonebookActivity : AppCompatActivity() {
                             .collection("partners")
                             .document(preferenceManager.userId)
                             .collection("phonebook").document(model.getmContactNumber()).set(model).addOnCompleteListener {
-
+                                val bundle = Bundle()
+                                firebaseAnalytics.logEvent("z_contact_invited", bundle)
                             }.addOnCanceledListener {
                                 holder.time.text = "Invite"
                                 Toast.makeText(applicationContext, "Try Again!", Toast.LENGTH_SHORT).show()
@@ -164,6 +168,8 @@ class InvitePhonebookActivity : AppCompatActivity() {
             Logger.v("askings permission")
             askForContactPermission()
             allow_and_sync.text = "Hold Tight..."
+            val bundle = Bundle()
+            firebaseAnalytics.logEvent("z_contacts_synced", bundle)
         }
 
         sync_contacts.setOnClickListener {

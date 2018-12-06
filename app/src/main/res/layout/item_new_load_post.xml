@@ -15,11 +15,12 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/autherprofile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/brown_50"
-            android:gravity="center_vertical"
             android:elevation="1dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
@@ -27,6 +28,9 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="10dp"
+                android:background="@drawable/white_circle_bg"
+                android:padding="2dp"
+                android:elevation="2dp"
                 app:srcCompat="@mipmap/ic_launcher_round" />
 
             <LinearLayout
@@ -105,6 +109,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/loadpostdetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"

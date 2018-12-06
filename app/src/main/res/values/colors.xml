@@ -125,7 +125,7 @@
     <color name="deep_orange_700">#E64A19</color>
     <color name="deep_orange_800">#D84315</color>
     <color name="deep_orange_900">#BF360C</color>
-    <color name="deep_orange_A100">#FF9E80</color>
+    <color name="deep_orange_A100">#ff9e80</color>
     <color name="deep_orange_A200">#FF6E40</color>
     <color name="deep_orange_A400">#FF3D00</color>
     <color name="deep_orange_A700">#DD2C00</color>
@@ -157,7 +157,7 @@
     <color name="pink_A700">#C51162</color>
 
     <color name="indigo_50">#E8EAF6</color>
-    <color name="indigo_100">#C5CAE9</color>
+    <color name="indigo_100">#c5cae9</color>
     <color name="indigo_200">#9FA8DA</color>
     <color name="indigo_300">#7986CB</color>
     <color name="indigo_400">#5C6BC0</color>

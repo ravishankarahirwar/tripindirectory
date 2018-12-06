@@ -19,6 +19,8 @@ public class PreferenceManager {
     public static final String PREF_IS_MAININTRO_SEEN = "ismainintroseen";
     public static final String PREF_IS_PROFILEINTRO_SEEN = "isprofileintroseen";
     public static final String PREF_RATE_REMINDER = "ratereminder";
+    public static final String PREF_LB_FILTER = "loadboardfilter";
+
 
     public static final String PREF_SETTING_LB_NOTIF = "loadboard_allnotifications";
     public static final String PREF_SETTING_INVITEPOPUP = "invite_popup";
@@ -228,6 +230,16 @@ public class PreferenceManager {
 
     public void setPrefRateReminder(String fuid) {
         editor.putString(PREF_RATE_REMINDER, fuid);
+        editor.commit();
+    }
+
+    public String getPrefLBFilter() {
+        String fuid = sInstance.getString(PREF_LB_FILTER, "");
+        return fuid;
+    }
+
+    public void setPrefLBFilter(String fuid) {
+        editor.putString(PREF_LB_FILTER, fuid);
         editor.commit();
     }
 

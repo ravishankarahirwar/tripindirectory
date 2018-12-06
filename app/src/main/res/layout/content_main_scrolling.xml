@@ -109,18 +109,6 @@
             android:textColor="@color/blue_grey_800"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/searchbyname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/chat_in_bg"
-            android:gravity="center"
-            android:padding="15dp"
-            android:text="SEARCH A COMPANY"
-            android:textColor="@color/blue_A200"
-            android:textStyle="bold" />
-
 
     </LinearLayout>
 

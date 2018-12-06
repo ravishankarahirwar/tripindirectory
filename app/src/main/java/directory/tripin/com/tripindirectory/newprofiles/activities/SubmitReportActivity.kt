@@ -144,8 +144,8 @@ class SubmitReportActivity : AppCompatActivity() {
             var reportTags : List<String> = ArrayList()
             reportTags = mReportTags
 
-            val submittedReportPojo = SubmittedReportPojo(preferenceManager.displayName,
-                    preferenceManager.comapanyName,
+            val submittedReportPojo = SubmittedReportPojo(preferenceManager.comapanyName,
+                    preferenceManager.displayName,
                     preferenceManager.rmn,
                     preferenceManager.userId,
                     preferenceManager.fuid,

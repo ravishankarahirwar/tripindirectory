@@ -69,10 +69,12 @@ import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfil
 import directory.tripin.com.tripindirectory.newprofiles.activities.UserEditProfileActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyProfilePojo
+import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.AppUtils
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.content_main_scrolling.*
+import kotlinx.android.synthetic.main.layout_directory_actionbar.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
 import kotlinx.android.synthetic.main.newlookfeedback.*
 import libs.mjn.prettydialog.PrettyDialog
@@ -104,10 +106,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    var mMyIndicator: ChatIndicatorPojo? = null
-    var pendingChatsvalueEventListener: ValueEventListener? = null
     val REQUEST_INVITE = 1001
-    lateinit var appUtils: AppUtils
     lateinit var gson: Gson
     lateinit var recyclerViewAnimator: RecyclerViewAnimator
     lateinit var mixpanelAPI: MixpanelAPI
@@ -121,7 +120,6 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         context = this
         gson = Gson()
         textUtils = TextUtils()
-        appUtils = AppUtils(context)
         preferenceManager = PreferenceManager.getInstance(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         mixpanelAPI = MixpanelAPI.getInstance(context, MixPanelConstants.MIXPANEL_TOKEN)
@@ -157,8 +155,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         }
         setSelectFleetAdapter()
         setRoutePickup()
-        basicQueryPojo = BasicQueryPojo("", "", ArrayList<String>())
-        setMainAdapter(basicQueryPojo)
+        basicQueryPojo = BasicQueryPojo("", "","","", ArrayList<String>())
+        getIntentData()
+
         setListners()
         setBottomNavogation()
 
@@ -169,16 +168,35 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         if (!preferenceManager.isMainScreenGuided) {
             showIntro()
-        }else{
-            if(preferenceManager.settingPopupinvite){
-                showInvitesScreen()
-            }
         }
-
 
         notificationSubscried()
 
 
+
+    }
+
+    private fun getIntentData() {
+        if(intent.extras!=null){
+            if(intent.extras.getSerializable("query")!=null){
+                val directorySearchPojo = intent.extras.getSerializable("query") as DirectorySearchPojo
+
+                basicQueryPojo.mSourceCity = directorySearchPojo.getmSourceCity()
+                basicQueryPojo.mDestinationCity = directorySearchPojo.getmDestinationCity()
+
+                basicQueryPojo.mSourceHub = directorySearchPojo.getmSourceHub()
+                basicQueryPojo.mDestinationHub = directorySearchPojo.getmDestinationHub()
+
+                textViewDestination.text = basicQueryPojo.mDestinationCity
+                textViewSource.text = basicQueryPojo.mSourceCity
+
+                setMainAdapter(basicQueryPojo)
+            }else{
+                setMainAdapter(basicQueryPojo)
+            }
+        }else{
+            setMainAdapter(basicQueryPojo)
+        }
     }
 
     private fun clearCities() {
@@ -186,6 +204,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         textViewDestination.text = ". Select City"
         basicQueryPojo.mDestinationCity = ""
         basicQueryPojo.mSourceCity = ""
+        basicQueryPojo.mDestinationHub = ""
+        basicQueryPojo.mSourceHub = ""
 //        fabFlip.visibility = View.INVISIBLE
 //        fabClear.visibility = View.INVISIBLE
         setMainAdapter(basicQueryPojo)
@@ -200,68 +220,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification")
     }
 
-    private fun setChatPendingIndicator() {
-        pendingChatsvalueEventListener = object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                chatloading.visibility = View.GONE
-            }
 
-            override fun onDataChange(p0: DataSnapshot) {
-                chatloading.visibility = View.GONE
-                if (p0.exists()) {
-                    mMyIndicator = p0.getValue(ChatIndicatorPojo::class.java)
-                    if (mMyIndicator != null) {
-                        if (mMyIndicator!!.getmMsgCount() > 0) {
-                            chatbadge.visibility = View.VISIBLE
 
-                            if (mMyIndicator!!.getmLastMsgUserImageUrl() != null) {
-                                if (!mMyIndicator!!.getmLastMsgUserImageUrl().isEmpty()) {
-                                    lastmsgimgurl.visibility = View.VISIBLE
-                                    val url = mMyIndicator!!.getmLastMsgUserImageUrl()
-                                    Picasso.with(applicationContext)
-                                            .load(url)
-                                            .placeholder(ContextCompat.getDrawable(applicationContext, R.drawable.emoji_google_1f464))
-                                            .transform(CircleTransform())
-                                            .fit()
-                                            .into(lastmsgimgurl, object : Callback {
 
-                                                override fun onSuccess() {
-                                                }
-
-                                                override fun onError() {
-                                                    lastmsgimgurl.visibility = View.INVISIBLE
-                                                }
-                                            })
-                                }
-
-                            }
-                        } else {
-                            chatbadge.visibility = View.INVISIBLE
-                            lastmsgimgurl.visibility = View.INVISIBLE
-                        }
-                    } else {
-                        chatbadge.visibility = View.INVISIBLE
-                        lastmsgimgurl.visibility = View.INVISIBLE
-                    }
-                } else {
-                    chatbadge.visibility = View.INVISIBLE
-                    lastmsgimgurl.visibility = View.INVISIBLE
-                }
-            }
-
-        }
-        FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).addValueEventListener(pendingChatsvalueEventListener as ValueEventListener)
-
-    }
-
-    override fun onStop() {
-        if (pendingChatsvalueEventListener != null) {
-            if (preferenceManager.userId != null)
-                FirebaseDatabase.getInstance().reference.child("chatpresence").child("chatpendings").child(preferenceManager.userId).removeEventListener(pendingChatsvalueEventListener!!)
-        }
-        super.onStop()
-    }
 
     override fun onDestroy() {
         mixpanelAPI.flush()
@@ -272,10 +233,6 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(mainhumb, "Welcome to ILN Directory", "Lets get through what you can explore here. Tap on the target!")
-                                .transparentTarget(true)
-                                .drawShadow(true)
-                                .cancelable(false).outerCircleColor(R.color.primaryColor),
                         TapTarget.forView(rv_fleets, "Select Fleet Type", "The list of top 12 transport companies who can provide you the fleets will be shown. You can select multiple fleet types.")
                                 .transparentTarget(true)
                                 .targetRadius(75)
@@ -332,9 +289,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     override fun onResume() {
         super.onResume()
 
-        if (preferenceManager.userId != null) {
-            setChatPendingIndicator()
-        }
+
 
         if (!preferenceManager.isProfileIntroSeen) {
             profilenew.visibility = View.VISIBLE
@@ -510,59 +465,11 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 //        ahBottomNavidATION.accentColor = ContextCompat.getColor(context, R.color.blue_grey_800)
 //        ahBottomNavidATION.inactiveColor = ContextCompat.getColor(context, R.color.blue_grey_300)
 
-        fabMenu.bindAnchorView(fab)
-        fabMenu.setOnFABMenuSelectedListener { view, id ->
-            when (id) {
-                R.id.action_loadboard -> {
-                    startLoadboardActivity("BottomMenu")
-                }
-                R.id.action_business -> {
-                    startYourBusinessActivity("BottomMenu")
-                }
-                R.id.action_chat -> {
-                    setChatHeadsActivity("BottomMenu")
-                }
-                R.id.action_rate -> {
-                    rateApp()
-                }
-                R.id.action_guide -> {
-                    showIntro()
-                }
-                R.id.action_invite -> {
-                    invite()
-                }
-                R.id.action_about -> {
-                    startInfoActivity()
-                }
 
-                R.id.action_feedback -> {
-                    chatwithassistant()
-                }
-//                R.id.action_logout -> {
-//                    AuthUI.getInstance().signOut(context).addOnSuccessListener {
-//                        Toast.makeText(context, "Logged Out", Toast.LENGTH_SHORT).show()
-//                        preferenceManager.setisFacebboked(false)
-//                        preferenceManager.rmn = null
-//                        val i = Intent(this, NewSplashActivity::class.java)
-//                        startActivity(i)
-//                        finish()
-//                        val bundle = Bundle()
-//                        firebaseAnalytics.logEvent("z_logout", bundle)
-//                    }
-//
-//                }
-            }
-        }
 
 
     }
 
-    private fun invite() {
-        val params = Bundle()
-        firebaseAnalytics.logEvent("z_share_clicked", params)
-        appUtils.shareApp()
-        //startActivityForResult(appUtils.getInviteIntent(), REQUEST_INVITE)
-    }
 
 
     private fun setListners() {
@@ -584,12 +491,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         showall.setOnClickListener {
             startAllTransportersActivity()
         }
-        yourbusiness.setOnClickListener {
-            startYourBusinessActivity("ActionBar")
-        }
-        showchats.setOnClickListener {
-            setChatHeadsActivity("ActionBar")
-        }
+
 
         posttolb2.setOnClickListener {
             startLoadboardActivity("ActionBar")
@@ -607,17 +509,16 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
             openOfferActivity()
         }
 
-        mainhumb.setOnClickListener {
-            startInfoActivity()
-        }
+
 
         searchbyname.setOnClickListener {
             startSearchCompanyActivity()
         }
 
-        searchacomp_top.setOnClickListener {
-            startSearchCompanyActivity()
+        backfromdirectory.setOnClickListener {
+            finish()
         }
+
 
 
     }
@@ -717,10 +618,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         startActivity(i)
     }
 
-    private fun startInfoActivity() {
-        val i = Intent(this, AboutIlnActivity::class.java)
-        startActivity(i)
-    }
+
 
     private fun startSearchCompanyActivity() {
         val i = Intent(this, SearchCompanyActivity::class.java)
@@ -809,10 +707,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         firebaseAnalytics.logEvent("z_seeall_transporters", bundle)
     }
 
-    private fun showInvitesScreen() {
-        val i = Intent(this, InvitePhonebookActivity::class.java)
-        startActivity(i)
-    }
+
 
 
     private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
@@ -822,9 +717,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         Logger.v(basicQueryPojo.toString())
 
         var source = "ANYWHERE"
-        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-            bundle.putString("source", basicQueryPojo.mSourceCity)
-            source = basicQueryPojo.mSourceCity.toUpperCase()
+        if (!basicQueryPojo.mSourceHub.isEmpty() && basicQueryPojo.mSourceHub != "Select City") {
+            bundle.putString("source", basicQueryPojo.mSourceHub)
+            source = basicQueryPojo.mSourceHub.toUpperCase()
             textViewSource.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
         } else {
             bundle.putString("source", "Empty")
@@ -832,9 +727,9 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         }
 
         var destination = "ANYWHERE"
-        if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-            bundle.putString("destination", basicQueryPojo.mDestinationCity)
-            destination = basicQueryPojo.mDestinationCity.toUpperCase()
+        if (!basicQueryPojo.mDestinationHub.isEmpty() && basicQueryPojo.mDestinationHub != "Select City") {
+            bundle.putString("destination", basicQueryPojo.mDestinationHub)
+            destination = basicQueryPojo.mDestinationHub.toUpperCase()
             textViewDestination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
         } else {
             bundle.putString("destination", "Empty")
@@ -1054,10 +949,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
                         val bundle = Bundle()
 
-                        if (!basicQueryPojo.mSourceCity.isEmpty() &&
-                                basicQueryPojo.mSourceCity != "Select City" &&
-                                !basicQueryPojo.mDestinationCity.isEmpty() &&
-                                basicQueryPojo.mDestinationCity != "Select City") {
+                        if (!basicQueryPojo.mSourceHub.isEmpty() &&
+                                basicQueryPojo.mSourceHub != "Select City" &&
+                                !basicQueryPojo.mDestinationHub.isEmpty() &&
+                                basicQueryPojo.mDestinationHub != "Select City") {
                             bundle.putString("is_route_queried", "Yes")
                         } else {
                             bundle.putString("is_route_queried", "No")
@@ -1141,6 +1036,21 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                         showall.visibility = View.VISIBLE
                         noresult.visibility = View.GONE
 
+                        val dPojo = DirectorySearchPojo(basicQueryPojo.mSourceCity
+                                ,basicQueryPojo.mDestinationCity
+                                ,basicQueryPojo.mSourceHub
+                                ,basicQueryPojo.mDestinationHub)
+
+                        if(dPojo.getmSourceCity().isNotEmpty()&&dPojo.getmDestinationCity().isNotEmpty()){
+                            FirebaseFirestore.getInstance().collection("partners")
+                                    .document(preferenceManager.userId)
+                                    .collection("mDirectoryUsage")
+                                    .document("${dPojo.getmSourceHub().toUpperCase()}_${dPojo.getmDestinationHub().toUpperCase()}").set(dPojo).addOnCompleteListener {
+                                        Logger.v("Collected in directory usage")
+                                    }
+
+                        }
+
                     }
                     LoadingState.FINISHED -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
@@ -1163,6 +1073,10 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                             if (itemCount < 12) {
                                 showall.visibility = View.GONE
                             }
+
+
+
+
 
                         }
                     }
@@ -1197,7 +1111,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
 
-                        textViewSource.text = ". ${place.name}"
+                        basicQueryPojo.mSourceCity = place.name.toString()
+                        textViewSource.text = ". ${basicQueryPojo.mSourceCity}"
 //                        fabFlip.visibility = View.VISIBLE
 //                        fabClear.visibility = View.VISIBLE
 
@@ -1219,7 +1134,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
 
-                        textViewDestination.text = ". ${place.name}"
+                        basicQueryPojo.mDestinationCity = place.name.toString()
+                        textViewDestination.text = ". ${basicQueryPojo.mDestinationCity}"
 //                        fabFlip.visibility = View.VISIBLE
 //                        fabClear.visibility = View.VISIBLE
 
@@ -1237,16 +1153,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
 
                 }
-                SIGN_IN_FOR_CREATE_COMPANY -> {
-                    startYourBusinessActivity("AfterPhoneSignup")
-                }
 
-                3 -> {
-                    if (preferenceManager.userId != null) {
-                        setChatPendingIndicator()
-                    }
-                    Toast.makeText(context, "Welcome", Toast.LENGTH_SHORT).show()
-                }
             }
         } else {
             when (requestCode) {
@@ -1262,12 +1169,12 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     }
 
     override fun onDestinationHubFetched(destinationhub: String, operaion: Int) {
-        basicQueryPojo.mDestinationCity = destinationhub
+        basicQueryPojo.mDestinationHub = destinationhub
         setMainAdapter(basicQueryPojo)
     }
 
     override fun onSourceHubFetched(sourcehub: String, operation: Int) {
-        basicQueryPojo.mSourceCity = sourcehub
+        basicQueryPojo.mSourceHub = sourcehub
         setMainAdapter(basicQueryPojo)
     }
 
@@ -1401,22 +1308,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         context.startActivity(callIntent)
     }
 
-    internal fun rateApp() {
-        val uri = Uri.parse("market://details?id=" + context.getPackageName())
-        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-        // To count with Play market backstack, After pressing back button,
-        // to taken back to our application, we need to add following flags to intent.
-        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
-                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-        try {
-            startActivity(goToMarket)
-        } catch (e: ActivityNotFoundException) {
-            startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + context.getPackageName())))
-        }
 
-    }
 
     /**
      * This method is use for checking internet connectivity
@@ -1428,15 +1320,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 .snackbar()
     }
 
-    private fun chatwithassistant() {
-        val intent = Intent(this@MainScrollingActivity, ChatRoomActivity::class.java)
-        intent.putExtra("ormn", "+919284089759")
-        intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
-        intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
-        startActivity(intent)
-        val bundle = Bundle()
-        firebaseAnalytics.logEvent("z_assistant", bundle)
-    }
+
 
     private fun mainPageAction(action: String) {
         val props = JSONObject()
