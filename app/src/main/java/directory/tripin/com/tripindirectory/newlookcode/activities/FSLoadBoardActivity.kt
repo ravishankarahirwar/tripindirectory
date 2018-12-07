@@ -1,5 +1,6 @@
 package directory.tripin.com.tripindirectory.newlookcode.activities
 
+import android.app.Activity
 import android.arch.paging.PagedList
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -48,12 +49,13 @@ import java.util.*
 
 class FSLoadBoardActivity : AppCompatActivity() {
 
+    internal var LOADBOARD_FILTER_REQUEST_CODE = 1
     lateinit var filterLoadPostPojo: LoadPostPojo
     lateinit var adapter: FirestorePagingAdapter<LoadPostPojo, LoadPostViewHolder>
     lateinit var recyclerViewAnimator: RecyclerViewAnimator
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
-    lateinit var firebaseAnalytics : FirebaseAnalytics
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +69,31 @@ class FSLoadBoardActivity : AppCompatActivity() {
         setListners()
 
         filterLoadPostPojo = LoadPostPojo()
-        setAdapter(filterLoadPostPojo)
+        arrangeUIaccordingtofilters()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+    private fun arrangeUIaccordingtofilters() {
+
+        if (preferenceManager.prefLBFilter.isNotEmpty()) {
+            clearfilters.visibility = View.VISIBLE
+            filterdetails.text = "Filters are added."
+            filterloads.text = "Edit Filters"
+            filterLoadPostPojo = Gson().fromJson(preferenceManager.prefLBFilter, LoadPostPojo::class.java)
+            setAdapter(filterLoadPostPojo)
+        } else {
+            clearfilters.visibility = View.GONE
+            filterdetails.text = "No Filters are added."
+            filterloads.text = "Add Filters"
+            filterLoadPostPojo = LoadPostPojo()
+            setAdapter(filterLoadPostPojo)
+        }
+
     }
 
 
@@ -83,7 +109,20 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
         filterloads.setOnClickListener {
             val i = Intent(this, LoadFiltersActivity::class.java)
-            startActivity(i)
+            startActivityForResult(i, LOADBOARD_FILTER_REQUEST_CODE)
+        }
+
+        clearfilters.setOnClickListener {
+            preferenceManager.prefLBFilter = ""
+            arrangeUIaccordingtofilters()
+        }
+
+        fablbsync.setOnClickListener {
+            setAdapter(filterLoadPostPojo)
+        }
+        swiperefresh.setOnRefreshListener {
+            swiperefresh.isRefreshing = false
+            setAdapter(filterLoadPostPojo)
         }
 
     }
@@ -99,8 +138,46 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 .collection("loadposts")
 
 
-        //fitler and sort
+        //time sort
         baseQuery = baseQuery.orderBy("mTimeStamp", Query.Direction.DESCENDING)
+
+        //other filters
+
+        if (filterLoadPostPojo.getmSourceHub() != null) {
+            baseQuery = baseQuery.whereEqualTo("mSourceHub", filterLoadPostPojo.getmSourceHub())
+        }
+
+
+        if (filterLoadPostPojo.getmDestinationHub() != null) {
+            Logger.v(filterLoadPostPojo.getmDestinationHub())
+            baseQuery = baseQuery.whereEqualTo("mDestinationHub", filterLoadPostPojo.getmDestinationHub())
+        }
+
+        if (filterLoadPostPojo.getmPayload() != null) {
+            if (filterLoadPostPojo.getmPayload().isNotEmpty()) {
+                baseQuery = baseQuery.whereEqualTo("mPayload", filterLoadPostPojo.getmPayload())
+                if (filterLoadPostPojo.getmPayloadUnit() != null) {
+                    baseQuery = baseQuery.whereEqualTo("mPayloadUnit", filterLoadPostPojo.getmPayloadUnit())
+                }
+            }
+        }
+
+        if (filterLoadPostPojo.getmVehichleLenght() != null) {
+            if (filterLoadPostPojo.getmVehichleLenght().isNotEmpty()) {
+                baseQuery = baseQuery.whereEqualTo("mVehichleLenght", filterLoadPostPojo.getmVehichleLenght())
+                if (filterLoadPostPojo.getmPayloadUnit() != null) {
+                    baseQuery = baseQuery.whereEqualTo("mPayloadUnit", filterLoadPostPojo.getmPayloadUnit())
+                }
+            }
+        }
+
+        if (filterLoadPostPojo.getmVehicleType() != null) {
+            baseQuery = baseQuery.whereEqualTo("mVehicleType", filterLoadPostPojo.getmVehicleType())
+        }
+
+        if (filterLoadPostPojo.getmBodyType() != null) {
+            baseQuery = baseQuery.whereEqualTo("mBodyType", filterLoadPostPojo.getmBodyType())
+        }
 
 
         val config = PagedList.Config.Builder()
@@ -127,9 +204,9 @@ class FSLoadBoardActivity : AppCompatActivity() {
                                           @NonNull model: LoadPostPojo) {
 
 
-                if(model.getmUid().equals(preferenceManager.userId)){
+                if (model.getmUid().equals(preferenceManager.userId)) {
                     holder.delete.visibility = View.VISIBLE
-                }else{
+                } else {
                     holder.delete.visibility = View.GONE
                 }
                 holder.authername.text = model.getmDisplayName()
@@ -137,8 +214,8 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 holder.destination.text = model.getmDestinationCity()
                 holder.truck_type.text = model.getmVehicleType()
                 holder.body_type.text = model.getmBodyType()
-                holder.weight.text = model.getmPayload()+" "+model.getmPayloadUnit()
-                holder.length.text = model.getmVehichleLenght()+" "+model.getmVehichleLenghtUnit()
+                holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
+                holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
                 holder.material.text = model.getmMaterial()
                 holder.post_requirement.text = model.getmRemark()
                 holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
@@ -146,7 +223,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                 holder.share.setOnClickListener {
                     firebaseAnalytics.logEvent("z_share_clicked_lb", bundle)
-                    shareMesssages(context,"Loadpost on ILN",model.toString())
+                    shareMesssages(context, "Loadpost on ILN", model.toString())
                 }
 
                 holder.call.setOnClickListener {
@@ -179,7 +256,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                     val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
                         when (which) {
-                            DialogInterface.BUTTON_POSITIVE ->{
+                            DialogInterface.BUTTON_POSITIVE -> {
 
                                 FirebaseFirestore.getInstance().collection("loadposts").document(getItem(position)!!.id).delete().addOnCompleteListener {
                                     Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show()
@@ -232,9 +309,6 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 }
 
 
-
-
-
             }
 
 
@@ -269,8 +343,20 @@ class FSLoadBoardActivity : AppCompatActivity() {
             }
         }
 
-        fsloadslist.layoutManager = LinearLayoutManager(this)
+        fsloadslist.layoutManager = LinearLayoutManager(context)
         fsloadslist.adapter = adapter
+
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == LOADBOARD_FILTER_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                arrangeUIaccordingtofilters()
+            }
+        }
 
 
     }

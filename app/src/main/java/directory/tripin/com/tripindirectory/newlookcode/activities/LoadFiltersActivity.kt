@@ -33,6 +33,12 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
     lateinit var mSourceRouteCityPojo: RouteCityPojo
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
     lateinit var preferenceManager : PreferenceManager
+    lateinit var spinnervehicle: MaterialSpinner
+    lateinit var spinnerbody: MaterialSpinner
+    lateinit var spinnerweight: MaterialSpinner
+    lateinit var spinnerlength: MaterialSpinner
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,23 +53,29 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
         setRoutePickup()
         postpojo = LoadPostPojo()
 
+        if(preferenceManager.prefLBFilter.isNotEmpty()){
+            setInitialFilters()
+        }
+
 
     }
 
     override fun onResume() {
         super.onResume()
-        if(preferenceManager.prefLBFilter.isNotEmpty()){
-            setInitialFilters()
-        }
+
     }
+
+
 
     private fun setInitialFilters() {
         postpojo = Gson().fromJson(preferenceManager.prefLBFilter, LoadPostPojo::class.java)
         if(postpojo.getmSourceCity()!=null){
             select_source.text = postpojo.getmSourceCity()
+            select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
         }
         if(postpojo.getmDestinationCity()!=null){
             select_destination.text = postpojo.getmDestinationCity()
+            select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
         }
         if(postpojo.getmPayload()!=null){
             weightf.setText(postpojo.getmPayload())
@@ -71,6 +83,24 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
         if(postpojo.getmVehichleLenght()!=null){
             lengthf.setText(postpojo.getmVehichleLenght())
         }
+
+        if(postpojo.getmVehicleType()!=null){
+            spinnervehicle.selectedIndex = spinnervehicle.getItems<String>().indexOf(postpojo.getmVehicleType())
+        }
+
+        if(postpojo.getmBodyType()!=null){
+            spinnerbody.selectedIndex = spinnerbody.getItems<String>().indexOf(postpojo.getmBodyType())
+        }
+
+        if(postpojo.getmPayloadUnit()!=null){
+            spinnerweight.selectedIndex = spinnerweight.getItems<String>().indexOf(postpojo.getmPayloadUnit())
+        }
+
+        if(postpojo.getmVehichleLenghtUnit()!=null){
+            spinnerlength.selectedIndex = spinnerlength.getItems<String>().indexOf(postpojo.getmVehichleLenghtUnit())
+        }
+
+
 
     }
 
@@ -83,6 +113,21 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
         setfilters.setOnClickListener {
             setFilters()
         }
+
+        fab_clearall.setOnClickListener {
+            clearroute()
+        }
+    }
+
+    private fun clearroute() {
+
+        select_source.text = "Source"
+        select_destination.text = "Destination"
+        postpojo.setmDestinationHub(null)
+        postpojo.setmSourceHub(null)
+        postpojo.setmSourceCity(null)
+        postpojo.setmDestinationCity(null)
+
     }
 
     private fun setFilters() {
@@ -113,6 +158,7 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
 
 
         Logger.v(postpojo.toString())
+        setResult(Activity.RESULT_OK)
         finish()
 
     }
@@ -130,7 +176,7 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
     }
 
     private fun setSpinners() {
-        val spinnervehicle = findViewById<MaterialSpinner>(R.id.spinnervtypef)
+        spinnervehicle = findViewById<MaterialSpinner>(R.id.spinnervtypef)
         spinnervehicle.setItems("Select",
                 "LCV",
                 "Truck",
@@ -149,7 +195,7 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
             postpojo.setmVehicleType(item.toString())
         }
 
-        val spinnerbody = findViewById<MaterialSpinner>(R.id.spinnerbtypef)
+        spinnerbody = findViewById<MaterialSpinner>(R.id.spinnerbtypef)
         spinnerbody.setItems("Select",
                 "Normal",
                 "Full Body",
@@ -165,10 +211,12 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
         spinnerbody.setOnItemSelectedListener { view, position, id, item ->
             postpojo.setmBodyType(item.toString())
         }
-        val spinnerweight = findViewById<MaterialSpinner>(R.id.spinnerweightf)
+
+
+        spinnerweight = findViewById<MaterialSpinner>(R.id.spinnerweightf)
         spinnerweight.setItems("KG", "Tons", "MT")
         spinnerweight.setOnItemSelectedListener { view, position, id, item -> }
-        val spinnerlength = findViewById<MaterialSpinner>(R.id.spinnerlengthf)
+        spinnerlength = findViewById<MaterialSpinner>(R.id.spinnerlengthf)
         spinnerlength.setItems("Meters", "Feets")
         spinnerlength.setOnItemSelectedListener { view, position, id, item -> }
     }

@@ -6,6 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".newlookcode.activities.FSLoadBoardActivity">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fablbsync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:visibility="gone"
+        app:fab_size="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/swiperefresh"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/swiperefresh"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/com_mixpanel_android_ic_sync" />
+
     <include
         android:id="@+id/include3"
         layout="@layout/layout_fsloadboard_actionbar"
@@ -74,14 +93,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fsloadslist"
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/manageloads"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filterstatus" />
+        app:layout_constraintTop_toBottomOf="@+id/filterstatus">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fsloadslist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loadingfslb"
@@ -92,11 +120,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:padding="8dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/fsloadslist"
+        app:layout_constraintBottom_toBottomOf="@+id/swiperefresh"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fsloadslist"
+        app:layout_constraintTop_toTopOf="@+id/swiperefresh"
         app:lottie_autoPlay="true"
         app:lottie_fileName="loading.json"
         app:lottie_loop="true" />
