@@ -16,6 +16,7 @@ import directory.tripin.com.tripindirectory.newlookcode.activities.MainScrolling
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
+import directory.tripin.com.tripindirectory.newprofiles.activities.NewLandingNavActivity;
 
 public class MainNewIntroActivity extends AhoyOnboarderActivity {
 
@@ -99,7 +100,7 @@ public class MainNewIntroActivity extends AhoyOnboarderActivity {
     }
 
     private void startMainNewActivity() {
-        Intent i = new Intent(MainNewIntroActivity.this, MainScrollingActivity.class);
+        Intent i = new Intent(MainNewIntroActivity.this, NewLandingNavActivity.class);
         startActivity(i);
         finishAffinity();
     }

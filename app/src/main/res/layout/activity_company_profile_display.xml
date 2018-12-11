@@ -396,17 +396,30 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="64dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:inputType="textMultiLine"
                     android:text="..."
                     android:textColor="@color/blue_grey_800"
                     android:textSize="14sp"
                     android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/profiletype"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/city"
                     app:layout_constraintTop_toBottomOf="@+id/city" />
+
+                <TextView
+                    android:id="@+id/profiletype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="ROLE UNSPECIFIED YET!"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/biodisplay"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/biodisplay" />
             </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.RecyclerView

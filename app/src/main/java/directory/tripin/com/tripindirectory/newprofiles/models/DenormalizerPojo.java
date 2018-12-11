@@ -13,6 +13,8 @@ public class DenormalizerPojo {
     private String mPhotoUrl;
     private String mLocationCity;
     private String mFcmToken;
+    private String mProfileType;
+
 
     private List<String> mFleetsSort;
     private Map<String,Boolean> mOperationHubs;
@@ -23,7 +25,7 @@ public class DenormalizerPojo {
     private Double mNumRatings;
 
 
-    public DenormalizerPojo(String mCompanyName, String mDisplayName, String mRMN, String mUID, String mFUID, String mPhotoUrl, String mLocationCity, String mFcmToken, List<String> mFleetsSort, Map<String, Boolean> mOperationHubs, Double mLastActive, Boolean isActive, Double mAvgRating, Double mNumRatings) {
+    public DenormalizerPojo(String mCompanyName, String mDisplayName, String mRMN, String mUID, String mFUID, String mPhotoUrl, String mLocationCity, String mFcmToken, List<String> mFleetsSort, Map<String, Boolean> mOperationHubs, Double mLastActive, Boolean isActive, Double mAvgRating, Double mNumRatings, String mProfileType) {
         this.mCompanyName = mCompanyName;
         this.mDisplayName = mDisplayName;
         this.mRMN = mRMN;
@@ -38,9 +40,18 @@ public class DenormalizerPojo {
         this.isActive = isActive;
         this.mAvgRating = mAvgRating;
         this.mNumRatings = mNumRatings;
+        this.mProfileType = mProfileType;
     }
 
     public DenormalizerPojo() {
+    }
+
+    public String getmProfileType() {
+        return mProfileType;
+    }
+
+    public void setmProfileType(String mProfileType) {
+        this.mProfileType = mProfileType;
     }
 
     public String getmFcmToken() {

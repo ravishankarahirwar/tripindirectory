@@ -12,6 +12,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerPojo
 import kotlinx.android.synthetic.main.activity_company_profile_edit.*
@@ -21,13 +22,14 @@ class DataModifierActivity : AppCompatActivity() {
 
     var oppName : String = "Update Hubs"
     lateinit var doclist: QuerySnapshot
-
+    lateinit var preferenceManager: PreferenceManager
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data_modifier)
+        preferenceManager = PreferenceManager.getInstance(this)
 
         docname.text = oppName
 
@@ -183,7 +185,8 @@ class DataModifierActivity : AppCompatActivity() {
                             partnerPojo.getmLastActive(),
                             partnerPojo.isActive,
                             partnerPojo.getmAvgRating(),
-                            partnerPojo.getmNumRatings()
+                            partnerPojo.getmNumRatings(),preferenceManager.profileType.toString()
+
                     )
 
                     //denormaliser update

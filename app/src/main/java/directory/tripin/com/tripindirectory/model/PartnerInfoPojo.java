@@ -29,6 +29,8 @@ public class PartnerInfoPojo {
     private String mFUID;
     private String mPhotoUrl;
     private String mDisplayName;
+    private String mProfileType;
+
 
     private List<String> mOperationCities;
     private Map<String,Boolean> mOperationHubs;
@@ -87,6 +89,13 @@ public class PartnerInfoPojo {
         this.mDestinationCities = mDestinationCities;
     }
 
+    public String getmProfileType() {
+        return mProfileType;
+    }
+
+    public void setmProfileType(String mProfileType) {
+        this.mProfileType = mProfileType;
+    }
 
     public Double getmAvgRating() {
         return mAvgRating;

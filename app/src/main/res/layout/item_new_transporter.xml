@@ -129,11 +129,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
                 android:text="Mumbai"
                 android:textSize="10sp"
-                app:layout_constraintEnd_toEndOf="@+id/company_name1"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/company_name1"
                 app:layout_constraintTop_toBottomOf="@+id/company_name1" />
 
@@ -146,6 +143,19 @@
                 app:layout_constraintEnd_toEndOf="@+id/ratings"
                 app:layout_constraintStart_toStartOf="@+id/ratings"
                 app:layout_constraintTop_toBottomOf="@+id/ratings" />
+
+            <TextView
+                android:id="@+id/rolee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text=".."
+                android:textSize="10sp"
+                app:layout_constraintEnd_toStartOf="@+id/reviews"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/company_address"
+                app:layout_constraintTop_toBottomOf="@+id/company_name1" />
 
 
         </android.support.constraint.ConstraintLayout>

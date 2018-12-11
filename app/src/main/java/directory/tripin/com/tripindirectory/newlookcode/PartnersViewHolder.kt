@@ -24,6 +24,8 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var mRatings : TextView
     var mReviews : TextView
     var mIsPromoted : TextView
+    var mRole : TextView
+
 
 
     var isSelected : Boolean
@@ -44,6 +46,8 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         mRatings = itemView.findViewById(R.id.rating)
         mReviews = itemView.findViewById(R.id.reviews)
         mIsPromoted = itemView.findViewById(R.id.promoted)
+        mRole = itemView.findViewById(R.id.rolee)
+
 
 
 

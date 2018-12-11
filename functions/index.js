@@ -1146,6 +1146,32 @@ exports.setdefaultspamvalue = functions.https.onRequest((req, res) => {
 
 });
 
+exports.setdefaultprofiletype = functions.https.onRequest((req, res) => {
+
+   return admin.firestore().collection("denormalizers").get().then((docs) => {
+
+
+           return docs.forEach((doc) => {
+
+             let profile = doc.data();
+
+             console.log(doc.id,profile);
+
+
+              return fsdb.collection('denormalizers')
+                        .doc(doc.id)
+                        .set({ mProfileType: "1"},  {merge: true});
+
+
+
+
+
+           })
+
+
+   })
+
+});
 
   exports.newReportSubmitted = functions.firestore
       .document('adminappdata/reports/reportedcomps/{reportedUid}/reportslist/{reporterUid}')

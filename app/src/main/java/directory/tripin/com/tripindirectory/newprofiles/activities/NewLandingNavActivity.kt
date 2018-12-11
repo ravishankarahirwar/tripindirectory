@@ -31,9 +31,11 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatIndicatorPojo
+import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
+import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.newlookcode.activities.*
 import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentSearchesViewHolder
 import directory.tripin.com.tripindirectory.newprofiles.CompanyRatingsPojo
@@ -46,6 +48,7 @@ import kotlinx.android.synthetic.main.layout_choose_vehicle.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
 import kotlinx.android.synthetic.main.layout_route_input.*
 import java.math.RoundingMode
+import java.util.*
 
 class NewLandingNavActivity : AppCompatActivity() {
 
@@ -69,6 +72,25 @@ class NewLandingNavActivity : AppCompatActivity() {
         appUtils = AppUtils(context)
         setListners()
 
+        if (FirebaseAuth.getInstance().currentUser == null
+                || preferenceManager.rmn == null
+                || preferenceManager.userId == null
+                || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null) {
+            val i = Intent(this, FacebookRequiredActivity::class.java)
+            i.putExtra("from", "MainActivity")
+            startActivityForResult(i, 3)
+        } else {
+            if (preferenceManager.userId != null) {
+                val userPresensePojo2 = UserPresensePojo(false, Date().time, "")
+                FirebaseDatabase.getInstance().reference
+                        .child("chatpresence")
+                        .child("users")
+                        .child(preferenceManager.userId)
+                        .onDisconnect()
+                        .setValue(userPresensePojo2)
+            }
+        }
+
         if (!preferenceManager.isMainScreenGuided) {
             showIntro()
         }else{
@@ -76,6 +98,7 @@ class NewLandingNavActivity : AppCompatActivity() {
                 showInvitesScreen()
             }
         }
+
 
         internetCheck()
 
@@ -88,6 +111,13 @@ class NewLandingNavActivity : AppCompatActivity() {
             setChatPendingIndicator()
             setRecentSearchesAdapter()
         }
+        if(preferenceManager.userId!=null){
+            if(preferenceManager.profileType==1L){
+                val i = Intent(this, ProfileRoleInputActivity::class.java)
+                startActivity(i)
+            }
+        }
+
     }
 
     override fun onStop() {

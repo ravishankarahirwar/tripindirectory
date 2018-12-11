@@ -361,6 +361,18 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
             }
 
+            //role
+            if(partnerInfoPojo.getmProfileType()!=null){
+                var type = ""
+                if(partnerInfoPojo.getmProfileType()=="0"){
+                    type = "LOAD PROVIDER"
+                }
+                if(partnerInfoPojo.getmProfileType()=="2"){
+                    type = "FLEET PROVIDER"
+                }
+                profiletype.text = type
+            }
+
             if (partnerInfoPojo.getmOperationCities() != null) {
                 if (partnerInfoPojo.getmOperationCities().size > 0) {
                     addCities(partnerInfoPojo.getmOperationCities())

@@ -73,6 +73,7 @@ import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.AppUtils
 import directory.tripin.com.tripindirectory.utils.TextUtils
+import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import kotlinx.android.synthetic.main.layout_directory_actionbar.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
@@ -290,10 +291,6 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         super.onResume()
 
 
-
-        if (!preferenceManager.isProfileIntroSeen) {
-            profilenew.visibility = View.VISIBLE
-        }
 
 //        if (preferenceManager.displayName != null) {
 //            var name = preferenceManager.displayName.substringBefore(" ")
@@ -770,12 +767,15 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         mainPageAction("search")
 
         //fitler and sort
+        baseQuery = baseQuery.orderBy("mDetails.mProfileType")
+        baseQuery = baseQuery.whereGreaterThan("mDetails.mProfileType","0")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
         baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
+
 
 
         val config = PagedList.Config.Builder()
@@ -805,6 +805,30 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                 if (model != null) {
                     recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
 
+                    //Photo
+                    if (model.getmDetails().getmPhotoUrl() != null) {
+                        if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
+                            Picasso.with(applicationContext)
+                                    .load(model.getmDetails().getmPhotoUrl() + "?width=100&width=100")
+                                    .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
+                                    .transform(CircleTransform())
+                                    .fit()
+                                    .into(holder.mThumbnail, object : Callback {
+
+                                        override fun onSuccess() {
+                                            Logger.v("image set: transporter thumb")
+                                        }
+
+                                        override fun onError() {
+                                            Logger.v("image transporter Error")
+                                        }
+                                    })
+                        }
+
+                    } else {
+                        holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
+                    }
+
                     //CompName
                     if (model.getmDetails().getmCompanyName() != null) {
                         if (!model.getmDetails().getmCompanyName().isEmpty()) {
@@ -831,35 +855,25 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
                     //City
                     if (model.getmDetails().getmLocationCity() != null) {
-                        if (model.getmDetails().getmLocationCity() != null) {
+                        if (model.getmDetails().getmLocationCity().isNotEmpty()) {
                             holder.mAddress.text = textUtils.toTitleCase(model.getmDetails().getmLocationCity())
                         }
                     }
 
-
-                    //Photo
-                    if (model.getmDetails().getmPhotoUrl() != null) {
-                        if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
-                            Picasso.with(applicationContext)
-                                    .load(model.getmDetails().getmPhotoUrl() + "?width=100&width=100")
-                                    .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
-                                    .transform(CircleTransform())
-                                    .fit()
-                                    .into(holder.mThumbnail, object : Callback {
-
-                                        override fun onSuccess() {
-                                            Logger.v("image set: transporter thumb")
-                                        }
-
-                                        override fun onError() {
-                                            Logger.v("image transporter Error")
-                                        }
-                                    })
+                    //Role
+                    if (model.getmDetails().getmProfileType() != null) {
+                        if (model.getmDetails().getmProfileType().isNotEmpty()) {
+                            var type = ""
+                            if(model.getmDetails().getmProfileType()=="0"){
+                                type = "LOAD PROVIDER"
+                            }
+                            if(model.getmDetails().getmProfileType()=="2"){
+                                type = "FLEET PROVIDER"
+                            }
+                            holder.mRole.text = type
                         }
-
-                    } else {
-                        holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                     }
+
 
 //                    if(model.getmAccountStatus()!=null){
 //                        if(model.getmAccountStatus()>=2){

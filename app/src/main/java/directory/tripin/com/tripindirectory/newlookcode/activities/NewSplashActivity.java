@@ -23,6 +23,7 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants;
+import directory.tripin.com.tripindirectory.newprofiles.activities.NewLandingNavActivity;
 
 public class NewSplashActivity extends AppCompatActivity {
 
@@ -146,7 +147,7 @@ public class NewSplashActivity extends AppCompatActivity {
             }
         }
 
-        Intent i = new Intent(NewSplashActivity.this, MainScrollingActivity.class);
+        Intent i = new Intent(NewSplashActivity.this, NewLandingNavActivity.class);
         startActivity(i);
         finish();
     }

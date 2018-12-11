@@ -32,6 +32,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter
+import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
@@ -40,6 +41,7 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
+import directory.tripin.com.tripindirectory.newlookcode.activities.ProfileRoleInputActivity
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormUpdateListner
@@ -104,7 +106,11 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         if(preferenceManager.imageUrl!=null){
             setUpImage(preferenceManager.imageUrl)
         }
+        if(preferenceManager.profileType==1L){
+            profiletypecard.visibility = View.GONE
+        }
         fetchData()
+
 
     }
 
@@ -157,6 +163,10 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             editprofilePageAction("pick_location")
         }
 
+        editprofiletype.setOnClickListener {
+            chatwithassistant()
+        }
+
         doneeditprofile.setOnClickListener {
 
             editprofilePageAction("submit_form")
@@ -181,6 +191,8 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                 hashMap.put("mFcmToken", preferenceManager.getFcmToken())
                 hashMap.put("mBio", bioedit.text.toString().trim())
                 hashMap.put("mRMN", preferenceManager.rmn)
+                hashMap.put("mProfileType", preferenceManager.profileType.toString())
+
 
 
                 reference.set(hashMap as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
@@ -225,7 +237,8 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                                 Date().time.toDouble(),
                                 true,
                                 partnerInfoPojo.getmAvgRating(),
-                                partnerInfoPojo.getmNumRatings()
+                                partnerInfoPojo.getmNumRatings(),
+                                preferenceManager.profileType.toString()
                         )
 
                         val userPresensePojo2 = UserPresensePojo(false, Date().time, "")
@@ -415,6 +428,22 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             if (!partnerInfoPojo.getmBio().isEmpty()) {
                 if (bioedit.text.toString().isEmpty())
                     bioedit.setText(partnerInfoPojo.getmBio())
+            }
+        }
+
+        //company profiletype
+        if (partnerInfoPojo.getmProfileType() != null) {
+            if (!partnerInfoPojo.getmProfileType().isEmpty()) {
+
+                var type = ""
+                if(partnerInfoPojo.getmProfileType()=="0"){
+                    type = "LOAD PROVIDER"
+                }
+                if(partnerInfoPojo.getmProfileType()=="2"){
+                    type = "FLEET PROVIDER"
+                }
+                showprofiletype.text = type
+
             }
         }
 
@@ -786,5 +815,16 @@ class CompanyProfileEditActivity : AppCompatActivity() {
         }
 
         mixpanelAPI.track(MixPanelConstants.EVENT_EDIT_COMPANY_PAGE_ACTION, props)
+    }
+
+    private fun chatwithassistant() {
+        val intent = Intent(this@CompanyProfileEditActivity, ChatRoomActivity::class.java)
+        intent.putExtra("ormn", "+919284089759")
+        intent.putExtra("imsg", "Hi, I need to change my role.")
+        intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1")
+        intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1")
+        startActivity(intent)
+        val bundle = Bundle()
+        firebaseAnalytics.logEvent("z_assistant", bundle)
     }
 }
