@@ -69,10 +69,9 @@ import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPoj
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemViewHolder;
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserActivityPojo;
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
-import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.FacebookRequiredActivity;
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo;
 import directory.tripin.com.tripindirectory.newlookcode.pojos.UserProfile;
-import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.ListPaddingDecoration;

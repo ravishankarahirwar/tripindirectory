@@ -12,13 +12,14 @@ import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.algolia.instantsearch.utils.ItemClickSupport
 import com.google.firebase.analytics.FirebaseAnalytics
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import kotlinx.android.synthetic.main.activity_search_company.*
 
 
-class SearchCompanyActivity : AppCompatActivity() {
+class SearchCompanyActivity : LocalizationActivity() {
 
     private val ALGOLIA_APP_ID = "RHELQ0ROWI"
     private val ALGOLIA_SEARCH_API_KEY = "63d588ea2c0d9e628cabfb1d6f0013fc"

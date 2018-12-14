@@ -37,7 +37,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:text="About ILN"
+            android:text="@string/about_iln"
             android:textColor="@color/blue_grey_900"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="      ILN is a platform for fleet providers and load providers to connect with each other for business in a profound way. Load providers can use directory feature to get a list of top available transport companies, or can post the requirement on loadboard and get responses when a transporter is interested. Fleet Providers can register there company and become visible to all on directory. Transport companies can then collect ratings and connections to improve credibility and get more leads. A company can also use promote feature to stay top on the result list for a particular route."
+                android:text="@string/iln_is_a_platform"
                 android:textSize="12sp" />
 
             <LinearLayout
@@ -130,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="ILN explainer video"
+                        android:text="@string/iln_explainer_video"
                         android:textColor="@color/bg_screen3"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -143,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="https://youtu.be/FOkt6F0ZAOk"
+                        android:text="@string/yt_link_explainer"
                         android:textColor="@color/bg_screen3"
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -177,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Video Tutorial for Load providers"
+                        android:text="@string/video_tutorial_for_load_providers"
                         android:textColor="@color/bg_screen3"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -190,7 +190,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="https://youtu.be/CLzu7nFdv3Y"
+                        android:text="@string/yt_link_loadproviders"
                         android:textColor="@color/bg_screen3"
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -224,7 +224,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Video Tutorial for Fleet providers"
+                        android:text="@string/video_tutorial_for_fleet_providers"
                         android:textColor="@color/bg_screen3"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -237,7 +237,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="https://youtu.be/45hvO9XOFro"
+                        android:text="@string/yt_link_fleetprovider"
                         android:textColor="@color/bg_screen3"
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -255,7 +255,7 @@
                 android:alpha="0.5"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Stay in touch with us on"
+                android:text="@string/stay_in_touch_with_us_on"
                 android:textSize="12sp" />
 
             <LinearLayout
@@ -286,7 +286,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="5dp"
-                        android:text="youtube/ILN Community Official"
+                        android:text="@string/youtube_iln_community_official"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -313,7 +313,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="5dp"
-                        android:text="facebook/ILNOfficial"
+                        android:text="@string/facebook_ilnofficial"
                         android:textSize="10sp" />
                 </LinearLayout>
 
@@ -340,7 +340,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="5dp"
-                        android:text="instagram/indian.logistics.network"
+                        android:text="@string/instagram_indian_logistics_network"
                         android:textSize="10sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -355,7 +355,7 @@
                 android:elevation="2dp"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Chat with ILN Assistant"
+                android:text="@string/chat_with_iln_assistant"
                 android:textColor="@color/active_indicator"
                 android:textStyle="bold" />
 

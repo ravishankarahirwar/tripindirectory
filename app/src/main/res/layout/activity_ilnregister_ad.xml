@@ -39,7 +39,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Not Interested"
+            android:text="@string/not_interested"
             android:textStyle="bold" />
 
         <TextView
@@ -51,7 +51,7 @@
             android:background="@drawable/border_sreoke_yollo_bg"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Try It!"
+            android:text="@string/try_it"
             android:textStyle="bold" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

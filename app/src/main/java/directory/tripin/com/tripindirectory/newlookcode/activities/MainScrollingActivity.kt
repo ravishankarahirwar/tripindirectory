@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.layout_route_input.*
 import android.support.v4.view.ViewCompat
 import android.view.animation.OvershootInterpolator
 import android.arch.paging.PagedList
-import android.content.ActivityNotFoundException
 import android.net.Uri
 import android.support.annotation.NonNull
 import android.support.v7.widget.RecyclerView
@@ -28,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.andrognito.flashbar.Flashbar
 import com.andrognito.flashbar.anim.FlashAnim
 import com.firebase.ui.auth.AuthUI
@@ -36,14 +36,9 @@ import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
-import com.google.android.gms.tasks.OnCanceledListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.*
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
@@ -53,7 +48,6 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
-import directory.tripin.com.tripindirectory.chatingactivities.models.ChatIndicatorPojo
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo
 import directory.tripin.com.tripindirectory.newlookcode.*
 import directory.tripin.com.tripindirectory.helper.CircleTransform
@@ -62,18 +56,17 @@ import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
-import directory.tripin.com.tripindirectory.newprofiles.activities.AboutIlnActivity
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.activities.UserEditProfileActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyProfilePojo
 import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
-import directory.tripin.com.tripindirectory.utils.AppUtils
 import directory.tripin.com.tripindirectory.utils.TextUtils
-import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import kotlinx.android.synthetic.main.layout_directory_actionbar.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
@@ -87,7 +80,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
+class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
 
     val fleets: ArrayList<FleetSelectPojo> = ArrayList()
@@ -156,7 +149,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
         }
         setSelectFleetAdapter()
         setRoutePickup()
-        basicQueryPojo = BasicQueryPojo("", "","","", ArrayList<String>())
+        basicQueryPojo = BasicQueryPojo("", "", "", "", ArrayList<String>())
         getIntentData()
 
         setListners()
@@ -201,8 +194,8 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     }
 
     private fun clearCities() {
-        textViewSource.text = ". Select City"
-        textViewDestination.text = ". Select City"
+        textViewSource.text = getString(R.string.select_city)
+        textViewDestination.text = getString(R.string.select_city)
         basicQueryPojo.mDestinationCity = ""
         basicQueryPojo.mSourceCity = ""
         basicQueryPojo.mDestinationHub = ""
@@ -234,19 +227,19 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 
         val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(rv_fleets, "Select Fleet Type", "The list of top 12 transport companies who can provide you the fleets will be shown. You can select multiple fleet types.")
+                        TapTarget.forView(rv_fleets, getString(R.string.select_fleet_type), getString(R.string.fleet_type_discription))
                                 .transparentTarget(true)
                                 .targetRadius(75)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(fromtitle, "Select Source City from here", "Type the source city and select from suggestion. Result will be filtered accordingly. Tap on the target.")
+                        TapTarget.forView(fromtitle, getString(R.string.select_source_city), getString(R.string.select_source_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(totitle, "Select Destination City here", "Transporters operating only between your selected route will be shown!")
+                        TapTarget.forView(totitle, getString(R.string.select_destination_city), getString(R.string.select_destination_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                                .cancelable(true).outerCircleColor(R.color.primaryColor)
 
 //                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
 //                                .transparentTarget(true)
@@ -256,14 +249,6 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
 //                                .transparentTarget(true)
 //                                .drawShadow(true)
 //                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(yourbusiness, "Your Profile Here", "See your Network, Wallet and Add your own business on ILN. For Free!")
-                                .transparentTarget(true)
-                                .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(showchats, "Your Chats Here", "All your chats are saved here, Now keep your business talks at one place. Tap the target!")
-                                .transparentTarget(true)
-                                .drawShadow(true)
-                                .cancelable(true).outerCircleColor(R.color.primaryColor)
 
                 )
                 .listener(object : TapTargetSequence.Listener {
@@ -271,7 +256,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     }
 
                     override fun onSequenceFinish() {
-                        Toast.makeText(applicationContext, "Use ILN wisely!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, getString(R.string.use_iln_wisely), Toast.LENGTH_SHORT).show()
                         preferenceManager.setisMainScreenGuided(true)
                         val bundle = Bundle()
                         firebaseAnalytics.logEvent("z_mainguidefifished", bundle)
@@ -280,7 +265,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
                         // Boo
                         preferenceManager.setisMainScreenGuided(true)
-                        Toast.makeText(applicationContext, "You can restart the guide from menu!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, getString(R.string.restart_guide_from_menu), Toast.LENGTH_SHORT).show()
                     }
                 })
 
@@ -630,7 +615,7 @@ class MainScrollingActivity : AppCompatActivity(), HubFetchedCallback {
     private fun startLoadboardActivity(s: String) {
         if (FirebaseAuth.getInstance().currentUser != null) {
             // already signed in
-            val i = Intent(this, LoadBoardActivity::class.java)
+            val i = Intent(this, FSLoadBoardActivity::class.java)
             if (s != "BottomMenu") {
                 i.putExtra("query", basicQueryPojo)
             }

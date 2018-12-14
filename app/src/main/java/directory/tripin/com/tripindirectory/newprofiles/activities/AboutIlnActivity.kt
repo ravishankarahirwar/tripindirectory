@@ -7,13 +7,14 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.util.Linkify
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.helper.Logger
 import kotlinx.android.synthetic.main.activity_about_iln.*
 
-class AboutIlnActivity : AppCompatActivity() {
+class AboutIlnActivity : LocalizationActivity() {
     lateinit var firebaseAnalytics : FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {

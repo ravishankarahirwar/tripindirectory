@@ -54,7 +54,7 @@
                 android:layout_marginTop="16dp"
                 android:drawableLeft="@drawable/ic_message"
                 android:gravity="center_vertical"
-                android:text=" Chat Initiating Message :"
+                android:text="@string/chat_initiating_message"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone"
@@ -147,7 +147,7 @@
                     android:id="@+id/tv_msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Typing..."
+                    android:text="@string/typing"
                     android:textColor="@color/app_title"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -187,7 +187,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/msg_bg_you"
-            android:hint="Type Something..."
+            android:hint="@string/type_something"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLength="250"
             android:padding="13dp"

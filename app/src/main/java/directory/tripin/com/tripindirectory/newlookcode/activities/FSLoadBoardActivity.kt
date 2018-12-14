@@ -28,7 +28,6 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
-import directory.tripin.com.tripindirectory.forum.MainActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
@@ -82,14 +81,14 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
         if (preferenceManager.prefLBFilter.isNotEmpty()) {
             clearfilters.visibility = View.VISIBLE
-            filterdetails.text = "Filters are added."
-            filterloads.text = "Edit Filters"
+            filterdetails.text = getString(R.string.filters_are_added)
+            filterloads.text = getString(R.string.edit_filters)
             filterLoadPostPojo = Gson().fromJson(preferenceManager.prefLBFilter, LoadPostPojo::class.java)
             setAdapter(filterLoadPostPojo)
         } else {
             clearfilters.visibility = View.GONE
-            filterdetails.text = "No Filters are added."
-            filterloads.text = "Add Filters"
+            filterdetails.text = getString(R.string.no_filters_are_added)
+            filterloads.text = getString(R.string.add_filters)
             filterLoadPostPojo = LoadPostPojo()
             setAdapter(filterLoadPostPojo)
         }
@@ -234,7 +233,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
                     if (model.getmRmn() != null && model.getmRmn().isNotEmpty()) {
                         callNumber(model.getmRmn())
                     } else {
-                        Toast.makeText(context, "Sorry!! Mobile no not available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, getString(R.string.moble_not_available), Toast.LENGTH_SHORT).show()
                     }
                 }
 

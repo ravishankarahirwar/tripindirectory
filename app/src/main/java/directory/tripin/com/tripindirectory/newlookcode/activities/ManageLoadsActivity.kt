@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
@@ -37,7 +38,7 @@ import kotlinx.android.synthetic.main.activity_manage_loads.*
 import kotlinx.android.synthetic.main.layout_fsyourloads_actionbar.*
 import java.text.SimpleDateFormat
 
-class ManageLoadsActivity : AppCompatActivity() {
+class ManageLoadsActivity : LocalizationActivity(){
 
     lateinit var adapter: FirestorePagingAdapter<LoadPostPojo, LoadPostViewHolder>
     lateinit var preferenceManager: PreferenceManager
@@ -170,7 +171,7 @@ class ManageLoadsActivity : AppCompatActivity() {
                             DialogInterface.BUTTON_POSITIVE -> {
 
                                 FirebaseFirestore.getInstance().collection("loadposts").document(getItem(position)!!.id).delete().addOnCompleteListener {
-                                    Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, getString(R.string.removed_successfully), Toast.LENGTH_SHORT).show()
                                 }
                                 val bundle = Bundle()
                                 firebaseAnalytics.logEvent("z_remove_clicked_lb", bundle)
@@ -182,9 +183,9 @@ class ManageLoadsActivity : AppCompatActivity() {
                     }
 
                     val builder = AlertDialog.Builder(context)
-                    builder.setTitle("Delete Post")
-                    builder.setMessage("Are you sure? You want to delete this post.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show()
+                    builder.setTitle(getString(R.string.delete_post))
+                    builder.setMessage(getString(R.string.want_to_delete_post)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                            .setNegativeButton(getString(R.string.no), dialogClickListener).show()
                 }
 
                 holder.autherprofile.setOnClickListener {

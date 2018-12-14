@@ -1,31 +1,26 @@
 package directory.tripin.com.tripindirectory.newprofiles.activities
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.StaggeredGridLayoutManager
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.ScrollView
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import com.google.android.gms.location.places.ui.PlacePicker
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
-import com.google.gson.Gson
 import com.keiferstone.nonet.NoNet
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.squareup.picasso.Callback
@@ -38,24 +33,20 @@ import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
-import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
-import directory.tripin.com.tripindirectory.newlookcode.activities.ProfileRoleInputActivity
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
-import directory.tripin.com.tripindirectory.newprofiles.models.DenormUpdateListner
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerUpdateManager
-import directory.tripin.com.tripindirectory.newprofiles.models.ProfileData
 import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_company_profile_edit.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
-class CompanyProfileEditActivity : AppCompatActivity() {
+class CompanyProfileEditActivity : LocalizationActivity() {
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE = 1
     internal var PLACE_PICKER_REQUEST = 2
@@ -175,7 +166,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             mixpanelAPI.timeEvent(MixPanelConstants.EVENT_UPLOAD_COMPANY_FORM)
 
             if (compnametext.text.toString().isEmpty()) {
-                Toast.makeText(context, "Company Name Cant be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.company_name_cant_be_empty), Toast.LENGTH_SHORT).show()
             } else {
                 //Upload
                 //save bio, name, timestamp
@@ -483,12 +474,12 @@ class CompanyProfileEditActivity : AppCompatActivity() {
                 addCities(partnerInfoPojo.getmOperationCities())
             } else {
                 val nocity: java.util.ArrayList<String> = java.util.ArrayList()
-                nocity.add("No Cities Added Yet, tap on manage cities.")
+                nocity.add(getString(R.string.no_cities_yet_tap_manage))
                 addCities(nocity)
             }
         } else {
             val nocity: java.util.ArrayList<String> = java.util.ArrayList()
-            nocity.add("No Cities Added Yet, tap on Manage Cities.")
+            nocity.add(getString(R.string.no_cities_yet_tap_manage))
             addCities(nocity)
         }
         mainscrolledit.visibility = View.VISIBLE
@@ -503,7 +494,7 @@ class CompanyProfileEditActivity : AppCompatActivity() {
             cities.add(city)
         }
         if (cities.isEmpty()) {
-            cities.add("No Cities Added, Tap On Manage Cities")
+            cities.add(getString(R.string.no_cities_yet_tap_manage))
         }
         rv_citiess.adapter.notifyDataSetChanged()
     }

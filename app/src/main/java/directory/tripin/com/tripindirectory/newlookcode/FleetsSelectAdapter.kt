@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import directory.tripin.com.tripindirectory.R
+import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import kotlinx.android.synthetic.main.item_truck_select.view.*
 
 class FleetsSelectAdapter(val items: ArrayList<FleetSelectPojo>, val context: Context, val listner : OnFleetSelectedListner, val type :Int): RecyclerView.Adapter<ViewHolder>() {

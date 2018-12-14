@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_main_profile_insight.*
 import kotlinx.android.synthetic.main.activity_submit_report.*
 import kotlinx.android.synthetic.main.activity_user_edit_profile.*
 
-class SubmitReportActivity : AppCompatActivity() {
+class SubmitReportActivity : LocalizationActivity() {
 
     lateinit var context : Context
     lateinit var mCompUid : String
@@ -165,12 +166,12 @@ class SubmitReportActivity : AppCompatActivity() {
                         finish()
 
                     }.addOnCanceledListener {
-                        submitreport_button.text = "Submit Report!"
+                        submitreport_button.text = getString(R.string.submit_report)
                     }
 
         }else{
 
-            Toast.makeText(applicationContext,"Select a cause",Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext,getString(R.string.select_a_cause),Toast.LENGTH_SHORT).show()
 
         }
 

@@ -65,7 +65,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/border_sreoke_cyne_bg"
         android:padding="8dp"
-        android:text="INVITE"
+        android:text="@string/invite"
         android:textColor="@color/blue_grey_900"
         android:textSize="12sp"
         android:textStyle="bold"
@@ -87,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"></View>
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/lable1"
@@ -96,7 +96,7 @@
         android:layout_marginStart="8dp"
         android:elevation="1dp"
         android:padding="2dp"
-        android:text="Found on ILN"
+        android:text="@string/found_on_iln"
         android:textColor="@color/blue_A100"
         android:textSize="10sp"
         android:textStyle="bold"

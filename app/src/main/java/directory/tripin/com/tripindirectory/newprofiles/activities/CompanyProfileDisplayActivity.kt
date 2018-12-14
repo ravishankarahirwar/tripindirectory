@@ -18,7 +18,7 @@ import directory.tripin.com.tripindirectory.adapters.CapsulsRecyclarAdapter
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
@@ -28,8 +28,8 @@ import directory.tripin.com.tripindirectory.newprofiles.CompanyRatingsPojo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.*
@@ -46,7 +46,6 @@ import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
-import kotlinx.android.synthetic.main.company_hits_item.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 import org.json.JSONException
@@ -56,7 +55,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener {
+class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListener {
 
 
     lateinit var preferenceManager: PreferenceManager
@@ -145,7 +144,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         }
         if (mCompUid.isEmpty()) {
             finish()
-            Toast.makeText(context, "Try Again!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
         } else {
 
             //Profile Analytics: Profile visit
@@ -172,7 +171,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
     private fun fetchData(mCompUid: String) {
 
         mainscrollprofile.visibility = View.GONE
-        comptitle.text = "Company Details Loading..."
+        comptitle.text = getString(R.string.company_details_loading)
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(mCompUid)
@@ -190,8 +189,8 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                         if (mCompUid.equals(preferenceManager.userId)) {
                             adjustIfYourProfile()
                         } else {
-                            Toast.makeText(context, "Not Available", Toast.LENGTH_SHORT).show()
-                            comptitle.text = "Not Available"
+                            Toast.makeText(context, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+                            comptitle.text = getString(R.string.not_available)
                         }
                         Logger.v("Current data: null")
                     }
@@ -345,7 +344,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
 
                 }
             } else {
-                Toast.makeText(context, "Not Available", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
                 finish()
             }
 
@@ -365,10 +364,10 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             if(partnerInfoPojo.getmProfileType()!=null){
                 var type = ""
                 if(partnerInfoPojo.getmProfileType()=="0"){
-                    type = "LOAD PROVIDER"
+                    type = getString(R.string.load_provider_b)
                 }
                 if(partnerInfoPojo.getmProfileType()=="2"){
-                    type = "FLEET PROVIDER"
+                    type = getString(R.string.fleet_provider_b)
                 }
                 profiletype.text = type
             }
@@ -379,13 +378,13 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                     operators.text = partnerInfoPojo.getmOperationCities().size.toString()
                 } else {
                     val nocity: ArrayList<String> = ArrayList()
-                    nocity.add("No Cities Added Yet")
+                    nocity.add(getString(R.string.no_cities_are_added))
                     addCities(nocity)
                     operators.text = "0"
                 }
             } else {
                 val nocity: ArrayList<String> = ArrayList()
-                nocity.add("No Cities Added Yet")
+                nocity.add(getString(R.string.no_cities_are_added))
                 addCities(nocity)
                 operators.text = "0"
             }
@@ -737,7 +736,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
             cities.add(city)
         }
         if (cities.isEmpty()) {
-            cities.add("No Cities Added Yet")
+            cities.add(getString(R.string.no_cities_added_yet))
         }
         rv_cities.adapter.notifyDataSetChanged()
     }
@@ -945,10 +944,10 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
         val prettyDialog: PrettyDialog = PrettyDialog(this)
 
         prettyDialog
-                .setTitle("Promote My Business")
-                .setMessage("This feature is still in development. For now, You can ask for promotion personally to ILN Assistant.")
+                .setTitle(getString(R.string.promote_my_business))
+                .setMessage(getString(R.string.promotion_in_development_progress))
                 .addButton(
-                        "Yes, Talk to Assistant",
+                        getString(R.string.yes_talk_to_assistant),
                         R.color.pdlg_color_white,
                         R.color.green_400
                 ) {
@@ -956,7 +955,7 @@ class CompanyProfileDisplayActivity : AppCompatActivity(), RatingDialogListener 
                     chatwithassistant()
 
                 }.addButton(
-                        "Cancel",
+                        getString(R.string.cancel),
                         R.color.pdlg_color_white,
                         R.color.blue_grey_100,
                         PrettyDialogCallback {

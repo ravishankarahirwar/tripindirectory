@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
@@ -25,7 +26,6 @@ import com.google.firebase.firestore.Query
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
-import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
@@ -35,7 +35,6 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
-import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_my_network.*
@@ -44,7 +43,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MyNetworkActivity : AppCompatActivity() {
+class MyNetworkActivity : LocalizationActivity() {
 
     lateinit var adapter: FirestorePagingAdapter<ConnectPojo, PartnersViewHolder>
     lateinit var context: Context

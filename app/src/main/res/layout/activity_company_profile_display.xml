@@ -38,7 +38,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
-            android:text="Company Name"
+            android:text="@string/company_name"
             android:maxLines="1"
             android:textColor="@color/blue_grey_900"
             android:textStyle="bold"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/red_200"
                 android:padding="12dp"
-                android:text="This profile is blocked!"
+                android:text="@string/this_profile_is_blocked"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -109,7 +109,7 @@
                 android:background="@color/red_100"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Tap here to request unblock. "
+                android:text="@string/tap_here_to_request_unblock"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Fetching..."
+                    android:text="@string/fetching"
                     android:textSize="12sp" />
 
                 <TextView
@@ -140,7 +140,7 @@
                     android:layout_weight="1"
                     android:background="@android:drawable/list_selector_background"
                     android:gravity="center"
-                    android:text="SEE INSIGHTS"
+                    android:text="@string/see_insights"
                     android:textColor="@color/blue_400"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -150,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/blue_grey_100"
-                android:visibility="gone"></View>
+                android:visibility="gone" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/status"
@@ -178,7 +178,7 @@
                         android:elevation="2dp"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="Promote"
+                        android:text="@string/promote"
                         android:textColor="@color/blue_grey_900"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -194,7 +194,7 @@
                         android:elevation="2dp"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="Edit Profile"
+                        android:text="@string/edit_profile"
                         android:textColor="@color/blue_grey_900"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -281,7 +281,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Cities"
+                            android:text="@string/cities"
                             android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -308,7 +308,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Connections"
+                            android:text="@string/connections"
                             android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -335,7 +335,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Ratings"
+                            android:text="@string/ratings"
                             android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -370,7 +370,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="32dp"
                     android:elevation="1dp"
-                    android:text="Company Name"
+                    android:text="@string/company_name"
                     android:textAllCaps="true"
                     android:textColor="@color/blue_grey_900"
                     android:textStyle="bold"
@@ -413,7 +413,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="ROLE UNSPECIFIED YET!"
+                    android:text="@string/role_unspecified_yet"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -454,7 +454,7 @@
                         android:elevation="1dp"
                         android:gravity="center_vertical"
                         android:padding="16dp"
-                        android:text=" Cities Of Operation"
+                        android:text="@string/cities_of_operation"
                         android:textColor="@color/blue_grey_900"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -502,7 +502,7 @@
                         android:elevation="1dp"
                         android:gravity="center_vertical"
                         android:padding="16dp"
-                        android:text=" Operators"
+                        android:text="@string/operators"
                         android:textColor="@color/blue_grey_900"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -536,7 +536,7 @@
                     android:drawableLeft="@drawable/ic_person_black_24dp"
                     android:gravity="center_vertical"
                     android:padding="8dp"
-                    android:text=" Ratings and Reviews (0)" />
+                    android:text="@string/ratings_and_reviews_0" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_ratingsrecent"
@@ -553,7 +553,7 @@
                 android:background="@color/red_100"
                 android:gravity="center"
                 android:padding="16dp"
-                android:text="REPORT THIS PROFILE!"
+                android:text="@string/report_this_profile"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="14sp"
                 android:textStyle="bold" />

@@ -2,20 +2,18 @@ package directory.tripin.com.tripindirectory.newlookcode.activities
 
 import android.arch.paging.PagedList
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.NonNull
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.andrognito.flashbar.Flashbar
 import com.andrognito.flashbar.anim.FlashAnim
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
@@ -29,30 +27,26 @@ import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
-import directory.tripin.com.tripindirectory.newlookcode.BasicQueryPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
 import directory.tripin.com.tripindirectory.newlookcode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.R
-import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
-import directory.tripin.com.tripindirectory.utils.DB
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.activity_all_transporters.*
-import kotlinx.android.synthetic.main.content_main_scrolling.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AllTransportersActivity : AppCompatActivity() {
+class AllTransportersActivity : LocalizationActivity() {
 
     lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
@@ -81,7 +75,7 @@ class AllTransportersActivity : AppCompatActivity() {
                 if(!basicQueryPojo.mSourceCity.isEmpty()&&!basicQueryPojo.mDestinationCity.isEmpty()){
                     title = "${textUtils.toTitleCase(basicQueryPojo.mSourceCity)} To ${textUtils.toTitleCase(basicQueryPojo.mDestinationCity)}"
                 }else{
-                    title = "All Transporters"
+                    title = getString(R.string.all_transporters)
                 }
                 var fleets: String = ""
                 for(fleet:String in basicQueryPojo.mFleets!!){
@@ -98,7 +92,7 @@ class AllTransportersActivity : AppCompatActivity() {
 
         fabfilter.setOnClickListener {
             shownewlookfeedbackdialog()
-            Toast.makeText(context,"Feature Coming Soon",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,getString(R.string.feature_coming_soon),Toast.LENGTH_SHORT).show()
         }
 
         internetCheck()
@@ -501,16 +495,16 @@ class AllTransportersActivity : AppCompatActivity() {
 
                     var subTitle = ""
                     if(rateReminderPojo.getmAction() == "call"){
-                        subTitle = "You called this company, How was your experience? Visit & Rate now or swipe to dismiss."
+                        subTitle = getString(R.string.rate_after_call)
                     }else{
-                        subTitle = "You chatted with this company, How was your experience? Visit & Rate now or swipe to dismiss."
+                        subTitle = getString(R.string.rate_after_chat)
                     }
 
                     Flashbar.Builder(this)
                             .gravity(Flashbar.Gravity.BOTTOM)
                             .title(title)
                             .message(subTitle)
-                            .positiveActionText("Visit and Rate Now!")
+                            .positiveActionText(getString(R.string.visit_and_rate_now))
                             .backgroundDrawable(R.drawable.thrid_bg)
                             .positiveActionTextColorRes(R.color.amber_50)
                             .negativeActionTextColorRes(R.color.colorAccent)

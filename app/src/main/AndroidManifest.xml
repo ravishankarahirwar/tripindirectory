@@ -40,79 +40,6 @@
             android:name="firebase_crash_collection_enabled"
             android:value="true" />
 
-        <activity
-            android:name=".activity.SplashActivity"
-            android:configChanges="orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name=".forum.MainActivity.OPEN_DYNAMIC_SHORTCUT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="http://indianlogisticsnetwork.com/"
-                    android:scheme="http" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".Messaging.Activity.ChatActivity"
-            android:configChanges="orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activity.MainActivity"
-            android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.WelcomeActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".formactivities.CompanyInfoActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activity.DataTransferActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.PartnerDetailScrollingActivity"
-            android:label="@string/title_activity_partner_detail_scrolling"
-            android:theme="@style/AppTheme.NoActionBarStatusBarTransparent">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
-
         <!-- Firebase Notification -->
 
         <service android:name=".notification.MyFirebaseMessagingService">
@@ -148,78 +75,7 @@
         </activity>
 
         <!-- Forum Activities -->
-        <activity
-            android:name=".forum.MainActivity"
-            android:configChanges="orientation"
-            android:label="ILN Loadboard"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name=".forum.MainActivity.OPEN_DYNAMIC_SHORTCUT" />
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="http://indianlogisticsnetwork.com/"
-                    android:scheme="http" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".forum.NewPostActivity"
-            android:label="Now Post"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".forum.MainActivity" />
-        </activity>
-        <activity
-            android:name=".activity.LandingActivity"
-            android:label="@string/title_activity_landing"
-            android:theme="@style/AppTheme.NoActionBarStatusBarTransparent"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.NotificationsActivity"
-            android:label="Notifications and Updates">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
-        <activity
-            android:name=".loadboardactivities.LoadBoardActivity"
-            android:label="@string/title_activity_load_board"
-            android:parentActivityName=".activity.MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="directory.tripin.com.tripindirectory.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name=".forum.PostDetailActivity"
-            android:label="Post Detail"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".forum.MainActivity" />
-        </activity>
-        <activity
-            android:name=".activity.ProfileHelpActivity"
-            android:label="Company Profile Help"
-            android:parentActivityName=".formactivities.CompanyInfoActivity" />
 
         <!-- Used for Google Play Store Campaign Measurement -->
         <receiver
@@ -232,30 +88,6 @@
         </receiver>
 
         <activity
-            android:name=".loadboardactivities.PostLoadActivity"
-            android:label="Post Load ..."
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.PostFleetActivity"
-            android:label="Post Fleet ..."
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.LoadDetailsActivity"
-            android:label="LoadDetails..."
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.FleetDetailsActivity"
-            android:label="FleetDetails..."
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".chatingactivities.ChatRoomActivity"
             android:label="ChatRoom"
             android:parentActivityName=".chatingactivities.ChatHeadsActivity"
@@ -265,34 +97,15 @@
         <activity
             android:name=".chatingactivities.ChatHeadsActivity"
             android:label="ILN Chats"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".newprofiles.activities.NewLandingNavActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.LoadPostsActivity"
-            android:label="LoadPosts..."
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.LoadBoardMapViewActivity"
-            android:label="LoadBoard MapView"
-            android:parentActivityName=".loadboardactivities.LoadBoardActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".loadboardactivities.FleetPostsActivity"
-            android:label="FleetPosts..."
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".Messaging.ChatList.ListChatActivity" />
-        <activity android:name=".newlookcode.MainNewIntroActivity" />
 
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
 
+        <activity android:name=".newlookcode.activities.MainNewIntroActivity" />
         <activity
             android:name=".newlookcode.activities.MainScrollingActivity"
-            android:label="@string/title_activity_main_scrolling"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -303,13 +116,7 @@
         </activity>
         <activity android:name=".newlookcode.activities.AllTransportersActivity" />
         <activity
-            android:name=".newlookcode.activities.LoadBoardActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".newlookcode.FacebookRequiredActivity"
+            android:name=".newlookcode.activities.FacebookRequiredActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -319,6 +126,17 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name=".forum.MainActivity.OPEN_DYNAMIC_SHORTCUT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="http://indianlogisticsnetwork.com/"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity
@@ -551,12 +369,23 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".newlookcode.activities.ProfileRoleInputActivity"
+        <activity
+            android:name=".newlookcode.activities.ProfileRoleInputActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".newlookcode.activities.LangSelectActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

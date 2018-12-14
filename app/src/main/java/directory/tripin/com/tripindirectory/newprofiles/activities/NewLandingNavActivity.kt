@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.getkeepsafe.taptargetview.TapTarget
@@ -35,22 +36,16 @@ import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresens
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity
+import directory.tripin.com.tripindirectory.newlookcode.activities.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.newlookcode.activities.*
 import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentSearchesViewHolder
-import directory.tripin.com.tripindirectory.newprofiles.CompanyRatingsPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo
 import directory.tripin.com.tripindirectory.utils.AppUtils
-import kotlinx.android.synthetic.main.activity_company_profile_display.*
-import kotlinx.android.synthetic.main.activity_main_scrolling.*
 import kotlinx.android.synthetic.main.activity_new_landing_nav.*
-import kotlinx.android.synthetic.main.layout_choose_vehicle.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
-import kotlinx.android.synthetic.main.layout_route_input.*
-import java.math.RoundingMode
 import java.util.*
 
-class NewLandingNavActivity : AppCompatActivity() {
+class NewLandingNavActivity : LocalizationActivity() {
 
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var context : Context
@@ -89,6 +84,7 @@ class NewLandingNavActivity : AppCompatActivity() {
                         .onDisconnect()
                         .setValue(userPresensePojo2)
             }
+
         }
 
         if (!preferenceManager.isMainScreenGuided) {
@@ -237,16 +233,23 @@ class NewLandingNavActivity : AppCompatActivity() {
 
         val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(mainhumb, "Welcome to ILN Directory", "Lets get through what you can explore here. Tap on the target!")
+                        TapTarget.forView(mainhumb, getString(R.string.welcome_to_iln), getString(R.string.welcome_note))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor),
-
-                        TapTarget.forView(yourbusiness, "Your Profile Here", "See your Network, Wallet and Add your own business on ILN. For Free!")
+                        TapTarget.forView(yourbusiness, getString(R.string.your_comp_profile_here), getString(R.string.your_comp_profile_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(showchats, "Your Chats Here", "All your chats are saved here, Now keep your business talks at one place. Tap the target!")
+                        TapTarget.forView(yourbusiness, getString(R.string.your_profile_here), getString(R.string.your_profile_discription))
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(showchats, getString(R.string.your_chats_here), getString(R.string.your_chats_discription))
+                                .transparentTarget(true)
+                                .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(showchats, getString(R.string.your_calls_here), getString(R.string.your_calls_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)

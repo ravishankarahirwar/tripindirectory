@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
@@ -21,14 +22,13 @@ import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
-import directory.tripin.com.tripindirectory.newlookcode.BasicQueryPojo
-import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity
+import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.LoadPostPojo
 import kotlinx.android.synthetic.main.item_loadpost_input.*
 import kotlinx.android.synthetic.main.layout_fsnewload_actionbar.*
 import libs.mjn.prettydialog.PrettyDialog
 
-class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
+class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
 
 
 
@@ -59,7 +59,7 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
             val i = Intent(this@NewLoadFormActivity, FacebookRequiredActivity::class.java)
             i.putExtra("from", "Loadboard")
             startActivityForResult(i, 3)
-            Toast.makeText(applicationContext, "Login with Facebook To Use Loadboard", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, getString(R.string.login_to_use_loadboard), Toast.LENGTH_LONG).show()
         }
 
         mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
@@ -141,14 +141,14 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
                         select_destinationf.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.setmDestinationCity(place.name.toString())
                     }else{
-                        Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,getString(R.string.try_again),Toast.LENGTH_LONG).show()
                     }
 
 
                 }
 
                 3->{
-                    Toast.makeText(applicationContext, "Welcome", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, getString(R.string.welcome), Toast.LENGTH_LONG).show()
                 }
 
             }
@@ -184,7 +184,7 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
 
         post.setOnClickListener {
             if(postpojo.getmSourceHub()==null||postpojo.getmDestinationHub()==null){
-                Toast.makeText(context,"Please Enter Route",Toast.LENGTH_LONG).show()
+                Toast.makeText(context,getString(R.string.please_enter_route),Toast.LENGTH_LONG).show()
                 post.text = "POST NOW"
 
             }else{
@@ -285,10 +285,10 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
         val prettyDialog: PrettyDialog = PrettyDialog(this)
 
         prettyDialog
-                .setTitle("Loadboard Agreement")
-                .setMessage("By posting your requirement on Loadboard we cant give you the guarantee of getting any useful responses. It completely depends on how many and who are interested in this deal at this time. We just make sure This post is notified and visible to all transporters.")
+                .setTitle(getString(R.string.loadboard_agreement))
+                .setMessage(getString(R.string.loadboard_agreement_details))
                 .addButton(
-                        "I agree, Post now!",
+                        getString(R.string.agreed_post_now),
                         R.color.pdlg_color_white,
                         R.color.green_400
                 ) {
@@ -296,14 +296,14 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
                     writeNewPost(postpojo)
 
                 }.addButton(
-                        "No, Find on directory",
+                        getString(R.string.find_transporter_on_directory),
                         R.color.pdlg_color_white,
                         R.color.blue_grey_100
                 ) {
                     prettyDialog.dismiss()
                     finish()
                 }.addButton(
-                        "Cancel",
+                        getString(R.string.cencel),
                         R.color.pdlg_color_white,
                         R.color.blue_grey_100
                 ) {
@@ -317,17 +317,17 @@ class NewLoadFormActivity : AppCompatActivity() , HubFetchedCallback {
 
     private fun writeNewPost( postpojo: LoadPostPojo) {
         post.text = "..."
-        Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.posting), Toast.LENGTH_SHORT).show()
         FirebaseFirestore.getInstance()
                 .collection("loadposts")
                 .add(postpojo).addOnCompleteListener {
-            Toast.makeText(context,"Posted! interested tansporters will contact you.",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,getString(R.string.after_load_post_success),Toast.LENGTH_LONG).show()
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_loadboard_post", bundle)
             finish()
 
         }.addOnCanceledListener {
-            Toast.makeText(context,"Try Again",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,getString(R.string.try_again),Toast.LENGTH_LONG).show()
         }
 
     }

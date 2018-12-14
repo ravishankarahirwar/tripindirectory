@@ -7,11 +7,11 @@ import android.support.v4.content.ContextCompat
 import android.text.Html
 import directory.tripin.com.tripindirectory.R
 import kotlinx.android.synthetic.main.activity_main_profile_insight.*
-import directory.tripin.com.tripindirectory.Messaging.Class.Chat
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainProfileInsightActivity : AppCompatActivity() {
+class MainProfileInsightActivity : LocalizationActivity(){
 
 lateinit var preferenceManager: PreferenceManager
     lateinit var context : Context

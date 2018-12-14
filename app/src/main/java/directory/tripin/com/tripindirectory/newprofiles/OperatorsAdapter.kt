@@ -1,15 +1,12 @@
 package directory.tripin.com.tripindirectory.newprofiles
 
 import android.content.Context
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import directory.tripin.com.tripindirectory.R
-import directory.tripin.com.tripindirectory.newlookcode.FleetSelectPojo
+import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
 import kotlinx.android.synthetic.main.item_operator.view.*
 import kotlinx.android.synthetic.main.item_truck_select.view.*

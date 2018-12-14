@@ -5,6 +5,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_profile_role_input.*
 import libs.mjn.prettydialog.PrettyDialog
 import java.util.HashMap
 
-class ProfileRoleInputActivity : AppCompatActivity() {
+class ProfileRoleInputActivity : LocalizationActivity() {
 
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
@@ -25,6 +26,7 @@ class ProfileRoleInputActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile_role_input)
         context = this
@@ -32,14 +34,13 @@ class ProfileRoleInputActivity : AppCompatActivity() {
         preferenceManager = PreferenceManager.getInstance(context)
         setListners()
 
-
     }
 
     override fun onResume() {
         super.onResume()
         if (preferenceManager.comapanyName != null) {
             if (preferenceManager.comapanyName.isNotEmpty()) {
-                createprofiletypeinput.text = "See your Company Profile"
+                createprofiletypeinput.text = getString(R.string.see_your_comp_profile)
             }
         }
     }
@@ -79,7 +80,7 @@ class ProfileRoleInputActivity : AppCompatActivity() {
                 // update the mProfileType Value
                 val hashMap = HashMap<String, String>()
                 hashMap.put("mProfileType", profileType.toString())
-                saveandcontprofileinput.text = "Saving..."
+                saveandcontprofileinput.text = getString(R.string.saving)
                 FirebaseFirestore.getInstance()
                         .collection("partners")
                         .document(preferenceManager.userId)
@@ -101,13 +102,13 @@ class ProfileRoleInputActivity : AppCompatActivity() {
                                     }.addOnCanceledListener {
 
                                         Toast.makeText(context,"Try again!",Toast.LENGTH_SHORT).show()
-                                        saveandcontprofileinput.text = "Save and continue"
+                                        saveandcontprofileinput.text = getString(R.string.save_and_continue)
 
                                     }
                         }.addOnCanceledListener {
 
                             Toast.makeText(context,"Try again!",Toast.LENGTH_SHORT).show()
-                            saveandcontprofileinput.text = "Save and continue"
+                            saveandcontprofileinput.text = getString(R.string.save_and_continue)
 
                         }
 
@@ -129,17 +130,17 @@ class ProfileRoleInputActivity : AppCompatActivity() {
 
         var type = ""
         if (profileType == 0L) {
-            type = "Load Provider"
+            type = getString(R.string.load_provider)
         }
         if (profileType == 2L) {
-            type = "Fleet Provider"
+            type = getString(R.string.fleet_provider)
         }
 
         prettyDialog
                 .setTitle("Continue as " + type)
-                .setMessage("You can't change the selected role, you will have to contact ILN Assistant to edit it further. Are you sure?")
+                .setMessage(getString(R.string.role_warning))
                 .addButton(
-                        "Yes! Goto ILN App.",
+                        getString(R.string.yes_goto_app),
                         R.color.pdlg_color_white,
                         R.color.green_400
                 ) {
@@ -147,7 +148,7 @@ class ProfileRoleInputActivity : AppCompatActivity() {
                     saveandContinue(profileType)
 
                 }.addButton(
-                        "Cancel",
+                        getString(R.string.cancel),
                         R.color.pdlg_color_white,
                         R.color.blue_grey_100
                 ) {

@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -39,7 +40,7 @@ import kotlinx.android.synthetic.main.activity_recent_calls.*
 import java.text.SimpleDateFormat
 
 
-class InvitePhonebookActivity : AppCompatActivity() {
+class InvitePhonebookActivity : LocalizationActivity() {
 
     private val PERMISSION_REQUEST_CONTACT: Int = 1
     lateinit var preferenceManager: PreferenceManager
@@ -87,7 +88,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
                 }
 
                 if (model.invited) {
-                    holder.time.text = "Invited"
+                    holder.time.text = getString(R.string.invited)
                     val top = holder.time.paddingTop
                     val left = holder.time.paddingLeft
                     val right = holder.time.paddingRight
@@ -96,7 +97,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
                     holder.time.setPadding(left, top, right, bottom)
 
                 } else {
-                    holder.time.text = "Invite"
+                    holder.time.text = getString(R.string.invite)
                     val top = holder.time.paddingTop
                     val left = holder.time.paddingLeft
                     val right = holder.time.paddingRight
@@ -116,7 +117,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
                                 val bundle = Bundle()
                                 firebaseAnalytics.logEvent("z_contact_invited", bundle)
                             }.addOnCanceledListener {
-                                holder.time.text = "Invite"
+                                holder.time.text = getString(R.string.invite)
                                 Toast.makeText(applicationContext, "Try Again!", Toast.LENGTH_SHORT).show()
                             }
                 }
@@ -137,15 +138,15 @@ class InvitePhonebookActivity : AppCompatActivity() {
                 invitesloading.visibility = View.GONE
 
 //                invite_permission.visibility = View.GONE
-                skip_invite.text = "Goto ILN App."
+                skip_invite.text = getString(R.string.goto_iln_app)
                 invite_permission.visibility = View.GONE
                 contactslist.visibility = View.VISIBLE
                 sync_contacts.visibility = View.VISIBLE
 
 
                 if (itemCount == 0) {
-                    allow_and_sync.text = "Allow and Sync"
-                    skip_invite.text = "Skip Now."
+                    allow_and_sync.text = getString(R.string.allow_and_sync)
+                    skip_invite.text = getString(R.string.skip_now)
                     invite_permission.visibility = View.VISIBLE
                     contactslist.visibility = View.GONE
                     sync_contacts.visibility = View.GONE
@@ -167,7 +168,7 @@ class InvitePhonebookActivity : AppCompatActivity() {
         allow_and_sync.setOnClickListener {
             Logger.v("askings permission")
             askForContactPermission()
-            allow_and_sync.text = "Hold Tight..."
+            allow_and_sync.text = getString(R.string.hold_tight)
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_contacts_synced", bundle)
         }

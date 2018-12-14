@@ -40,7 +40,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="bottom"
-            android:text=" ILN Settings"
+            android:text="@string/iln_settings"
             android:textColor="@color/blue_grey_900"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:gravity="center_vertical"
-                    android:text="Get Loadboard Notifications"
+                    android:text="@string/get_loadboard_notifications"
                     android:textSize="12sp" />
 
                 <Switch
@@ -91,6 +91,32 @@
                     android:layout_weight="1"
                     android:checked="true" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/border_stroke_bg"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Language: English" />
+
+                <TextView
+                    android:id="@+id/changelang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:text="Change Language"
+                    android:textColor="@color/bg_screen3"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

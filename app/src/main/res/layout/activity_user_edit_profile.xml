@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="You"
+                    android:text="@string/you"
                     android:textColor="@color/blue_grey_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -83,7 +83,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:text="Loading..."
+                    android:text="@string/loading"
                     android:textColor="@color/blue_grey_900"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -144,7 +144,7 @@
                             android:layout_height="wrap_content"
                             android:background="@android:drawable/list_selector_background"
                             android:gravity="center"
-                            android:text="My Network"
+                            android:text="@string/my_network"
                             android:textColor="@color/blue_grey_800"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -191,7 +191,7 @@
                             android:layout_height="wrap_content"
                             android:background="@android:drawable/list_selector_background"
                             android:gravity="center"
-                            android:text="My Business"
+                            android:text="@string/my_business"
                             android:textColor="@color/blue_grey_800"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -246,7 +246,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Recent Calls"
+                    android:text="@string/recent_calls"
                     android:textColor="@color/black"
                     android:textSize="10sp"
                     android:textStyle="bold"
@@ -286,7 +286,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="ILN Wallet"
+                    android:text="@string/iln_wallet"
                     android:textColor="@color/black"
                     android:textSize="10sp"
                     android:textStyle="bold"
@@ -326,7 +326,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Settings"
+                    android:text="@string/settings"
                     android:textColor="@color/black"
                     android:textSize="10sp"
                     android:textStyle="bold"
@@ -353,7 +353,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="'Lets make ILN the best and free platform for transport community. Share the app with your connections.' "
+                android:text="@string/lets_make_iln"
                 android:textSize="10sp"
                 android:textStyle="italic" />
 
@@ -364,7 +364,7 @@
                 android:layout_margin="10dp"
                 android:background="@android:drawable/list_selector_background"
                 android:gravity="center"
-                android:text="SHARE APP"
+                android:text="@string/share_app"
                 android:textColor="@color/blue_A200"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -376,7 +376,7 @@
                 android:layout_margin="10dp"
                 android:background="@android:drawable/list_selector_background"
                 android:gravity="center"
-                android:text="INVITE PHONEBOOK CONTACTS"
+                android:text="@string/invite_phonebook_contacts"
                 android:textColor="@color/blue_A200"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -426,7 +426,7 @@
                 android:layout_gravity="right|center_vertical"
                 android:layout_margin="8dp"
                 android:alpha="0.2"
-                android:text="recommended"
+                android:text="@string/recommended"
                 android:textColor="@color/active_indicator"
                 android:textSize="10sp"
                 android:visibility="gone" />
@@ -441,7 +441,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:padding="10dp"
-                android:text="CONNECT WITH FACEBOOK"
+                android:text="@string/connect_with_facebook"
                 android:textColor="@color/background"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -457,7 +457,7 @@
             android:background="@drawable/chat_in_bg"
             android:gravity="center"
             android:padding="10dp"
-            android:text="LogOut"
+            android:text="@string/logout"
             android:textStyle="bold" />
 
     </LinearLayout>

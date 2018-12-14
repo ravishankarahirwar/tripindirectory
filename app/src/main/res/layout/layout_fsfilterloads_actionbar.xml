@@ -30,7 +30,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Loadboard Filters"
+        android:text="@string/loadboard_filters"
         android:textColor="@color/blue_grey_900"
         android:textSize="16sp"
         android:textStyle="bold"

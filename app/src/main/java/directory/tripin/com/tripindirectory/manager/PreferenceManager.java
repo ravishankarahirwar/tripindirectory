@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Created by Yogesh Tikam on 5/10/2017.
+ * Created by Shubham Sardar on 5/10/2017.
  */
 
 public class PreferenceManager {
@@ -21,6 +21,8 @@ public class PreferenceManager {
     public static final String PREF_RATE_REMINDER = "ratereminder";
     public static final String PREF_LB_FILTER = "loadboardfilter";
     public static final String PREF_PROFILE_TYPE = "profile_type";
+    public static final String PREF_LANG = "preferred_lang";
+
 
 
 
@@ -115,7 +117,7 @@ public class PreferenceManager {
     }
 
     public boolean isOnNewLook() {
-         return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, true);
+        return sInstance.getBoolean(PREF_IS_ON_NEWLOOK, true);
     }
     public void setisOnNewLook(boolean b) {
         editor.putBoolean(PREF_IS_ON_NEWLOOK, b);
@@ -252,6 +254,16 @@ public class PreferenceManager {
 
     public void setProfileType(Long type) {
         editor.putLong(PREF_PROFILE_TYPE, type);
+        editor.commit();
+    }
+
+    public Long getPreferredLang() {
+        Long type = sInstance.getLong(PREF_LANG, 0);
+        return type;
+    }
+
+    public void setPreferredLang(Long type) {
+        editor.putLong(PREF_LANG, type);
         editor.commit();
     }
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +24,7 @@ import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_recent_calls.*
 import java.text.SimpleDateFormat
 
-class RecentCallsActivity : AppCompatActivity() {
+class RecentCallsActivity : LocalizationActivity() {
 
 
     lateinit var preferenceManager: PreferenceManager

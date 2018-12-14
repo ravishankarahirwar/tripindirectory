@@ -1,340 +1,284 @@
 <resources>
-    <string name="app_name">Indian Logistic Network</string>
 
-    <string name="facebook_application_id">227091151168633</string>
-    <string name="fb_login_protocol_scheme">fb227091151168633</string>
-
+    <string name="facebook_application_id" translatable="false">227091151168633</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb227091151168633</string>
     <string name="ga_trackingId" translatable="false">UA-113067263-1</string>
+    <string name="api_map_key" translatable="false">AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM</string>
+    <string name="FCM_KEY" translatable="false">AAAATegXd4w:APA91bE_RRy4w4s8aDSJHIeiJPn8xDoKzlSDyTBespBNSSPRMF2iX-VdHkvbdkLSXkyA07NBphPp2MIv1Al2Bhf_I4s_XSvsScVdgiQt4RRDZpyQGN7c-ITrQP7t9UAgmdTGfSQllx5F</string>
+    <string name="invitation_deep_link" translatable="false">https://vn98y.app.goo.gl/bjYi</string>
+    <string name="invitation_custom_image" translatable="false">https://ibb.co/cYAajw</string>
+    <string name="yt_link_explainer" translatable="false">https://youtu.be/FOkt6F0ZAOk</string>
+    <string name="yt_link_fleetprovider" translatable="false">https://youtu.be/45hvO9XOFro</string>
+    <string name="yt_link_loadproviders" translatable="false">https://youtu.be/CLzu7nFdv3Y</string>
+
 
     <string name="invitation_title">Grow your Logistic Network by INL</string>
-    <!--<string name="invitation_message">Be the part of India level logistic network and  grow your transport/logistic business as well as network just download INL Now</string>-->
-    <string name="invitation_message" translatable="false">Be the part of India\'s largest logistics network and grow your business</string>
-
-    <string name="invitation_deep_link">https://vn98y.app.goo.gl/bjYi</string>
-    <string name="invitation_custom_image">https://ibb.co/cYAajw</string>
-    <string name="invitation_cta">Download Now</string>
-
-    <string name="menu_location_text">Location</string>
-    <string name="menu_Message_text">Message</string>
-
-    <string name="company_name">Company Name</string>
-    <string name="company_name_caps">COMPANY NAME </string>
-    <string name="contact_person_name">Person name</string>
-    <string name="contact_person_number">Person number</string>
-
-    <string name="company_landline_number">Company Landline Number</string>
-    <string name="company_address">Company Address</string>
-    <string name="city_town_village">City/Town/Village</string>
-
-    <string name="state">State</string>
-
-    <string name="sign_in_cancelled">Sign In is cancelled</string>
-    <string name="no_internet_connection">No connection!</string>
-    <string name="unknown_error">Unknown Error</string>
-    <string name="unknown_sign_in_response">Unknown Responce</string>
-    <string name="sign_in_done">Signed In</string>
-
-
-    <string name="form_name">My Business Profile</string>
-
-    <string name="action_voice_rec">Voice Search</string>
-
-
-    <string name="truck_type_prompt">Vehicle Types</string>
-
-
-    <string-array name="truck_type">
-        <item>Select Type of Vehicle</item>
-        <item>None</item>
-        <item>LCV</item>
-        <item>Truck</item>
-        <item>Tusker</item>
-        <item>Taurus</item>
-        <item>Trailers</item>
-        <item>Container Body</item>
-        <item>Refrigerated Vans</item>
-        <item>Tankers</item>
-        <item>Tippers</item>
-        <item>Bulkers</item>
-        <item>Car Carriers</item>
-        <item>Scooter Body</item>
-        <item>Hydraulic Axles</item>
-    </string-array>
-
-    <string name="body_type_prompt">Body Types</string>
-
-    <string-array name="body_type">
-        <item>Select Type of Body</item>
-        <item>None</item>
-        <item>Normal</item>
-        <item>Full Body</item>
-        <item>Half Body</item>
-        <item>Open Body</item>
-        <item>Platform</item>
-        <item>Skeleton</item>
-        <item>Semi-low</item>
-        <item>Low</item>
-        <item>Trolla/Body Trailer</item>
-        <item>Refer</item>
-        <item>High Cube (HC)</item>
-        <item>Normal</item>
-    </string-array>
-    <string name="title_activity_partner_detail_scrolling">PartnerDetailScrollingActivity</string>
-    <string name="api_map_key">AIzaSyAFrBb3RPLb8Vlz4-dERUR2atZaiPj4yoM</string>
-    <string name="pincode">Pincode</string>
-    <string name="driver_number">Driver Number</string>
-    <string name="only_for_you">(Only you can see)</string>
-    <string name="nev_add_your_business">Add Your Business</string>
-    <string name="nev_notification">Notifications</string>
-    <string name="nev_log_out">Log Out</string>
-    <string name="nev_share_app">Share App</string>
-    <string name="nev_feature_request_feedback">Feature Request/Feedback</string>
-    <string name="nev_invite_friends">Invite friends</string>
-    <string name="no_images_uploaded_yet">No Images Uploaded Yet!</string>
-    <string name="destination">Destination</string>
-    <string name="route">ROUTE </string>
-    <string name="search_tag_city">CITY </string>
-    <string name="transporter">TRANSPORTER</string>
-    <string name="company_contacts">Company Contacts</string>
-    <string name="area_of_operation">Area of operation</string>
-    <string name="source_cities">Source Cities</string>
-    <string name="destination_cities">Destination Cities</string>
-    <string name="types_of_services">Types of services</string>
-    <string name="nature_of_business">Nature of Business</string>
-    <string name="fleet_owned">Fleet Owned :</string>
-    <string name="call">CALL</string>
-    <string name="fetching_your_data">Fetching Your Data ...</string>
-    <string name="contact_persons">Contact Persons :</string>
-    <string name="add">Add</string>
-    <string name="import_from_your_contacts">Import from your Contacts</string>
-    <string name="company_landline_numbers">Company Landline Numbers</string>
-    <string name="locate_your_business_on_map">Locate Your Business On Map</string>
-    <string name="fleet">Your Fleets :</string>
-    <string name="working_with">Working With :</string>
-
-    <string name="add_truck">Add Truck</string>
-    <string name="upload_required_images">Add and Upload required Images:</string>
-    <string name="image_upload">Image Upload</string>
-    <string name="your_pick_up_cities">Your Pick Up Cities :</string>
-    <string name="your_drop_off_cities">Your Drop Off Cities :</string>
-    <string name="available">Available</string>
-    <string name="not_available">Not Available</string>
-    <string name="vehicle_number">Vehicle Number</string>
-    <string name="payload">Weight(MT)</string>
-    <string name="length">Length(Ft)</string>
-    <string name="requirement">Other Requirement</string>
-
-
-    <string name="driver_name">Driver Name</string>
-    <string name="indian_logistics_network">Indian Logistics Network</string>
-    <string name="support_email">ravishankar.ahirwar@tripin.co.in</string>
-    <string name="title_activity_demo_scrolling">DemoScrollingActivity</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_landing">ILN</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_load_board">LoadBoard</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">Tab 3</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="action_filter">filters</string>
-    <string name="action_notifications">notifications</string>
-    <string name="nev_loadboard">Load Board</string>
-
-    <string name="heading_recent">Recent</string>
-    <string name="heading_my_posts">My Posts</string>
-    <string name="heading_my_top_posts">My Top Posts</string>
-
-    <string name="source">Source</string>
-    <string name="hint_material">Material</string>
-
-    <string name="post_load">POST LOAD</string>
-    <string name="post_truck">POST TRUCK</string>
-
-    <string name="get_verified">\t Hello user! your company details are not verified yet,
-        please send a verification request and get your company verified by ILN Executives,
-        a verified company is shown with blue check as shown in the card below. This will improve your credibility and
-        hence the chances of getting good deals. So, get Verified on ILN ASAP!</string>
-
-    <string name="under_verification">\tPlease wait while your company is been verified by ILN executivies.
-        You can modify your data anytime, Verification will be done on the latest version available.
-        You will be notified soon if everything goes right!</string>
-    <string name="comp_verified">\tCongratulations! Your Company is verified now!
-        Do not make major changes in company TAB, doing it will make you get the modified
-        data verified again. Improve reputation of your company by getting good reviews
-        from your clients. All the best!</string>
-    <string name="alert_sent_verfication_req">Make sure you have filled all the important fields in the form,
-        incomplete or inappropriate form can be rejected. Rejection can harm your company reputation or can also lead to termination of your account. You may receive a call on your registered mobile number from ILN in the process for verification</string>
-    <string name="rmn_title">Registered Mobile Number</string>
-    <string name="action_help">Get Help</string>
-    <string name="fetching">Fetching...</string>
-    <string name="unverified">Unverified</string>
-    <string name="verified">Verified</string>
-
-    <string name="email">Email Id</string>
-    <string name="password">Password</string>
-    <string name="login">Login</string>
-    <string name="login_register">New user, tap here to register !</string>
-    <string name="register">Register</string>
-
-    <string name="user_successfully_added">User successfully added!</string>
-    <string name="user_unable_to_add">Unable to add user!</string>
-    <string name="adding_user_to_db">Adding user to database.</string>
-    <string name="loading">Loading</string>
-    <string name="please_wait">Please wait...</string>
-
-    <string name="font_family_roboto_light">sans-serif-thin</string>
-    <string name="type_a_message">Type a message...</string>
-    <string name="action_logout">Logout</string>
-    <string name="title_activity_splash">SplashActivity</string>
-    <string name="logout">Logout</string>
-    <string name="are_you_sure">Are you sure ?</string>
-    <string name="cancel">Cancel</string>
-
-    <!--Welcome Activity Strings Start-->
-    <string name="next">NEXT</string>
-    <string name="skip">SKIP</string>
-    <string name="start">GOT IT</string>
-
-    <string name="slide_1_title">Partner!</string>
-    <string name="slide_1_desc">Add your business in ILN so other can search you in the world!</string>
-
-    <string name="slide_2_title">Search Query ?</string>
-    <string name="slide_2_desc">Search by Route, Company Name and City.</string>
-
-    <string name="slide_3_title">Just Speak</string>
-    <string name="slide_3_desc">No need to type just speak we will show you what you want!</string>
-
-    <string name="slide_4_title">Load Board</string>
-    <string name="slide_4_desc">Post your Load/Truck on LoadBoard, So Transporter/Shipper will contact you</string>
-
-    <string name="title_send_verification_request">Send Verification Request</string>
-    <string name="send_now">SEND NOW!</string>
-    <string name="nev_inbox">Inbox</string>
-
-    <string name="no_location">Private</string>
-    <string name="user_info_no_name">no_name</string>
-
-    <string name="conf_1">Confirmation</string>
-    <string name="conf_2">You are about to activated a paid service, this will cost you 100 credits.</string>
-    <string name="conf_3">Activate</string>
-    <string name="conf_4">Cancel</string>
-    <string name="FCM_KEY">AAAATegXd4w:APA91bE_RRy4w4s8aDSJHIeiJPn8xDoKzlSDyTBespBNSSPRMF2iX-VdHkvbdkLSXkyA07NBphPp2MIv1Al2Bhf_I4s_XSvsScVdgiQt4RRDZpyQGN7c-ITrQP7t9UAgmdTGfSQllx5F</string>
+    <string name="invitation_message">Be the part of India level logistic network and  grow your transport/logistic business as well as network just download INL Now</string>
     <string name="msg_permission_required">You denied the required permission, You Disabled the function. Grant the permission to use this function !</string>
-    <string name="dialog_title_select_image">Choose an image…</string>
-    <string name="error_upload_task_create">Error updating photo</string>
-    <string name="SignUp_username">Username</string>
-    <string name="signup_male">Male</string>
-    <string name="signup_female">Female</string>
-    <string name="basic_information">Basic information</string>
-    <string name="indefined">Undefined</string>
-    <string name="birthday2">Birthday</string>
-    <string name="personal_informations">Personal Informations</string>
-    <string name="status2">Status</string>
-    <string name="sexuality">Sexuality</string>
-    <string name="update_location2">Update Location</string>
-    <string name="oriantation">Oriantation</string>
-    <string name="about_me">About me</string>
-    <string name="title_activity_main_scrolling">MainScrollingActivity</string>
-    <string name="large_text">
-        "Material is the metaphor.\n\n"
 
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
 
-        "Bold, graphic, intentional.\n\n"
-
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
-
-        "Motion provides meaning.\n\n"
-
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
-
-        "3D world.\n\n"
-
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
-
-        "Light and shadow.\n\n"
-
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
-
-        "Resting elevation.\n\n"
-
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
-
-        "Component elevations.\n\n"
-
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
-    </string>
+    <string name="app_name">Indian Logistic Network</string>
+    <string name="invitation_cta">Download Now</string>
     <string name="from">From</string>
     <string name="select_city">. Select City</string>
     <string name="to">To</string>
     <string name="userInactive">User Inactive, will be invited via SMS.</string>
+    <string name="available">Available</string>
+    <string name="about_iln">About ILN</string>
+    <string name="iln_is_a_platform">ILN is a platform for fleet providers and load providers to connect with each other for business in a profound way. Load providers can use directory feature to get a list of top available transport companies, or can post the requirement on loadboard and get responses when a transporter is interested. Fleet Providers can register there company and become visible to all on directory. Transport companies can then collect ratings and connections to improve credibility and get more leads. A company can also use promote feature to stay top on the result list for a particular route.</string>
+    <string name="iln_explainer_video">ILN explainer video</string>
+    <string name="video_tutorial_for_load_providers">Video Tutorial for Load providers</string>
+    <string name="video_tutorial_for_fleet_providers">Video Tutorial for Fleet providers</string>
+    <string name="stay_in_touch_with_us_on">Stay in touch with us on</string>
+    <string name="youtube_iln_community_official">youtube/ILN Community Official</string>
+    <string name="facebook_ilnofficial">facebook/ILNOfficial</string>
+    <string name="instagram_indian_logistics_network">instagram/indian.logistics.network</string>
+    <string name="chat_with_iln_assistant">Chat with ILN Assistant</string>
+    <string name="no_chats_yet">No Chats Yet!</string>
+    <string name="chat_initiating_message">Chat Initiating Message :</string>
+    <string name="typing">Typing…</string>
+    <string name="type_something">Type Something…</string>
+    <string name="this_profile_is_blocked">This profile is blocked!</string>
+    <string name="tap_here_to_request_unblock">Tap here to request unblock.</string>
+    <string name="fetching">Fetching…</string>
+    <string name="see_insights">SEE INSIGHTS</string>
+    <string name="promote">Promote</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="cities">Cities</string>
+    <string name="connections">Connections</string>
+    <string name="ratings">Ratings</string>
+    <string name="role_unspecified_yet">ROLE UNSPECIFIED YET!</string>
+    <string name="ratings_and_reviews_0">Ratings and Reviews (0)</string>
+    <string name="report_this_profile">REPORT THIS PROFILE!</string>
+    <string name="edit_company_profile">Edit Company Profile</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="company_bio">Company Bio</string>
+    <string name="unspecified_yet">UNSPECIFIED YET!</string>
+    <string name="edit_role">Edit Role</string>
+    <string name="company_address">Company Address</string>
+    <string name="your_city">Your City</string>
+    <string name="tap_to_select">Tap to select</string>
+    <string name="pin_point_on_map">Pin Point on Map</string>
+    <string name="tap_to_point">Tap to point</string>
+    <string name="available_fleets">Available Fleets</string>
+    <string name="manage_cities">Manage Cities</string>
+    <string name="log_in_with_facebook_mobile">LOG IN WITH FACEBOOK + MOBILE</string>
+    <string name="log_in_with_phone_number">LOG IN WITH PHONE NUMBER</string>
+    <string name="note">Note</string>
+    <string name="back_to_old_app">Back to Old App</string>
+    <string name="facebook_login_note">Facebook Login is just to Authenticate you on ILN. We do not use any of your data or post on your Facebook account without permission.</string>
+    <string name="no_filters_are_applied">No filters are applied.</string>
+    <string name="clear_filters">Clear Filters</string>
+    <string name="manage_your_loadposts">Manage Your LoadPosts</string>
+    <string name="not_interested">Not Interested</string>
+    <string name="try_it">Try It!</string>
+    <string name="allow_and_sync_contacts">Allow and sync contacts</string>
+    <string name="dear_iln_user">Dear ILN user!</string>
+    <string name="premission_contacts">We need your permission to access contacts from your Phonebook. Then, you can send them invitation by SMS for free.</string>
+    <string name="dont_ask_this_again">Dont ask this again.</string>
+    <string name="select_body_type">Select Body Type</string>
+    <string name="truck_length">Truck Length</string>
+    <string name="insights">Insights</string>
+    <string name="visits_on_this_profile">Visits on this profile.</string>
+    <string name="calls_on_this_business">Calls on this business.</string>
+    <string name="chats_with_this_user">Chats with this user.</string>
+    <string name="connections_gained">Connections gained.</string>
+    <string name="ratings_gained">Ratings gained.</string>
+    <string name="manage_operation_cities">Manage Operation Cities</string>
+    <string name="cities_empty_add_now">Cities Empty. Add Now!</string>
+    <string name="it_is_recommended_city">It is recommended to keep only top 20 cities you are currently operating in this list.</string>
+    <string name="network_empty">Network Empty! You can add companies to your network by visiting company profiles from directory search and tapping on \'Connect\' button.</string>
+    <string name="find_transporters_on_iln_directory">Find Transporters on ILN Directory</string>
+    <string name="directory_guide">Select your route/fleet and get the list of available transporters.</string>
+    <string name="transporters_online_now">Transporters Online now.</string>
+    <string name="recent_searches">Recent searches :</string>
+    <string name="goto_directory">Goto Directory</string>
+    <string name="post_your_load_on_iln_loadboard">Post your load on ILN Loadboard</string>
+    <string name="loadboard_guide">Select your route/fleet and get the list of available transporters.</string>
+    <string name="search_loads">Search Loads</string>
+    <string name="search_a_transport_company_by_name">Search a transport company by name</string>
+    <string name="searchbyname_guide">Select your route/fleet and get the list of available transporters.</string>
+    <string name="update_your_profile">Update your profile</string>
+    <string name="note_loadpost_form">Note: This form is for load providers and not for asking load requirement.</string>
+    <string name="indian_logistics_network">Indian Logistics Network</string>
+    <string name="selected_companies">Selected Companies</string>
+    <string name="a_complete_profile_request">A complete profile will improve your chances of getting business through ILN</string>
+    <string name="create_your_company_profile">Create Your Company Profile</string>
+    <string name="i_am_a_load_provider">I am a Load Provider</string>
+    <string name="i_am_a_fleet_provider">I am a Fleet Provider</string>
+    <string name="specify_your_role">Specify your Role.</string>
+    <string name="save_and_continue">Save and Continue</string>
+    <string name="no_result_found_try_something_else">No result found! try something else.</string>
+    <string name="search_a_company_bio">Type a transport company name or company operator/owner name or Registered Mobile Number to get search results.</string>
+    <string name="scan_company_qr">Scan Company QR</string>
+    <string name="search">Search....</string>
+    <string name="iln_settings">ILN Settings</string>
+    <string name="get_loadboard_notifications">Get Loadboard Notifications</string>
+    <string name="report_this_company">Report This Company</string>
+    <string name="feels_like_a_spam">Feels Like a spam</string>
+    <string name="inappropriate_response_on_call">Inappropriate response on call</string>
+    <string name="inappropriate_response_on_chat">Inappropriate response on chat</string>
+    <string name="its_a_fraud">Its a fraud!</string>
+    <string name="write_a_comment_optional">Write a comment (optional)</string>
+    <string name="submit_report">SUBMIT REPORT</string>
+    <string name="you">You</string>
+    <string name="my_business">My Business</string>
+    <string name="recent_calls">Recent Calls</string>
+    <string name="settings">Settings</string>
+    <string name="lets_make_iln">\'Lets make ILN the best and free platform for transport community. Share the app with your connections.\'</string>
+    <string name="share_app">SHARE APP</string>
+    <string name="invite_phonebook_contacts">INVITE PHONEBOOK CONTACTS</string>
+    <string name="connect_with_facebook">CONNECT WITH FACEBOOK</string>
+    <string name="logout">LogOut</string>
+    <string name="work_in_progress">WORK IN PROGRESS</string>
+    <string name="no_results_found_try_nearby_route">No Results Found, Try Nearby Route</string>
+    <string name="post_to_selected">POST TO SELECTED</string>
+    <string name="post_to_loadboard">POST TO LOADBOARD</string>
+    <string name="invite">INVITE</string>
+    <string name="found_on_iln">Found on ILN</string>
+    <string name="post_now">POST NOW</string>
+    <string name="type_other_requirement_here">Type Other Requirement here…</string>
+    <string name="other_requirement_comment_here">Other Requirement/Comment Here</string>
+    <string name="share">Share</string>
+    <string name="call">Call</string>
+    <string name="remove">Remove</string>
+    <string name="chat_2">CHAT</string>
+    <string name="call_2">CALL</string>
+    <string name="directory">Directory</string>
+    <string name="loadboard_filters">Loadboard Filters</string>
+    <string name="loadboard">Loadboard</string>
+    <string name="new_load">New Load</string>
+    <string name="your_loads">Your Loads</string>
+    <string name="offer_string">Get up to 90% discount on Vehicle Insurance, now!</string>
+    <string name="vehicle_type">VEHICLE TYPE</string>
+    <string name="select_vehicle_type">Select Vehicle Type</string>
+    <string name="body_type">BODY TYPE</string>
+    <string name="payload">PAYLOAD</string>
+    <string name="payload_2">Payload</string>
+    <string name="length">LENGTH</string>
+    <string name="length_2">Length</string>
+    <string name="material">MATERIAL</string>
+    <string name="type_material_specifications">Type Material Specifications</string>
+    <string name="material_specifications_optional">Material Specifications (Optional)</string>
+    <string name="manage_operators">Manage Operators</string>
+    <string name="my_network">My Network</string>
+    <string name="recommended">recommended</string>
+    <string name="company_name">Company Name</string>
+    <string name="loading">Loading…</string>
+    <string name="post_new_load">Post New Load</string>
+    <string name="iln_wallet">ILN Wallet</string>
+    <string name="ton">Ton</string>
+    <string name="mt">MT</string>
+    <string name="other_requirements_optional">Other Requirements (Optional)_</string>
+    <string name="see_details">SEE DETAILS</string>
+    <string name="saving_to_server">Saving to Server…</string>
+    <string name="set_filters">Set Filters</string>
+    <string name="cities_of_operation">Cities Of Operation</string>
+    <string name="operators">Operators</string>
 
-    <!--End-->
+    <string name="english">English (Default)</string>
+    <string name="hindi">Hindi</string>
+    <string name="marathi">Marathi</string>
+    <string name="transport_directory">Transport Directory</string>
+    <string name="directory_discription">Select route and get list of registered transporters.</string>
+    <string name="load_board">LoadBoard</string>
+    <string name="loadboard_discription">Post your requirements on Loadboard and get responces from interested people.</string>
+    <string name="chat">Chat</string>
+    <string name="chat_discription">Connect with transporters and proceed the further transaction on chat.</string>
+    <string name="all_transporters">All Transporters</string>
+    <string name="feature_coming_soon">Feature Coming Soon</string>
+    <string name="rate_after_call"><![CDATA[You called this company, How was your experience? Visit & Rate now or swipe to dismiss.]]></string>
+    <string name="rate_after_chat"><![CDATA[You chatted with this company, How was your experience? Visit & Rate now or swipe to dismiss.]]></string>
+    <string name="visit_and_rate_now">Visit and Rate Now!</string>
+    <string name="fb_convi_1">Hi, You are almost there! Log in with Facebook for a more personalised experience.</string>
+    <string name="fb_convi_2">Hi, Log in once with Facebook to use the chat feature of Indian Logistics Network.</string>
+    <string name="fb_convi_3">Hi, Log in once with Facebook to use the LoadBoard, Post your load and get deals from ILN trusted trasporters.</string>
+    <string name="fb_convi_4">Hi, Log in once with Facebook and send your requirement to multiple selected transporters in one click!</string>
+    <string name="user_null_try_again">User Null, Try Again</string>
+    <string name="creating_user">Creating User</string>
+    <string name="rmn_null_try_again">RMN Null! Try again</string>
+    <string name="try_again">Try again</string>
+    <string name="checking_facebook">Checking Facebook!</string>
+    <string name="filters_are_added">Filters are added.</string>
+    <string name="edit_filters">Edit Filters</string>
+    <string name="no_filters_are_added">No Filters are added.</string>
+    <string name="add_filters">Add Filters</string>
+    <string name="moble_not_available">Sorry!! Mobile no not available</string>
+    <string name="invite_phonebook_contacts1">Invite Phonebook Contacts</string>
+    <string name="skip_now">Skip Now</string>
+    <string name="language_changed">Language Changed</string>
+    <string name="source">Source</string>
+    <string name="destination">Destination</string>
+    <string name="kg">KG</string>
+    <string name="meter">Meters</string>
+    <string name="feet">Feets</string>
+    <string name="select_city_1">. Select City</string>
+    <string name="select_fleet_type">Select Fleet Type</string>
+    <string name="fleet_type_discription">The list of top 12 transport companies who can provide you the fleets will be shown. You can select multiple fleet types.</string>
+    <string name="select_source_city">Select Source City from here</string>
+    <string name="select_destination_city">Select Destination City here</string>
+    <string name="select_source_discription">Type the source city and select from suggestion. Result will be filtered accordingly. Tap on the target.</string>
+    <string name="select_destination_discription">Transporters operating only between your selected route will be shown!</string>
+    <string name="your_profile_here">Your Profile Here</string>
+    <string name="your_chats_here">Your Chats Here</string>
+    <string name="your_profile_discription">See your Network, Wallet and Add your own business on ILN. For Free!</string>
+    <string name="your_chats_discription">All your chats are saved here, Now keep your business talks at one place. Tap the target!</string>
+    <string name="your_comp_profile_here">Your Business Profile Here</string>
+    <string name="your_comp_profile_discription">Maintain your business profile to get  the most out of ILN.</string>
+    <string name="your_calls_here">Your Recents Calls from ILN here</string>
+    <string name="your_calls_discription">See who called you and whom do you called from ILN to quickly access them again.</string>
+    <string name="use_iln_wisely">Use ILN wisely!</string>
+    <string name="restart_guide_from_menu">You can restart the guide from menu!</string>
+    <string name="removed_successfully">Removed Successfully</string>
+    <string name="delete_post">Delete Post</string>
+    <string name="want_to_delete_post">Are you sure? You want to delete this post.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="login_to_use_loadboard">Login with Facebook To Use Loadboard</string>
+    <string name="welcome">Welcome</string>
+    <string name="please_enter_route">Please Enter Route</string>
+    <string name="loadboard_agreement">Loadboard Agreement</string>
+    <string name="loadboard_agreement_details">By posting your requirement on Loadboard we cant give you the guarantee of getting any useful responses. It completely depends on how many and who are interested in this deal at this time. We just make sure This post is notified and visible to all transporters.</string>
+    <string name="agreed_post_now">I agree, Post now!</string>
+    <string name="find_transporter_on_directory">No, Find Transporter on directory</string>
+    <string name="cencel">Cancel</string>
+    <string name="posting">Posting...</string>
+    <string name="after_load_post_success">Posted! interested tansporters will contact you.</string>
+    <string name="updating_presence">Updating your presence...</string>
+    <string name="syncing_data">Syncing Data...</string>
+    <string name="launching_iln">Launching ILN App...</string>
+    <string name="login_fb_required_pts">Login with FB To send requirement to selected</string>
+    <string name="sending_wait">Sending... Please Wait!</string>
+    <string name="sending">Sending</string>
+    <string name="nothing_selected">Nothing Selected</string>
+    <string name="sending_done">Sending Done!</string>
+    <string name="see_your_comp_profile">See your Company Profile</string>
+    <string name="saving">Saving...</string>
+    <string name="load_provider">Load Provider</string>
+    <string name="fleet_provider">Fleet Provider</string>
+    <string name="role_warning">You can\'t change the selected role, you will have to contact ILN Assistant to edit it further. Are you sure?</string>
+    <string name="yes_goto_app">Yes! Goto ILN App.</string>
+    <string name="cancel">Cancel</string>
+    <string name="company_details_loading">Company Details Loading...</string>
+    <string name="not_available">Not Available</string>
+    <string name="load_provider_b">LOAD PROVIDER</string>
+    <string name="fleet_provider_b">FLEET PROVIDER</string>
+    <string name="no_cities_are_added">No Cities Added Yet</string>
+    <string name="no_cities_added_yet">No Cities Added Yet</string>
+    <string name="promote_my_business">Promote My Business</string>
+    <string name="promotion_in_development_progress">This feature is still in development. For now, You can ask for promotion personally to ILN Assistant.</string>
+    <string name="yes_talk_to_assistant">Yes, Talk to Assistant</string>
+    <string name="company_name_cant_be_empty">Company Name Cant be empty</string>
+    <string name="no_cities_yet_tap_manage">No Cities Added Yet, tap on manage cities.</string>
+    <string name="welcome_to_iln">Welcome to ILN App</string>
+    <string name="welcome_note">Lets get through what you can explore here. Tap on the target!</string>
+    <string name="you_will_be_notified_lb">Will get Notifications</string>
+    <string name="no_lb_notif">No notifications from Loadboard</string>
+    <string name="select_a_cause">Select a cause</string>
+    <string name="goto_iln_app">Goto ILN App.</string>
+    <string name="allow_and_sync">Allow and Sync</string>
+    <string name="hold_tight">Hold Tight...</string>
+    <string name="setting_up">Setting Up...</string>
+    <string name="invited">Invited</string>
+
 </resources>

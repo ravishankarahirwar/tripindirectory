@@ -218,7 +218,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="8dp"
                         android:padding="2dp"
-                        android:text="CHAT"
+                        android:text="@string/chat_2"
                         android:textColor="@color/blue_grey_900"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -242,7 +242,7 @@
                 android:background="@android:drawable/list_selector_background"
                 android:gravity="center"
                 android:padding="12dp"
-                android:text="CALL"
+                android:text="@string/call_2"
                 android:textColor="@color/blue_grey_900"
                 android:textSize="12sp"
                 android:textStyle="bold" />

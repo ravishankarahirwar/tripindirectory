@@ -129,7 +129,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue_grey_50"
                     android:padding="5dp"
-                    android:text="VEHICLE TYPE"
+                    android:text="@string/vehicle_type"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -157,7 +157,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue_grey_50"
                     android:padding="5dp"
-                    android:text="BODY TYPE"
+                    android:text="@string/body_type"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -185,7 +185,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue_grey_50"
                     android:padding="5dp"
-                    android:text="PAYLOAD"
+                    android:text="@string/payload"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -213,7 +213,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue_grey_50"
                     android:padding="5dp"
-                    android:text="LENGTH"
+                    android:text="@string/length"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -241,7 +241,7 @@
                     android:layout_weight="1"
                     android:background="@color/blue_grey_50"
                     android:padding="5dp"
-                    android:text="MATERIAL"
+                    android:text="@string/material"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -265,7 +265,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Other Requirement/Comment Here"
+            android:text="@string/other_requirement_comment_here"
             android:textSize="12sp" />
 
         <LinearLayout
@@ -283,7 +283,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Share"
+                android:text="@string/share"
                 android:textColor="@color/blue_grey_900"
                 android:textStyle="bold" />
 
@@ -299,7 +299,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Chat"
+                android:text="@string/chat"
                 android:textColor="@color/blue_grey_900"
                 android:textStyle="bold" />
 
@@ -315,7 +315,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Call"
+                android:text="@string/call"
                 android:textColor="@color/blue_grey_900"
                 android:textStyle="bold" />
 
@@ -327,7 +327,7 @@
                 android:background="@color/red_A100"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Remove"
+                android:text="@string/remove"
                 android:textColor="@color/blue_grey_900"
                 android:textStyle="bold" />
 

@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
@@ -35,7 +36,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
-class ManageCitiesActivity : AppCompatActivity(), CityInteractionCallbacks, HubFetchedCallback {
+class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, HubFetchedCallback {
 
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE = 1

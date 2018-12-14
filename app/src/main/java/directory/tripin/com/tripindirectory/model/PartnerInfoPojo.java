@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import directory.tripin.com.tripindirectory.model.response.Vehicle;
 
 /**
  * Created by Shubham on 12/12/2017.
@@ -58,7 +57,6 @@ public class PartnerInfoPojo {
 
     private List<ContactPersonPojo> mContactPersonsList;
 
-    private List<Vehicle> vehicles;
 
     private CompanyAddressPojo mCompanyAdderss;
 
@@ -330,15 +328,6 @@ public class PartnerInfoPojo {
 
     public void setmTypesOfServices(Map<String, Boolean> mTypesOfServices) {
         this.mTypesOfServices = mTypesOfServices;
-    }
-
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
-
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
-
     }
 
     public Map<String, Boolean> getmSourceCities() {

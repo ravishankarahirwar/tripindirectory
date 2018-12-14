@@ -10,8 +10,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 95
-        versionName "10.8"
+        versionCode 96
+        versionName "10.9"
         multiDexEnabled true
         dataBinding.enabled true
         vectorDrawables.useSupportLibrary = true
@@ -153,6 +153,8 @@ dependencies {
     //Mixpanel
     implementation "com.mixpanel.android:mixpanel-android:5.4.1"
     implementation "com.google.android.gms:play-services-gcm:15.0.1"
+
+    implementation 'com.akexorcist:localizationactivity:1.2.2'
 
     implementation 'com.vanniktech:emoji-google:0.5.1'
     implementation 'de.hdodenhof:circleimageview:2.1.0'

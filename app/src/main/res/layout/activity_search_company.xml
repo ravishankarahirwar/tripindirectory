@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="No result found! try something else."
+            android:text="@string/no_result_found_try_something_else"
             android:textSize="12sp"
             android:visibility="gone" />
 
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:gravity="left"
             android:padding="20dp"
-            android:text="Type a transport company name or company operator/owner name or Registered Mobile Number to get search results."
+            android:text="@string/search_a_company_bio"
             android:textSize="14sp" />
 
         <TextView
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Scan Company QR"
+            android:text="@string/scan_company_qr"
             android:textColor="@color/bg_screen3"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -64,7 +64,7 @@
         android:drawableLeft="@drawable/ic_search_black_24dp"
         android:elevation="4dp"
         android:ems="10"
-        android:hint="Search...."
+        android:hint="@string/search"
         android:inputType="textPersonName"
         android:padding="15dp"
         android:textSize="14sp"

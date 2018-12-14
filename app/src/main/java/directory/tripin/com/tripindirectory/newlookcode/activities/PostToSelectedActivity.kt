@@ -2,18 +2,16 @@ package directory.tripin.com.tripindirectory.newlookcode.activities
 
 import android.arch.paging.PagedList
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.NonNull
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
 import com.firebase.ui.firestore.paging.LoadingState
@@ -28,23 +26,19 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatHeadPojo
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPojo
-import directory.tripin.com.tripindirectory.newlookcode.BasicQueryPojo
-import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity
+import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
 import directory.tripin.com.tripindirectory.newlookcode.PartnersViewHolder
 import directory.tripin.com.tripindirectory.R
-import directory.tripin.com.tripindirectory.activity.PartnerDetailScrollingActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
 import directory.tripin.com.tripindirectory.newprofiles.models.CompanyCardPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
-import kotlinx.android.synthetic.main.activity_all_transporters.*
 import kotlinx.android.synthetic.main.activity_post_to_selected.*
 
-class PostToSelectedActivity : AppCompatActivity() {
+class PostToSelectedActivity : LocalizationActivity() {
 
     lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
@@ -81,7 +75,7 @@ class PostToSelectedActivity : AppCompatActivity() {
             val i = Intent(this@PostToSelectedActivity, FacebookRequiredActivity::class.java)
             i.putExtra("from", "PostToSelected")
             startActivityForResult(i, 3)
-            Toast.makeText(applicationContext, "Login with FB To send requirement to selected", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, getString(R.string.login_fb_required_pts), Toast.LENGTH_LONG).show()
         }
 
 
@@ -110,10 +104,10 @@ class PostToSelectedActivity : AppCompatActivity() {
         sendtoaalfab.setOnClickListener {
 
             if (noc == 0) {
-                Toast.makeText(context, "Nothing Selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.nothing_selected), Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(context, "Sending", Toast.LENGTH_SHORT).show()
-                selected_comps.text = "Sending... Please Wait!"
+                Toast.makeText(context, getString(R.string.sending), Toast.LENGTH_SHORT).show()
+                selected_comps.text = getString(R.string.sending_wait)
 
                 //Sending Function
 
@@ -144,7 +138,7 @@ class PostToSelectedActivity : AppCompatActivity() {
 
         if (values.size == 0) {
             //Sending Finished
-            Toast.makeText(context, "Sending Done!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.sending_done), Toast.LENGTH_SHORT).show()
             val bundle = Bundle()
             if(preferenceManager.rmn!=null){
                 bundle.putString("by_rmn",preferenceManager.rmn)

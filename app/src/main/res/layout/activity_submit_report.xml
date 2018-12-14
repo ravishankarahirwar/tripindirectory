@@ -40,7 +40,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:text="Report This Company"
+            android:text="@string/report_this_company"
             android:textColor="@color/blue_grey_900"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/chat_in_bg"
                         android:padding="8dp"
-                        android:text="Company Name"
+                        android:text="@string/company_name"
                         android:textColor="@color/blue_grey_800"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -124,28 +124,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Feels Like a spam" />
+                    android:text="@string/feels_like_a_spam" />
 
                 <CheckBox
                     android:id="@+id/cbicall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Inappropriate response on call" />
+                    android:text="@string/inappropriate_response_on_call" />
 
                 <CheckBox
                     android:id="@+id/cbichat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Inappropriate response on chat" />
+                    android:text="@string/inappropriate_response_on_chat" />
 
                 <CheckBox
                     android:id="@+id/cbifraud"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Its a fraud!" />
+                    android:text="@string/its_a_fraud" />
 
             </LinearLayout>
 
@@ -157,7 +157,7 @@
                 android:background="@drawable/background_dialog"
                 android:ems="10"
                 android:gravity="top"
-                android:hint="Write a comment (optional)"
+                android:hint="@string/write_a_comment_optional"
                 android:inputType="text|textMultiLine"
                 android:maxLength="500"
                 android:maxLines="10"
@@ -175,7 +175,7 @@
         android:background="@color/red_100"
         android:gravity="center"
         android:padding="16dp"
-        android:text="SUBMIT REPORT"
+        android:text="@string/submit_report"
         android:textColor="@color/blue_grey_900"
         android:textSize="14sp"
         android:textStyle="bold"

@@ -37,7 +37,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Manage Operators"
+            android:text="@string/manage_operators"
             android:textColor="@color/blue_grey_900"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

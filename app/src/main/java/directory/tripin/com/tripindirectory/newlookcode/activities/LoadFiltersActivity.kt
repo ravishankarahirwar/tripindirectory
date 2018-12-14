@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.AutocompleteFilter
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_load_filters.*
 import kotlinx.android.synthetic.main.item_loadpost_input.*
 import kotlinx.android.synthetic.main.layout_fsfilterloads_actionbar.*
 
-class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
+class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE = 3
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION = 4
@@ -121,8 +122,8 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
 
     private fun clearroute() {
 
-        select_source.text = "Source"
-        select_destination.text = "Destination"
+        select_source.text = getString(R.string.source)
+        select_destination.text = getString(R.string.destination)
         postpojo.setmDestinationHub(null)
         postpojo.setmSourceHub(null)
         postpojo.setmSourceCity(null)
@@ -214,10 +215,10 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
 
 
         spinnerweight = findViewById<MaterialSpinner>(R.id.spinnerweightf)
-        spinnerweight.setItems("KG", "Tons", "MT")
+        spinnerweight.setItems(getString(R.string.kg), getString(R.string.ton), getString(R.string.mt))
         spinnerweight.setOnItemSelectedListener { view, position, id, item -> }
         spinnerlength = findViewById<MaterialSpinner>(R.id.spinnerlengthf)
-        spinnerlength.setItems("Meters", "Feets")
+        spinnerlength.setItems(getString(R.string.meter), getString(R.string.feet))
         spinnerlength.setOnItemSelectedListener { view, position, id, item -> }
     }
 
@@ -243,7 +244,7 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
                         select_source.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.setmSourceCity(place.name.toString())
                     }else{
-                        Toast.makeText(context,"Try Again!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,R.string.try_again, Toast.LENGTH_LONG).show()
                     }
 
                 }
@@ -255,7 +256,7 @@ class LoadFiltersActivity : AppCompatActivity() , HubFetchedCallback {
                         select_destination.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.setmDestinationCity(place.name.toString())
                     }else{
-                        Toast.makeText(context,"Try Again!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,R.string.try_again, Toast.LENGTH_LONG).show()
                     }
 
 

@@ -18,9 +18,7 @@ import java.util.Date;
 
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
 import directory.tripin.com.tripindirectory.helper.Logger;
-import directory.tripin.com.tripindirectory.newlookcode.MainNewIntroActivity;
 import directory.tripin.com.tripindirectory.R;
-import directory.tripin.com.tripindirectory.activity.MainActivity;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants;
 import directory.tripin.com.tripindirectory.newprofiles.activities.NewLandingNavActivity;
@@ -35,7 +33,7 @@ public class NewSplashActivity extends AppCompatActivity {
     private TextView splashInfo;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_splash);
         splashInfo = findViewById(R.id.splashinfo);
@@ -46,7 +44,7 @@ public class NewSplashActivity extends AppCompatActivity {
 
         if (firebaseAuth.getCurrentUser() != null) {
 
-            splashInfo.setText("Updating your presence...");
+            splashInfo.setText(R.string.updating_presence);
             UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), "");
             FirebaseDatabase.getInstance().getReference()
                     .child("chatpresence")
@@ -57,7 +55,7 @@ public class NewSplashActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Logger.v("onResume userpresence updated1");
-                            splashInfo.setText("Syncing Data...");
+                            splashInfo.setText(R.string.syncing_data);
                             UserPresensePojo userPresensePojo2 = new UserPresensePojo(false, new Date().getTime(), "");
                             FirebaseDatabase.getInstance().getReference()
                                     .child("chatpresence")
@@ -95,7 +93,7 @@ public class NewSplashActivity extends AppCompatActivity {
     }
 
     private void timer() {
-        splashInfo.setText("Setting Up...");
+        splashInfo.setText(R.string.setting_up);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -105,23 +103,10 @@ public class NewSplashActivity extends AppCompatActivity {
                 if (!preferenceManager.isMainIntroSeen()) {
                     startIntroActivity();
                 } else {
-                    splashInfo.setText("Launching Directory...");
+                    splashInfo.setText(R.string.launching_iln);
 
-                    if (preferenceManager.isNewLookAccepted()) {
-                        startMainNewActivity();
-                        to = "New";
-                    } else {
-                        if (preferenceManager.isOnNewLook()) {
-                            startMainNewActivity();
-                            to = "New";
-                        } else {
-                            startMainActivity();
-                            to = "Old";
+                    startMainNewActivity();
 
-                        }
-                    }
-                    bundle.putString("to", to);
-                    firebaseAnalytics.logEvent("z_from_splash", bundle);
                 }
 
 
@@ -152,11 +137,7 @@ public class NewSplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void startMainActivity() {
-        Intent i = new Intent(NewSplashActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
-    }
+
 
     /**
      * This method is use for checking internet connectivity

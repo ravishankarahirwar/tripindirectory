@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Toast
+import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.firebase.ui.auth.AuthUI
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
@@ -30,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_route_input.*
 import org.json.JSONException
 import org.json.JSONObject
 
-class UserEditProfileActivity : AppCompatActivity() {
+class UserEditProfileActivity : LocalizationActivity() {
 
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context

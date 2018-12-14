@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatHeadItemViewHolder;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatHeadPojo;
 import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator;
-import directory.tripin.com.tripindirectory.newlookcode.FacebookRequiredActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.FacebookRequiredActivity;
 import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.helper.CircleTransform;
 import directory.tripin.com.tripindirectory.helper.Logger;
@@ -292,9 +292,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 firebaseAnalytics.logEvent("z_assistant", bundle);
                 break;
             }
-            case R.id.action_comments: {
-                break;
-            }
+
         }
         return super.onOptionsItemSelected(item);
     }
