@@ -269,5 +269,27 @@
     <string name="hold_tight">Hold Tight...</string>
     <string name="setting_up">Setting Up...</string>
     <string name="invited">Invited</string>
+    <string name="get_started">Get Started</string>
+    <string name="guide_restart">You can restart the guide from menu!</string>
+    <string name="search_by_name">Search by Name</string>
+    <string name="manage_your_loads">Manage Your Loads</string>
+    <string name="post_your_load_on">Post your load on</string>
+    <string name="iln_loadboard">ILN LOADBOARD</string>
+    <string name="loadboard_guide1">Post your load and interested transporters will contact you.</string>
+    <string name="search_by_name1">Search By Name</string>
+    <string name="find_transporters_on">Find Transporters on</string>
+    <string name="iln_directory">ILN DIRECTORY</string>
+    <string name="loadboard_guide2">See posted loads , filter them and connect load owners.</string>
+    <string name="search_posted_poads_on">Search posted loads on</string>
+
+    <string name="directory_guide2">Select route/fleet and get list of Transporters.</string>
+    <string name="my_network_title">Your Logistics Network here</string>
+    <string name="my_network_guide">See the List of Transporters you have added in your network, Tap on Target</string>
+    <string name="your_business_title">Your Business Here</string>
+    <string name="your_business_giude">Add and Manage your business profile from here.</string>
+
+    <string name="operational_fleets">Operational Fleets</string>
+    <string name="fleets_need">Fleets you may need</string>
+    <string name="fleets_provide">Fleets you can provide</string>
 
 </resources>

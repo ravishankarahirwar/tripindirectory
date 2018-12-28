@@ -456,7 +456,10 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                 rate.visibility = View.GONE
                 editprofile.visibility = View.VISIBLE
                 promote.visibility = View.VISIBLE
+                reportprofile.visibility = View.GONE
                 fetchData(mCompUid)
+
+
             } else {
                 val i = Intent(this, CompanyProfileEditActivity::class.java)
                 startActivityForResult(i, 1)

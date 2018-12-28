@@ -160,12 +160,9 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
         internetCheck()
 
-        if (!preferenceManager.isMainScreenGuided) {
+        if (!preferenceManager.isDirectoryGuided) {
             showIntro()
         }
-
-        notificationSubscried()
-
 
 
     }
@@ -207,12 +204,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         firebaseAnalytics.logEvent("z_route_clear", bundle)
     }
 
-    private fun notificationSubscried() {
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates")
-        //For Testing
-        //        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdatesTest");
-        FirebaseMessaging.getInstance().subscribeToTopic("loadboardNotification")
-    }
 
 
 
@@ -239,6 +230,10 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         TapTarget.forView(totitle, getString(R.string.select_destination_city), getString(R.string.select_destination_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
+                                .cancelable(true).outerCircleColor(R.color.primaryColor),
+                        TapTarget.forView(searchbyname, getString(R.string.search_by_name), getString(R.string.search_a_company_bio))
+                                .transparentTarget(true)
+                                .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)
 
 //                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
@@ -257,14 +252,14 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
                     override fun onSequenceFinish() {
                         Toast.makeText(applicationContext, getString(R.string.use_iln_wisely), Toast.LENGTH_SHORT).show()
-                        preferenceManager.setisMainScreenGuided(true)
+                        preferenceManager.setisDirectoryGuided(true)
                         val bundle = Bundle()
                         firebaseAnalytics.logEvent("z_mainguidefifished", bundle)
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
                         // Boo
-                        preferenceManager.setisMainScreenGuided(true)
+                        preferenceManager.setisDirectoryGuided(true)
                         Toast.makeText(applicationContext, getString(R.string.restart_guide_from_menu), Toast.LENGTH_SHORT).show()
                     }
                 })

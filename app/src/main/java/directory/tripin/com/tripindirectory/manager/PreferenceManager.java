@@ -22,18 +22,12 @@ public class PreferenceManager {
     public static final String PREF_LB_FILTER = "loadboardfilter";
     public static final String PREF_PROFILE_TYPE = "profile_type";
     public static final String PREF_LANG = "preferred_lang";
-
+    public static final String PREF_IS_DIRECTRY_INTRO_SEEN = "isdirectory_into_seen";
 
 
 
     public static final String PREF_SETTING_LB_NOTIF = "loadboard_allnotifications";
     public static final String PREF_SETTING_INVITEPOPUP = "invite_popup";
-
-
-
-
-
-
 
 
     public static final String PREF_DISPLAY_NAME = "displayneame";
@@ -178,6 +172,15 @@ public class PreferenceManager {
         editor.commit();
     }
 
+    public boolean isDirectoryGuided() {
+        return sInstance.getBoolean(PREF_IS_DIRECTRY_INTRO_SEEN, false);
+    }
+
+    public void setisDirectoryGuided(boolean b) {
+        editor.putBoolean(PREF_IS_DIRECTRY_INTRO_SEEN, b);
+        editor.commit();
+    }
+
     public boolean isProfileIntroSeen() {
         return sInstance.getBoolean(PREF_IS_PROFILEINTRO_SEEN, false);
     }
@@ -266,6 +269,7 @@ public class PreferenceManager {
         editor.putLong(PREF_LANG, type);
         editor.commit();
     }
+
 
     public Boolean getSettingLoadboardNotif() {
         return sInstance.getBoolean(PREF_SETTING_LB_NOTIF, true);

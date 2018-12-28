@@ -83,7 +83,27 @@ exports.newLoadpost = functions.database.ref('/posts/{pushId}')
          return admin.messaging().sendToTopic("loadboardNotification", payload, options);
     });
 
+ exports.newFSloadPost = functions.firestore
+              .document('loadposts/{loadId}')
+              .onCreate((snapshot, context) => {
 
+                var loadPojo =  snapshot.data();
+                 const payload = {
+                                    data: {
+                                               type: "102",
+                                               route: loadPojo.mSourceCity +" to "+ loadPojo.mDestinationCity,
+                                               loadid: context.params.loadId,
+                                               displayname: loadPojo.mDisplayName
+                                          }
+
+                                   };
+                        const options = {
+                            priority: "high",
+                            timeToLive: 60 * 60 * 24
+                        };
+                 return admin.messaging().sendToTopic("newloadposts", payload, options);
+
+              });
 
 
 //Make the initial mAccountStatusValue 0
@@ -564,6 +584,8 @@ exports.updatePresence = functions.database.ref('/chatpresence/users/{pushId}')
 
         });
 
+
+
 function recursiveTillAllUpdateAreDone(newdenormalizerPojo,hubstoupdate,newlyaddedhubs,hubstodelete,uid){
 
     console.log('recursivee update');
@@ -767,6 +789,151 @@ function recursiveTillAllBiDeletesAreDone(hubstodelete,uid){
 
 
         });
+
+ exports.incrimentTransportersCount = functions.firestore
+            .document('denormalizers/{uid}')
+            .onCreate((snap, context) => {
+
+                            var dateSnapshotRef = fsdb.collection('usercounts').doc("fleetproviders");
+
+                            var newdenormalizerPojo =  snap.data();
+                            console.log('new profile ', newdenormalizerPojo);
+
+                           if(newdenormalizerPojo.mProfileType !== undefined){
+                           if(newdenormalizerPojo.mProfileType === "2"){
+
+                                     return fsdb.runTransaction(transaction => {
+                                       return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                                         // Compute new number of views this day
+                                         var datesnapshotpojo = dateSnapshotDoc.data()
+                                         console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                                         var oldNumFPs = 0;
+
+
+
+                                         if(datesnapshotpojo !== undefined){
+                                          if(datesnapshotpojo.mNumFPs!== undefined ){
+                                                        oldNumFPs = datesnapshotpojo.mNumFPs;
+                                                     }
+                                         }
+
+                                         console.log('oldmNumFPs: ', oldNumFPs);
+
+                                         var newNumFPs = oldNumFPs + 1;
+
+                                         // Update date snapshot
+                                         return transaction.set(dateSnapshotRef, {
+                                           mNumFPs: newNumFPs
+                                         });
+                                       });
+                                     });
+
+                             }else{
+                              return console.log('new profile ', "not transporter");
+
+                             }
+                           }else{
+
+                             return console.log('new profile ', "undefined");
+
+                           }
+
+
+
+
+
+
+
+                          });
+
+ exports.incrimentLoadsCount = functions.firestore
+            .document('loadposts/{loadid}')
+            .onCreate((snap, context) => {
+
+                            var dateSnapshotRef = fsdb.collection('usercounts').doc("loadsposted");
+
+                            var newdenormalizerPojo =  snap.data();
+                            console.log('new profile ', newdenormalizerPojo);
+
+                            return fsdb.runTransaction(transaction => {
+                                                                  return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                                                                    // Compute new number of views this day
+                                                                    var datesnapshotpojo = dateSnapshotDoc.data()
+                                                                    console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                                                                    var oldNumLoads = 0;
+
+
+
+                                                                    if(datesnapshotpojo !== undefined){
+                                                                     if(datesnapshotpojo.mNumLoads!== undefined ){
+                                                                                   oldNumLoads = datesnapshotpojo.mNumLoads;
+                                                                                }
+                                                                    }
+
+                                                                    console.log('oldNumLoads: ', oldNumLoads);
+
+                                                                    var mNumLoads = oldNumLoads + 1;
+
+                                                                    // Update date snapshot
+                                                                    return transaction.set(dateSnapshotRef, {
+                                                                      mNumLoads: mNumLoads
+                                                                    });
+                                                                  });
+                                                                });
+
+
+
+
+
+
+
+                          });
+
+  exports.incrimentLoadviews = functions.firestore
+              .document('loadposts/{loadid}/viewers/{viewerId}')
+              .onCreate((snap, context) => {
+
+                              var dataSnapshotRef = fsdb.collection('loadposts').doc(context.params.loadid);
+
+
+
+                              return fsdb.runTransaction(transaction => {
+                                                                    return transaction.get(dataSnapshotRef).then(dataSnapshotDoc => {
+                                                                      // Compute new number of views this day
+                                                                      var datasnapshotpojo = dataSnapshotDoc.data()
+                                                                      console.log('datasnapshotpojo: ', datasnapshotpojo);
+
+                                                                      var oldNumViews = 0;
+
+
+
+                                                                      if(datasnapshotpojo !== undefined){
+                                                                       if(datasnapshotpojo.mNumViews!== undefined ){
+                                                                                     oldNumViews = datasnapshotpojo.mNumViews;
+                                                                                  }
+                                                                      }
+
+                                                                      console.log('oldNumViews: ', oldNumViews);
+
+                                                                      var mNumViews = oldNumViews + 1;
+
+                                                                      // Update date snapshot
+                                                                      return transaction.update(dataSnapshotRef, {
+                                                                        mNumViews: mNumViews
+                                                                      });
+                                                                    });
+                                                                  });
+
+
+
+
+
+
+
+                            });
+
 
 function recursiveTillAllCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,uid){
 
@@ -1151,22 +1318,24 @@ exports.setdefaultprofiletype = functions.https.onRequest((req, res) => {
    return admin.firestore().collection("denormalizers").get().then((docs) => {
 
 
-           return docs.forEach((doc) => {
+           return console.log('number of docs',docs.size);
 
-             let profile = doc.data();
-
-             console.log(doc.id,profile);
-
-
-              return fsdb.collection('denormalizers')
-                        .doc(doc.id)
-                        .set({ mProfileType: "1"},  {merge: true});
-
-
-
-
-
-           })
+//           return docs.forEach((doc) => {
+//
+//             let profile = doc.data();
+//
+//             console.log(doc.id,profile);
+//
+//
+//              return fsdb.collection('denormalizers')
+//                        .doc(doc.id)
+//                        .set({ mProfileType: "1"},  {merge: true});
+//
+//
+//
+//
+//
+//           })
 
 
    })

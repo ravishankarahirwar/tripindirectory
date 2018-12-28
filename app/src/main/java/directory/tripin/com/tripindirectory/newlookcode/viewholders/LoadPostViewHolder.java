@@ -33,6 +33,13 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout loadpostDetails;
     public LinearLayout autherprofile;
 
+    public LinearLayout lltype;
+    public LinearLayout llbody;
+    public LinearLayout llweight;
+    public LinearLayout lllength;
+    public LinearLayout llmaterial;
+
+
 
 
     public LoadPostViewHolder(View itemView) {
@@ -60,5 +67,12 @@ public class LoadPostViewHolder extends RecyclerView.ViewHolder {
 
         loadpostDetails = itemView.findViewById(R.id.loadpostdetails);
         autherprofile = itemView.findViewById(R.id.autherprofile);
+
+        lltype = itemView.findViewById(R.id.lltype);
+        llbody = itemView.findViewById(R.id.llbody);
+        llweight = itemView.findViewById(R.id.llweight);
+        lllength = itemView.findViewById(R.id.lllength);
+        llmaterial = itemView.findViewById(R.id.llmaterial);
+
     }
 }

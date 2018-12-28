@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,8 +24,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -40,9 +42,16 @@ import directory.tripin.com.tripindirectory.newlookcode.activities.FacebookRequi
 import directory.tripin.com.tripindirectory.newlookcode.activities.*
 import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentSearchesViewHolder
 import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.LoadCountsPojo
+import directory.tripin.com.tripindirectory.newprofiles.models.TransportersCountPojo
 import directory.tripin.com.tripindirectory.utils.AppUtils
+import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_new_landing_nav.*
+import kotlinx.android.synthetic.main.directorybannercard.*
 import kotlinx.android.synthetic.main.layout_main_actionbar.*
+import kotlinx.android.synthetic.main.loadboardbannercard.*
+import kotlinx.android.synthetic.main.loadboardbannercardt.*
+import kotlinx.android.synthetic.main.updateprofilead.*
 import java.util.*
 
 class NewLandingNavActivity : LocalizationActivity() {
@@ -95,10 +104,64 @@ class NewLandingNavActivity : LocalizationActivity() {
             }
         }
 
-
+        notificationSubscried()
+        setCountsListners()
         internetCheck()
 
 
+    }
+
+    private fun setCountsListners() {
+
+        FirebaseFirestore.getInstance()
+                .collection("usercounts")
+                .document("fleetproviders")
+                .addSnapshotListener(this, EventListener<DocumentSnapshot> { snapshot, e ->
+
+                    if (e != null) {
+                        finish()
+                        Logger.v(e.toString())
+                        Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
+                        return@EventListener
+                    }
+
+                    if (snapshot != null) {
+
+                        val count = snapshot.toObject(TransportersCountPojo::class.java)
+                        transporterscount.text = "${count!!.getmNumFPs()} Transporters are Online."
+
+                    } else {
+
+                        transporterscount.text = "Transporters are Available."
+
+                    }
+                })
+
+        FirebaseFirestore.getInstance()
+                .collection("usercounts")
+                .document("loadsposted")
+                .addSnapshotListener(this, EventListener<DocumentSnapshot> { snapshot, e ->
+
+                    if (e != null) {
+                        finish()
+                        Logger.v(e.toString())
+                        Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
+                        return@EventListener
+                    }
+
+                    if (snapshot != null) {
+
+                        val count = snapshot.toObject(LoadCountsPojo::class.java)
+                        availableloads.text = "${count!!.getmNumLoads()} Loads Posted."
+                        availableloadst.text = "${count!!.getmNumLoads()} Loads Available."
+
+                    } else {
+
+                        availableloads.text = "Loads are Posted."
+                        availableloadst.text = "Loads are Available."
+
+                    }
+                })
     }
 
     override fun onResume() {
@@ -114,6 +177,20 @@ class NewLandingNavActivity : LocalizationActivity() {
             }
         }
 
+        arrengeUIaccordingtoRole()
+
+    }
+
+    private fun arrengeUIaccordingtoRole() {
+
+        if(preferenceManager.profileType == 2L){
+            gotoloadboardt.visibility = View.VISIBLE
+            gotoloadboard.visibility = View.GONE
+        }
+        if(preferenceManager.profileType == 0L){
+            gotoloadboardt.visibility = View.GONE
+            gotoloadboard.visibility = View.VISIBLE
+        }
     }
 
     override fun onStop() {
@@ -130,12 +207,28 @@ class NewLandingNavActivity : LocalizationActivity() {
             val i = Intent(this, MainScrollingActivity::class.java)
             startActivity(i)
         }
-
-        searchbynamegoto.setOnClickListener {
-            startSearchCompanyActivity()
+        gotosearchbyname.setOnClickListener {
+            val i = Intent(this, SearchCompanyActivity::class.java)
+            startActivity(i)
         }
-        gotoloadboard.setOnClickListener {
+        manageload.setOnClickListener {
+            val i = Intent(this, ManageLoadsActivity::class.java)
+            startActivity(i)
+        }
+
+        gotoloadboardt.setOnClickListener {
             startLoadboard()
+        }
+
+        updateprofilelink.setOnClickListener {
+            startBusinessProfile()
+        }
+
+        gotoloadboard.setOnClickListener {
+            startNewLoadpost()
+        }
+        postbyloadt.setOnClickListener {
+            startNewLoadpost()
         }
 
         yourbusiness.setOnClickListener {
@@ -157,8 +250,8 @@ class NewLandingNavActivity : LocalizationActivity() {
             showRecentCalls()
         }
 
-        directloadpost.setOnClickListener {
-            startNewLoadpost()
+        searchforloadt.setOnClickListener {
+            startLoadboard()
         }
 
 
@@ -237,7 +330,7 @@ class NewLandingNavActivity : LocalizationActivity() {
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(yourbusiness, getString(R.string.your_comp_profile_here), getString(R.string.your_comp_profile_discription))
+                        TapTarget.forView(businessprofile, getString(R.string.your_comp_profile_here), getString(R.string.your_comp_profile_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
@@ -249,7 +342,7 @@ class NewLandingNavActivity : LocalizationActivity() {
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(showchats, getString(R.string.your_calls_here), getString(R.string.your_calls_discription))
+                        TapTarget.forView(showcalls, getString(R.string.your_calls_here), getString(R.string.your_calls_discription))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)
@@ -260,7 +353,7 @@ class NewLandingNavActivity : LocalizationActivity() {
                     }
 
                     override fun onSequenceFinish() {
-                        Toast.makeText(applicationContext, "Use ILN wisely!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, getString(R.string.use_iln_wisely), Toast.LENGTH_SHORT).show()
                         preferenceManager.setisMainScreenGuided(true)
                         val bundle = Bundle()
                         firebaseAnalytics.logEvent("z_mainguidefifished", bundle)
@@ -269,12 +362,22 @@ class NewLandingNavActivity : LocalizationActivity() {
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
                         // Boo
                         preferenceManager.setisMainScreenGuided(true)
-                        Toast.makeText(applicationContext, "You can restart the guide from menu!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, getString(R.string.guide_restart), Toast.LENGTH_SHORT).show()
                     }
                 })
 
         tapTargetSequence.start()
     }
+
+    private fun notificationSubscried() {
+        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates")
+
+        if(preferenceManager.settingLoadboardNotif){
+            FirebaseMessaging.getInstance().subscribeToTopic("newloadposts")
+        }
+
+    }
+
 
     private fun showInvitesScreen() {
         val i = Intent(this, InvitePhonebookActivity::class.java)

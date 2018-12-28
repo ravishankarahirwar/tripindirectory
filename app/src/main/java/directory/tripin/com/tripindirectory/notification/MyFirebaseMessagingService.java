@@ -2,6 +2,7 @@ package directory.tripin.com.tripindirectory.notification;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -39,6 +41,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
 import br.com.goncalves.pugnotification.notification.PugNotification;
 import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity;
@@ -50,6 +53,7 @@ import directory.tripin.com.tripindirectory.R;
 
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
+import directory.tripin.com.tripindirectory.newlookcode.activities.FSLoadBoardActivity;
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity;
 import directory.tripin.com.tripindirectory.utils.Constants;
 
@@ -57,17 +61,155 @@ import directory.tripin.com.tripindirectory.utils.Constants;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    private static final String LOADBOARD_GROUP_NAME = "loadboard_notifications_group";
+
     DocumentReference mUpdateDocRef;
     NotificationCompat.Builder generalUpdatesNotificationBuilder;
     private FirebaseAuth mAuth;
     private PreferenceManager preferenceManager;
     DocumentReference mUserDocRef;
 
+    NotificationManager notificationManager;
+    public int LoadPostsBundleNotificationId = 100;
+    NotificationCompat.Builder summaryNotificationBuilder;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         preferenceManager = PreferenceManager.getInstance(getApplicationContext());
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        //generateLoadpostsBundle();
+
+    }
+
+    private void generateLoadpostsBundle() {
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            NotificationChannel groupChannel = new NotificationChannel("lb_bundle_channel_id",
+                    "lb_bundle_channel_name",
+                    NotificationManager.IMPORTANCE_LOW);
+
+            notificationManager.createNotificationChannel(groupChannel);
+        }
+
+        Intent resultIntent = new Intent(this, FSLoadBoardActivity.class);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent resultPendingIntent = PendingIntent
+                .getActivity(this, LoadPostsBundleNotificationId, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        summaryNotificationBuilder = new NotificationCompat.Builder(this, "lb_bundle_channel_id")
+                .setGroup(LoadPostsBundleNotificationId+"")
+                .setGroupSummary(true)
+                .setContentTitle("ILN Loadboard Notifications")
+                .setContentText("Available New Load Posts!")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(resultPendingIntent);
+
+        notificationManager.notify(LoadPostsBundleNotificationId, summaryNotificationBuilder.build());
+    }
+
+    private void sendNewLoadPostNotification(String route, String dispmayname, String loadid) {
+
+
+        Log.v(TAG," new loadpost sendNewLoadPostNotification");
+        Intent resultIntent = new Intent(this, FSLoadBoardActivity.class);
+        resultIntent.putExtra("loadid", loadid);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent resultPendingIntent = PendingIntent
+                .getActivity(this, LoadPostsBundleNotificationId, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //We need to update the bundle notification every time a new notification comes up.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannels().size() < 2) {
+                NotificationChannel groupChannel = new NotificationChannel("lb_bundle_channel_id", "lb_bundle_channel_name", NotificationManager.IMPORTANCE_LOW);
+                notificationManager.createNotificationChannel(groupChannel);
+                NotificationChannel channel = new NotificationChannel("channel_id", "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+
+        summaryNotificationBuilder = new NotificationCompat.Builder(this, "lb_bundle_channel_id")
+                .setGroup(LoadPostsBundleNotificationId+"")
+                .setGroupSummary(true)
+                .setContentTitle("ILN Loadboard Notifications")
+                .setContentText("Available New Load Posts!")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(resultPendingIntent);
+
+
+
+        Random random = new Random();
+        int notifid = random.nextInt(9999 - 1000) + 1000;
+
+        resultIntent = new Intent(this, FSLoadBoardActivity.class);
+        resultIntent.putExtra("loadid", loadid);
+        resultIntent.putExtra("notifid", notifid);
+
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        resultPendingIntent = PendingIntent.getActivity(this, notifid, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, "lb_single_channel_id")
+                .setGroup(LoadPostsBundleNotificationId+"")
+                .setContentTitle(route)
+                .setContentText("Load Posted by : "+dispmayname)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setGroupSummary(false)
+                .setContentIntent(resultPendingIntent);
+
+
+        notificationManager.notify(notifid, notification.build());
+        notificationManager.notify(LoadPostsBundleNotificationId, summaryNotificationBuilder.build());
+
+
+    }
+
+    private void sendNewLoadPostNotif(String route, String dispmayname, String loadid) {
+
+
+        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.d(TAG, "new loadboard doc");
+        Random random = new Random();
+        int notifid = random.nextInt(9999 - 1000) + 1000;
+
+        Bundle bundle = new Bundle();
+        bundle.putString("loadid",loadid);
+        bundle.putInt("notifid",notifid);
+
+        Intent resultIntent = new Intent(this, FSLoadBoardActivity.class);
+        resultIntent.putExtra("loadid", loadid);
+        resultIntent.putExtra("notifid", notifid);
+
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, notifid, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PugNotification.with(getApplicationContext())
+                .load()
+                .identifier(notifid)
+                .button(R.drawable.ic_widgets_grey_24dp,"See Load Details",resultPendingIntent)
+                .group(LOADBOARD_GROUP_NAME)
+                .groupSummary(true)
+                .title(route)
+                .message("Load posted by : "+dispmayname)
+                .smallIcon(R.drawable.ic_notification)
+                .largeIcon(R.mipmap.ic_launcher_round)
+                .flags(Notification.DEFAULT_ALL)
+                .click(FSLoadBoardActivity.class,bundle)
+                .color(R.color.primaryColor)
+                .lights(Color.RED, 1, 1)
+                .sound(defaultRingtoneUri)
+                .autoCancel(true)
+                .simple()
+                .build();
+
+
     }
 
     @Override
@@ -181,6 +323,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     } else {
                         Log.d(TAG, "ids null");
                     }
+                }else if (type.equals("102")) {
+                    //OneToOneChat New Message Notification
+                    String route = remoteMessage.getData().get("route");
+                    String dispmayname = remoteMessage.getData().get("displayname");
+                    String loadid = remoteMessage.getData().get("loadid");
+
+                    Log.d(TAG, "new loadpost");
+
+                    if (route != null && dispmayname != null && loadid != null) {
+                        sendNewLoadPostNotif(route, dispmayname,loadid);
+                    } else {
+                        Log.d(TAG, "ids null");
+                    }
                 }
             }
 
@@ -197,8 +352,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
     }
-
-
 
 
 

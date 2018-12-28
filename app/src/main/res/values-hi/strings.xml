@@ -26,11 +26,11 @@
     <string name="chat_with_iln_assistant">आईएलएन सहायक के साथ चैट करें</string>
     <string name="no_chats_yet">अभी तक कोई चैट नहीं!</string>
     <string name="chat_initiating_message">चैट शुरू करने वाला संदेश:</string>
-    <string name="typing">टंकण ...</string>
+    <string name="typing">टंकण …</string>
     <string name="type_something">कुछ लिखो…</string>
     <string name="this_profile_is_blocked">यह प्रोफ़ाइल अवरुद्ध है!</string>
     <string name="tap_here_to_request_unblock">अनब्लॉक करने का अनुरोध करने के लिए यहां टैप करें।</string>
-    <string name="fetching">ला रहा है ...</string>
+    <string name="fetching">ला रहा है …</string>
     <string name="see_insights">अंतर्दृष्टि देखें</string>
     <string name="promote">को बढ़ावा देना</string>
     <string name="edit_profile">प्रोफाइल एडिट करें</string>
@@ -127,7 +127,7 @@
     <string name="invite">आमंत्रित करें</string>
     <string name="found_on_iln">आईएलएन पर मिला</string>
     <string name="post_now">अभी पोस्ट करें</string>
-    <string name="type_other_requirement_here">यहां अन्य आवश्यकताएं टाइप करें ...</string>
+    <string name="type_other_requirement_here">यहां अन्य आवश्यकताएं टाइप करें …</string>
     <string name="other_requirement_comment_here">अन्य आवश्यकता / टिप्पणी यहां</string>
     <string name="share">शेयर</string>
     <string name="call">कॉल</string>
@@ -136,7 +136,7 @@
     <string name="call_2">कॉल</string>
     <string name="directory">निर्देशिका</string>
     <string name="loadboard_filters">लोडबोर्ड फ़िल्टर</string>
-    <string name="loadboard">Loadboard</string>
+    <string name="loadboard">लोडबोर्ड</string>
     <string name="new_load">नया भार</string>
     <string name="your_loads">आपका भार</string>
     <string name="offer_string">अब वाहन बीमा पर 90% छूट प्राप्त करें!</string>
@@ -161,7 +161,7 @@
     <string name="mt">मीट्रिक टन</string>
     <string name="other_requirements_optional">अन्य आवश्यकताएं (वैकल्पिक) _</string>
     <string name="see_details">विवरण देखें</string>
-    <string name="saving_to_server">सर्वर पर सहेजा जा रहा है ...</string>
+    <string name="saving_to_server">सर्वर पर सहेजा जा रहा है …</string>
     <string name="set_filters">फ़िल्टर सेट करें</string>
     <string name="cities_of_operation">ऑपरेशन के शहर</string>
     <string name="operators">ऑपरेटर्स</string>
@@ -270,7 +270,29 @@
     <string name="hold_tight">कसी पकड़…</string>
     <string name="setting_up">सेट अप कर रहा है …</string>
     <string name="invited">आमंत्रित</string>
+    <string name="get_started">शुरू हो जाओ</string>
+    <string name="guide_restart">आप मेनू से गाइड को पुनरारंभ कर सकते हैं!</string>
+    <string name="search_by_name">नाम से खोजें</string>
 
+    <string name="manage_your_loads">अपना भार प्रबंधित करें</string>
+    <string name="post_your_load_on">अपना भार पोस्ट करें</string>
+    <string name="iln_loadboard">आईएलएन लोडबोर्ड</string>
+    <string name="loadboard_guide1">अपना भार पोस्ट करें और इच्छुक ट्रांसपोर्टर आपसे संपर्क करेंगे।</string>
+    <string name="search_by_name1">नाम से खोजें</string>
+    <string name="find_transporters_on">ट्रांसपोर्टर खोजें</string>
+    <string name="iln_directory">आईएलएन निर्देशिका</string>
+    <string name="loadboard_guide2">पोस्ट लोड देखें, उन्हें फ़िल्टर करें और लोड मालिकों को कनेक्ट करें।</string>
+    <string name="search_posted_poads_on">पोस्ट लोड खोज</string>
+    <string name="directory_guide2">मार्ग / बेड़े का चयन करें और ट्रांसपोर्टरों की सूची प्राप्त करें।</string>
+
+    <string name="my_network_title">Your Logistics Network here</string>
+    <string name="my_network_guide">See the List of Transporters you have added in your network, Tap on Target</string>
+    <string name="your_business_title">Your Business Here</string>
+    <string name="your_business_giude">Add and Manage your business profile from here.</string>
+
+    <string name="operational_fleets">परिचालन बेड़े</string>
+    <string name="fleets_need">आपको जरूरत पड़ने वाले बेड़े</string>
+    <string name="fleets_provide">आप प्रदान कर सकते हैं बेड़े</string>
 
 
 </resources>

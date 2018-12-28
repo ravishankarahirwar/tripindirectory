@@ -42,54 +42,64 @@ public class NewSplashActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         mixpanelAPI = MixpanelAPI.getInstance(this,MixPanelConstants.MIXPANEL_TOKEN);
 
-        if (firebaseAuth.getCurrentUser() != null) {
+        internetCheck();
+    }
 
-            splashInfo.setText(R.string.updating_presence);
-            UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), "");
-            FirebaseDatabase.getInstance().getReference()
-                    .child("chatpresence")
-                    .child("users")
-                    .child(firebaseAuth.getUid())
-                    .setValue(userPresensePojo)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Logger.v("onResume userpresence updated1");
-                            splashInfo.setText(R.string.syncing_data);
-                            UserPresensePojo userPresensePojo2 = new UserPresensePojo(false, new Date().getTime(), "");
-                            FirebaseDatabase.getInstance().getReference()
-                                    .child("chatpresence")
-                                    .child("users")
-                                    .child(firebaseAuth.getUid())
-                                    .onDisconnect()
-                                    .setValue(userPresensePojo2)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Logger.v("onResume userpresence updated");
-                                            timer();
-                                        }
-                                    }).addOnCanceledListener(new OnCanceledListener() {
-                                @Override
-                                public void onCanceled() {
-                                    timer();
-                                }
-                            });
-                        }
-                    }).addOnCanceledListener(new OnCanceledListener() {
-                @Override
-                public void onCanceled() {
-                    timer();
-                }
-            });
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(preferenceManager.getPreferredLang() == 0L){
+            Intent i = new Intent(NewSplashActivity.this, LangSelectActivity.class);
+            startActivity(i);
+        }else {
+            if (firebaseAuth.getCurrentUser() != null) {
+
+                splashInfo.setText(R.string.updating_presence);
+                UserPresensePojo userPresensePojo = new UserPresensePojo(true, new Date().getTime(), "");
+                FirebaseDatabase.getInstance().getReference()
+                        .child("chatpresence")
+                        .child("users")
+                        .child(firebaseAuth.getUid())
+                        .setValue(userPresensePojo)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Logger.v("onResume userpresence updated1");
+                                splashInfo.setText(R.string.syncing_data);
+                                UserPresensePojo userPresensePojo2 = new UserPresensePojo(false, new Date().getTime(), "");
+                                FirebaseDatabase.getInstance().getReference()
+                                        .child("chatpresence")
+                                        .child("users")
+                                        .child(firebaseAuth.getUid())
+                                        .onDisconnect()
+                                        .setValue(userPresensePojo2)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Logger.v("onResume userpresence updated");
+                                                timer();
+                                            }
+                                        }).addOnCanceledListener(new OnCanceledListener() {
+                                    @Override
+                                    public void onCanceled() {
+                                        timer();
+                                    }
+                                });
+                            }
+                        }).addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        timer();
+                    }
+                });
 
 
-        } else {
-            timer();
+            } else {
+                timer();
+            }
         }
 
-
-        internetCheck();
     }
 
     private void timer() {

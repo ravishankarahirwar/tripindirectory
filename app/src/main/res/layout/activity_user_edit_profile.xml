@@ -394,7 +394,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="v10.8"
+            android:text="v11.3"
             android:textSize="10sp" />
 
 

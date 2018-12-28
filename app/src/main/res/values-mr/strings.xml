@@ -27,11 +27,11 @@
     <string name="chat_with_iln_assistant">आयएलएन सहाय्यकांसह चॅट करा</string>
     <string name="no_chats_yet">अद्याप नाही गप्पा!</string>
     <string name="chat_initiating_message">संदेश प्रारंभ करणे चॅट कराः</string>
-    <string name="typing">टाइप करीत आहे ...</string>
-    <string name="type_something">काहीतरी टाइप करा ...</string>
+    <string name="typing">टाइप करीत आहे …</string>
+    <string name="type_something">काहीतरी टाइप करा …</string>
     <string name="this_profile_is_blocked">हे प्रोफाइल अवरोधित आहे!</string>
     <string name="tap_here_to_request_unblock">अनब्लॉक करण्यासाठी येथे टॅप करा.</string>
-    <string name="fetching">आणत आहे ...</string>
+    <string name="fetching">आणत आहे …</string>
     <string name="see_insights">अंतर्दृष्टी पहा</string>
     <string name="promote">जाहिरात करा</string>
     <string name="edit_profile">प्रोफाईल संपादित करा</string>
@@ -128,7 +128,7 @@
     <string name="invite">आमंत्रित करा</string>
     <string name="found_on_iln">आयएलएन वर आढळले</string>
     <string name="post_now">आताच पोस्ट करा</string>
-    <string name="type_other_requirement_here">येथे इतर आवश्यकता टाइप करा ...</string>
+    <string name="type_other_requirement_here">येथे इतर आवश्यकता टाइप करा …</string>
     <string name="other_requirement_comment_here">येथे इतर आवश्यकता / टिप्पणी</string>
     <string name="share">सामायिक करा</string>
     <string name="call">कॉल करा</string>
@@ -155,14 +155,14 @@
     <string name="my_network">माझे नेटवर्क</string>
     <string name="recommended">शिफारस केली</string>
     <string name="company_name">कंपनीचे नाव</string>
-    <string name="loading">लोड करीत आहे ...</string>
+    <string name="loading">लोड करीत आहे …</string>
     <string name="post_new_load">नवीन लोड पोस्ट करा</string>
     <string name="iln_wallet">आयएलएन वॉलेट</string>
     <string name="ton">टन</string>
     <string name="mt">एमटी</string>
     <string name="other_requirements_optional">इतर आवश्यकता (वैकल्पिक) _</string>
     <string name="see_details">तपशील बघा</string>
-    <string name="saving_to_server">सर्व्हरवर जतन करीत आहे ...</string>
+    <string name="saving_to_server">सर्व्हरवर जतन करीत आहे …</string>
     <string name="set_filters">फिल्टर सेट करा</string>
     <string name="cities_of_operation">ऑपरेशन शहर</string>
     <string name="operators">ऑपरेटर</string>
@@ -233,24 +233,24 @@
     <string name="agreed_post_now">मी सहमत आहे, आता पोस्ट करा!</string>
     <string name="find_transporter_on_directory">नाही, निर्देशिका वर ट्रान्सपोर्टर शोधा</string>
     <string name="cencel">रद्द करा</string>
-    <string name="posting">पोस्ट करीत आहे ...</string>
+    <string name="posting">पोस्ट करीत आहे …</string>
     <string name="after_load_post_success">पोस्ट केले स्वारस्यपूर्ण टॅनस्पोर्टर्स आपल्याशी संपर्क साधतील.</string>
-    <string name="updating_presence">आपली उपस्थिती अद्ययावत करीत आहे ...</string>
-    <string name="syncing_data">डेटा समक्रमित करीत आहे ...</string>
-    <string name="launching_iln">आयएलएन अॅप लॉन्च करीत आहे ...</string>
+    <string name="updating_presence">आपली उपस्थिती अद्ययावत करीत आहे …</string>
+    <string name="syncing_data">डेटा समक्रमित करीत आहे …</string>
+    <string name="launching_iln">आयएलएन अॅप लॉन्च करीत आहे …</string>
     <string name="login_fb_required_pts">निवडण्याची आवश्यकता पाठविण्यासाठी एफबी सह लॉग इन करा</string>
-    <string name="sending_wait">पाठवत आहे ... कृपया प्रतीक्षा करा!</string>
+    <string name="sending_wait">पाठवत आहे … कृपया प्रतीक्षा करा!</string>
     <string name="sending">पाठवून</string>
     <string name="nothing_selected">काहीही निवडलेले नाही</string>
     <string name="sending_done">पाठवित आहे!</string>
     <string name="see_your_comp_profile">आपल्या कंपनी प्रोफाइल पहा</string>
-    <string name="saving">बचत...</string>
+    <string name="saving">बचत…</string>
     <string name="load_provider">लोड प्रदाता</string>
     <string name="fleet_provider">फ्लीट प्रदाता</string>
     <string name="role_warning">आपण निवडलेली भूमिका बदलू शकत नाही, आपल्याला त्यास संपादित करण्यासाठी आयएलएन सहाय्यकाशी संपर्क साधावा लागेल. तुला खात्री आहे?</string>
     <string name="yes_goto_app">होय! गोटो आयएलएन ऍप.</string>
     <string name="cancel">रद्द करा</string>
-    <string name="company_details_loading">कंपनीचे तपशील लोड करीत आहे ...</string>
+    <string name="company_details_loading">कंपनीचे तपशील लोड करीत आहे …</string>
     <string name="not_available">उपलब्ध नाही</string>
     <string name="load_provider_b">लोड प्रोव्हिडर</string>
     <string name="fleet_provider_b">फ्लीट प्रोव्हिडर</string>
@@ -268,10 +268,32 @@
     <string name="select_a_cause">एक कारण निवडा</string>
     <string name="goto_iln_app">गोटो आयएलएन ऍप.</string>
     <string name="allow_and_sync">परवानगी द्या आणि समक्रमित करा</string>
-    <string name="hold_tight">घट्ट धरा...</string>
-    <string name="setting_up">उभे करणे उभारणे...</string>
+    <string name="hold_tight">घट्ट धरा…</string>
+    <string name="setting_up">उभे करणे उभारणे…</string>
     <string name="invited">आमंत्रित</string>
+    <string name="get_started">सुरु करूया</string>
+    <string name="guide_restart">आपण मेनूमधून मार्गदर्शक रीस्टार्ट करू शकता!</string>
+    <string name="search_by_name">नावाद्वारे शोधा</string>
 
-<!-- Generated by Automatic String Resource Translation
---><!--          https://asrt.gluege.boerde.de            
---></resources>
+    <string name="manage_your_loads">आपले लोड व्यवस्थापित करा</string>
+    <string name="post_your_load_on">आपला भार पोस्ट करा</string>
+    <string name="iln_loadboard">आयएलएन लोडबोर्ड</string>
+    <string name="loadboard_guide1">आपले लोड पोस्ट करा आणि स्वारस्यपूर्ण वाहतूक करणारे आपल्याशी संपर्क साधतील</string>
+    <string name="search_by_name1">नावाने शोधा</string>
+    <string name="find_transporters_on">वाहकांना शोधा</string>
+    <string name="iln_directory">आयएलएन डायरेक्टरी</string>
+    <string name="loadboard_guide2">पोस्ट केलेले लोड पहा, त्यांना फिल्टर करा आणि लोड मालकांना कनेक्ट करा.</string>
+    <string name="search_posted_poads_on">पोस्ट केलेले भार शोधा</string>
+    <string name="directory_guide2">मार्ग / फ्लीट निवडा आणि ट्रान्सपोर्टर्सची यादी मिळवा.</string>
+
+    <string name="my_network_title">येथे आपले लॉजिस्टिक नेटवर्क</string>
+    <string name="my_network_guide">आपण आपल्या नेटवर्कमध्ये जोडलेल्या ट्रांसपोर्टरची यादी पहा, लक्ष्य वर टॅप करा</string>
+    <string name="your_business_title">आपला व्यवसाय येथे</string>
+    <string name="your_business_giude">येथून आपला व्यवसाय प्रोफाइल जोडा आणि व्यवस्थापित करा.</string>
+
+    <string name="operational_fleets">ऑपरेशनल फ्लीट्स</string>
+    <string name="fleets_need">आपल्याला आवश्यक असलेले फ्लीट्स</string>
+    <string name="fleets_provide">आपण प्रदान करू शकता फ्लीट्स</string>
+
+
+</resources>

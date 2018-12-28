@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -25,6 +26,7 @@ class ProfileRoleInputActivity : LocalizationActivity() {
     var profileType: Long = -1
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -33,7 +35,26 @@ class ProfileRoleInputActivity : LocalizationActivity() {
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         preferenceManager = PreferenceManager.getInstance(context)
         setListners()
+        setSelectedRole()
 
+    }
+
+    private fun setSelectedRole() {
+        if(preferenceManager.profileType != 1L){
+            if(preferenceManager.profileType == 2L){
+                rblp.isChecked = false
+                lbfp.isChecked = true
+            }
+            if(preferenceManager.profileType == 0L){
+                rblp.isChecked = true
+                lbfp.isChecked = false
+            }
+        }
+        if(intent.extras.getBoolean("isFromEditProfile")!=null){
+            if(intent.extras.getBoolean("isFromEditProfile")){
+                profilelink.visibility = View.GONE
+            }
+        }
     }
 
     override fun onResume() {
@@ -72,6 +93,10 @@ class ProfileRoleInputActivity : LocalizationActivity() {
 
     private fun saveandContinue(profileType: Long) {
         preferenceManager.profileType = profileType
+
+        val bundle = Bundle()
+        bundle.putLong("profile_type",profileType)
+        firebaseAnalytics.logEvent("z_my_profile_type", bundle)
 
         if (preferenceManager.comapanyName != null) {
 

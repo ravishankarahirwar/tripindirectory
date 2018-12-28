@@ -36,6 +36,7 @@ import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.FleetsSelectAdapter
 import directory.tripin.com.tripindirectory.newlookcode.OnFleetSelectedListner
+import directory.tripin.com.tripindirectory.newlookcode.activities.ProfileRoleInputActivity
 import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.OperatorsAdapter
 import directory.tripin.com.tripindirectory.newprofiles.models.DenormalizerPojo
@@ -155,7 +156,10 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         }
 
         editprofiletype.setOnClickListener {
-            chatwithassistant()
+            val i = Intent(this, ProfileRoleInputActivity::class.java)
+            i.putExtra("isFromEditProfile",true);
+            startActivity(i)
+//            chatwithassistant()
         }
 
         doneeditprofile.setOnClickListener {
@@ -428,10 +432,12 @@ class CompanyProfileEditActivity : LocalizationActivity() {
 
                 var type = ""
                 if(partnerInfoPojo.getmProfileType()=="0"){
-                    type = "LOAD PROVIDER"
+                    type = getString(R.string.load_provider)
+                    fleetstitle.text = getString(R.string.fleets_need)
                 }
                 if(partnerInfoPojo.getmProfileType()=="2"){
-                    type = "FLEET PROVIDER"
+                    type = getString(R.string.fleet_provider)
+                    fleetstitle.text = getString(R.string.fleets_provide)
                 }
                 showprofiletype.text = type
 

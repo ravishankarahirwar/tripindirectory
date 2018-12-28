@@ -10,6 +10,7 @@ import com.facebook.LoggingBehavior;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.FirebaseApp;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.google.GoogleEmojiProvider;
 
@@ -31,7 +32,7 @@ public class TripinDirectoryApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        FirebaseApp.initializeApp(getApplicationContext());
         sAnalytics = GoogleAnalytics.getInstance(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);

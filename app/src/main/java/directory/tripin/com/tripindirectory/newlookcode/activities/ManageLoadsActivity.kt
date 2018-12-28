@@ -29,6 +29,7 @@ import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
+import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.newlookcode.viewholders.LoadPostViewHolder
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity
@@ -44,6 +45,8 @@ class ManageLoadsActivity : LocalizationActivity(){
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var recyclerViewAnimator: RecyclerViewAnimator
+
 
 
 
@@ -52,15 +55,17 @@ class ManageLoadsActivity : LocalizationActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_loads)
         context = this
+        recyclerViewAnimator = RecyclerViewAnimator(yourloadslist)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         preferenceManager = PreferenceManager.getInstance(context)
         setListners()
-        setAdapter()
 
     }
 
     override fun onResume() {
         super.onResume()
+        setAdapter()
+
     }
 
     private fun setListners() {
@@ -109,12 +114,16 @@ class ManageLoadsActivity : LocalizationActivity(){
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): LoadPostViewHolder {
                 val view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.item_new_load_post, parent, false)
+                recyclerViewAnimator.onCreateViewHolder(view)
                 return LoadPostViewHolder(view)
             }
 
             override fun onBindViewHolder(@NonNull holder: LoadPostViewHolder,
                                           position: Int,
                                           @NonNull model: LoadPostPojo) {
+
+                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+
                 if (model.getmUid().equals(preferenceManager.userId)) {
                     holder.delete.visibility = View.VISIBLE
                 } else {
@@ -123,11 +132,65 @@ class ManageLoadsActivity : LocalizationActivity(){
                 holder.authername.text = model.getmDisplayName()
                 holder.source.text = model.getmSourceCity()
                 holder.destination.text = model.getmDestinationCity()
-                holder.truck_type.text = model.getmVehicleType()
-                holder.body_type.text = model.getmBodyType()
-                holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
-                holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
-                holder.material.text = model.getmMaterial()
+
+                if(model.getmVehicleType()!=null){
+                    if(model.getmVehicleType().isNotEmpty()){
+                        holder.lltype.visibility = View.VISIBLE
+                        holder.truck_type.text = model.getmVehicleType()
+                    }else{
+                        holder.lltype.visibility = View.GONE
+                    }
+                }else{
+                    holder.lltype.visibility = View.GONE
+                }
+
+
+                if(model.getmBodyType()!=null){
+                    if(model.getmBodyType().isNotEmpty()){
+                        holder.llbody.visibility = View.VISIBLE
+                        holder.body_type.text = model.getmBodyType()
+                    }else{
+                        holder.llbody.visibility = View.GONE
+                    }
+                }else{
+                    holder.llbody.visibility = View.GONE
+                }
+
+
+                if(model.getmPayload()!=null){
+                    if(model.getmPayload().isNotEmpty()){
+                        holder.llweight.visibility = View.VISIBLE
+                        holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
+
+                    }else{
+                        holder.llweight.visibility = View.GONE
+                    }
+                }else{
+                    holder.llweight.visibility = View.GONE
+                }
+
+                if(model.getmVehichleLenght()!=null){
+                    if(model.getmVehichleLenght().isNotEmpty()){
+                        holder.lllength.visibility = View.VISIBLE
+                        holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
+                    }else{
+                        holder.lllength.visibility = View.GONE
+                    }
+                }else{
+                    holder.lllength.visibility = View.GONE
+                }
+
+                if(model.getmMaterial()!=null){
+                    if(model.getmMaterial().isNotEmpty()){
+                        holder.llmaterial.visibility = View.VISIBLE
+                        holder.material.text = model.getmMaterial()
+                    }else{
+                        holder.llmaterial.visibility = View.GONE
+                    }
+                }else{
+                    holder.llmaterial.visibility = View.GONE
+                }
+
                 holder.post_requirement.text = model.getmRemark()
                 holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
@@ -173,6 +236,8 @@ class ManageLoadsActivity : LocalizationActivity(){
                                 FirebaseFirestore.getInstance().collection("loadposts").document(getItem(position)!!.id).delete().addOnCompleteListener {
                                     Toast.makeText(context, getString(R.string.removed_successfully), Toast.LENGTH_SHORT).show()
                                 }
+
+                                holder.itemView.visibility = View.GONE
                                 val bundle = Bundle()
                                 firebaseAnalytics.logEvent("z_remove_clicked_lb", bundle)
                             }
@@ -194,6 +259,14 @@ class ManageLoadsActivity : LocalizationActivity(){
                     i.putExtra("rmn", model.getmRmn())
                     i.putExtra("fuid", model.getmFuid())
                     startActivity(i)
+                }
+
+                holder.loadpostDetails.setOnClickListener {
+                    val i = Intent(context, SingleLoadDetailsActivity::class.java)
+                    i.putExtra("loadid",getItem(position)!!.id)
+                    startActivity(i)
+                    Logger.v("load post details: ${getItem(position)!!.id}")
+
                 }
 
                 if (model.getmPhotoUrl() != null) {
@@ -245,6 +318,11 @@ class ManageLoadsActivity : LocalizationActivity(){
 
                     LoadingState.FINISHED ->{
                         loadingfslby.visibility = View.GONE
+                        if(itemCount==0){
+                            noyourloads.visibility = View.VISIBLE
+                        }else{
+                            noyourloads.visibility = View.GONE
+                        }
                     }
 
                     LoadingState.ERROR -> {

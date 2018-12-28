@@ -212,11 +212,11 @@ class UserEditProfileActivity : LocalizationActivity() {
 
         val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(imagemynet, "Your Logistics Network here", "See the List of Transporters you have added in your network, Tap on Target")
+                        TapTarget.forView(imagemynet, getString(R.string.my_network_title), getString(R.string.my_network_guide))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor),
-                        TapTarget.forView(imageViewmb, "Your Business Here", "Add and Manage your business profile from here. ")
+                        TapTarget.forView(imageViewmb, getString(R.string.your_business_title), getString(R.string.your_business_giude))
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)

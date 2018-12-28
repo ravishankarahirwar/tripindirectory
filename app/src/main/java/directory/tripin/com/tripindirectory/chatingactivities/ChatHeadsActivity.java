@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,9 @@ public class ChatHeadsActivity extends AppCompatActivity {
     private RecyclerView mChatHeadsList;
     private FirebaseAuth mAuth;
     private TextView mTextNoChats;
+    private TextView mILNAssistant;
+    private ImageView mBack;
+
     private TextUtils textUtils;
     private PreferenceManager preferenceManager;
     private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
@@ -66,6 +70,8 @@ public class ChatHeadsActivity extends AppCompatActivity {
         mChatHeadsList.setLayoutManager(new LinearLayoutManager(this));
         lottieAnimationView = findViewById(R.id.loading);
         mTextNoChats = findViewById(R.id.nochats);
+        mILNAssistant = findViewById(R.id.gotoilnassistant);
+        mBack = findViewById(R.id.backchatheads);
         mAuth = FirebaseAuth.getInstance();
         textUtils = new TextUtils();
         preferenceManager = PreferenceManager.getInstance(this);
@@ -84,6 +90,26 @@ public class ChatHeadsActivity extends AppCompatActivity {
         buildAdapter();
         internetCheck();
         //showIntro();
+
+        mILNAssistant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
+                intent.putExtra("ormn", "+919284089759");
+                intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1");
+                intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1");
+                startActivity(intent);
+                Bundle bundle = new Bundle();
+                firebaseAnalytics.logEvent("z_assistant", bundle);
+            }
+        });
+
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 

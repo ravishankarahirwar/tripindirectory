@@ -64,6 +64,7 @@ public class FacebookRequiredActivity extends LocalizationActivity {
 
 
 
+
         if(getIntent().getExtras()!=null){
             if(getIntent().getExtras().get("from")!=null){
                 from = getIntent().getExtras().getString("from");

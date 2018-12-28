@@ -29,13 +29,15 @@ public class LoadPostPojo {
     private String mRmn;
     private String mPhotoUrl;
 
+    private Long mNumViews;
+
     @ServerTimestamp
     private Date mTimeStamp;
 
     public LoadPostPojo() {
     }
 
-    public LoadPostPojo(String mSourceCity, String mDestinationCity, String mSourceHub, String mDestinationHub, String mVehicleType, String mBodyType, String mPayload, String mPayloadUnit, String mVehichleLenght, String mVehichleLenghtUnit, String mMaterial, String mRemark, String mDisplayName, String mCompanyName, String mUid, String mFuid, String mRmn, String mPhotoUrl) {
+    public LoadPostPojo(String mSourceCity, String mDestinationCity, String mSourceHub, String mDestinationHub, String mVehicleType, String mBodyType, String mPayload, String mPayloadUnit, String mVehichleLenght, String mVehichleLenghtUnit, String mMaterial, String mRemark, String mDisplayName, String mCompanyName, String mUid, String mFuid, String mRmn, String mPhotoUrl, Long mNumViews) {
         this.mSourceCity = mSourceCity;
         this.mDestinationCity = mDestinationCity;
         this.mSourceHub = mSourceHub;
@@ -54,6 +56,16 @@ public class LoadPostPojo {
         this.mFuid = mFuid;
         this.mRmn = mRmn;
         this.mPhotoUrl = mPhotoUrl;
+        this.mNumViews = mNumViews;
+    }
+
+
+    public Long getmNumViews() {
+        return mNumViews;
+    }
+
+    public void setmNumViews(Long mNumViews) {
+        this.mNumViews = mNumViews;
     }
 
     public String getmSourceCity() {

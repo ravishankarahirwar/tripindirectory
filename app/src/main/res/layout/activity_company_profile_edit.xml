@@ -354,7 +354,7 @@
                         android:elevation="1dp"
                         android:gravity="center_vertical"
                         android:padding="16dp"
-                        android:text="@string/available_fleets"
+                        android:text="@string/operational_fleets"
                         android:textColor="@color/blue_grey_900"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"

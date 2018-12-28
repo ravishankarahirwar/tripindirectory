@@ -1,6 +1,7 @@
 package directory.tripin.com.tripindirectory.newlookcode.activities
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.arch.paging.PagedList
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -24,6 +25,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.gson.Gson
+import com.keiferstone.nonet.NoNet
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.R
@@ -55,6 +57,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    var lastloadid : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,11 +72,26 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
         filterLoadPostPojo = LoadPostPojo()
         arrangeUIaccordingtofilters()
+        internetCheck()
+
+
 
     }
 
     override fun onResume() {
         super.onResume()
+
+        if(intent.extras.getString("loadid")!=null){
+
+            if(lastloadid!=intent.extras.getString("loadid")){
+                val i = Intent(context, SingleLoadDetailsActivity::class.java)
+                i.putExtra("loadid",intent.extras.getString("loadid"))
+                lastloadid = intent.extras.getString("loadid")
+                startActivity(i)
+            }
+
+        }
+
 
     }
 
@@ -202,7 +220,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
                                           position: Int,
                                           @NonNull model: LoadPostPojo) {
 
-
+                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
                 if (model.getmUid().equals(preferenceManager.userId)) {
                     holder.delete.visibility = View.VISIBLE
                 } else {
@@ -211,11 +229,65 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 holder.authername.text = model.getmDisplayName()
                 holder.source.text = model.getmSourceCity()
                 holder.destination.text = model.getmDestinationCity()
-                holder.truck_type.text = model.getmVehicleType()
-                holder.body_type.text = model.getmBodyType()
-                holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
-                holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
-                holder.material.text = model.getmMaterial()
+
+                if(model.getmVehicleType()!=null){
+                    if(model.getmVehicleType().isNotEmpty()){
+                        holder.lltype.visibility = View.VISIBLE
+                        holder.truck_type.text = model.getmVehicleType()
+                    }else{
+                        holder.lltype.visibility = View.GONE
+                    }
+                }else{
+                    holder.lltype.visibility = View.GONE
+                }
+
+
+                if(model.getmBodyType()!=null){
+                    if(model.getmBodyType().isNotEmpty()){
+                        holder.llbody.visibility = View.VISIBLE
+                        holder.body_type.text = model.getmBodyType()
+                    }else{
+                        holder.llbody.visibility = View.GONE
+                    }
+                }else{
+                    holder.lltype.visibility = View.GONE
+                }
+
+
+                if(model.getmPayload()!=null){
+                    if(model.getmPayload().isNotEmpty()){
+                        holder.llweight.visibility = View.VISIBLE
+                        holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
+
+                    }else{
+                        holder.llweight.visibility = View.GONE
+                    }
+                }else{
+                    holder.llweight.visibility = View.GONE
+                }
+
+                if(model.getmVehichleLenght()!=null){
+                    if(model.getmVehichleLenght().isNotEmpty()){
+                        holder.lllength.visibility = View.VISIBLE
+                        holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
+                    }else{
+                        holder.lllength.visibility = View.GONE
+                    }
+                }else{
+                    holder.lllength.visibility = View.GONE
+                }
+
+                if(model.getmMaterial()!=null){
+                    if(model.getmMaterial().isNotEmpty()){
+                        holder.llmaterial.visibility = View.VISIBLE
+                        holder.material.text = model.getmMaterial()
+                    }else{
+                        holder.llmaterial.visibility = View.GONE
+                    }
+                }else{
+                    holder.llmaterial.visibility = View.GONE
+                }
+
                 holder.post_requirement.text = model.getmRemark()
                 holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
@@ -257,6 +329,8 @@ class FSLoadBoardActivity : AppCompatActivity() {
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
 
+                                holder.itemView.visibility = View.GONE
+
                                 FirebaseFirestore.getInstance().collection("loadposts").document(getItem(position)!!.id).delete().addOnCompleteListener {
                                     Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show()
                                 }
@@ -277,7 +351,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                 holder.autherprofile.setOnClickListener {
                     val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                    i.putExtra("uid", getItem(position)!!.id)
+                    i.putExtra("uid", model.getmUid())
                     i.putExtra("rmn", model.getmRmn())
                     i.putExtra("fuid", model.getmFuid())
                     startActivity(i)
@@ -307,6 +381,14 @@ class FSLoadBoardActivity : AppCompatActivity() {
                     Logger.v("image url null: $position")
                 }
 
+                holder.loadpostDetails.setOnClickListener {
+                    val i = Intent(context, SingleLoadDetailsActivity::class.java)
+                    i.putExtra("loadid",getItem(position)!!.id)
+                    startActivity(i)
+                    Logger.v("load post details: ${getItem(position)!!.id}")
+
+                }
+
 
             }
 
@@ -332,6 +414,11 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                     LoadingState.FINISHED -> {
                         loadingfslb.visibility = View.GONE
+                        if(itemCount==0){
+                            noresult.visibility = View.VISIBLE
+                        }else{
+                            noresult.visibility = View.GONE
+                        }
                     }
 
                     LoadingState.ERROR -> {
@@ -378,6 +465,16 @@ class FSLoadBoardActivity : AppCompatActivity() {
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(callIntent)
+    }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 
 }

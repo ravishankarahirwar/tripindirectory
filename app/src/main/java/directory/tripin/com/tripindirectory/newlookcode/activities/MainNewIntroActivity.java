@@ -29,11 +29,6 @@ public class MainNewIntroActivity extends IntroScreensHelperActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        if(preferenceManager.getPreferredLang() == 0L){
-            Intent i = new Intent(MainNewIntroActivity.this, LangSelectActivity.class);
-            startActivity(i);
-        }
-
 
         AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard(getString(R.string.transport_directory), getString(R.string.directory_discription), R.drawable.route);
         AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard(getString(R.string.load_board), getString(R.string.loadboard_discription), R.drawable.ic_developer_board_black_24dp);
@@ -57,7 +52,7 @@ public class MainNewIntroActivity extends IntroScreensHelperActivity {
             //page.setIconLayoutParams(width, height, marginTop, marginLeft, marginRight, marginBottom);
         }
 
-        setFinishButtonTitle("Get Started");
+        setFinishButtonTitle(R.string.get_started);
         showNavigationControls(true);
         setGradientBackground();
 

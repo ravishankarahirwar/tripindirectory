@@ -17,6 +17,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jaredrummler.materialspinner.MaterialSpinner
+import com.keiferstone.nonet.NoNet
 import directory.tripin.com.tripindirectory.R
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
@@ -70,6 +71,7 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
         setSpinners()
         setRoutePickup()
         getIntentData()
+        internetCheck()
 
 
     }
@@ -318,6 +320,7 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
     private fun writeNewPost( postpojo: LoadPostPojo) {
         post.text = "..."
         Toast.makeText(this, getString(R.string.posting), Toast.LENGTH_SHORT).show()
+        postpojo.setmNumViews(2)
         FirebaseFirestore.getInstance()
                 .collection("loadposts")
                 .add(postpojo).addOnCompleteListener {
@@ -330,5 +333,11 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
             Toast.makeText(context,getString(R.string.try_again),Toast.LENGTH_LONG).show()
         }
 
+    }
+
+    private fun internetCheck() {
+        NoNet.monitor(this)
+                .poll()
+                .snackbar()
     }
 }

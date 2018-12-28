@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".newlookcode.activities.FSLoadBoardActivity">
 
+    <TextView
+        android:id="@+id/noresult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="No Loads Found. Try another filter."
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/swiperefresh"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/swiperefresh" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fablbsync"
         android:layout_width="wrap_content"
@@ -93,8 +107,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -106,7 +119,9 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fsloadslist"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
