@@ -893,12 +893,19 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
     }
 
     override fun onPositiveButtonClicked(rate: Int, comment: String) {
+
+        val fcmToken = if(partnerInfoPojo!=null){
+            partnerInfoPojo.getmFcmToken()
+        }else{
+            ""
+        }
+
         val companyRatingsPojo = CompanyRatingsPojo(preferenceManager.displayName,
                 preferenceManager.imageUrl,
                 preferenceManager.rmn,
                 preferenceManager.userId,
                 rate.toDouble(),
-                comment, partnerInfoPojo.getmFcmToken())
+                comment, fcmToken)
 
         FirebaseFirestore.getInstance()
                 .collection("partners")

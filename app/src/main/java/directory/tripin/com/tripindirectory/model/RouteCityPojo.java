@@ -73,7 +73,6 @@ public class RouteCityPojo {
 
     public void setmLatLang(LatLng mLatLang) {
         this.mLatLang = mLatLang;
-        directory.tripin.com.tripindirectory.helper.Logger.v("LatLong: " + mCityName + " " + mLatLang.latitude + "," + mLatLang.longitude);
         if(mLatLang!=null){
             fetchNearestHub(mLatLang);
         }

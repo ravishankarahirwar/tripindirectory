@@ -155,7 +155,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:text="..."
-                            android:textSize="10sp" />
+                            android:textSize="10sp"
+                            android:visibility="visible" />
                     </LinearLayout>
 
                     <View
@@ -394,7 +395,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="v11.3"
+            android:text="v11.6"
             android:textSize="10sp" />
 
 

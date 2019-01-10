@@ -365,7 +365,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:gravity="center"
-                android:text="v11.3" />
+                android:text="v11.6" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

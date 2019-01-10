@@ -389,19 +389,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".newlookcode.activities.SingleLoadDetailsActivity"
+        <activity
+            android:name=".newlookcode.activities.SingleLoadDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
 
+        <activity android:name=".biddingmodule.activities.MainBidMoniterActivity"></activity>
     </application>
 
 </manifest>

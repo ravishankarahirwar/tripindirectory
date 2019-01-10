@@ -965,7 +965,12 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                 Date().time.toString(),
                                 model.getmDetails().getmAvgRating(), true)
 
-                        preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojo)
+
+                        if(model.getmDetails().getmAvgRating()!=null){
+                            if(!model.getmDetails().getmAvgRating().isNaN())
+                                preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojo)
+                        }
+
 
                     }
 

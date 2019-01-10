@@ -128,7 +128,12 @@ class NewLandingNavActivity : LocalizationActivity() {
                     if (snapshot != null) {
 
                         val count = snapshot.toObject(TransportersCountPojo::class.java)
-                        transporterscount.text = "${count!!.getmNumFPs()} Transporters are Online."
+                        if(count!=null){
+                            if(count!!.getmNumFPs()!=null){
+                                val transportersCount = "${count!!.getmNumFPs()} Transporters are Online."
+                                transporterscount.text = transportersCount
+                            }
+                        }
 
                     } else {
 

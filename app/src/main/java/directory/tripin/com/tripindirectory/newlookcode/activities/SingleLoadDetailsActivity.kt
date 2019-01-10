@@ -63,17 +63,23 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
                             .collection("loadposts")
                             .document(loadid)
                             .get()
-                            .addOnCompleteListener {
+                            .addOnSuccessListener {
 
-                                if(it.isSuccessful){
-                                    loadPostPojo = it.result!!.toObject(LoadPostPojo::class.java)!!
+                                if (it != null) {
+                                    Logger.v("DocumentSnapshot data: " + it.data)
+                                    loadPostPojo = it.toObject(LoadPostPojo::class.java)!!
                                     bindDetails(loadPostPojo)
-                                }else{
+                                } else {
+                                    Logger.d("No such document")
                                     finish()
                                     Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
-
                                 }
+
+                            }.addOnFailureListener {
+                                finish()
+                                Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
                             }
+
 
                     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.cancel(intent.extras.getInt("notifid"))
@@ -235,15 +241,16 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
                 loadPostPojo.getmCompanyName(), loadPostPojo.getmDisplayName(),
                 "")
 
+            FirebaseFirestore.getInstance()
+                    .collection("loadposts")
+                    .document(loadid)
+                    .collection("viewers")
+                    .document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
+
+                    }
 
 
-        FirebaseFirestore.getInstance()
-                .collection("loadposts")
-                .document(loadid)
-                .collection("viewers")
-                .document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
 
-                }
 
     }
 

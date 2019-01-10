@@ -10,8 +10,8 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 100
-        versionName "11.3"
+        versionCode 103
+        versionName "11.7"
         multiDexEnabled true
         dataBinding.enabled true
         vectorDrawables.useSupportLibrary = true

@@ -289,6 +289,8 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 }
 
                 holder.post_requirement.text = model.getmRemark()
+
+                if(model.getmTimeStamp()!=null)
                 holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
 
