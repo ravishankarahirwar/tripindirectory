@@ -154,7 +154,7 @@ class NewLandingNavActivity : LocalizationActivity() {
                         return@EventListener
                     }
 
-                    if (snapshot != null) {
+                    if (snapshot != null && snapshot.exists()) {
 
                         val count = snapshot.toObject(LoadCountsPojo::class.java)
                         availableloads.text = "${count!!.getmNumLoads()} Loads Posted."
@@ -375,7 +375,6 @@ class NewLandingNavActivity : LocalizationActivity() {
     }
 
     private fun notificationSubscried() {
-        FirebaseMessaging.getInstance().subscribeToTopic("generalUpdates")
 
         if(preferenceManager.settingLoadboardNotif){
             FirebaseMessaging.getInstance().subscribeToTopic("newloadposts")

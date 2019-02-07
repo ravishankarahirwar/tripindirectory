@@ -31,6 +31,7 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var isSelected : Boolean
 
     init {
+
         mThumbnail = itemView.findViewById(R.id.transporter_thumbnail)
         mCardView = itemView.findViewById(R.id.partner_card_view)
         mAddress = itemView.findViewById(R.id.company_address)
@@ -47,9 +48,6 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         mReviews = itemView.findViewById(R.id.reviews)
         mIsPromoted = itemView.findViewById(R.id.promoted)
         mRole = itemView.findViewById(R.id.rolee)
-
-
-
 
     }
 }

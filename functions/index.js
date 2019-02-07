@@ -1284,6 +1284,80 @@ exports.newContactUpdated = functions.firestore
 
                 });
 
+exports.newDumpContactInvited = functions.firestore
+              .document('smsinvites/{providermobile}/invitedcontacts/{invitedmobile}')
+              .onCreate((snapshot, context) => {
+                // Get pojo of the newly added visit interaction document
+                var contactPojo =  snapshot.data();
+
+
+                     console.log('invited: ',contactPojo.mContactNumber, contactPojo);
+
+                     //Hit SMS API
+                     const hashkey = rawurlencode('hLGz8/yJ4bI-GS5XO3Pr8b3V7W2Nvoxiz3A3Kh6IWA');
+                     const rmn = rawurlencode(contactPojo.mContactNumber.replace('+91',''));
+                     const sender = rawurlencode('TRIPIN');
+                     const appurl = rawurlencode('https://vn98y.app.goo.gl/ilnapp')
+                     const sendername = rawurlencode('ILN Assistant');
+                     console.log('Sending SMS to :', contactPojo.mContactName, rmn);
+                     const msg = rawurlencode('Hi. You are invited to join the Indian Logistics Network. Click on the link to get ILN app now. '+appurl)
+                     request.get('https://api.textlocal.in/send/?apikey='+hashkey+'&numbers='+rmn+'&message='+msg+'&sender='+sender, function (error, response, body) {
+                     console.log('error:', error); // Print the error if one occurred
+                     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+                     return console.log('body:', body); //Prints the response of the request.
+                     });
+                     return console.log("Sms api processing: ", msg)
+
+
+
+
+
+
+
+                });
+
+exports.newDumpInviteCount = functions.firestore
+              .document('smsinvites/{providermobile}/invitedcontacts/{invitedmobile}')
+              .onCreate((snapshot, context) => {
+
+                //incriment count
+                // Get a date snapshot
+                              var dateSnapshotRef = fsdb.collection('smsinvites').doc(context.params.providermobile);
+                              console.log('date: ', context.params.date);
+
+                              // Update aggregations in a transaction
+                              return fsdb.runTransaction(transaction => {
+                                return transaction.get(dateSnapshotRef).then(dateSnapshotDoc => {
+                                  // Compute new number of views this day
+                                  var datesnapshotpojo = dateSnapshotDoc.data()
+                                  console.log('datesnapshotpojo: ', datesnapshotpojo);
+
+                                  var oldNumInvites = 0;
+
+
+
+                                  if(datesnapshotpojo !== undefined){
+                                   if(datesnapshotpojo.newNumInvites!== undefined ){
+                                                 oldNumInvites = datesnapshotpojo.newNumInvites;
+                                              }
+                                  }
+
+                                  console.log('oldNumInvites: ', oldNumInvites);
+
+                                  var newNumInvites = oldNumInvites + 1;
+
+                                  // Update date snapshot
+                                  return transaction.set(dateSnapshotRef, {
+                                    newNumInvites: newNumInvites
+                                  });
+                                });
+                              });
+
+
+
+
+                });
+
 
 
 exports.setdefaultspamvalue = functions.https.onRequest((req, res) => {

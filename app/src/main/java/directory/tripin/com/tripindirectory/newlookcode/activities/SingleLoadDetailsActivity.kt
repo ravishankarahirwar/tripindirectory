@@ -32,9 +32,9 @@ import java.text.SimpleDateFormat
 class SingleLoadDetailsActivity : AppCompatActivity() {
 
     lateinit var loadPostPojo: LoadPostPojo
-    lateinit var context : Context
-    lateinit var preferenceManager : PreferenceManager
-    lateinit var firebaseAnalytics : FirebaseAnalytics
+    lateinit var context: Context
+    lateinit var preferenceManager: PreferenceManager
+    lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var loadid: String
 
 
@@ -51,7 +51,6 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
     }
 
 
-
     private fun fetchLoadData() {
         if (intent.extras != null) {
             if (intent.extras.getString("loadid") != null) {
@@ -65,10 +64,13 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
                             .get()
                             .addOnSuccessListener {
 
-                                if (it != null) {
+                                if (it != null && it.exists()) {
+
                                     Logger.v("DocumentSnapshot data: " + it.data)
                                     loadPostPojo = it.toObject(LoadPostPojo::class.java)!!
                                     bindDetails(loadPostPojo)
+
+
                                 } else {
                                     Logger.d("No such document")
                                     finish()
@@ -118,14 +120,14 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
         post_requirement.text = model.getmRemark()
         date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
-        if(model.getmNumViews()!=null){
-            if(preferenceManager.userId == model.getmUid()){
+        if (model.getmNumViews() != null) {
+            if (preferenceManager.userId == model.getmUid()) {
                 viewscount.visibility = View.VISIBLE
                 viewscount.text = model.getmNumViews().toString()
-            }else{
+            } else {
                 viewscount.visibility = View.GONE
             }
-        }else{
+        } else {
             viewscount.visibility = View.GONE
         }
 
@@ -224,9 +226,6 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
         incrimentview()
 
 
-
-
-
     }
 
     private fun incrimentview() {
@@ -241,16 +240,20 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
                 loadPostPojo.getmCompanyName(), loadPostPojo.getmDisplayName(),
                 "")
 
-            FirebaseFirestore.getInstance()
-                    .collection("loadposts")
-                    .document(loadid)
-                    .collection("viewers")
-                    .document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
+        if (loadid != null && loadid.isNotEmpty()) {
 
-                    }
+            if (preferenceManager.userId != null) {
+                FirebaseFirestore.getInstance()
+                        .collection("loadposts")
+                        .document(loadid)
+                        .collection("viewers")
+                        .document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
+
+                        }
+            }
 
 
-
+        }
 
     }
 

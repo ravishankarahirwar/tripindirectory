@@ -39,6 +39,7 @@ import com.keiferstone.nonet.NoNet
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.stepstone.apprating.AppRatingDialog
 import com.stepstone.apprating.listener.RatingDialogListener
+import directory.tripin.com.tripindirectory.biddingmodule.activities.MainBidMoniterActivity
 import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity
 import directory.tripin.com.tripindirectory.model.PartnerInfoPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
@@ -512,6 +513,9 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         }
 
         promote.setOnClickListener {
+
+//            val i = Intent(this, MainBidMoniterActivity::class.java)
+//            startActivity(i)
             showpromotedialog()
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_promote_clicked", bundle)

@@ -139,6 +139,16 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".newprofiles.activities.InviteAllActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".newlookcode.activities.PostToSelectedActivity"
             android:screenOrientation="portrait">
@@ -399,10 +409,52 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".biddingmodule.activities.MainBidMoniterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".biddingmodule.activities.AllIndiaBidActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".biddingmodule.activities.StateWiseBidActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".biddingmodule.activities.AddStatesForBidActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
 
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
 
-        <activity android:name=".biddingmodule.activities.MainBidMoniterActivity"></activity>
+
     </application>
 
 </manifest>
