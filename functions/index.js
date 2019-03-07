@@ -672,6 +672,8 @@ function recursiveTillAllBiCreatesAreDone(newdenormalizerPojo,newlyaddedhubs,hub
 
         batch.set(docRef,{mDetails: newdenormalizerPojo, mBidValue : 0})
 
+
+
      }
 
      return batch.commit().then(function () {
@@ -1378,6 +1380,33 @@ exports.setdefaultspamvalue = functions.https.onRequest((req, res) => {
                                      .set({ isSpammed: false},  {merge: true});
 
               console.log(doc.id,profile);
+
+
+           })
+
+
+   })
+
+});
+
+exports.setdefaultPremiumvalue = functions.https.onRequest((req, res) => {
+
+   return admin.firestore().collection("denormalizers").get().then((docs) => {
+
+
+           return docs.forEach((doc) => {
+
+             let profile = doc.data();
+
+              fsdb.collection('denormalizers')
+                        .doc(doc.id)
+                        .set({isPremium: false},{merge: true});
+
+              fsdb.collection('partners')
+                                     .doc(doc.id)
+                                     .set({ isPremium: false},  {merge: true});
+
+              console.log(doc.id,"done!");
 
 
            })

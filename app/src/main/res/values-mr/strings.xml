@@ -23,7 +23,7 @@
     <string name="stay_in_touch_with_us_on">आमच्या संपर्कात रहा</string>
     <string name="youtube_iln_community_official">यूट्यूब / आयएलएन समुदाय अधिकृत</string>
     <string name="facebook_ilnofficial">फेसबुक / ILNOfficial</string>
-    <string name="instagram_indian_logistics_network">instagram / indian.logistics.network</string>
+    <string name="instagram_indian_logistics_network">instagram/ilnofficial</string>
     <string name="chat_with_iln_assistant">आयएलएन सहाय्यकांसह चॅट करा</string>
     <string name="no_chats_yet">अद्याप नाही गप्पा!</string>
     <string name="chat_initiating_message">संदेश प्रारंभ करणे चॅट कराः</string>
@@ -294,6 +294,9 @@
     <string name="operational_fleets">ऑपरेशनल फ्लीट्स</string>
     <string name="fleets_need">आपल्याला आवश्यक असलेले फ्लीट्स</string>
     <string name="fleets_provide">आपण प्रदान करू शकता फ्लीट्स</string>
+
+    <string name="load_provider_premium">LOAD PROVIDER || SUPER</string>
+    <string name="fleet_provider_premium">FLEET PROVIDER || SUPER</string>
 
 
 </resources>

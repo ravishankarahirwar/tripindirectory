@@ -10,12 +10,11 @@ android {
         applicationId "directory.tripin.com.tripindirectory"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 104
-        versionName "11.8"
+        versionCode 108
+        versionName "13.0"
         multiDexEnabled true
         dataBinding.enabled true
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
 
@@ -69,9 +68,7 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.1'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'jp.wasabeef:picasso-transformations:2.1.2'
@@ -107,6 +104,7 @@ dependencies {
     implementation 'com.hlab.fabrevealmenu:fab-reveal-menu:1.0.3'
     implementation 'com.github.mjn1369:prettydialog:1.0.3'
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+    implementation 'com.github.ceryle:RadioRealButton:v2.1.1'
 
     //rating dialog
     implementation 'com.stepstone.apprating:app-rating:2.3.0'
@@ -139,7 +137,6 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-analytics:16.0.4'
 
-    testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -153,6 +150,9 @@ dependencies {
     //Mixpanel
     implementation "com.mixpanel.android:mixpanel-android:5.4.1"
     implementation "com.google.android.gms:play-services-gcm:15.0.1"
+
+    //appsee
+    implementation 'com.appsee:appsee-android:+'
 
     implementation 'com.akexorcist:localizationactivity:1.2.2'
 

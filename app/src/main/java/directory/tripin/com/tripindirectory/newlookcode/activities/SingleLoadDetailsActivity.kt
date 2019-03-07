@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Toast
+import com.appsee.Appsee
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Callback
@@ -48,6 +49,7 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
         backslbdetails.setOnClickListener {
             finish()
         }
+        Appsee.start()
     }
 
 

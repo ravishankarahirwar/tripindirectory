@@ -21,9 +21,11 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var mThumbnail : ImageView
     var mChatParent : ConstraintLayout
     var mRateLayout : LinearLayout
+    var mActionsLayout : LinearLayout
     var mRatings : TextView
     var mReviews : TextView
     var mIsPromoted : TextView
+    var mIsSuper : TextView
     var mRole : TextView
 
 
@@ -44,9 +46,11 @@ class PartnersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         isSelected = false
         mOnlineStatus = itemView.findViewById(R.id.onlinestatus)
         mRateLayout = itemView.findViewById(R.id.ratings)
+        mActionsLayout = itemView.findViewById(R.id.actions)
         mRatings = itemView.findViewById(R.id.rating)
         mReviews = itemView.findViewById(R.id.reviews)
         mIsPromoted = itemView.findViewById(R.id.promoted)
+        mIsSuper = itemView.findViewById(R.id.premium)
         mRole = itemView.findViewById(R.id.rolee)
 
     }

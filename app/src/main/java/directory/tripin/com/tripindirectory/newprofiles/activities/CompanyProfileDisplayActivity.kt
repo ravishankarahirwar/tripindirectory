@@ -47,6 +47,7 @@ import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants
 import directory.tripin.com.tripindirectory.newprofiles.models.ConnectPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
+import kotlinx.android.synthetic.main.activity_get_super.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
 import org.json.JSONException
@@ -365,10 +366,18 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             if(partnerInfoPojo.getmProfileType()!=null){
                 var type = ""
                 if(partnerInfoPojo.getmProfileType()=="0"){
-                    type = getString(R.string.load_provider_b)
+                    if(partnerInfoPojo.getmProfileType()=="0.5"){
+                        type = getString(R.string.load_provider_premium)
+                    }else{
+                        type = getString(R.string.load_provider_b)
+                    }
                 }
-                if(partnerInfoPojo.getmProfileType()=="2"){
-                    type = getString(R.string.fleet_provider_b)
+                if(partnerInfoPojo.getmProfileType()=="2"|| partnerInfoPojo.getmProfileType()=="2.5"){
+                    if(partnerInfoPojo.getmProfileType()=="0.5"){
+                        type = getString(R.string.fleet_provider_premium)
+                    }else{
+                        type = getString(R.string.fleet_provider_b)
+                    }
                 }
                 profiletype.text = type
             }
@@ -395,6 +404,21 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             }
 
             mainscrollprofile.visibility = View.VISIBLE
+
+            //superstatus
+            if(partnerInfoPojo.getmProfileType()!=null){
+                if(partnerInfoPojo.getmProfileType().length.equals(3)){
+                    //super user
+                    promote.text = "Your Super"
+
+                }else{
+
+                    //pending request
+                    promote.text = "Get Super"
+
+                }
+            }
+
 
             FetchProfileVisits()
 
@@ -514,9 +538,16 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
 
         promote.setOnClickListener {
 
-//            val i = Intent(this, MainBidMoniterActivity::class.java)
-//            startActivity(i)
-            showpromotedialog()
+            if(partnerInfoPojo.getmProfileType().length.equals(3)){
+                val i = Intent(this, ActiveSuperPlan::class.java)
+                startActivity(i)
+            }else{
+                val i = Intent(this, GetSuperActivity::class.java)
+                startActivity(i)
+            }
+
+
+//            showpromotedialog()
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_promote_clicked", bundle)
         }
@@ -705,7 +736,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             Logger.v(f.isSelected.toString())
 
         }
-        rv_available_fleets.adapter.notifyDataSetChanged()
+        rv_available_fleets.adapter!!.notifyDataSetChanged()
 
     }
 
@@ -745,7 +776,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         if (cities.isEmpty()) {
             cities.add(getString(R.string.no_cities_added_yet))
         }
-        rv_cities.adapter.notifyDataSetChanged()
+        rv_cities.adapter!!.notifyDataSetChanged()
     }
 
     private fun setRatingsAdapter() {
@@ -862,6 +893,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             defaultcomment = ""
         }
         val builder = AppRatingDialog.Builder()
+
                 .setPositiveButtonText("Submit")
                 .setNegativeButtonText("Cancel")
                 .setNoteDescriptions(Arrays.asList("Very Bad", "Not good", "Quite ok", "Very Good", "Excellent !!!"))

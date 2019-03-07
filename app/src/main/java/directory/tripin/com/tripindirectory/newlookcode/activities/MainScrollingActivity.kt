@@ -30,6 +30,7 @@ import android.widget.Toast
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.andrognito.flashbar.Flashbar
 import com.andrognito.flashbar.anim.FlashAnim
+import com.appsee.Appsee
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
@@ -164,6 +165,8 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
             showIntro()
         }
 
+        Appsee.start();
+
 
     }
 
@@ -185,6 +188,7 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
             }else{
                 setMainAdapter(basicQueryPojo)
             }
+
         }else{
             setMainAdapter(basicQueryPojo)
         }
@@ -747,8 +751,8 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         mainPageAction("search")
 
         //fitler and sort
-        baseQuery = baseQuery.orderBy("mDetails.mProfileType")
-        baseQuery = baseQuery.whereGreaterThan("mDetails.mProfileType","0")
+        baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
@@ -844,15 +848,30 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                     if (model.getmDetails().getmProfileType() != null) {
                         if (model.getmDetails().getmProfileType().isNotEmpty()) {
                             var type = ""
-                            if(model.getmDetails().getmProfileType()=="0"){
+                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
                                 type = "LOAD PROVIDER"
                             }
-                            if(model.getmDetails().getmProfileType()=="2"){
+                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
                                 type = "FLEET PROVIDER"
                             }
                             holder.mRole.text = type
                         }
                     }
+
+                    //Premium
+                    if (model.getmDetails().getmProfileType() == "0.5" ||
+                            model.getmDetails().getmProfileType() == "1.5"||
+                            model.getmDetails().getmProfileType() == "2.5" ) {
+                        holder.mIsSuper.visibility = View.VISIBLE
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.orange_50))
+                    }else{
+                        holder.mIsSuper.visibility = View.GONE
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.browser_actions_bg_grey))
+
+                    }
+
+
+
 
 
 //                    if(model.getmAccountStatus()!=null){
@@ -1046,6 +1065,11 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                     .collection("mDirectoryUsage")
                                     .document("${dPojo.getmSourceHub().toUpperCase()}_${dPojo.getmDestinationHub().toUpperCase()}").set(dPojo).addOnCompleteListener {
                                         Logger.v("Collected in directory usage")
+                                        FirebaseMessaging.getInstance().subscribeToTopic("${dPojo.getmSourceHub()
+                                                .replace(" ","")
+                                                .toUpperCase()}_${dPojo.getmDestinationHub()
+                                                .replace(" ","")
+                                                .toUpperCase()}")
                                     }
 
                         }
@@ -1072,6 +1096,9 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                             if (itemCount < 12) {
                                 showall.visibility = View.GONE
                             }
+
+
+
 
 
 

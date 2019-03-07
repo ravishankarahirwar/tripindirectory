@@ -166,6 +166,8 @@ class AllTransportersActivity : LocalizationActivity() {
         firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
 
         //fitler and sort
+        baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
@@ -228,6 +230,33 @@ class AllTransportersActivity : LocalizationActivity() {
                         if(model.getmDetails().getmLocationCity()!=null){
                             holder.mAddress.text = textUtils.toTitleCase(model.getmDetails().getmLocationCity())
                         }
+                    }
+
+                    //Role
+                    if (model.getmDetails().getmProfileType() != null) {
+                        if (model.getmDetails().getmProfileType().isNotEmpty()) {
+                            var type = ""
+                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                                type = "LOAD PROVIDER"
+                            }
+                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                                type = "FLEET PROVIDER"
+                            }
+                            holder.mRole.text = type
+                        }
+                    }
+
+
+                    //Premium
+                    if (model.getmDetails().getmProfileType() == "0.5" ||
+                            model.getmDetails().getmProfileType() == "1.5"||
+                            model.getmDetails().getmProfileType() == "2.5" ) {
+                        holder.mIsSuper.visibility = View.VISIBLE
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.orange_50))
+                    }else{
+                        holder.mIsSuper.visibility = View.GONE
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.browser_actions_bg_grey))
+
                     }
 
 

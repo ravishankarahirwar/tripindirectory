@@ -84,7 +84,7 @@ class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, H
                                 limitcity.visibility = View.GONE
                             }
                             cities.sort()
-                            rv_cities_manage.adapter.notifyDataSetChanged()
+                            (rv_cities_manage.adapter as OperationCitiesAdapter).notifyDataSetChanged()
 
                             if (partnerInfoPojo.getmOperationHubs() != null) {
                                 if (partnerInfoPojo.getmOperationHubs().size > 0) {
@@ -95,7 +95,7 @@ class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, H
 
                         } else {
                             cities.clear()
-                            rv_cities_manage.adapter.notifyDataSetChanged()
+                            (rv_cities_manage.adapter as OperationCitiesAdapter).notifyDataSetChanged()
                             citiesemptyinfo.visibility = View.VISIBLE
                         }
                     } else {

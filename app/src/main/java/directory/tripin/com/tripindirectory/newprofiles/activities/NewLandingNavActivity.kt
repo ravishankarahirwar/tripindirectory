@@ -7,6 +7,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
+import com.appsee.Appsee
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.getkeepsafe.taptargetview.TapTarget
@@ -107,8 +109,8 @@ class NewLandingNavActivity : LocalizationActivity() {
         notificationSubscried()
         setCountsListners()
         internetCheck()
-
-
+        Appsee.start()
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
     private fun setCountsListners() {

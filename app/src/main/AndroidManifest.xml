@@ -40,6 +40,9 @@
             android:name="firebase_crash_collection_enabled"
             android:value="true" />
 
+        <meta-data android:name="com.appsee.ApiKey"
+            android:value="04a36989640a49fb9ae0e30742fdb1c0" />
+
         <!-- Firebase Notification -->
 
         <service android:name=".notification.MyFirebaseMessagingService">
@@ -139,10 +142,9 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".newprofiles.activities.InviteAllActivity"
-            android:screenOrientation="portrait"
-            >
+        <activity
+            android:name=".newprofiles.activities.InviteAllActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -449,11 +451,29 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".newprofiles.activities.GetSuperActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".newprofiles.activities.ActiveSuperPlan"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
 
         <!-- ,,,,,,,,,,,,,,,,,,,,,New Look Screens,,,,,,,,,,,,,,,,,,,,,,,, -->
-
 
     </application>
 

@@ -32,7 +32,7 @@
     <string name="stay_in_touch_with_us_on">Stay in touch with us on</string>
     <string name="youtube_iln_community_official">youtube/ILN Community Official</string>
     <string name="facebook_ilnofficial">facebook/ILNOfficial</string>
-    <string name="instagram_indian_logistics_network">instagram/indian.logistics.network</string>
+    <string name="instagram_indian_logistics_network">instagram/ilnofficial</string>
     <string name="chat_with_iln_assistant">Chat with ILN Assistant</string>
     <string name="no_chats_yet">No Chats Yet!</string>
     <string name="chat_initiating_message">Chat Initiating Message :</string>
@@ -300,5 +300,7 @@
     <string name="operational_fleets">Operational Fleets</string>
     <string name="fleets_need">Fleets you may need</string>
     <string name="fleets_provide">Fleets you can provide</string>
+    <string name="load_provider_premium">LOAD PROVIDER || SUPER</string>
+    <string name="fleet_provider_premium">FLEET PROVIDER || SUPER</string>
 
 </resources>

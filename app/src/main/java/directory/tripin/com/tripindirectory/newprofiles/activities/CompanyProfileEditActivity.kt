@@ -156,10 +156,23 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         }
 
         editprofiletype.setOnClickListener {
-            val i = Intent(this, ProfileRoleInputActivity::class.java)
-            i.putExtra("isFromEditProfile",true);
-            startActivity(i)
-//            chatwithassistant()
+            if(partnerInfoPojo.getmProfileType()!=null){
+                if(partnerInfoPojo.getmProfileType().equals("0.5")
+                        ||partnerInfoPojo.getmProfileType().equals("2.5")
+                        ||partnerInfoPojo.getmProfileType().equals("1.5")){
+                    chatwithassistant()
+                }else{
+                    val i = Intent(this, ProfileRoleInputActivity::class.java)
+                    i.putExtra("isFromEditProfile",true);
+                    startActivity(i)
+                }
+            }else{
+                val i = Intent(this, ProfileRoleInputActivity::class.java)
+                i.putExtra("isFromEditProfile",true);
+                startActivity(i)
+            }
+
+
         }
 
         doneeditprofile.setOnClickListener {
@@ -502,7 +515,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         if (cities.isEmpty()) {
             cities.add(getString(R.string.no_cities_yet_tap_manage))
         }
-        rv_citiess.adapter.notifyDataSetChanged()
+        rv_citiess.adapter!!.notifyDataSetChanged()
     }
 
     private fun addFleets(fleetVehicle: MutableMap<String, Boolean>) {
@@ -518,7 +531,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
             Logger.v(f.isSelected.toString())
 
         }
-        rv_fleetss.adapter.notifyDataSetChanged()
+        rv_fleetss.adapter!!.notifyDataSetChanged()
 
     }
     private fun addFleets() {
@@ -529,7 +542,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         fleets.add(FleetSelectPojo("Taurus", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_tauruspng_round)!!, false))
         fleets.add(FleetSelectPojo("Trailers", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_trailerpng_round)!!, false))
 
-        rv_fleetss.adapter.notifyDataSetChanged()
+        rv_fleetss.adapter!!.notifyDataSetChanged()
 
     }
 

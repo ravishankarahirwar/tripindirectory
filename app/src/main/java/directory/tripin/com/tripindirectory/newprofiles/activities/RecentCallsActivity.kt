@@ -108,7 +108,10 @@ class RecentCallsActivity : LocalizationActivity() {
 
                 }
 
-                holder.time.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
+                if(model.getmTimeStamp()!=null){
+                    holder.time.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
+                }
+
 
             }
 

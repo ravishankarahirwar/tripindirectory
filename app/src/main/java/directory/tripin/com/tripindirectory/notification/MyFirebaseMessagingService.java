@@ -54,7 +54,9 @@ import directory.tripin.com.tripindirectory.R;
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
 import directory.tripin.com.tripindirectory.newlookcode.activities.FSLoadBoardActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.MainScrollingActivity;
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity;
+import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo;
 import directory.tripin.com.tripindirectory.utils.Constants;
 
 
@@ -336,6 +338,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     } else {
                         Log.d(TAG, "ids null");
                     }
+                }else if (type.equals("103")) {
+                    //OneToOneChat New Message Notification
+                    String route = remoteMessage.getData().get("route");
+                    String sourcehub = remoteMessage.getData().get("sourcehub");
+                    String destinationhub = remoteMessage.getData().get("destinationhub");
+
+                    Log.d(TAG, "new directory update");
+
+                    if (route != null&&sourcehub!=null&&destinationhub!=null) {
+                        sendDirectoryUpdateNotif(sourcehub,destinationhub);
+                    } else {
+                        Log.d(TAG, "ids null");
+                    }
                 }
             }
 
@@ -353,7 +368,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
+    private void sendDirectoryUpdateNotif(String sourcehub, String destinationhub) {
 
+        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.d(TAG, "new directory route update");
+        Random random = new Random();
+        int notifid = random.nextInt(9999 - 1000) + 1000;
+
+        Intent resultIntent = new Intent(this, MainScrollingActivity.class);
+        DirectorySearchPojo directorySearchPojo = new DirectorySearchPojo();
+        directorySearchPojo.setmSourceHub(sourcehub);
+        directorySearchPojo.setmDestinationHub(destinationhub);
+        resultIntent.putExtra("route", directorySearchPojo);
+
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, notifid, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PugNotification.with(getApplicationContext())
+                .load()
+                .identifier(notifid)
+                .button(R.drawable.ic_widgets_grey_24dp,"SEE AVAILABLE TRANSPORTERS",resultPendingIntent)
+                .group(LOADBOARD_GROUP_NAME)
+                .groupSummary(true)
+                .title("ILN Directory is active!")
+                .message("New Transporters are available")
+                .smallIcon(R.drawable.ic_notification)
+                .largeIcon(R.mipmap.ic_launcher_round)
+                .flags(Notification.DEFAULT_ALL)
+                .color(R.color.primaryColor)
+                .lights(Color.RED, 1, 1)
+                .sound(defaultRingtoneUri)
+                .autoCancel(true)
+                .simple()
+                .build();
+    }
 
 
     /**

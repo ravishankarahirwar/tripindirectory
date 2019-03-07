@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatDelegate
 import android.text.util.Linkify
 import android.widget.Toast
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
@@ -22,18 +23,19 @@ class AboutIlnActivity : LocalizationActivity() {
         setContentView(R.layout.activity_about_iln)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setListners()
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
         Linkify.addLinks(fleetprovideriln, Linkify.ALL)
         Linkify.addLinks(loadprovideriln, Linkify.ALL)
         Linkify.addLinks(explaineriln, Linkify.ALL)
-
-
-
     }
 
     private fun setListners() {
+
         back_from_aboutiln.setOnClickListener {
             finish()
         }
+
         chat_from_about.setOnClickListener {
             chatwithassistant()
         }
@@ -67,7 +69,7 @@ class AboutIlnActivity : LocalizationActivity() {
         }
 
         instagramll.setOnClickListener {
-            val url = "https://www.instagram.com/indian.logistics.network/"
+            val url = "https://www.instagram.com/ilnofficial/"
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(url)
             startActivity(i)
@@ -81,19 +83,23 @@ class AboutIlnActivity : LocalizationActivity() {
             bundle.putInt("whichVideo",3)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
+
         loadprovideriln.setOnClickListener {
             val bundle = Bundle()
             bundle.putInt("whichVideo",2)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
+
         explaineriln.setOnClickListener {
             val bundle = Bundle()
             bundle.putInt("whichVideo",1)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
+
     }
 
     private fun chatwithassistant() {
+
         val intent = Intent(this@AboutIlnActivity, ChatRoomActivity::class.java)
         intent.putExtra("ormn", "+919284089759")
         intent.putExtra("imsg", "Hi, I am coming from About ILN page.")
@@ -102,5 +108,6 @@ class AboutIlnActivity : LocalizationActivity() {
         startActivity(intent)
         val bundle = Bundle()
         firebaseAnalytics.logEvent("z_assistant", bundle)
+
     }
 }

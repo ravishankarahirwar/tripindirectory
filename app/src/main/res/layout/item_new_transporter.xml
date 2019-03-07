@@ -58,6 +58,25 @@
                 app:layout_constraintStart_toStartOf="@+id/company_address"
                 app:layout_constraintTop_toBottomOf="@+id/company_address" />
 
+            <TextView
+                android:id="@+id/premium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/orange_50"
+                android:elevation="2dp"
+                android:padding="5dp"
+                android:text="SUPER"
+                android:textColor="@color/blue_grey_900"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/promoted"
+                app:layout_constraintTop_toBottomOf="@+id/company_address"
+                app:layout_constraintVertical_bias="0.0" />
+
             <LinearLayout
                 android:id="@+id/ratings"
                 android:layout_width="wrap_content"

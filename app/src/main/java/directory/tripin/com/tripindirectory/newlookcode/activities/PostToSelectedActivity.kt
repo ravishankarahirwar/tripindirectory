@@ -247,17 +247,17 @@ class PostToSelectedActivity : LocalizationActivity() {
         Logger.v(basicQueryPojo.toString())
 
         var source = "ANYWHERE"
-        if (!basicQueryPojo.mSourceCity.isEmpty() && basicQueryPojo.mSourceCity != "Select City") {
-            bundle.putString("source", basicQueryPojo.mSourceCity)
-            source = basicQueryPojo.mSourceCity.toUpperCase()
+        if (!basicQueryPojo.mSourceHub.isEmpty() && basicQueryPojo.mSourceHub != "Select City") {
+            bundle.putString("source", basicQueryPojo.mSourceHub)
+            source = basicQueryPojo.mSourceHub.toUpperCase()
         } else {
             bundle.putString("source", "Empty")
         }
 
         var destination = "ANYWHERE"
-        if (!basicQueryPojo.mDestinationCity.isEmpty() && basicQueryPojo.mDestinationCity != "Select City") {
-            bundle.putString("destination", basicQueryPojo.mDestinationCity)
-            destination = basicQueryPojo.mDestinationCity.toUpperCase()
+        if (!basicQueryPojo.mDestinationHub.isEmpty() && basicQueryPojo.mDestinationHub != "Select City") {
+            bundle.putString("destination", basicQueryPojo.mDestinationHub)
+            destination = basicQueryPojo.mDestinationHub.toUpperCase()
         } else {
             bundle.putString("destination", "Empty")
         }
@@ -283,6 +283,9 @@ class PostToSelectedActivity : LocalizationActivity() {
         firebaseAnalytics.logEvent("z_set_main_adapter", bundle)
 
         //fitler and sort
+        baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
+        baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
         baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
         baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
         baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
@@ -312,6 +315,9 @@ class PostToSelectedActivity : LocalizationActivity() {
             override fun onBindViewHolder(@NonNull holder: PartnersViewHolder,
                                           position: Int,
                                           @NonNull model: CompanyCardPojo) {
+
+                Logger.v("onBind ${position}")
+
 
                 recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
                 //CompName
@@ -382,11 +388,35 @@ class PostToSelectedActivity : LocalizationActivity() {
                     if(model.getmBidValue() != 0.0){
                         holder.mIsPromoted.visibility = View.VISIBLE
                     }else{
-                        holder.mIsPromoted.visibility = View.GONE
+                        holder.mIsPromoted.visibility = View.GONE //Role
+                    if (model.getmDetails().getmProfileType() != null) {
+                        if (model.getmDetails().getmProfileType().isNotEmpty()) {
+                            var type = ""
+                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                                type = "LOAD PROVIDER"
+                            }
+                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                                type = "FLEET PROVIDER"
+                            }
+                            holder.mRole.text = type
+                        }
+                    }
                     }
                 }
 
-                if (hashmap.contains(model.getmDetails().getmRMN())) {
+                if (hashmap.contains(model.getmDetails().getmRMN())) { //Role
+                    if (model.getmDetails().getmProfileType() != null) {
+                        if (model.getmDetails().getmProfileType().isNotEmpty()) {
+                            var type = ""
+                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                                type = "LOAD PROVIDER"
+                            }
+                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                                type = "FLEET PROVIDER"
+                            }
+                            holder.mRole.text = type
+                        }
+                    }
                     if (hashmap[model.getmDetails().getmRMN()]!!.selected == true) {
                         holder.mCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.blue_grey_100))
                         holder.mIsSelectedImg.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_readred_24dp))
@@ -505,6 +535,8 @@ class PostToSelectedActivity : LocalizationActivity() {
 
                     LoadingState.FINISHED -> {
                         loadingpts.visibility = View.GONE
+                        Logger.v("onLoadingStateChanged ${state.name}")
+
                     }
 
                     LoadingState.ERROR -> {
