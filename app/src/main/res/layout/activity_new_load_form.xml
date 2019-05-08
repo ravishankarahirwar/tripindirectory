@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".newlookcode.activities.NewLoadFormActivity">
+    tools:context=".newlookcode.activities.loadboard.NewLoadFormActivity">
 
     <include
         android:id="@+id/include6"

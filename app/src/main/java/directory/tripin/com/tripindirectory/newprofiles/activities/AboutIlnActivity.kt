@@ -21,6 +21,7 @@ class AboutIlnActivity : LocalizationActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about_iln)
+
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setListners()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)

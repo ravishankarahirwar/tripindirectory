@@ -1,9 +1,8 @@
-package directory.tripin.com.tripindirectory.newlookcode.activities
+package directory.tripin.com.tripindirectory.newlookcode.activities.loadboard
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
@@ -23,6 +22,7 @@ import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.newlookcode.activities.FacebookRequiredActivity
 import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.LoadPostPojo
 import kotlinx.android.synthetic.main.item_loadpost_input.*

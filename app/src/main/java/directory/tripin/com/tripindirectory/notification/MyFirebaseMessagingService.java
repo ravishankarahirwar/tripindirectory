@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,14 +37,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
 import br.com.goncalves.pugnotification.notification.PugNotification;
 import directory.tripin.com.tripindirectory.chatingactivities.ChatHeadsActivity;
-import directory.tripin.com.tripindirectory.chatingactivities.ChatRoomActivity;
 import directory.tripin.com.tripindirectory.chatingactivities.models.ChatItemPojo;
 import directory.tripin.com.tripindirectory.chatingactivities.models.UserPresensePojo;
 
@@ -53,7 +50,7 @@ import directory.tripin.com.tripindirectory.R;
 
 import directory.tripin.com.tripindirectory.manager.PreferenceManager;
 import directory.tripin.com.tripindirectory.model.UpdateInfoPojo;
-import directory.tripin.com.tripindirectory.newlookcode.activities.FSLoadBoardActivity;
+import directory.tripin.com.tripindirectory.newlookcode.activities.loadboard.FSLoadBoardActivity;
 import directory.tripin.com.tripindirectory.newlookcode.activities.MainScrollingActivity;
 import directory.tripin.com.tripindirectory.newprofiles.activities.CompanyProfileDisplayActivity;
 import directory.tripin.com.tripindirectory.newprofiles.models.DirectorySearchPojo;
@@ -506,7 +503,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .smallIcon(R.drawable.ic_notification)
                 .largeIcon(R.mipmap.ic_launcher_round)
                 .flags(Notification.DEFAULT_ALL)
-                .click(directory.tripin.com.tripindirectory.newlookcode.activities.FSLoadBoardActivity.class)
+                .click(FSLoadBoardActivity.class)
                 .color(R.color.primaryColor)
                 .lights(Color.RED, 1, 1)
                 .sound(defaultRingtoneUri)

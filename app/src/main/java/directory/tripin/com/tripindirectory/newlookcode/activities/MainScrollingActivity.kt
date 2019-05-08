@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
@@ -57,6 +56,7 @@ import directory.tripin.com.tripindirectory.helper.RecyclerViewAnimator
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
+import directory.tripin.com.tripindirectory.newlookcode.activities.loadboard.FSLoadBoardActivity
 import directory.tripin.com.tripindirectory.newlookcode.pojos.BasicQueryPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.FleetSelectPojo
 import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
@@ -70,7 +70,6 @@ import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import directory.tripin.com.tripindirectory.utils.TextUtils
 import kotlinx.android.synthetic.main.content_main_scrolling.*
 import kotlinx.android.synthetic.main.layout_directory_actionbar.*
-import kotlinx.android.synthetic.main.layout_main_actionbar.*
 import kotlinx.android.synthetic.main.newlookfeedback.*
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback

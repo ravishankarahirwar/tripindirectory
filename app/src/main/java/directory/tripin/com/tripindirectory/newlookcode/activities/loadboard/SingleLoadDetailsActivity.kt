@@ -1,4 +1,4 @@
-package directory.tripin.com.tripindirectory.newlookcode.activities
+package directory.tripin.com.tripindirectory.newlookcode.activities.loadboard
 
 import android.app.NotificationManager
 import android.content.ActivityNotFoundException

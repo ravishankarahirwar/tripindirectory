@@ -1,9 +1,8 @@
-package directory.tripin.com.tripindirectory.newlookcode.activities
+package directory.tripin.com.tripindirectory.newlookcode.activities.loadboard
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.widget.Toast
@@ -20,9 +19,7 @@ import directory.tripin.com.tripindirectory.manager.PreferenceManager
 import directory.tripin.com.tripindirectory.model.HubFetchedCallback
 import directory.tripin.com.tripindirectory.model.RouteCityPojo
 import directory.tripin.com.tripindirectory.newprofiles.models.LoadPostPojo
-import directory.tripin.com.tripindirectory.newprofiles.models.RateReminderPojo
 import kotlinx.android.synthetic.main.activity_load_filters.*
-import kotlinx.android.synthetic.main.item_loadpost_input.*
 import kotlinx.android.synthetic.main.layout_fsfilterloads_actionbar.*
 
 class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {

@@ -342,7 +342,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".newlookcode.activities.FSLoadBoardActivity"
+            android:name=".newlookcode.activities.loadboard.FSLoadBoardActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -352,7 +352,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".newlookcode.activities.ManageLoadsActivity"
+            android:name=".newlookcode.activities.loadboard.ManageLoadsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -362,7 +362,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".newlookcode.activities.NewLoadFormActivity"
+            android:name=".newlookcode.activities.loadboard.NewLoadFormActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -372,7 +372,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".newlookcode.activities.LoadFiltersActivity"
+            android:name=".newlookcode.activities.loadboard.LoadFiltersActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -402,7 +402,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".newlookcode.activities.SingleLoadDetailsActivity"
+            android:name=".newlookcode.activities.loadboard.SingleLoadDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
