@@ -26,6 +26,11 @@ import java.text.SimpleDateFormat
 
 class RecentCallsActivity : LocalizationActivity() {
 
+    /**
+     * This Activity shows the list of recent calls made by user
+     * Using ILN app
+     * @author shubhamsardar
+     */
 
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
@@ -36,11 +41,9 @@ class RecentCallsActivity : LocalizationActivity() {
         context = this
         preferenceManager = PreferenceManager.getInstance(context)
         textUtils = TextUtils()
-
         setContentView(R.layout.activity_recent_calls)
         setListners()
         setAdapter()
-
     }
 
     private fun setAdapter() {
@@ -61,14 +64,14 @@ class RecentCallsActivity : LocalizationActivity() {
 
                 Logger.v("onBindViewHolder")
 
-                if(model.getmUID() == preferenceManager.userId){
-                    if(model.getmOcompanyName()!=null){
-                        if(!model.getmOcompanyName().isEmpty()){
+                if (model.getmUID() == preferenceManager.userId) {
+                    if (model.getmOcompanyName() != null) {
+                        if (!model.getmOcompanyName().isEmpty()) {
                             holder.name.text = textUtils.toTitleCase(model.getmOcompanyName())
-                        }else{
+                        } else {
                             holder.name.text = model.getmOdisplayName()
                         }
-                    }else{
+                    } else {
                         holder.name.text = model.getmOdisplayName()
                     }
 
@@ -78,20 +81,20 @@ class RecentCallsActivity : LocalizationActivity() {
 
                     holder.itemView.setOnClickListener {
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                        i.putExtra("uid",model.getmOUID())
-                        i.putExtra("rmn",model.getmORMN())
-                        i.putExtra("fuid",model.getmOFUID())
+                        i.putExtra("uid", model.getmOUID())
+                        i.putExtra("rmn", model.getmORMN())
+                        i.putExtra("fuid", model.getmOFUID())
                         startActivity(i)
                     }
 
-                }else{
-                    if(model.getmCompanyName()!=null){
-                        if(!model.getmCompanyName().isEmpty()){
+                } else {
+                    if (model.getmCompanyName() != null) {
+                        if (!model.getmCompanyName().isEmpty()) {
                             holder.name.text = textUtils.toTitleCase(model.getmCompanyName())
-                        }else{
+                        } else {
                             holder.name.text = model.getmDisplayName()
                         }
-                    }else{
+                    } else {
                         holder.name.text = model.getmDisplayName()
                     }
 
@@ -100,18 +103,17 @@ class RecentCallsActivity : LocalizationActivity() {
 
                     holder.itemView.setOnClickListener {
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                        i.putExtra("uid",model.getmUID())
-                        i.putExtra("rmn",model.getmRMN())
-                        i.putExtra("fuid",model.getmFUID())
+                        i.putExtra("uid", model.getmUID())
+                        i.putExtra("rmn", model.getmRMN())
+                        i.putExtra("fuid", model.getmFUID())
                         startActivity(i)
                     }
 
                 }
 
-                if(model.getmTimeStamp()!=null){
+                if (model.getmTimeStamp() != null) {
                     holder.time.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
                 }
-
 
             }
 
@@ -120,7 +122,6 @@ class RecentCallsActivity : LocalizationActivity() {
                 // layout called R.layout.message for each item
                 val view = LayoutInflater.from(group.context)
                         .inflate(R.layout.item_recent_call, group, false)
-
                 return RecentCallsViewHolder(view)
             }
 

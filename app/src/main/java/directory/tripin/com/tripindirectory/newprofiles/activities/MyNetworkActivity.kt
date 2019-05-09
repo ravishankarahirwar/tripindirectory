@@ -45,12 +45,19 @@ import java.util.*
 
 class MyNetworkActivity : LocalizationActivity() {
 
+    /**
+     * Renders the list of transport companies which you have added
+     * in your network.
+     * @author shubhamsardar
+     *
+     */
+
     lateinit var adapter: FirestorePagingAdapter<ConnectPojo, PartnersViewHolder>
     lateinit var context: Context
     lateinit var textUtils: TextUtils
     lateinit var preferenceManager: PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
+    lateinit var recyclerViewAnimator: RecyclerViewAnimator
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +68,6 @@ class MyNetworkActivity : LocalizationActivity() {
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         recyclerViewAnimator = RecyclerViewAnimator(rv_mynetwork)
-
-
         back_mynetwork.setOnClickListener {
             finish()
         }
@@ -70,10 +75,9 @@ class MyNetworkActivity : LocalizationActivity() {
     }
 
 
-
     private fun setAdapter() {
         var baseQuery: Query = FirebaseFirestore.getInstance()
-                .collection("networks").document(preferenceManager.userId).collection("mNetwork").whereEqualTo("mStatus",true)
+                .collection("networks").document(preferenceManager.userId).collection("mNetwork").whereEqualTo("mStatus", true)
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)
@@ -104,7 +108,7 @@ class MyNetworkActivity : LocalizationActivity() {
                                           @NonNull model: ConnectPojo) {
                 if (model != null) {
 
-                    recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                    recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
 
                     holder.mIsPromoted.visibility = View.GONE
                     holder.mReviews.visibility = View.GONE
@@ -116,26 +120,24 @@ class MyNetworkActivity : LocalizationActivity() {
                             holder.mCompany.text = textUtils.toTitleCase(model.getmCompanyName())
                         } else {
                             holder.mCompany.text = "Unknown Name"
-                            if(model.getmDisplayName() != null){
-                                if(!model.getmDisplayName().isEmpty()){
+                            if (model.getmDisplayName() != null) {
+                                if (!model.getmDisplayName().isEmpty()) {
                                     holder.mCompany.text = model.getmDisplayName()
                                 }
                             }
                         }
                     } else {
                         holder.mCompany.text = "Unknown Name"
-                        if(model.getmDisplayName() != null){
-                            if(!model.getmDisplayName().isEmpty()){
+                        if (model.getmDisplayName() != null) {
+                            if (!model.getmDisplayName().isEmpty()) {
                                 holder.mCompany.text = model.getmDisplayName()
                             }
                         }
                     }
 
-
                     if (model.getmRmn() != null) {
                         holder.mAddress.text = model.getmRmn()
                     }
-
 
                     if (model.getmPhotoUrl() != null) {
                         if (!model.getmPhotoUrl().isEmpty()) {
@@ -160,8 +162,6 @@ class MyNetworkActivity : LocalizationActivity() {
                         holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                     }
 
-
-
                     holder.itemView.setOnClickListener {
 
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
@@ -178,7 +178,7 @@ class MyNetworkActivity : LocalizationActivity() {
                                 preferenceManager.comapanyName, preferenceManager.displayName,
                                 preferenceManager.fcmToken,
                                 model.getmUid(),
-                                model.getmFuid(),model.getmRmn(),model.getmCompanyName(),model.getmDisplayName(),"")
+                                model.getmFuid(), model.getmRmn(), model.getmCompanyName(), model.getmDisplayName(), "")
 
                         FirebaseFirestore.getInstance().collection("partners")
                                 .document(model.getmUid()).collection("mCallsDump").document(getDateString())
@@ -198,14 +198,12 @@ class MyNetworkActivity : LocalizationActivity() {
                     }
 
                     holder.mChat.setOnClickListener {
-
                         val intent = Intent(context, ChatRoomActivity::class.java)
                         intent.putExtra("imsg", "From MyNetwork")
                         intent.putExtra("ormn", model.getmRmn())
                         intent.putExtra("ouid", getItem(position)!!.id)
                         intent.putExtra("ofuid", model.getmFuid())
                         startActivity(intent)
-
                     }
                 }
 
@@ -219,9 +217,7 @@ class MyNetworkActivity : LocalizationActivity() {
                     LoadingState.LOADING_INITIAL -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loadingmn.visibility = View.VISIBLE
-
                     }
-
                     LoadingState.LOADING_MORE -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loadingmn.visibility = View.VISIBLE
@@ -235,36 +231,31 @@ class MyNetworkActivity : LocalizationActivity() {
                         loadingmn.visibility = View.GONE
                         if (itemCount != 0) {
                             networkemptyinfo.visibility = View.GONE
-                        }else{
+                        } else {
                             networkemptyinfo.visibility = View.VISIBLE
                         }
-
                     }
-
                     LoadingState.FINISHED -> {
                         Logger.v("onLoadingStateChanged ${state.name} $itemCount")
                         loadingmn.visibility = View.GONE
                         if (itemCount != 0) {
                             networkemptyinfo.visibility = View.GONE
-                        }else{
+                        } else {
                             networkemptyinfo.visibility = View.VISIBLE
                         }
-
                     }
-
                     LoadingState.ERROR -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                     }
-
                 }
             }
         }
 
         rv_mynetwork.layoutManager = LinearLayoutManager(this)
-        rv_mynetwork.adapter = adapter    }
+        rv_mynetwork.adapter = adapter
+    }
 
     private fun callNumber(number: String) {
-
         val callIntent = Intent(Intent.ACTION_DIAL)
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

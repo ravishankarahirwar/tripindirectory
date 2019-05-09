@@ -59,6 +59,10 @@ import java.util.*
 
 class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListener {
 
+    /**
+     * CompanyProfileDisplayActivity displays the details of a company
+     * @author shubhamsardar
+     */
 
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
@@ -68,16 +72,13 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
     lateinit var partnerInfoPojo: PartnerInfoPojo
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
-
     var mCompUid: String = ""
     var mCompRmn: String = ""
     var mCompFuid: String = ""
     var mCompName: String = ""
     var mCompPhotourl: String = ""
 
-
     var isDirectRateShown = false
-
     lateinit var textUtils: TextUtils
     var isConnected: Boolean = false
     var mRatingsPojo: CompanyRatingsPojo? = null
@@ -98,20 +99,16 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             finish()
         }
         simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
-
         setSelectFleetAdapter()
         setCitiesAdapter()
         setListners()
         internetCheck()
-//        setOperatorAdapter()
-
 
     }
 
     override fun onResume() {
         super.onResume()
         getIntentData()
-
     }
 
     private fun getIntentData() {
@@ -127,13 +124,11 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                             mCompFuid = intent.extras.getString("fuid")
                         }
                     }
-
                     if (intent.extras.getBoolean("fromchat") != null) {
                         if (intent.extras.getBoolean("fromchat")) {
                             chatwithcomp.visibility = View.INVISIBLE
                         }
                     }
-
 
                 } else {
                     Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
@@ -203,6 +198,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
     }
 
     private fun fetchConnections() {
+
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(mCompUid)
@@ -225,15 +221,12 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                                     //You are Connected
                                     isConnected = true
                                     connect.text = "Disconnect"
-
                                     val bottom = connect.paddingBottom
                                     val top = connect.paddingTop
                                     val right = connect.paddingRight
                                     val left = connect.paddingLeft
                                     connect.background = ContextCompat.getDrawable(context, R.drawable.border_sreoke_orange_bg)
                                     connect.setPadding(left, top, right, bottom)
-
-
                                 } else {
                                     //You are Diconnected
                                     isConnected = false
@@ -244,7 +237,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                                     val left = connect.paddingLeft
                                     connect.background = ContextCompat.getDrawable(context, R.drawable.round_gradient_orange_bg)
                                     connect.setPadding(left, top, right, bottom)
-
                                 }
                             }
                         }
@@ -256,42 +248,9 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                 })
     }
 
-//    private fun fetchRatings() {
-//        FirebaseFirestore.getInstance().collection("partners").document(mCompUid).collection("mRatings").addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
-//            if (e != null) {
-//                finish()
-//                Toast.makeText(context, "Error, Try Again!", Toast.LENGTH_SHORT).show()
-//                return@EventListener
-//            }
-//            if (snapshot != null && !snapshot.isEmpty) {
-//                var totalrate: Double = 0.0
-//
-//                snapshot.forEach {
-//
-//                    val ratingsPojo: CompanyRatingsPojo = it.toObject(CompanyRatingsPojo::class.java)
-//
-//                    totalrate += ratingsPojo.getmRitings()
-//
-//                    if (ratingsPojo.getmUid() == preferenceManager.userId) {
-//                        mRatingsPojo = ratingsPojo
-//                    }
-//
-//                }
-//                if (snapshot.size() != 0) {
-//                    ratings.text = (totalrate.div(snapshot.size())).toString()
-//                } else {
-//                    ratings.text = "0.0"
-//                }
-//
-//                setRatingsAdapter()
-//
-//
-//            } else {
-//                ratings.text = "0.0"
-//                Toast.makeText(context, "No Ratings Yet!", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-//    }
+    /**
+     * Function to find the fetched data from firestore/partners/$uid doc
+     */
 
     private fun bindData(partnerInfoPojo: PartnerInfoPojo?) {
 
@@ -305,16 +264,16 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             }
 
             //is spammed
-            if(partnerInfoPojo.isSpammed){
+            if (partnerInfoPojo.isSpammed) {
                 blockedui.visibility = View.VISIBLE
                 Logger.v("spammed")
-                if(mCompUid==preferenceManager.userId){
+                if (mCompUid == preferenceManager.userId) {
                     unblockrequest.visibility = View.VISIBLE
-                }else{
+                } else {
                     unblockrequest.visibility = View.GONE
                 }
 
-            }else{
+            } else {
                 blockedui.visibility = View.GONE
                 unblockrequest.visibility = View.GONE
                 Logger.v("not spammed")
@@ -363,19 +322,19 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             }
 
             //role
-            if(partnerInfoPojo.getmProfileType()!=null){
+            if (partnerInfoPojo.getmProfileType() != null) {
                 var type = ""
-                if(partnerInfoPojo.getmProfileType()=="0"){
-                    if(partnerInfoPojo.getmProfileType()=="0.5"){
+                if (partnerInfoPojo.getmProfileType() == "0") {
+                    if (partnerInfoPojo.getmProfileType() == "0.5") {
                         type = getString(R.string.load_provider_premium)
-                    }else{
+                    } else {
                         type = getString(R.string.load_provider_b)
                     }
                 }
-                if(partnerInfoPojo.getmProfileType()=="2"|| partnerInfoPojo.getmProfileType()=="2.5"){
-                    if(partnerInfoPojo.getmProfileType()=="0.5"){
+                if (partnerInfoPojo.getmProfileType() == "2" || partnerInfoPojo.getmProfileType() == "2.5") {
+                    if (partnerInfoPojo.getmProfileType() == "0.5") {
                         type = getString(R.string.fleet_provider_premium)
-                    }else{
+                    } else {
                         type = getString(R.string.fleet_provider_b)
                     }
                 }
@@ -406,12 +365,12 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
             mainscrollprofile.visibility = View.VISIBLE
 
             //superstatus
-            if(partnerInfoPojo.getmProfileType()!=null){
-                if(partnerInfoPojo.getmProfileType().length.equals(3)){
+            if (partnerInfoPojo.getmProfileType() != null) {
+                if (partnerInfoPojo.getmProfileType().length.equals(3)) {
                     //super user
                     promote.text = "Your Super"
 
-                }else{
+                } else {
 
                     //pending request
                     promote.text = "Get Super"
@@ -433,7 +392,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(mCompUid)
-                .collection("mProfileVisits").orderBy("mDate",Query.Direction.DESCENDING).limit(7)
+                .collection("mProfileVisits").orderBy("mDate", Query.Direction.DESCENDING).limit(7)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
 
                     if (e != null) {
@@ -458,7 +417,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                         val s = "<b>$visits</b> profile visits in last 7 active days"
                         visits_text.text = Html.fromHtml(s)
 
-                        if(snapshot.size()<7){
+                        if (snapshot.size() < 7) {
                             insightll.visibility = View.GONE
                         }
 
@@ -476,15 +435,12 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         if (mCompUid == preferenceManager.userId) {
             //your profile
             if (preferenceManager.comapanyName != null) {
-
                 connect.visibility = View.GONE
                 rate.visibility = View.GONE
                 editprofile.visibility = View.VISIBLE
                 promote.visibility = View.VISIBLE
                 reportprofile.visibility = View.GONE
                 fetchData(mCompUid)
-
-
             } else {
                 val i = Intent(this, CompanyProfileEditActivity::class.java)
                 startActivityForResult(i, 1)
@@ -526,28 +482,22 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         rate.setOnClickListener {
             showDialog()
         }
-
         back_fromdisplay.setOnClickListener {
             finish()
         }
-
         editprofile.setOnClickListener {
             val i = Intent(this, CompanyProfileEditActivity::class.java)
             startActivityForResult(i, 1)
         }
-
         promote.setOnClickListener {
 
-            if(partnerInfoPojo.getmProfileType().length.equals(3)){
+            if (partnerInfoPojo.getmProfileType().length.equals(3)) {
                 val i = Intent(this, ActiveSuperPlan::class.java)
                 startActivity(i)
-            }else{
+            } else {
                 val i = Intent(this, GetSuperActivity::class.java)
                 startActivity(i)
             }
-
-
-//            showpromotedialog()
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_promote_clicked", bundle)
         }
@@ -558,11 +508,8 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                     .collection("partners")
                     .document(mCompUid)
                     .collection("mConnections")
-
             val bundle = Bundle()
-
             if (isConnected) {
-
                 val connectPojo = ConnectPojo(preferenceManager.userId,
                         false,
                         preferenceManager.displayName,
@@ -570,9 +517,7 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                         preferenceManager.rmn,
                         preferenceManager.fuid,
                         preferenceManager.comapanyName)
-
                 collection.document(preferenceManager.userId).set(connectPojo).addOnCompleteListener {
-
                     var mycollection = FirebaseFirestore.getInstance()
                             .collection("networks")
                             .document(preferenceManager.userId)
@@ -590,7 +535,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                         bundle.putInt("connect_status", 0)
                         firebaseAnalytics.logEvent("z_profile_connected", bundle)
                         mixpanelConnect("Connected")
-
                     }
                 }
 
@@ -633,7 +577,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
 
         chatwithcomp.setOnClickListener {
 
-
             val intent = Intent(context, ChatRoomActivity::class.java)
             intent.putExtra("imsg", "From Your Company Profile")
             intent.putExtra("ormn", mCompRmn)
@@ -644,20 +587,20 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
 
         see_insight.setOnClickListener {
             val intent = Intent(context, MainProfileInsightActivity::class.java)
-            intent.putExtra("uid",mCompUid)
-            intent.putExtra("name",mCompName)
-            intent.putExtra("rmn",mCompRmn)
-            intent.putExtra("photourl",mCompPhotourl)
+            intent.putExtra("uid", mCompUid)
+            intent.putExtra("name", mCompName)
+            intent.putExtra("rmn", mCompRmn)
+            intent.putExtra("photourl", mCompPhotourl)
             startActivity(intent)
         }
 
         reportprofile.setOnClickListener {
             val intent = Intent(context, SubmitReportActivity::class.java)
-            intent.putExtra("uid",mCompUid)
-            intent.putExtra("name",mCompName)
-            intent.putExtra("rmn",mCompRmn)
-            intent.putExtra("photourl",mCompPhotourl)
-            intent.putExtra("fuid",mCompFuid)
+            intent.putExtra("uid", mCompUid)
+            intent.putExtra("name", mCompName)
+            intent.putExtra("rmn", mCompRmn)
+            intent.putExtra("photourl", mCompPhotourl)
+            intent.putExtra("fuid", mCompFuid)
 
             startActivity(intent)
 
@@ -702,7 +645,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
     }
 
     private fun setSelectFleetAdapter() {
-
 
         // Creates a vertical Layout Manager
         rv_available_fleets.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -762,8 +704,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
     }
 
     private fun setCitiesAdapter() {
-
-
         rv_cities.layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
         rv_cities.adapter = CapsulsRecyclarAdapter(cities)
     }
@@ -842,14 +782,10 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                 var totalrate = 0.0
                 for (i in 0..(itemCount - 1)) {
 
-
                     val ratingsPojo = getItem(i)
-
                     totalrate += ratingsPojo.getmRitings()
-
                     if (ratingsPojo.getmUid() == preferenceManager.userId) {
                         mRatingsPojo = ratingsPojo
-
                     }
 
                 }
@@ -930,9 +866,9 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
 
     override fun onPositiveButtonClicked(rate: Int, comment: String) {
 
-        val fcmToken = if(partnerInfoPojo!=null){
+        val fcmToken = if (partnerInfoPojo != null) {
             partnerInfoPojo.getmFcmToken()
-        }else{
+        } else {
             ""
         }
 
@@ -973,7 +909,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
                         }
 
                     }
-
 
                 }
 
@@ -1044,7 +979,6 @@ class CompanyProfileDisplayActivity : LocalizationActivity(), RatingDialogListen
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-
         mixpanelAPI.track(MixPanelConstants.EVENT_CONNECT, props)
     }
 

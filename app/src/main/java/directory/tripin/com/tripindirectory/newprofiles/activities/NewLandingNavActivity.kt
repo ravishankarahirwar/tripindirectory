@@ -58,16 +58,19 @@ import java.util.*
 
 class NewLandingNavActivity : LocalizationActivity() {
 
+    /**
+     * NewLandingNavActivity is a Landing activity which
+     * provides link to all parts of the app in an
+     * organised way.
+     * @author shubhamsardar
+     */
+
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var context : Context
     lateinit var preferenceManager : PreferenceManager
     var pendingChatsvalueEventListener: ValueEventListener? = null
     var mMyIndicator: ChatIndicatorPojo? = null
     lateinit var appUtils: AppUtils
-
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,6 +175,7 @@ class NewLandingNavActivity : LocalizationActivity() {
     }
 
     override fun onResume() {
+
         super.onResume()
         if (preferenceManager.userId != null) {
             setChatPendingIndicator()
@@ -183,9 +187,7 @@ class NewLandingNavActivity : LocalizationActivity() {
                 startActivity(i)
             }
         }
-
         arrengeUIaccordingtoRole()
-
     }
 
     private fun arrengeUIaccordingtoRole() {
@@ -260,8 +262,6 @@ class NewLandingNavActivity : LocalizationActivity() {
         searchforloadt.setOnClickListener {
             startLoadboard()
         }
-
-
 
         fabMenu.bindAnchorView(fab)
         fabMenu.setOnFABMenuSelectedListener { view, id ->
@@ -381,7 +381,6 @@ class NewLandingNavActivity : LocalizationActivity() {
         if(preferenceManager.settingLoadboardNotif){
             FirebaseMessaging.getInstance().subscribeToTopic("newloadposts")
         }
-
     }
 
 
@@ -389,7 +388,6 @@ class NewLandingNavActivity : LocalizationActivity() {
         val i = Intent(this, InvitePhonebookActivity::class.java)
         startActivity(i)
     }
-
 
     private fun startLoadboard() {
         val i = Intent(this, FSLoadBoardActivity::class.java)
@@ -401,11 +399,8 @@ class NewLandingNavActivity : LocalizationActivity() {
     }
 
     private fun startYourBusinessActivity(s: String) {
-
-
         val i = Intent(this, UserEditProfileActivity::class.java)
         startActivity(i)
-
     }
 
     private fun setChatHeadsActivity(s: String) {
@@ -545,8 +540,6 @@ class NewLandingNavActivity : LocalizationActivity() {
                 }
 
             }
-
-
             override fun onCreateViewHolder(group: ViewGroup, i: Int): RecentSearchesViewHolder {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item

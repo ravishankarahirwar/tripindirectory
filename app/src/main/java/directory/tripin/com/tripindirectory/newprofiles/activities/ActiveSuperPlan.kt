@@ -17,6 +17,11 @@ import kotlinx.android.synthetic.main.layout_activesuper_actionbar.*
 
 class ActiveSuperPlan : AppCompatActivity() {
 
+    /**
+     * This activity manages the Super Request and active plan
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -48,11 +53,11 @@ class ActiveSuperPlan : AppCompatActivity() {
 
                         val superRequestPojo = snapshot.toObject(SuperRequestPojo::class.java)
                         if (superRequestPojo != null) {
-                            if(superRequestPojo.getmRequestStatus().equals(1)){
+                            if (superRequestPojo.getmRequestStatus().equals(1)) {
                                 //super user
                                 planstatus.text = "Your SUPER is Active!"
 
-                            }else{
+                            } else {
                                 //pending request
                                 planstatus.text = "Hi, Your request is pending. You will get a call soon from ILN."
                             }

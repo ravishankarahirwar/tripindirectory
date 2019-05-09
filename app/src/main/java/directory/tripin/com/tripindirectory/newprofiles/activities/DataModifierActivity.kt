@@ -20,11 +20,15 @@ import kotlinx.android.synthetic.main.activity_company_profile_edit.*
 
 class DataModifierActivity : AppCompatActivity() {
 
-    var oppName : String = "Update Hubs"
+    /**
+     * Activity for data operations
+     * Do not play with this
+     * @author shubhamsardar
+     */
+
+    var oppName: String = "Update Hubs"
     lateinit var doclist: QuerySnapshot
     lateinit var preferenceManager: PreferenceManager
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,51 +37,43 @@ class DataModifierActivity : AppCompatActivity() {
 
         docname.text = oppName
 
-
-//        status.text = "Getting Docs... Hold On!"
-//        FirebaseFirestore.getInstance().collection("partners").get().addOnCompleteListener {
-//            status.text = it.result.size().toString()
-//            doclist = it.result
-//        }
-
         startmodif.setOnClickListener {
-            if(doclist!=null){
+            if (doclist != null) {
                 startOperation(doclist)
-            }else{
-                Toast.makeText(applicationContext,"Wait",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(applicationContext, "Wait", Toast.LENGTH_SHORT).show()
             }
         }
-
 
     }
 
     private fun startOperation(doclist: QuerySnapshot) {
 
         var nullcont = 0
-        for(doc in doclist){
+        for (doc in doclist) {
 
             val partnerPojo = doc.toObject(PartnerInfoPojo::class.java)
 
-            if(partnerPojo.getmCompanyName()!=null){
+            if (partnerPojo.getmCompanyName() != null) {
 
-                if(!partnerPojo.getmCompanyName().isEmpty()){
-                    Logger.v(partnerPojo.getmCompanyName()+"updating")
+                if (!partnerPojo.getmCompanyName().isEmpty()) {
+                    Logger.v(partnerPojo.getmCompanyName() + "updating")
 
                     var operationCitieslist = ArrayList<String>()
 
                     //get source cities
-                    if(partnerPojo.getmSourceCities()!=null){
-                        for(city in partnerPojo.getmSourceCities()){
-                            if(city.value){
+                    if (partnerPojo.getmSourceCities() != null) {
+                        for (city in partnerPojo.getmSourceCities()) {
+                            if (city.value) {
                                 operationCitieslist.add(city.key.toUpperCase())
                             }
                         }
                     }
 
                     //get destination cities
-                    if(partnerPojo.getmDestinationCities()!=null){
-                        for(city in partnerPojo.getmDestinationCities()){
-                            if(city.value){
+                    if (partnerPojo.getmDestinationCities() != null) {
+                        for (city in partnerPojo.getmDestinationCities()) {
+                            if (city.value) {
                                 operationCitieslist.add(city.key.toUpperCase())
                             }
                         }
@@ -88,22 +84,22 @@ class DataModifierActivity : AppCompatActivity() {
 
 
                     //hubs
-                    var operationHubs = HashMap<String,Boolean>()
+                    var operationHubs = HashMap<String, Boolean>()
 
                     //get source hubs
-                    if(partnerPojo.getmSourceHubs()!=null){
-                        for(hub in partnerPojo.getmSourceHubs()){
-                            if(hub.value){
-                                operationHubs.put(hub.key.toUpperCase(),true)
+                    if (partnerPojo.getmSourceHubs() != null) {
+                        for (hub in partnerPojo.getmSourceHubs()) {
+                            if (hub.value) {
+                                operationHubs.put(hub.key.toUpperCase(), true)
                             }
                         }
                     }
 
                     //get destination hubs
-                    if(partnerPojo.getmDestinationHubs()!=null){
-                        for(hub in partnerPojo.getmDestinationHubs()){
-                            if(hub.value){
-                                operationHubs.put(hub.key.toUpperCase(),true)
+                    if (partnerPojo.getmDestinationHubs() != null) {
+                        for (hub in partnerPojo.getmDestinationHubs()) {
+                            if (hub.value) {
+                                operationHubs.put(hub.key.toUpperCase(), true)
                             }
                         }
                     }
@@ -113,19 +109,19 @@ class DataModifierActivity : AppCompatActivity() {
 
                     //update fleets sorter
 
-                    if(partnerPojo.fleetVehicle==null){
-                        var fllv = HashMap<String,Boolean>()
-                        fllv.put("LCV",false)
-                        fllv.put("Truck",false)
-                        fllv.put("Tusker",false)
-                        fllv.put("Taurus",false)
-                        fllv.put("Trailers",false)
+                    if (partnerPojo.fleetVehicle == null) {
+                        var fllv = HashMap<String, Boolean>()
+                        fllv.put("LCV", false)
+                        fllv.put("Truck", false)
+                        fllv.put("Tusker", false)
+                        fllv.put("Taurus", false)
+                        fllv.put("Trailers", false)
                         partnerPojo.fleetVehicle = fllv
                     }
 
                     val arr = ArrayList<String>()
-                    for(fleets in partnerPojo.fleetVehicle){
-                        if(fleets.value){
+                    for (fleets in partnerPojo.fleetVehicle) {
+                        if (fleets.value) {
                             arr.add(fleets.key)
                         }
                     }
@@ -137,9 +133,9 @@ class DataModifierActivity : AppCompatActivity() {
                     for (i in 0 until (1 shl arr.size)) {
 
                         var possiblity = ""
-                        for (j in 0 until arr.size){
-                            if (i and (1 shl j) > 0){
-                                possiblity =  possiblity + arr[j] + "_"
+                        for (j in 0 until arr.size) {
+                            if (i and (1 shl j) > 0) {
+                                possiblity = possiblity + arr[j] + "_"
                             }
                         }
                         partnerPojo.getmFleetsSort().add(possiblity)
@@ -149,17 +145,17 @@ class DataModifierActivity : AppCompatActivity() {
                     partnerPojo.setmAvgRating(0.0)
                     partnerPojo.setmNumRatings(0.0)
 
-                    if(partnerPojo.getmLastActive()==null){
+                    if (partnerPojo.getmLastActive() == null) {
                         partnerPojo.setmLastActive(0.0)
                     }
 
-                    if(partnerPojo.getmCompanyAdderss()!=null){
-                        if(partnerPojo.getmCompanyAdderss().city!=null){
+                    if (partnerPojo.getmCompanyAdderss() != null) {
+                        if (partnerPojo.getmCompanyAdderss().city != null) {
                             partnerPojo.setmCity(partnerPojo.getmCompanyAdderss().city)
                         }
 
-                        if(partnerPojo.getmCompanyAdderss().isLatLongSet){
-                            if(partnerPojo.getmCompanyAdderss().getmLatitude()!=null&&partnerPojo.getmCompanyAdderss().getmLongitude()!=null){
+                        if (partnerPojo.getmCompanyAdderss().isLatLongSet) {
+                            if (partnerPojo.getmCompanyAdderss().getmLatitude() != null && partnerPojo.getmCompanyAdderss().getmLongitude() != null) {
                                 partnerPojo.setmLocation(GeoPoint(partnerPojo.getmCompanyAdderss().getmLatitude().toDouble(),
                                         partnerPojo.getmCompanyAdderss().getmLongitude().toDouble()))
                             }
@@ -185,7 +181,7 @@ class DataModifierActivity : AppCompatActivity() {
                             partnerPojo.getmLastActive(),
                             partnerPojo.isActive,
                             partnerPojo.getmAvgRating(),
-                            partnerPojo.getmNumRatings(),preferenceManager.profileType.toString()
+                            partnerPojo.getmNumRatings(), preferenceManager.profileType.toString()
 
                     )
 
@@ -196,13 +192,13 @@ class DataModifierActivity : AppCompatActivity() {
                         Logger.v("denormaliser update canceled")
                     }
 
-                }else{
+                } else {
                     FirebaseFirestore.getInstance().collection("partners").document(doc.id).delete().addOnCompleteListener {
                         Logger.v("doc removed emptyname")
                     }
                 }
 
-            }else{
+            } else {
                 FirebaseFirestore.getInstance().collection("partners").document(doc.id).delete().addOnCompleteListener {
                     Logger.v("doc removed")
                 }

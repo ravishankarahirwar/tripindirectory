@@ -43,6 +43,16 @@ import java.text.SimpleDateFormat
 
 class FSLoadBoardActivity : AppCompatActivity() {
 
+
+    /**
+     * FSLoadBoardActivity is Fire Store Load Board Activity
+     *
+     * This activity is renders the realtime changes in /loadposts collection
+     *
+     * @author shubhamsardar
+     *
+     */
+
     internal var LOADBOARD_FILTER_REQUEST_CODE = 1
     lateinit var filterLoadPostPojo: LoadPostPojo
     lateinit var adapter: FirestorePagingAdapter<LoadPostPojo, LoadPostViewHolder>
@@ -50,8 +60,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    var lastloadid : String = ""
-
+    var lastloadid: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,33 +69,23 @@ class FSLoadBoardActivity : AppCompatActivity() {
         recyclerViewAnimator = RecyclerViewAnimator(fsloadslist)
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
-
         setListners()
-
         filterLoadPostPojo = LoadPostPojo()
         arrangeUIaccordingtofilters()
         internetCheck()
         Appsee.start()
-
-
-
     }
 
     override fun onResume() {
         super.onResume()
-
-        if(intent.extras.getString("loadid")!=null){
-
-            if(lastloadid!=intent.extras.getString("loadid")){
+        if (intent.extras.getString("loadid") != null) {
+            if (lastloadid != intent.extras.getString("loadid")) {
                 val i = Intent(context, SingleLoadDetailsActivity::class.java)
-                i.putExtra("loadid",intent.extras.getString("loadid"))
+                i.putExtra("loadid", intent.extras.getString("loadid"))
                 lastloadid = intent.extras.getString("loadid")
                 startActivity(i)
             }
-
         }
-
-
     }
 
     private fun arrangeUIaccordingtofilters() {
@@ -109,25 +108,22 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
 
     private fun setListners() {
+
         manageloads.setOnClickListener {
             val i = Intent(this, ManageLoadsActivity::class.java)
             startActivity(i)
         }
-
         backfslb.setOnClickListener {
             finish()
         }
-
         filterloads.setOnClickListener {
             val i = Intent(this, LoadFiltersActivity::class.java)
             startActivityForResult(i, LOADBOARD_FILTER_REQUEST_CODE)
         }
-
         clearfilters.setOnClickListener {
             preferenceManager.prefLBFilter = ""
             arrangeUIaccordingtofilters()
         }
-
         fablbsync.setOnClickListener {
             setAdapter(filterLoadPostPojo)
         }
@@ -138,26 +134,25 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
     }
 
-
+    /**
+     * Method that sets the adapter according to the filters content
+     * @param filterLoadPostPojo The current filter pojo
+     */
     private fun setAdapter(filterLoadPostPojo: LoadPostPojo) {
 
         val bundle = Bundle()
         Logger.v(filterLoadPostPojo.toString())
 
-
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("loadposts")
-
 
         //time sort
         baseQuery = baseQuery.orderBy("mTimeStamp", Query.Direction.DESCENDING)
 
         //other filters
-
         if (filterLoadPostPojo.getmSourceHub() != null) {
             baseQuery = baseQuery.whereEqualTo("mSourceHub", filterLoadPostPojo.getmSourceHub())
         }
-
 
         if (filterLoadPostPojo.getmDestinationHub() != null) {
             Logger.v(filterLoadPostPojo.getmDestinationHub())
@@ -190,7 +185,6 @@ class FSLoadBoardActivity : AppCompatActivity() {
             baseQuery = baseQuery.whereEqualTo("mBodyType", filterLoadPostPojo.getmBodyType())
         }
 
-
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPrefetchDistance(2)
@@ -201,6 +195,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 .setLifecycleOwner(this)
                 .setQuery(baseQuery, config, LoadPostPojo::class.java)
                 .build()
+
         adapter = object : FirestorePagingAdapter<LoadPostPojo, LoadPostViewHolder>(options) {
             @NonNull
             override fun onCreateViewHolder(@NonNull parent: ViewGroup, viewType: Int): LoadPostViewHolder {
@@ -214,7 +209,7 @@ class FSLoadBoardActivity : AppCompatActivity() {
                                           position: Int,
                                           @NonNull model: LoadPostPojo) {
 
-                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
                 if (model.getmUid().equals(preferenceManager.userId)) {
                     holder.delete.visibility = View.VISIBLE
                 } else {
@@ -224,68 +219,68 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 holder.source.text = model.getmSourceCity()
                 holder.destination.text = model.getmDestinationCity()
 
-                if(model.getmVehicleType()!=null){
-                    if(model.getmVehicleType().isNotEmpty()){
+                if (model.getmVehicleType() != null) {
+                    if (model.getmVehicleType().isNotEmpty()) {
                         holder.lltype.visibility = View.VISIBLE
                         holder.truck_type.text = model.getmVehicleType()
-                    }else{
+                    } else {
                         holder.lltype.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.lltype.visibility = View.GONE
                 }
 
 
-                if(model.getmBodyType()!=null){
-                    if(model.getmBodyType().isNotEmpty()){
+                if (model.getmBodyType() != null) {
+                    if (model.getmBodyType().isNotEmpty()) {
                         holder.llbody.visibility = View.VISIBLE
                         holder.body_type.text = model.getmBodyType()
-                    }else{
+                    } else {
                         holder.llbody.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.lltype.visibility = View.GONE
                 }
 
 
-                if(model.getmPayload()!=null){
-                    if(model.getmPayload().isNotEmpty()){
+                if (model.getmPayload() != null) {
+                    if (model.getmPayload().isNotEmpty()) {
                         holder.llweight.visibility = View.VISIBLE
                         holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
 
-                    }else{
+                    } else {
                         holder.llweight.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.llweight.visibility = View.GONE
                 }
 
-                if(model.getmVehichleLenght()!=null){
-                    if(model.getmVehichleLenght().isNotEmpty()){
+                if (model.getmVehichleLenght() != null) {
+                    if (model.getmVehichleLenght().isNotEmpty()) {
                         holder.lllength.visibility = View.VISIBLE
                         holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
-                    }else{
+                    } else {
                         holder.lllength.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.lllength.visibility = View.GONE
                 }
 
-                if(model.getmMaterial()!=null){
-                    if(model.getmMaterial().isNotEmpty()){
+                if (model.getmMaterial() != null) {
+                    if (model.getmMaterial().isNotEmpty()) {
                         holder.llmaterial.visibility = View.VISIBLE
                         holder.material.text = model.getmMaterial()
-                    }else{
+                    } else {
                         holder.llmaterial.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.llmaterial.visibility = View.GONE
                 }
 
                 holder.post_requirement.text = model.getmRemark()
 
-                if(model.getmTimeStamp()!=null)
-                holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
+                if (model.getmTimeStamp() != null)
+                    holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
 
                 holder.share.setOnClickListener {
@@ -379,15 +374,13 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                 holder.loadpostDetails.setOnClickListener {
                     val i = Intent(context, SingleLoadDetailsActivity::class.java)
-                    i.putExtra("loadid",getItem(position)!!.id)
+                    i.putExtra("loadid", getItem(position)!!.id)
                     startActivity(i)
                     Logger.v("load post details: ${getItem(position)!!.id}")
 
                 }
 
-
             }
-
 
             override fun onLoadingStateChanged(state: LoadingState) {
                 when (state) {
@@ -410,9 +403,9 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
                     LoadingState.FINISHED -> {
                         loadingfslb.visibility = View.GONE
-                        if(itemCount==0){
+                        if (itemCount == 0) {
                             noresult.visibility = View.VISIBLE
-                        }else{
+                        } else {
                             noresult.visibility = View.GONE
                         }
                     }
@@ -428,7 +421,6 @@ class FSLoadBoardActivity : AppCompatActivity() {
         fsloadslist.layoutManager = LinearLayoutManager(context)
         fsloadslist.adapter = adapter
 
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -439,8 +431,6 @@ class FSLoadBoardActivity : AppCompatActivity() {
                 arrangeUIaccordingtofilters()
             }
         }
-
-
     }
 
     private fun shareMesssages(context: Context, subject: String, body: String) {
@@ -456,6 +446,10 @@ class FSLoadBoardActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Method that makes system call on the given mobile number
+     * @param number The Given telephone number
+     */
     private fun callNumber(number: String) {
         val callIntent = Intent(Intent.ACTION_DIAL)
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))

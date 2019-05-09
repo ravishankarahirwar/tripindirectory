@@ -37,21 +37,21 @@ import directory.tripin.com.tripindirectory.newlookcode.utils.MixPanelConstants;
 
 public class FacebookRequiredActivity extends LocalizationActivity {
 
+    /**
+     * FacebookRequiredActivity manages facebook and Mobile signup process
+     * Both are managed using Firebase Auth
+     */
+
     private static final int FB_SIGN_IN = 100;
     private static final int PHONE_SIGN_IN = 101;
     CardView loginwithfacebbok;
     CardView loginwithphone;
     private FirebaseAnalytics firebaseAnalytics;
     private MixpanelAPI mixpanelAPI;
-
-
     private TextView mNameWelcome;
     private TextView mNote;
     private TextView mBactooldapp;
-
     String from = "";
-
-
     private PreferenceManager preferenceManager;
 
     @Override
@@ -61,10 +61,6 @@ public class FacebookRequiredActivity extends LocalizationActivity {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mixpanelAPI = MixpanelAPI.getInstance(this,MixPanelConstants.MIXPANEL_TOKEN);
         init();
-
-
-
-
         if(getIntent().getExtras()!=null){
             if(getIntent().getExtras().get("from")!=null){
                 from = getIntent().getExtras().getString("from");
@@ -75,19 +71,16 @@ public class FacebookRequiredActivity extends LocalizationActivity {
                     mNote.setText(R.string.fb_convi_2);
                     loginwithphone.setVisibility(View.INVISIBLE);
                     mBactooldapp.setVisibility(View.INVISIBLE);
-
                 }
                 if(from.equals("Loadboard")){
                     mNote.setText(R.string.fb_convi_3);
                     loginwithphone.setVisibility(View.INVISIBLE);
                     mBactooldapp.setVisibility(View.INVISIBLE);
-
                 }
                 if(from.equals("PostToSelected")){
                     mNote.setText(R.string.fb_convi_4);
                     loginwithphone.setVisibility(View.INVISIBLE);
                     mBactooldapp.setVisibility(View.INVISIBLE);
-
                 }
             }
         }
@@ -115,14 +108,7 @@ public class FacebookRequiredActivity extends LocalizationActivity {
                 finish();
             }
         });
-
-
         internetCheck();
-
-
-
-
-
     }
 
     private void init() {
@@ -131,7 +117,6 @@ public class FacebookRequiredActivity extends LocalizationActivity {
         loginwithphone = findViewById(R.id.phone);
         mBactooldapp = findViewById(R.id.backtooldapp);
         mNote =findViewById(R.id.note);
-
         ImageView imageview = (ImageView) findViewById(R.id.fbreqimagebg);
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0.2f);
@@ -163,11 +148,8 @@ public class FacebookRequiredActivity extends LocalizationActivity {
             bundle.putString("wasfrom","PostToSelected");
             finish();
         }
-
         firebaseAnalytics.logEvent("z_back_from_authland",bundle);
-
         authlandingAction("back");
-
     }
 
     @Override

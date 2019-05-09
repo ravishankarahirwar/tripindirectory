@@ -20,12 +20,17 @@ import java.util.HashMap
 
 class ProfileRoleInputActivity : LocalizationActivity() {
 
+    /**
+     * Asks user to specify his role as
+     * 1)Load Provider
+     * 2)Fleet Provider
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
     var profileType: Long = -1
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -40,18 +45,18 @@ class ProfileRoleInputActivity : LocalizationActivity() {
     }
 
     private fun setSelectedRole() {
-        if(preferenceManager.profileType != 1L){
-            if(preferenceManager.profileType == 2L){
+        if (preferenceManager.profileType != 1L) {
+            if (preferenceManager.profileType == 2L) {
                 rblp.isChecked = false
                 lbfp.isChecked = true
             }
-            if(preferenceManager.profileType == 0L){
+            if (preferenceManager.profileType == 0L) {
                 rblp.isChecked = true
                 lbfp.isChecked = false
             }
         }
-        if(intent.extras.getBoolean("isFromEditProfile")!=null){
-            if(intent.extras.getBoolean("isFromEditProfile")){
+        if (intent.extras.getBoolean("isFromEditProfile") != null) {
+            if (intent.extras.getBoolean("isFromEditProfile")) {
                 profilelink.visibility = View.GONE
             }
         }
@@ -85,9 +90,7 @@ class ProfileRoleInputActivity : LocalizationActivity() {
             if (radioGroupProfiletype.checkedRadioButtonId == lbfp.id) {
                 profileType = 2
             }
-
             showprofiletypeconfermationdialog()
-
         }
     }
 
@@ -95,13 +98,10 @@ class ProfileRoleInputActivity : LocalizationActivity() {
         preferenceManager.profileType = profileType
 
         val bundle = Bundle()
-        bundle.putLong("profile_type",profileType)
+        bundle.putLong("profile_type", profileType)
         firebaseAnalytics.logEvent("z_my_profile_type", bundle)
-
         if (preferenceManager.comapanyName != null) {
-
             if (preferenceManager.comapanyName.isNotEmpty()) {
-
                 // update the mProfileType Value
                 val hashMap = HashMap<String, String>()
                 hashMap.put("mProfileType", profileType.toString())
@@ -111,36 +111,28 @@ class ProfileRoleInputActivity : LocalizationActivity() {
                         .document(preferenceManager.userId)
                         .set(hashMap as Map<String, Any>, SetOptions.merge())
                         .addOnCompleteListener {
-
                             saveandcontprofileinput.text = "Just a moment..."
                             val hashMap2 = HashMap<String, String>()
                             hashMap2.put("mProfileType", profileType.toString())
-
                             FirebaseFirestore.getInstance()
                                     .collection("denormalizers")
                                     .document(preferenceManager.userId)
                                     .set(hashMap2 as Map<String, Any>, SetOptions.merge())
                                     .addOnCompleteListener {
-
                                         finish()
-
                                     }.addOnCanceledListener {
-
-                                        Toast.makeText(context,"Try again!",Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Try again!", Toast.LENGTH_SHORT).show()
                                         saveandcontprofileinput.text = getString(R.string.save_and_continue)
-
                                     }
                         }.addOnCanceledListener {
-
-                            Toast.makeText(context,"Try again!",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Try again!", Toast.LENGTH_SHORT).show()
                             saveandcontprofileinput.text = getString(R.string.save_and_continue)
-
                         }
 
-            }else{
+            } else {
                 finish()
             }
-        }else{
+        } else {
             finish()
         }
     }

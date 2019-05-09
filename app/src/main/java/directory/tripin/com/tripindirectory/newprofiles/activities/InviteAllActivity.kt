@@ -13,8 +13,12 @@ import kotlinx.android.synthetic.main.activity_invite_all.*
 
 class InviteAllActivity : AppCompatActivity() {
 
-    lateinit var doclist: QuerySnapshot
+    /**
+     * Activity to invite all synced contacts
+     * @author shubhamsardar
+     */
 
+    lateinit var doclist: QuerySnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +37,8 @@ class InviteAllActivity : AppCompatActivity() {
 
         not.text = "Getting Docs... Hold On!"
         FirebaseFirestore.getInstance().collection("promotionsdump")
-                .whereGreaterThanOrEqualTo("mContactNumber","+917000023068")
-                .whereEqualTo("invited",false)
+                .whereGreaterThanOrEqualTo("mContactNumber", "+917000023068")
+                .whereEqualTo("invited", false)
                 .limit(230)
                 .get()
                 .addOnCompleteListener {
@@ -69,9 +73,7 @@ class InviteAllActivity : AppCompatActivity() {
                     .collection("promotionsdump")
                     .document(contactPojo.getmContactNumber())
             batch.set(ref, contactPojo)
-            batch.update(ref2,"invited",true)
-
-
+            batch.update(ref2, "invited", true)
 
 
         }
@@ -83,7 +85,7 @@ class InviteAllActivity : AppCompatActivity() {
 
         }.addOnFailureListener {
 
-                       Toast.makeText(applicationContext, "Commit Failed!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Commit Failed!", Toast.LENGTH_SHORT).show()
 
         }
 

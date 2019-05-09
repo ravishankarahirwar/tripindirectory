@@ -49,6 +49,10 @@ import java.util.*
 
 class CompanyProfileEditActivity : LocalizationActivity() {
 
+    /**
+     * CompanyProfileEditActivity lets you edit and format the company details visible
+     */
+
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE = 1
     internal var PLACE_PICKER_REQUEST = 2
     lateinit var mixpanelAPI: MixpanelAPI
@@ -62,21 +66,15 @@ class CompanyProfileEditActivity : LocalizationActivity() {
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var refinedHubs: HashMap<String, Boolean>
     lateinit var denormalizerUpdateManager: DenormalizerUpdateManager
-//    private var dialog: AlertDialog? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_company_profile_edit)
         context = this
-//        dialog = SpotsDialog.Builder()
-//                .setContext(this)
-//                .setCancelable(false)
-//                .setMessage("Hold On! This may take a while.")
-//                .build()
+
         db = FirebaseFirestore.getInstance()
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        mixpanelAPI = MixpanelAPI.getInstance(context,MixPanelConstants.MIXPANEL_TOKEN)
+        mixpanelAPI = MixpanelAPI.getInstance(context, MixPanelConstants.MIXPANEL_TOKEN)
         preferenceManager = PreferenceManager.getInstance(context)
         partnerInfoPojo = PartnerInfoPojo()
 
@@ -87,23 +85,19 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         setCitiesAdapter()
         setListners()
         internetCheck()
-//        setOperatorAdapter()
-
 
     }
 
     override fun onResume() {
         super.onResume()
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        if(preferenceManager.imageUrl!=null){
+        if (preferenceManager.imageUrl != null) {
             setUpImage(preferenceManager.imageUrl)
         }
-        if(preferenceManager.profileType==1L){
+        if (preferenceManager.profileType == 1L) {
             profiletypecard.visibility = View.GONE
         }
         fetchData()
-
-
     }
 
     override fun onBackPressed() {
@@ -116,6 +110,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
 
 
     private fun setListners() {
+
         back_fromedit.setOnClickListener {
             val i = Intent()
             setResult(Activity.RESULT_CANCELED, i)
@@ -141,13 +136,11 @@ class CompanyProfileEditActivity : LocalizationActivity() {
             startPickupfragment()
             Toast.makeText(context, "Type City Name", Toast.LENGTH_SHORT).show()
             editprofilePageAction("pick_city")
-
         }
 
         changelogo.setOnClickListener {
             Toast.makeText(context, "Feature Coming Soon", Toast.LENGTH_SHORT).show()
             editprofilePageAction("change_logo")
-
         }
 
         pinpoint.setOnClickListener {
@@ -156,19 +149,19 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         }
 
         editprofiletype.setOnClickListener {
-            if(partnerInfoPojo.getmProfileType()!=null){
-                if(partnerInfoPojo.getmProfileType().equals("0.5")
-                        ||partnerInfoPojo.getmProfileType().equals("2.5")
-                        ||partnerInfoPojo.getmProfileType().equals("1.5")){
+            if (partnerInfoPojo.getmProfileType() != null) {
+                if (partnerInfoPojo.getmProfileType().equals("0.5")
+                        || partnerInfoPojo.getmProfileType().equals("2.5")
+                        || partnerInfoPojo.getmProfileType().equals("1.5")) {
                     chatwithassistant()
-                }else{
+                } else {
                     val i = Intent(this, ProfileRoleInputActivity::class.java)
-                    i.putExtra("isFromEditProfile",true);
+                    i.putExtra("isFromEditProfile", true);
                     startActivity(i)
                 }
-            }else{
+            } else {
                 val i = Intent(this, ProfileRoleInputActivity::class.java)
-                i.putExtra("isFromEditProfile",true);
+                i.putExtra("isFromEditProfile", true);
                 startActivity(i)
             }
 
@@ -190,7 +183,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                 saving.visibility = View.VISIBLE
                 doneeditprofile.visibility = View.GONE
 
-
                 val hashMap = HashMap<String, String>()
                 hashMap.put("mCompanyName", compnametext.text.toString().toUpperCase().trim())
                 hashMap.put("mFUID", preferenceManager.fuid)
@@ -200,8 +192,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                 hashMap.put("mBio", bioedit.text.toString().trim())
                 hashMap.put("mRMN", preferenceManager.rmn)
                 hashMap.put("mProfileType", preferenceManager.profileType.toString())
-
-
 
                 reference.set(hashMap as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
 
@@ -223,7 +213,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                     reference.set(hashMap3 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
 
                         val operationHubsHash = HashMap<String, Boolean>()
-                        if(partnerInfoPojo.getmOperationHubs()!=null){
+                        if (partnerInfoPojo.getmOperationHubs() != null) {
                             for (map in partnerInfoPojo.getmOperationHubs()) {
                                 if (map.value) {
                                     operationHubsHash.put(map.key, true)
@@ -264,9 +254,9 @@ class CompanyProfileEditActivity : LocalizationActivity() {
 
                                         //form saved
                                         val bundle = Bundle()
-                                        firebaseAnalytics.logEvent("z_form_uploaded",bundle)
+                                        firebaseAnalytics.logEvent("z_form_uploaded", bundle)
                                         mixpanelAPI.track(MixPanelConstants.EVENT_UPLOAD_COMPANY_FORM)
-                                        mixpanelAPI.people.set("CompanyName",preferenceManager.comapanyName)
+                                        mixpanelAPI.people.set("CompanyName", preferenceManager.comapanyName)
                                         val i = Intent()
                                         setResult(Activity.RESULT_OK, i)
                                         finish()
@@ -295,11 +285,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                     Toast.makeText(context, "Error, Try Again", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
         }
-
-
     }
 
     fun printSubsets(set: ArrayList<String>) {
@@ -323,8 +309,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
     }
 
 
-
-
     override fun onPause() {
         super.onPause()
     }
@@ -344,7 +328,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                         val hashMap3 = HashMap<String, String>()
                         hashMap3.put("mCity", place.name.toString().toUpperCase())
                         reference.set(hashMap3 as Map<String, Any>, SetOptions.merge()).addOnCompleteListener {
-                            mixpanelAPI.people.set("CompanyCity",place.name.toString().toUpperCase())
+                            mixpanelAPI.people.set("CompanyCity", place.name.toString().toUpperCase())
                         }
 
                     } else {
@@ -385,14 +369,14 @@ class CompanyProfileEditActivity : LocalizationActivity() {
             if (snapshot != null && snapshot.exists()) {
                 partnerInfoPojo = snapshot.toObject(PartnerInfoPojo::class.java)!!
                 bindData(partnerInfoPojo!!)
-                if(partnerInfoPojo.fleetVehicle==null){
-                    val ifleets= HashMap<String,Boolean>()
+                if (partnerInfoPojo.fleetVehicle == null) {
+                    val ifleets = HashMap<String, Boolean>()
                     ifleets["LCV"] = false
                     ifleets["Truck"] = false
                     ifleets["Tusker"] = false
                     ifleets["Taurus"] = false
                     ifleets["Trailers"] = false
-                    partnerInfoPojo.fleetVehicle = HashMap<String,Boolean>()
+                    partnerInfoPojo.fleetVehicle = HashMap<String, Boolean>()
                     partnerInfoPojo.fleetVehicle.putAll(ifleets)
                     addFleets(partnerInfoPojo.fleetVehicle)
                 }
@@ -401,14 +385,14 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                 Toast.makeText(context, "Create New!", Toast.LENGTH_SHORT).show()
                 mainscrolledit.visibility = View.VISIBLE
                 Logger.v("Current data: null")
-                if(partnerInfoPojo.fleetVehicle==null){
-                    val ifleets= HashMap<String,Boolean>()
+                if (partnerInfoPojo.fleetVehicle == null) {
+                    val ifleets = HashMap<String, Boolean>()
                     ifleets["LCV"] = false
                     ifleets["Truck"] = false
                     ifleets["Tusker"] = false
                     ifleets["Taurus"] = false
                     ifleets["Trailers"] = false
-                    partnerInfoPojo.fleetVehicle = HashMap<String,Boolean>()
+                    partnerInfoPojo.fleetVehicle = HashMap<String, Boolean>()
                     partnerInfoPojo.fleetVehicle.putAll(ifleets)
                     addFleets(partnerInfoPojo.fleetVehicle)
                 }
@@ -418,10 +402,13 @@ class CompanyProfileEditActivity : LocalizationActivity() {
 
     }
 
+    /**
+     * Bind Company details fetched from firestore
+     * @param partnerInfoPojo POJO for company details
+     */
+
     private fun bindData(partnerInfoPojo: PartnerInfoPojo) {
 
-        //image
-//        setUpImage(partnerInfoPojo.getmPhotoUrl())
 
         //company name
         if (partnerInfoPojo.getmCompanyName() != null) {
@@ -430,7 +417,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                     compnametext.setText(partnerInfoPojo.getmCompanyName())
             }
         }
-
         //company bio
         if (partnerInfoPojo.getmBio() != null) {
             if (!partnerInfoPojo.getmBio().isEmpty()) {
@@ -438,17 +424,16 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                     bioedit.setText(partnerInfoPojo.getmBio())
             }
         }
-
         //company profiletype
         if (partnerInfoPojo.getmProfileType() != null) {
             if (!partnerInfoPojo.getmProfileType().isEmpty()) {
 
                 var type = ""
-                if(partnerInfoPojo.getmProfileType()=="0"){
+                if (partnerInfoPojo.getmProfileType() == "0") {
                     type = getString(R.string.load_provider)
                     fleetstitle.text = getString(R.string.fleets_need)
                 }
-                if(partnerInfoPojo.getmProfileType()=="2"){
+                if (partnerInfoPojo.getmProfileType() == "2") {
                     type = getString(R.string.fleet_provider)
                     fleetstitle.text = getString(R.string.fleets_provide)
                 }
@@ -481,7 +466,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
             pinpoint.text = "Tap To Point"
         }
 
-
         //fleets
         if (partnerInfoPojo.fleetVehicle != null) {
             addFleets(partnerInfoPojo.fleetVehicle)
@@ -502,7 +486,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
             addCities(nocity)
         }
         mainscrolledit.visibility = View.VISIBLE
-
 
     }
 
@@ -534,6 +517,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         rv_fleetss.adapter!!.notifyDataSetChanged()
 
     }
+
     private fun addFleets() {
         fleets.clear()
         fleets.add(FleetSelectPojo("LCV", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_lcv_round)!!, false))
@@ -541,7 +525,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
         fleets.add(FleetSelectPojo("Tusker", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_tuskerpng_round)!!, false))
         fleets.add(FleetSelectPojo("Taurus", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_tauruspng_round)!!, false))
         fleets.add(FleetSelectPojo("Trailers", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_trailerpng_round)!!, false))
-
         rv_fleetss.adapter!!.notifyDataSetChanged()
 
     }
@@ -576,17 +559,14 @@ class CompanyProfileEditActivity : LocalizationActivity() {
 
     private fun setSelectFleetAdapter() {
 
-
         // Creates a vertical Layout Manager
         rv_fleetss.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
         // You can use GridLayoutManager if you want multiple columns. Enter the number of columns as a parameter.
 //        rv_animal_list.layoutManager = GridLayoutManager(this, 2)
-
         // Access the RecyclerView Adapter and load the data into it
         rv_fleetss.adapter = FleetsSelectAdapter(fleets, this, object : OnFleetSelectedListner {
             override fun onFleetSelected(mFleetName: String) {
-                if(partnerInfoPojo.fleetVehicle!=null){
+                if (partnerInfoPojo.fleetVehicle != null) {
                     partnerInfoPojo.fleetVehicle[mFleetName] = true
                     reference.update("fleetVehicle", partnerInfoPojo.fleetVehicle).addOnCompleteListener {
                         Logger.v("++ $mFleetName")
@@ -599,13 +579,13 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                         }
                         mixpanelAPI.track(MixPanelConstants.EVENT_AVAILABLE_FLEETS, props)
                     }
-                }else{
+                } else {
                     Logger.v("null $mFleetName")
                 }
             }
 
             override fun onFleetDeslected(mFleetName: String) {
-                if(partnerInfoPojo.fleetVehicle!=null){
+                if (partnerInfoPojo.fleetVehicle != null) {
                     partnerInfoPojo.fleetVehicle[mFleetName] = false
                     reference.update("fleetVehicle", partnerInfoPojo.fleetVehicle).addOnCompleteListener {
                         Logger.v("-- $mFleetName")
@@ -618,7 +598,7 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                         }
                         mixpanelAPI.track(MixPanelConstants.EVENT_AVAILABLE_FLEETS, props)
                     }
-                }else{
+                } else {
                     Logger.v("null $mFleetName")
                 }
             }
@@ -630,7 +610,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
     private fun setOperatorAdapter() {
         // Loads animals into the ArrayList
 //        addFleets()
-
         // Creates a vertical Layout Manager
         rv_operatorss.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
@@ -694,127 +673,6 @@ class CompanyProfileEditActivity : LocalizationActivity() {
                 .poll()
                 .snackbar()
     }
-
-//    private fun itirateBatches(refsToProcess: ConcurrentHashMap<String, Boolean>, hashMapp: Map<String, Any>, fleetsAvailable: ArrayList<String>) {
-//
-//        val batch = db.batch()
-//
-//        var count = 400
-//
-//        for(process in refsToProcess){
-//            if(process.value){
-//                //update
-//                val updateRef = db.collection("denormalised")
-//                        .document("routes")
-//                        .collection(process.key)
-//                        .document(preferenceManager.userId)
-//                val hashMappp = mapOf<String, Any>(
-//                        "mFleets" to fleetsAvailable
-//                )
-//                batch.set(updateRef,hashMapp, SetOptions.merge())
-//                batch.set(updateRef,hashMappp, SetOptions.merge())
-//                count -= 2
-//
-//            }else{
-//                //delete
-//                val delRef = db.collection("denormalised")
-//                        .document("routes")
-//                        .collection(process.key)
-//                        .document(preferenceManager.userId)
-//                batch.delete(delRef)
-//                count--
-//            }
-//            refsToProcess.remove(process.key)
-//            if(count<=0){
-//                break
-//            }
-//            Logger.v("Count $count")
-//            saving.text = "Loading Batch $count"
-//
-//
-//        }
-//
-//
-//        saving.text = "Denormalising Data. Please Wait..."
-//        dialog!!.show()
-//        batch.commit().addOnCompleteListener {
-//            if(refsToProcess.size==0){
-//                saving.text = "Clearing Junk Data..."
-//                reference.update("mOperationHubs", refinedHubs).addOnCompleteListener {
-//                    dialog!!.dismiss()
-//                    Toast.makeText(context,"Updated Successfully",Toast.LENGTH_SHORT).show()
-//                    finish()
-//                }
-//            }else{
-//                itirateBatches(refsToProcess, hashMapp, fleetsAvailable)
-//            }
-//
-//        }.addOnCanceledListener {
-//            saving.visibility = View.GONE
-//            Toast.makeText(context,"Error, Try Again",Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-//    private fun uploadinbatched(hubs: Map<String, Boolean>) {
-//
-//        saving.text = "Verifying Routes..."
-//        //generate profile data obj
-//        val fleetsAvailable : ArrayList<String> = ArrayList()
-//        for(fleet in partnerInfoPojo.fleetVehicle){
-//            if(fleet.value){
-//                fleetsAvailable.add(fleet.key)
-//            }
-//        }
-//        val mProfileData = ProfileData(partnerInfoPojo.getmCompanyName(),
-//                partnerInfoPojo.getmDisplayName(),
-//                partnerInfoPojo.getmCity(),
-//                partnerInfoPojo.getmPhotoUrl(),
-//                fleetsAvailable,preferenceManager.rmn,preferenceManager.userId,preferenceManager.fuid)
-//
-//        val gson : Gson = Gson()
-//        val mProfileDataString = gson.toJson(mProfileData)
-//        val hashMapp = mapOf<String, Any>(
-//                "mProfileData" to mProfileDataString
-//        )
-//
-//        //Denormalise
-//        refinedHubs = HashMap<String,Boolean>()
-//        val refsToProcess = ConcurrentHashMap<String,Boolean>()
-//        for(hub  in hubs){
-//
-//            for(hubb  in hubs){
-//                if(hub.value){
-//                    //update
-//                    if(hubb.value){
-//
-//                        refsToProcess.put("${hub.key}_${hubb.key}",true)
-//                        Logger.v("${hub.key}_${hubb.key} Add")
-//                    }else{
-//                        //Delete
-//
-//                        refsToProcess.put("${hub.key}_${hubb.key}",false)
-//
-//                        Logger.v("${hub.key}_${hubb.key} Remove")
-//                    }
-//
-//                    refinedHubs[hub.key] = true
-//                }else{
-//                    //delete
-//
-//                    refsToProcess.put("${hub.key}_${hubb.key}",false)
-//
-//                    Logger.v("${hub.key}_${hubb.key} Remove")
-//
-//                }
-//            }
-//
-//        }
-//        refsToProcess.put("ALL",true)
-//
-//        itirateBatches(refsToProcess, hashMapp , fleetsAvailable)
-//
-//
-//    }
 
     private fun editprofilePageAction(action: String) {
         val props = JSONObject()

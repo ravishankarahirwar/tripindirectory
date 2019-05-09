@@ -37,17 +37,20 @@ import kotlinx.android.synthetic.main.activity_manage_loads.*
 import kotlinx.android.synthetic.main.layout_fsyourloads_actionbar.*
 import java.text.SimpleDateFormat
 
-class ManageLoadsActivity : LocalizationActivity(){
+class ManageLoadsActivity : LocalizationActivity() {
+
+
+    /**
+     * ManageLoadsActivity is to check and remove self posted loads.
+     * Functions just like FSLoadboardActivity
+     * @author shubhamsardar
+     */
 
     lateinit var adapter: FirestorePagingAdapter<LoadPostPojo, LoadPostViewHolder>
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var recyclerViewAnimator: RecyclerViewAnimator
-
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +66,6 @@ class ManageLoadsActivity : LocalizationActivity(){
     override fun onResume() {
         super.onResume()
         setAdapter()
-
     }
 
     private fun setListners() {
@@ -75,11 +77,9 @@ class ManageLoadsActivity : LocalizationActivity(){
             val i = Intent(this, NewLoadFormActivity::class.java)
             startActivity(i)
         }
-
         fabsyncmyload.setOnClickListener {
             setAdapter()
         }
-
         swiperefreshmyloads.setOnRefreshListener {
             swiperefreshmyloads.isRefreshing = false
             setAdapter()
@@ -88,14 +88,12 @@ class ManageLoadsActivity : LocalizationActivity(){
 
     private fun setAdapter() {
 
-
-
         var baseQuery: Query = FirebaseFirestore.getInstance()
                 .collection("loadposts")
 
         //time sort
         baseQuery = baseQuery.orderBy("mTimeStamp", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.whereEqualTo("mUid",preferenceManager.userId)
+        baseQuery = baseQuery.whereEqualTo("mUid", preferenceManager.userId)
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
@@ -120,7 +118,7 @@ class ManageLoadsActivity : LocalizationActivity(){
                                           position: Int,
                                           @NonNull model: LoadPostPojo) {
 
-                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
 
                 if (model.getmUid().equals(preferenceManager.userId)) {
                     holder.delete.visibility = View.VISIBLE
@@ -131,68 +129,68 @@ class ManageLoadsActivity : LocalizationActivity(){
                 holder.source.text = model.getmSourceCity()
                 holder.destination.text = model.getmDestinationCity()
 
-                if(model.getmVehicleType()!=null){
-                    if(model.getmVehicleType().isNotEmpty()){
+                if (model.getmVehicleType() != null) {
+                    if (model.getmVehicleType().isNotEmpty()) {
                         holder.lltype.visibility = View.VISIBLE
                         holder.truck_type.text = model.getmVehicleType()
-                    }else{
+                    } else {
                         holder.lltype.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.lltype.visibility = View.GONE
                 }
 
 
-                if(model.getmBodyType()!=null){
-                    if(model.getmBodyType().isNotEmpty()){
+                if (model.getmBodyType() != null) {
+                    if (model.getmBodyType().isNotEmpty()) {
                         holder.llbody.visibility = View.VISIBLE
                         holder.body_type.text = model.getmBodyType()
-                    }else{
+                    } else {
                         holder.llbody.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.llbody.visibility = View.GONE
                 }
 
 
-                if(model.getmPayload()!=null){
-                    if(model.getmPayload().isNotEmpty()){
+                if (model.getmPayload() != null) {
+                    if (model.getmPayload().isNotEmpty()) {
                         holder.llweight.visibility = View.VISIBLE
                         holder.weight.text = model.getmPayload() + " " + model.getmPayloadUnit()
 
-                    }else{
+                    } else {
                         holder.llweight.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.llweight.visibility = View.GONE
                 }
 
-                if(model.getmVehichleLenght()!=null){
-                    if(model.getmVehichleLenght().isNotEmpty()){
+                if (model.getmVehichleLenght() != null) {
+                    if (model.getmVehichleLenght().isNotEmpty()) {
                         holder.lllength.visibility = View.VISIBLE
                         holder.length.text = model.getmVehichleLenght() + " " + model.getmVehichleLenghtUnit()
-                    }else{
+                    } else {
                         holder.lllength.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.lllength.visibility = View.GONE
                 }
 
-                if(model.getmMaterial()!=null){
-                    if(model.getmMaterial().isNotEmpty()){
+                if (model.getmMaterial() != null) {
+                    if (model.getmMaterial().isNotEmpty()) {
                         holder.llmaterial.visibility = View.VISIBLE
                         holder.material.text = model.getmMaterial()
-                    }else{
+                    } else {
                         holder.llmaterial.visibility = View.GONE
                     }
-                }else{
+                } else {
                     holder.llmaterial.visibility = View.GONE
                 }
 
                 holder.post_requirement.text = model.getmRemark()
 
-                if(model.getmTimeStamp()!=null)
-                holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
+                if (model.getmTimeStamp() != null)
+                    holder.date.text = SimpleDateFormat("dd MMM / HH:mm").format(model.getmTimeStamp())
 
 
                 holder.share.setOnClickListener {
@@ -263,7 +261,7 @@ class ManageLoadsActivity : LocalizationActivity(){
 
                 holder.loadpostDetails.setOnClickListener {
                     val i = Intent(context, SingleLoadDetailsActivity::class.java)
-                    i.putExtra("loadid",getItem(position)!!.id)
+                    i.putExtra("loadid", getItem(position)!!.id)
                     startActivity(i)
                     Logger.v("load post details: ${getItem(position)!!.id}")
 
@@ -292,11 +290,7 @@ class ManageLoadsActivity : LocalizationActivity(){
                 } else {
                     Logger.v("image url null: $position")
                 }
-
-
             }
-
-
             override fun onLoadingStateChanged(state: LoadingState) {
                 when (state) {
 
@@ -316,11 +310,11 @@ class ManageLoadsActivity : LocalizationActivity(){
 
                     }
 
-                    LoadingState.FINISHED ->{
+                    LoadingState.FINISHED -> {
                         loadingfslby.visibility = View.GONE
-                        if(itemCount==0){
+                        if (itemCount == 0) {
                             noyourloads.visibility = View.VISIBLE
-                        }else{
+                        } else {
                             noyourloads.visibility = View.GONE
                         }
                     }
@@ -332,13 +326,9 @@ class ManageLoadsActivity : LocalizationActivity(){
                 }
             }
         }
-
         yourloadslist.layoutManager = LinearLayoutManager(this)
         yourloadslist.adapter = adapter
-
-
     }
-
 
     private fun shareMesssages(context: Context, subject: String, body: String) {
         try {
@@ -352,7 +342,6 @@ class ManageLoadsActivity : LocalizationActivity(){
         }
 
     }
-
     private fun callNumber(number: String) {
         val callIntent = Intent(Intent.ACTION_DIAL)
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))

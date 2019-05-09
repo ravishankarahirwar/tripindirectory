@@ -12,6 +12,17 @@ import kotlinx.android.synthetic.main.activity_lang_select.*
 
 class LangSelectActivity : LocalizationActivity() {
 
+    /**
+     * This Activity manages application language selection
+     * Language codes :
+     * 1: English
+     * 2: Hindi
+     * 3: Marathi
+     * are stored in shared preferences and the selection is shared with
+     * LocalizationActivity
+     * @author shubhamsardar
+     */
+
     lateinit var context: Context
     lateinit var preferenceManager: PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics

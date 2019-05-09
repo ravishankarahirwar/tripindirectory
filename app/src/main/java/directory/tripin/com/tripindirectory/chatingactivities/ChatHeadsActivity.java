@@ -45,21 +45,30 @@ import directory.tripin.com.tripindirectory.utils.TextUtils;
 
 public class ChatHeadsActivity extends AppCompatActivity {
 
+    /**
+     * Activity for Displaying List of chat conversations (Chat Heads)
+     * <p>
+     * This activity is renders the realtime changes in chats/cheatheads collection
+     *
+     * @author shubhamsardar
+     */
+
     private RecyclerView mChatHeadsList;
     private FirebaseAuth mAuth;
     private TextView mTextNoChats;
     private TextView mILNAssistant;
     private ImageView mBack;
-
     private TextUtils textUtils;
     private PreferenceManager preferenceManager;
-    private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
     private LottieAnimationView lottieAnimationView;
     private FirebaseAnalytics firebaseAnalytics;
     private Menu mMenu;
     private RecyclerViewAnimator recyclerViewAnimator;
 
-
+    /**
+     * Firestore Recycler Adapter for rendering the collection
+     */
+    private FirestoreRecyclerAdapter<ChatHeadPojo, ChatHeadItemViewHolder> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +86,13 @@ public class ChatHeadsActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         recyclerViewAnimator = new RecyclerViewAnimator(mChatHeadsList);
 
-        if(mAuth.getCurrentUser()==null
-                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()==null
-                || !preferenceManager.isFacebooked()){
+        if (mAuth.getCurrentUser() == null
+                || FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() == null
+                || !preferenceManager.isFacebooked()) {
             Intent i = new Intent(ChatHeadsActivity.this, FacebookRequiredActivity.class);
-            i.putExtra("from","Chat");
-            startActivityForResult(i,3);
-            Toast.makeText(getApplicationContext(),"Login with Facebook To chat",Toast.LENGTH_LONG).show();
+            i.putExtra("from", "Chat");
+            startActivityForResult(i, 3);
+            Toast.makeText(getApplicationContext(), "Login with Facebook To chat", Toast.LENGTH_LONG).show();
         }
 
 
@@ -116,12 +125,12 @@ public class ChatHeadsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            if(requestCode==3){
-                Toast.makeText(getApplicationContext(),"Welcome",Toast.LENGTH_SHORT).show();
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 3) {
+                Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_SHORT).show();
             }
-        }else {
-            if(requestCode==3){
+        } else {
+            if (requestCode == 3) {
                 finish();
             }
         }
@@ -144,17 +153,17 @@ public class ChatHeadsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(final ChatHeadItemViewHolder holder, final int position, final ChatHeadPojo model) {
 
-                recyclerViewAnimator.onBindViewHolder(holder.itemView,position);
-                if(model.getmOpponentCompanyName()!=null){
+                recyclerViewAnimator.onBindViewHolder(holder.itemView, position);
+                if (model.getmOpponentCompanyName() != null) {
                     if (!model.getmOpponentCompanyName().isEmpty()) {
                         holder.title.setText(model.getmOpponentCompanyName());
-                        if(model.getmOpponentCompanyName().equals("ILN Assistant")){
-                            holder.title.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.blue_grey_700));
+                        if (model.getmOpponentCompanyName().equals("ILN Assistant")) {
+                            holder.title.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.blue_grey_700));
                         }
                     } else {
                         holder.title.setText(model.getmORMN());
                     }
-                }else {
+                } else {
                     holder.title.setText(model.getmORMN());
                 }
 
@@ -170,13 +179,13 @@ public class ChatHeadsActivity extends AppCompatActivity {
                         intent.putExtra("ofuid", model.getmOFUID());
                         startActivity(intent);
                         Bundle bundle = new Bundle();
-                        firebaseAnalytics.logEvent("z_chathead_clicked",bundle);
+                        firebaseAnalytics.logEvent("z_chathead_clicked", bundle);
                     }
                 });
 
                 holder.lastmsg.setText(model.getmLastMessage());
-                if(model.getmOpponentImageUrl()!=null){
-                    if(!model.getmOpponentImageUrl().isEmpty()){
+                if (model.getmOpponentImageUrl() != null) {
+                    if (!model.getmOpponentImageUrl().isEmpty()) {
                         Picasso.with(getApplicationContext())
                                 .load(model.getmOpponentImageUrl())
                                 .placeholder(ContextCompat.getDrawable(getApplicationContext()
@@ -193,10 +202,10 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                     public void onError() {
                                     }
                                 });
-                    }else {
-                        holder.thumbnail.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_launcher_round));
+                    } else {
+                        holder.thumbnail.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.mipmap.ic_launcher_round));
                     }
-                }else {
+                } else {
                 }
 
                 FirebaseFirestore.getInstance().collection("chats")
@@ -211,7 +220,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                 if (!documentSnapshots.isEmpty()) {
                                     holder.badge.setNumber(documentSnapshots.size());
                                     preferenceManager.setInbocRead(false);
-                                }else {
+                                } else {
                                     holder.badge.setNumber(0);
                                     preferenceManager.setInbocRead(true);
                                 }
@@ -232,9 +241,9 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 super.onDataChanged();
                 mChatHeadsList.smoothScrollToPosition(0);
                 lottieAnimationView.setVisibility(View.GONE);
-                if(getItemCount()==0){
+                if (getItemCount() == 0) {
                     mTextNoChats.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     mTextNoChats.setVisibility(View.GONE);
                 }
             }
@@ -252,7 +261,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(adapter!=null){
+        if (adapter != null) {
             adapter.stopListening();
         }
         super.onDestroy();
@@ -262,6 +271,38 @@ public class ChatHeadsActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chatheads, menu);
+        mMenu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help: {
+                Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
+                intent.putExtra("ormn", "+919284089759");
+                intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1");
+                intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1");
+                startActivity(intent);
+                Bundle bundle = new Bundle();
+                firebaseAnalytics.logEvent("z_assistant", bundle);
+                break;
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Method that returns time difference between the given date and current time
+     *
+     * @param startDate The Given Date
+     * @return The time difference
+     */
 
     public String gettimeDiff(Date startDate) {
 
@@ -298,31 +339,6 @@ public class ChatHeadsActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_chatheads, menu);
-        mMenu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_help: {
-                Intent intent = new Intent(ChatHeadsActivity.this, ChatRoomActivity.class);
-                intent.putExtra("ormn", "+919284089759");
-                intent.putExtra("ouid", "pKeXxKD5HjS09p4pWoUcu8Vwouo1");
-                intent.putExtra("ofuid", "4zRHiYyuLMXhsiUqA7ex27VR0Xv1");
-                startActivity(intent);
-                Bundle bundle = new Bundle();
-                firebaseAnalytics.logEvent("z_assistant", bundle);
-                break;
-            }
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * This method is use for checking internet connectivity
      * If there is no internet it will show an snackbar to user
@@ -333,7 +349,7 @@ public class ChatHeadsActivity extends AppCompatActivity {
                 .snackbar();
     }
 
-    private  void  showIntro(){
+    private void showIntro() {
         TapTargetSequence tapTargetSequence = new TapTargetSequence(this)
                 .targets(
                         TapTarget
@@ -341,9 +357,8 @@ public class ChatHeadsActivity extends AppCompatActivity {
                                         "Your ILN Assistant here",
                                         "Any feedback, suggestion or need help? just chat with your ILN Assistant from here")
                                 .transparentTarget(true)
-                        .cancelable(true)
+                                .cancelable(true)
                 )
-
 
 
                 .listener(new TapTargetSequence.Listener() {

@@ -22,9 +22,14 @@ import kotlinx.android.synthetic.main.activity_new_offer.*
 
 class NewOfferActivity : AppCompatActivity() {
 
+    /**
+     * NewOfferActivity opens the popup we are advertising for.
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
-    lateinit var firebaseAnalytics : FirebaseAnalytics
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +41,13 @@ class NewOfferActivity : AppCompatActivity() {
             preferenceManager.setisInsuranceResponded(true)
             gotosignuplink()
             val bundle = Bundle()
-            bundle.putString("responce","Interested")
+            bundle.putString("responce", "Interested")
             firebaseAnalytics.logEvent("z_offer_insurance", bundle)
         }
 
         nointerestinsurance.setOnClickListener {
             val bundle = Bundle()
-            bundle.putString("responce","No Interest")
+            bundle.putString("responce", "No Interest")
             firebaseAnalytics.logEvent("z_offer_insurance", bundle)
             finish()
         }
@@ -80,7 +85,7 @@ class NewOfferActivity : AppCompatActivity() {
             }
 
             if (snapshot != null) {
-                howmanyinterested.text = "${snapshot.size()+3} companies are interested!"
+                howmanyinterested.text = "${snapshot.size() + 3} companies are interested!"
             } else {
                 howmanyinterested.text = "counting..."
             }
@@ -92,27 +97,30 @@ class NewOfferActivity : AppCompatActivity() {
         super.onBackPressed()
         val bundle = Bundle()
 
-        bundle.putString("responce","Back Pressed")
+        bundle.putString("responce", "Back Pressed")
         firebaseAnalytics.logEvent("z_offer_insurance", bundle)
     }
 
+    /**
+     * function to mark the user as converted
+     */
+
     private fun gotosignuplink() {
 
-        val adInterestedUser : AdInterestedUser = AdInterestedUser()
+        val adInterestedUser: AdInterestedUser = AdInterestedUser()
         adInterestedUser.setmAdname("Insurance offer")
         adInterestedUser.setmUserRMN(preferenceManager.rmn)
         adInterestedUser.setmUserEmail(preferenceManager.email)
         adInterestedUser.setmUserName(preferenceManager.displayName)
         adInterestedUser.setmUserCompName(preferenceManager.comapanyName)
         FirebaseFirestore.getInstance().collection("insurance_offer_interested").add(adInterestedUser).addOnSuccessListener {
-            Toast.makeText(context,"You will get a call soon!",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "You will get a call soon!", Toast.LENGTH_SHORT).show()
             finish()
         }.addOnCanceledListener {
-            Toast.makeText(context,"Please Try Again",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Please Try Again", Toast.LENGTH_LONG).show()
             insuranceinterested.text = "Interested!"
         }
     }
-
 
 
     /**

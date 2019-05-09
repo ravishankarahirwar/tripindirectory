@@ -38,29 +38,31 @@ import kotlin.collections.ArrayList
 
 class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, HubFetchedCallback {
 
+    /**
+     * ManageCitiesActivity lets you add or remove operation cities
+     * it also update the profile by updating the operation hubs
+     * @author shubhamsardar
+     */
+
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE = 1
     lateinit var context: Context
     lateinit var auth: FirebaseAuth
     lateinit var mUserDocRef: DocumentReference
     lateinit var cities: MutableList<String>
-    lateinit var hubs: HashMap<String,Boolean>
+    lateinit var hubs: HashMap<String, Boolean>
     lateinit var mixpanelAPI: MixpanelAPI
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_cities)
         context = this
-        mixpanelAPI = MixpanelAPI.getInstance(context,MixPanelConstants.MIXPANEL_TOKEN)
+        mixpanelAPI = MixpanelAPI.getInstance(context, MixPanelConstants.MIXPANEL_TOKEN)
 
         cities = ArrayList<String>()
         hubs = HashMap()
-
         rv_cities_manage.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_cities_manage.adapter = OperationCitiesAdapter(cities, this, this)
-
 
         //listen to pojo
         auth = FirebaseAuth.getInstance()
@@ -78,9 +80,9 @@ class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, H
                             cities.clear()
                             cities.addAll(partnerInfoPojo.getmOperationCities())
                             countcity.text = cities.size.toString()
-                            if(cities.size>20){
+                            if (cities.size > 20) {
                                 limitcity.visibility = View.VISIBLE
-                            }else{
+                            } else {
                                 limitcity.visibility = View.GONE
                             }
                             cities.sort()
@@ -102,15 +104,13 @@ class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, H
                         citiesemptyinfo.visibility = View.VISIBLE
                         Logger.v("list cities null")
                     }
-                    if(partnerInfoPojo!!.getmOperationHubs() != null){
+                    if (partnerInfoPojo!!.getmOperationHubs() != null) {
                         hubs.clear()
                         hubs.putAll(partnerInfoPojo!!.getmOperationHubs())
                     }
                 }
             }
             setListners()
-
-
         } else {
 
             Toast.makeText(context, "Not Logged In. Retry!", Toast.LENGTH_SHORT).show()
@@ -138,20 +138,19 @@ class ManageCitiesActivity : LocalizationActivity(), CityInteractionCallbacks, H
             savingcities.visibility = View.VISIBLE
             manageCitiesAction("done")
             val hubsss = ArrayList<String>()
-            for(hub in hubs){
-                if(hub.value){
+            for (hub in hubs) {
+                if (hub.value) {
                     hubsss.add(hub.key)
                 }
             }
 
             val hashMap = HashMap<String, Any>()
-            hashMap.put("mHubs",hubsss)
+            hashMap.put("mHubs", hubsss)
             FirebaseFirestore.getInstance().collection("hubslookup").document(auth.uid!!).set(hashMap).addOnCompleteListener {
                 Handler().postDelayed(({
                     finish()
                 }), 500)
             }
-
 
         }
     }

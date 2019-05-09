@@ -1,18 +1,12 @@
 package directory.tripin.com.tripindirectory.newprofiles.activities
 
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.text.Html
 import directory.tripin.com.tripindirectory.R
 import kotlinx.android.synthetic.main.activity_main_profile_insight.*
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.Toast
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import com.jaredrummler.materialspinner.MaterialSpinner
@@ -22,24 +16,26 @@ import com.squareup.picasso.Picasso
 import directory.tripin.com.tripindirectory.helper.CircleTransform
 import directory.tripin.com.tripindirectory.helper.Logger
 import directory.tripin.com.tripindirectory.manager.PreferenceManager
-import directory.tripin.com.tripindirectory.newlookcode.pojos.InteractionPojo
-import directory.tripin.com.tripindirectory.newlookcode.viewholders.RecentCallsViewHolder
-import kotlinx.android.synthetic.main.activity_company_profile_display.*
 import kotlinx.android.synthetic.main.activity_user_edit_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainProfileInsightActivity : LocalizationActivity(){
+class MainProfileInsightActivity : LocalizationActivity() {
 
-lateinit var preferenceManager: PreferenceManager
-    lateinit var context : Context
-    lateinit var mCompUid : String
-    var mCompName : String = "Name"
-    var mCompRMN : String = "***"
-    lateinit var mCompPhotourl : String
-    var mDays : Long = 7
+    /**
+     * MainProfileInsightActivity shows traction analytics
+     * of the copmany profile
+     * @author shubhamsardar
+     */
 
+    lateinit var preferenceManager: PreferenceManager
+    lateinit var context: Context
+    lateinit var mCompUid: String
+    var mCompName: String = "Name"
+    var mCompRMN: String = "***"
+    lateinit var mCompPhotourl: String
+    var mDays: Long = 7
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,26 +46,24 @@ lateinit var preferenceManager: PreferenceManager
         preferenceManager = PreferenceManager.getInstance(context)
         getIntentData()
         internetCheck()
-
-
     }
 
     private fun getIntentData() {
         if (intent.extras != null) {
-            if (intent.extras.getString("uid") != null){
+            if (intent.extras.getString("uid") != null) {
                 mCompUid = intent.extras.getString("uid")
             }
-            if (intent.extras.getString("name") != null){
+            if (intent.extras.getString("name") != null) {
                 mCompName = intent.extras.getString("name")
             }
-            if (intent.extras.getString("rmn") != null){
+            if (intent.extras.getString("rmn") != null) {
                 mCompRMN = intent.extras.getString("rmn")
             }
-            if (intent.extras.getString("photourl") != null){
+            if (intent.extras.getString("photourl") != null) {
                 mCompPhotourl = intent.extras.getString("photourl")
             }
         }
-        if(mCompUid==null){
+        if (mCompUid == null) {
             finish()
         }
     }
@@ -87,7 +81,6 @@ lateinit var preferenceManager: PreferenceManager
     }
 
 
-
     private fun setRMN() {
         rmn_insight.text = mCompRMN
         compname_insight.text = mCompName
@@ -99,7 +92,7 @@ lateinit var preferenceManager: PreferenceManager
                 "Last 30 active days")
         spinnerTime.setOnItemSelectedListener { view, position, id, item ->
             // handle click
-            when(position){
+            when (position) {
                 0 -> {
                     mDays = 7
                     setupView()
@@ -120,12 +113,10 @@ lateinit var preferenceManager: PreferenceManager
                         .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                         .transform(CircleTransform())
                         .into(userimage_insight, object : Callback {
-
                             override fun onSuccess() {
                                 Logger.v("image set: profile thumb")
                                 Logger.v(mCompPhotourl)
                             }
-
                             override fun onError() {
                                 Logger.v("image profile Error")
                             }
@@ -143,7 +134,6 @@ lateinit var preferenceManager: PreferenceManager
         back_maininsight.setOnClickListener {
             finish()
         }
-
     }
 
     private fun FetchAnalytics(userId: String) {
@@ -156,7 +146,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mChatsDump").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays)
+                .collection("mChatsDump").orderBy("mDate", Query.Direction.DESCENDING).limit(mDays)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -173,10 +163,10 @@ lateinit var preferenceManager: PreferenceManager
                         snapshot.forEach {
                             if (it.id.length == 10) {
 
-                                if(c<mDays){
+                                if (c < mDays) {
                                     val count: Long = it.getLong("mNumDocs")!!
                                     visits += count
-                                }else{
+                                } else {
                                     val count: Long = it.getLong("mNumDocs")!!
                                     cvisits += count
                                 }
@@ -184,10 +174,10 @@ lateinit var preferenceManager: PreferenceManager
                             }
                         }
                         chats_count.text = " $visits"
-                        if((visits-cvisits>0)){
-                            chats_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
-                        }else{
-                            chats_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        if ((visits - cvisits > 0)) {
+                            chats_comparison.text = "+${visits - cvisits} Vs ${getComparisonDateString()}"
+                        } else {
+                            chats_comparison.text = "${visits - cvisits} Vs ${getComparisonDateString()}"
                         }
 
                     } else {
@@ -202,7 +192,7 @@ lateinit var preferenceManager: PreferenceManager
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mCallsDump").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays)
+                .collection("mCallsDump").orderBy("mDate", Query.Direction.DESCENDING).limit(mDays)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -211,46 +201,42 @@ lateinit var preferenceManager: PreferenceManager
                     }
 
                     if (snapshot != null) {
-
                         var visits: Long = 0
                         var c: Long = 0
                         var cvisits: Long = 0
-
                         snapshot.forEach {
                             if (it.id.length == 10) {
 
-                                if(c<mDays){
+                                if (c < mDays) {
                                     val count: Long = it.getLong("mNumDocs")!!
                                     visits += count
-                                }else{
+                                } else {
                                     val count: Long = it.getLong("mNumDocs")!!
                                     cvisits += count
                                 }
                                 c++
                             }
                         }
-
                         calls_count.text = " $visits"
-                        if((visits-cvisits>0)){
-                            calls_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
-                        }else{
-                            calls_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        if ((visits - cvisits > 0)) {
+                            calls_comparison.text = "+${visits - cvisits} Vs ${getComparisonDateString()}"
+                        } else {
+                            calls_comparison.text = "${visits - cvisits} Vs ${getComparisonDateString()}"
                         }
 
                     } else {
-
                         calls_count.text = " New"
-
                     }
                 })
 
     }
 
     private fun fetchVisits(userId: String) {
+
         FirebaseFirestore.getInstance()
                 .collection("partners")
                 .document(userId)
-                .collection("mProfileVisits").orderBy("mDate",Query.Direction.DESCENDING).limit(mDays*2)
+                .collection("mProfileVisits").orderBy("mDate", Query.Direction.DESCENDING).limit(mDays * 2)
                 .addSnapshotListener(this, EventListener<QuerySnapshot> { snapshot, e ->
                     if (e != null) {
                         finish()
@@ -264,14 +250,13 @@ lateinit var preferenceManager: PreferenceManager
                         var c: Long = 0
                         var cvisits: Long = 0
 
-
                         snapshot.forEach {
                             if (it.id.length == 10) {
 
-                                if(c<mDays){
+                                if (c < mDays) {
                                     val count: Long = it.getLong("mNumVisits")!!
                                     visits += count
-                                }else{
+                                } else {
                                     val count: Long = it.getLong("mNumVisits")!!
                                     cvisits += count
                                 }
@@ -280,12 +265,11 @@ lateinit var preferenceManager: PreferenceManager
                             }
                         }
                         visits_count.text = " $visits"
-                        if((visits-cvisits>0)){
-                            visits_comparison.text = "+${visits-cvisits} Vs ${getComparisonDateString()}"
-                        }else{
-                            visits_comparison.text = "${visits-cvisits} Vs ${getComparisonDateString()}"
+                        if ((visits - cvisits > 0)) {
+                            visits_comparison.text = "+${visits - cvisits} Vs ${getComparisonDateString()}"
+                        } else {
+                            visits_comparison.text = "${visits - cvisits} Vs ${getComparisonDateString()}"
                         }
-
 
                     } else {
 
@@ -295,12 +279,13 @@ lateinit var preferenceManager: PreferenceManager
                 })
     }
 
+    /**
+     * This function returns timestamp based on @param mDays
+     */
     private fun getComparisonDateString(): String {
-        var compDate : String
-        compDate = "${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays*2*86400000L)))}" +
-                " - ${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays*86400000L)))}"
 
-        return compDate
+        return "${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays * 2 * 86400000L)))}" +
+                " - ${SimpleDateFormat("dd MMM").format(Date(Date().time - (mDays * 86400000L)))}"
     }
 
     /**

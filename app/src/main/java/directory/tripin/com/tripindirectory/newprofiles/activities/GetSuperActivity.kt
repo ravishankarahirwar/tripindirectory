@@ -32,10 +32,15 @@ import libs.mjn.prettydialog.PrettyDialogCallback
 
 class GetSuperActivity : AppCompatActivity() {
 
+    /**
+     * Showcasing Super benefits and request
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    var selectedPlan : Long = 0
+    var selectedPlan: Long = 0
     lateinit var sliderLayout: SliderLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,18 +66,16 @@ class GetSuperActivity : AppCompatActivity() {
                         return@EventListener
                     }
                     if (snapshot != null && snapshot.exists()) {
-
                         val superRequestPojo = snapshot.toObject(SuperRequestPojo::class.java)
                         if (superRequestPojo != null) {
-                            if(superRequestPojo.getmProfileType()%1>0){
+                            if (superRequestPojo.getmProfileType() % 1 > 0) {
                                 //super user
                                 getsupernow.visibility = View.GONE
                                 planselector.visibility = View.GONE
-
                                 planstatus.visibility = View.VISIBLE
                                 planstatus.text = "You are SUPER already"
 
-                            }else{
+                            } else {
                                 //pending request
                                 getsupernow.visibility = View.GONE
                                 planselector.visibility = View.GONE
@@ -88,25 +91,23 @@ class GetSuperActivity : AppCompatActivity() {
                         planselector.visibility = View.VISIBLE
                         planstatus.visibility = View.GONE
 
-
                     }
                 })
-
 
     }
 
     private fun setListners() {
 
 
-        val defaultSliderView1 : DefaultSliderView = DefaultSliderView(context)
+        val defaultSliderView1: DefaultSliderView = DefaultSliderView(context)
         defaultSliderView1.image(R.drawable.superben1).scaleType = BaseSliderView.ScaleType.CenterInside
         sliderLayout.addSlider(defaultSliderView1)
 
-        val defaultSliderView2 : DefaultSliderView = DefaultSliderView(context)
+        val defaultSliderView2: DefaultSliderView = DefaultSliderView(context)
         defaultSliderView2.image(R.drawable.superben2).scaleType = BaseSliderView.ScaleType.CenterInside
         sliderLayout.addSlider(defaultSliderView2)
 
-        val defaultSliderView3 : DefaultSliderView = DefaultSliderView(context)
+        val defaultSliderView3: DefaultSliderView = DefaultSliderView(context)
         defaultSliderView3.image(R.drawable.superben3).scaleType = BaseSliderView.ScaleType.CenterInside
         sliderLayout.addSlider(defaultSliderView3)
 
@@ -161,7 +162,7 @@ class GetSuperActivity : AppCompatActivity() {
                     prettyDialog.dismiss()
 
                     val superRequestPojo = SuperRequestPojo(preferenceManager.userId,
-                            preferenceManager.fuid,preferenceManager.rmn,
+                            preferenceManager.fuid, preferenceManager.rmn,
                             preferenceManager.profileType,
                             preferenceManager.comapanyName,
                             preferenceManager.displayName, 0, selectedPlan)
@@ -172,7 +173,7 @@ class GetSuperActivity : AppCompatActivity() {
                             .document(superRequestPojo.getmUid())
                             .set(superRequestPojo).addOnCompleteListener {
 
-                                Toast.makeText(context,"Requested Successfully",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Requested Successfully", Toast.LENGTH_SHORT).show()
                             }
 
                 }.addButton(
@@ -185,7 +186,6 @@ class GetSuperActivity : AppCompatActivity() {
                         }
                 )
         prettyDialog.show()
-
 
     }
 }

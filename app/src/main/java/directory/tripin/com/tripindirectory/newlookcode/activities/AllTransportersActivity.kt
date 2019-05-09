@@ -48,17 +48,23 @@ import java.util.*
 
 class AllTransportersActivity : LocalizationActivity() {
 
-    lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
+    /**
+     * AllTransportersActivity renders entire list from firestore/partners/ collection
+     * @author shubhamsardar
+     */
+
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
     lateinit var textUtils: TextUtils
-    lateinit var preferenceManager :PreferenceManager
+    lateinit var preferenceManager: PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
+    lateinit var recyclerViewAnimator: RecyclerViewAnimator
     var isRatePopuped = false
 
-
-
+    /**
+     * FirestorePagingAdapter for
+     */
+    lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,21 +75,21 @@ class AllTransportersActivity : LocalizationActivity() {
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         recyclerViewAnimator = RecyclerViewAnimator(rv_transporters_at)
 
-        if(intent.extras!=null){
-            if(intent.extras.getSerializable("query")!=null){
+        if (intent.extras != null) {
+            if (intent.extras.getSerializable("query") != null) {
                 basicQueryPojo = intent.extras.getSerializable("query") as BasicQueryPojo
-                if(!basicQueryPojo.mSourceCity.isEmpty()&&!basicQueryPojo.mDestinationCity.isEmpty()){
+                if (!basicQueryPojo.mSourceCity.isEmpty() && !basicQueryPojo.mDestinationCity.isEmpty()) {
                     title = "${textUtils.toTitleCase(basicQueryPojo.mSourceCity)} To ${textUtils.toTitleCase(basicQueryPojo.mDestinationCity)}"
-                }else{
+                } else {
                     title = getString(R.string.all_transporters)
                 }
                 var fleets: String = ""
-                for(fleet:String in basicQueryPojo.mFleets!!){
+                for (fleet: String in basicQueryPojo.mFleets!!) {
                     fleets = "$fleets,$fleet"
                 }
-                if(!fleets.isEmpty()){
+                if (!fleets.isEmpty()) {
                     supportActionBar!!.subtitle = fleets.substring(1)
-                }else{
+                } else {
                     supportActionBar!!.subtitle = fleets
                 }
                 setMainAdapter(basicQueryPojo)
@@ -92,7 +98,7 @@ class AllTransportersActivity : LocalizationActivity() {
 
         fabfilter.setOnClickListener {
             shownewlookfeedbackdialog()
-            Toast.makeText(context,getString(R.string.feature_coming_soon),Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.feature_coming_soon), Toast.LENGTH_SHORT).show()
         }
 
         internetCheck()
@@ -118,13 +124,16 @@ class AllTransportersActivity : LocalizationActivity() {
             R.id.action_cancel -> {
                 finish()
             }
-
         }
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     *  sets adapter according to the query
+     *  @param basicQueryPojo
+     */
 
-    private fun setMainAdapter( basicQueryPojo: BasicQueryPojo) {
+    private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
 
         val bundle = Bundle()
         Logger.v(basicQueryPojo.toString())
@@ -159,7 +168,7 @@ class AllTransportersActivity : LocalizationActivity() {
         list.sort()
         Logger.v("Selected Fleets : $list")
         for (fleet in list) {
-            fleetssorter = fleetssorter+fleet+"_"
+            fleetssorter = fleetssorter + fleet + "_"
         }
         Logger.v("mFleetsSorter: $fleetssorter")
         bundle.putInt("fleetsselected", numberofFleets)
@@ -167,13 +176,13 @@ class AllTransportersActivity : LocalizationActivity() {
 
         //fitler and sort
         baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType", "1")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
-        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
-        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
-        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort", fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating", Query.Direction.DESCENDING)
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
@@ -199,26 +208,26 @@ class AllTransportersActivity : LocalizationActivity() {
                                           @NonNull model: CompanyCardPojo) {
 
                 if (model != null) {
-                    recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                    recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
 
                     //CompName
                     if (model.getmDetails().getmCompanyName() != null) {
                         if (!model.getmDetails().getmCompanyName().isEmpty()) {
                             holder.mCompany.text = textUtils.toTitleCase(model.getmDetails().getmCompanyName())
                         } else {
-                            if(model.getmDetails().getmDisplayName()!=null){
-                                if(!model.getmDetails().getmDisplayName().isEmpty()){
+                            if (model.getmDetails().getmDisplayName() != null) {
+                                if (!model.getmDetails().getmDisplayName().isEmpty()) {
                                     holder.mCompany.text = model.getmDetails().getmDisplayName()
-                                }else{
+                                } else {
                                     holder.mCompany.text = "Unknown Name"
                                 }
                             }
                         }
                     } else {
-                        if(model.getmDetails().getmDisplayName()!=null){
-                            if(!model.getmDetails().getmDisplayName().isEmpty()){
+                        if (model.getmDetails().getmDisplayName() != null) {
+                            if (!model.getmDetails().getmDisplayName().isEmpty()) {
                                 holder.mCompany.text = model.getmDetails().getmDisplayName()
-                            }else{
+                            } else {
                                 holder.mCompany.text = "Unknown Name"
                             }
                         }
@@ -226,8 +235,8 @@ class AllTransportersActivity : LocalizationActivity() {
 
 
                     //City
-                    if (model.getmDetails().getmLocationCity() != null){
-                        if(model.getmDetails().getmLocationCity()!=null){
+                    if (model.getmDetails().getmLocationCity() != null) {
+                        if (model.getmDetails().getmLocationCity() != null) {
                             holder.mAddress.text = textUtils.toTitleCase(model.getmDetails().getmLocationCity())
                         }
                     }
@@ -236,10 +245,10 @@ class AllTransportersActivity : LocalizationActivity() {
                     if (model.getmDetails().getmProfileType() != null) {
                         if (model.getmDetails().getmProfileType().isNotEmpty()) {
                             var type = ""
-                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                            if (model.getmDetails().getmProfileType() == "0" || model.getmDetails().getmProfileType() == "0.5") {
                                 type = "LOAD PROVIDER"
                             }
-                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                            if (model.getmDetails().getmProfileType() == "2" || model.getmDetails().getmProfileType() == "2.5") {
                                 type = "FLEET PROVIDER"
                             }
                             holder.mRole.text = type
@@ -249,13 +258,13 @@ class AllTransportersActivity : LocalizationActivity() {
 
                     //Premium
                     if (model.getmDetails().getmProfileType() == "0.5" ||
-                            model.getmDetails().getmProfileType() == "1.5"||
-                            model.getmDetails().getmProfileType() == "2.5" ) {
+                            model.getmDetails().getmProfileType() == "1.5" ||
+                            model.getmDetails().getmProfileType() == "2.5") {
                         holder.mIsSuper.visibility = View.VISIBLE
-                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.orange_50))
-                    }else{
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.orange_50))
+                    } else {
                         holder.mIsSuper.visibility = View.GONE
-                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.browser_actions_bg_grey))
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.browser_actions_bg_grey))
 
                     }
 
@@ -264,7 +273,7 @@ class AllTransportersActivity : LocalizationActivity() {
                     if (model.getmDetails().getmPhotoUrl() != null) {
                         if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
                             Picasso.with(applicationContext)
-                                    .load(model.getmDetails().getmPhotoUrl()+ "?width=100&width=100")
+                                    .load(model.getmDetails().getmPhotoUrl() + "?width=100&width=100")
                                     .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
                                     .transform(CircleTransform())
                                     .fit()
@@ -292,38 +301,38 @@ class AllTransportersActivity : LocalizationActivity() {
 //                        }
 //                    }
 
-                    if(model.getmDetails().isActive!=null){
-                        if(model.getmDetails().isActive){
+                    if (model.getmDetails().isActive != null) {
+                        if (model.getmDetails().isActive) {
                             Logger.v("active..")
-                            holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context,R.color.green_A200),android.graphics.PorterDuff.Mode.SRC_IN)
-                        }else{
+                            holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context, R.color.green_A200), android.graphics.PorterDuff.Mode.SRC_IN)
+                        } else {
                             Logger.v("inactive..")
-                            holder.mOnlineStatus.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_panorama_fish_eye_black_24dp))
+                            holder.mOnlineStatus.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_panorama_fish_eye_black_24dp))
                         }
-                    }else{
+                    } else {
                         Logger.v("null..")
-                        holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context,R.color.gray2),android.graphics.PorterDuff.Mode.SRC_IN)
+                        holder.mOnlineStatus.setColorFilter(ContextCompat.getColor(context, R.color.gray2), android.graphics.PorterDuff.Mode.SRC_IN)
 
                     }
 
-                    if(model.getmDetails().getmAvgRating()!=null){
-                        if(model.getmDetails().getmAvgRating().toInt()==0){
+                    if (model.getmDetails().getmAvgRating() != null) {
+                        if (model.getmDetails().getmAvgRating().toInt() == 0) {
                             holder.mRatings.text = "New"
-                        }else{
+                        } else {
                             holder.mRatings.text = model.getmDetails().getmAvgRating().toBigDecimal().setScale(1, RoundingMode.UP).toString()
                         }
-                    }else{
+                    } else {
                         holder.mRatings.text = "New"
                     }
 
-                    if(model.getmDetails().getmNumRatings()!=null){
+                    if (model.getmDetails().getmNumRatings() != null) {
                         holder.mReviews.text = model.getmDetails().getmNumRatings().toInt().toString() + " reviews"
                     }
 
-                    if(model.getmBidValue()!=null){
-                        if(model.getmBidValue() != 0.0){
+                    if (model.getmBidValue() != null) {
+                        if (model.getmBidValue() != 0.0) {
                             holder.mIsPromoted.visibility = View.VISIBLE
-                        }else{
+                        } else {
                             holder.mIsPromoted.visibility = View.GONE
                         }
                     }
@@ -334,9 +343,9 @@ class AllTransportersActivity : LocalizationActivity() {
                     holder.itemView.setOnClickListener {
 
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                        i.putExtra("uid",getItem(position)!!.id)
-                        i.putExtra("rmn",model.getmDetails().getmRMN())
-                        i.putExtra("fuid",model.getmDetails().getmFUID())
+                        i.putExtra("uid", getItem(position)!!.id)
+                        i.putExtra("rmn", model.getmDetails().getmRMN())
+                        i.putExtra("fuid", model.getmDetails().getmFUID())
                         startActivity(i)
 
                     }
@@ -349,7 +358,7 @@ class AllTransportersActivity : LocalizationActivity() {
                                 preferenceManager.comapanyName, preferenceManager.displayName,
                                 preferenceManager.fcmToken,
                                 model.getmDetails().getmUID(),
-                                model.getmDetails().getmFUID(),model.getmDetails().getmRMN(),model.getmDetails().getmCompanyName(),model.getmDetails().getmDisplayName(),model.getmDetails().getmFcmToken())
+                                model.getmDetails().getmFUID(), model.getmDetails().getmRMN(), model.getmDetails().getmCompanyName(), model.getmDetails().getmDisplayName(), model.getmDetails().getmFcmToken())
 
                         FirebaseFirestore.getInstance().collection("partners")
                                 .document(model.getmDetails().getmUID()).collection("mCallsDump").document(getDateString())
@@ -364,10 +373,10 @@ class AllTransportersActivity : LocalizationActivity() {
                                 }
 
 
-                        if(model.getmDetails().getmRMN()!=null) {
+                        if (model.getmDetails().getmRMN() != null) {
                             callNumber(model.getmDetails().getmRMN())
-                        }else {
-                            Toast.makeText(context,"No RMN, Visit Profile!",Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "No RMN, Visit Profile!", Toast.LENGTH_SHORT).show()
                         }
 
                         val bundle = Bundle()
@@ -385,17 +394,17 @@ class AllTransportersActivity : LocalizationActivity() {
 
                         firebaseAnalytics.logEvent("z_call_clicked_pl", bundle)
 
-                        val rateReminderPojo =  RateReminderPojo(model.getmDetails().getmCompanyName(),
+                        val rateReminderPojo = RateReminderPojo(model.getmDetails().getmCompanyName(),
                                 model.getmDetails().getmDisplayName(),
                                 model.getmDetails().getmRMN(),
                                 model.getmDetails().getmUID(),
                                 model.getmDetails().getmFUID(),
                                 "call",
                                 Date().time.toString(),
-                                model.getmDetails().getmAvgRating(),true)
+                                model.getmDetails().getmAvgRating(), true)
 
-                        if(model.getmDetails().getmAvgRating()!=null){
-                            if(!model.getmDetails().getmAvgRating().isNaN())
+                        if (model.getmDetails().getmAvgRating() != null) {
+                            if (!model.getmDetails().getmAvgRating().isNaN())
                                 preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojo)
                         }
                     }
@@ -434,7 +443,6 @@ class AllTransportersActivity : LocalizationActivity() {
                         firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
 
 
-
                     }
                 }
 
@@ -471,7 +479,7 @@ class AllTransportersActivity : LocalizationActivity() {
 
                     }
 
-                    LoadingState.FINISHED ->{
+                    LoadingState.FINISHED -> {
                         loadingat.visibility = View.GONE
                     }
 
@@ -489,11 +497,14 @@ class AllTransportersActivity : LocalizationActivity() {
     }
 
 
-
     private fun getDateString(): String {
         return SimpleDateFormat("dd-MM-yyyy").format(Date())
     }
 
+    /**
+     * Method that makes system call on the given mobile number
+     * @param number The Given telephone number
+     */
     private fun callNumber(number: String) {
         val callIntent = Intent(Intent.ACTION_DIAL)
         callIntent.data = Uri.parse("tel:" + Uri.encode(number.trim { it <= ' ' }))
@@ -503,35 +514,30 @@ class AllTransportersActivity : LocalizationActivity() {
 
     private fun showCompanyRatingSnackBar(prefRateReminder: String) {
 
-        if(!prefRateReminder.isEmpty()){
-            val rateReminderPojo = Gson().fromJson(prefRateReminder,RateReminderPojo::class.java)
-
-            if(rateReminderPojo.getmIsActive()){
-                if(!isRatePopuped){
-
+        if (!prefRateReminder.isEmpty()) {
+            val rateReminderPojo = Gson().fromJson(prefRateReminder, RateReminderPojo::class.java)
+            if (rateReminderPojo.getmIsActive()) {
+                if (!isRatePopuped) {
                     var title = ""
-                    if(rateReminderPojo.getmRatings()!=null){
-                        if(rateReminderPojo.getmCompanyName()!=null){
-                            title = rateReminderPojo.getmCompanyName() + " || "+ rateReminderPojo.getmRatings().toBigDecimal().setScale(1,RoundingMode.UP).toString()
-                        }else{
-                            title = rateReminderPojo.getmDisplayName() + " || "+ rateReminderPojo.getmRatings().toBigDecimal().setScale(1,RoundingMode.UP).toString()
+                    if (rateReminderPojo.getmRatings() != null) {
+                        if (rateReminderPojo.getmCompanyName() != null) {
+                            title = rateReminderPojo.getmCompanyName() + " || " + rateReminderPojo.getmRatings().toBigDecimal().setScale(1, RoundingMode.UP).toString()
+                        } else {
+                            title = rateReminderPojo.getmDisplayName() + " || " + rateReminderPojo.getmRatings().toBigDecimal().setScale(1, RoundingMode.UP).toString()
                         }
-
-                    }else{
-                        if(rateReminderPojo.getmCompanyName()!=null){
+                    } else {
+                        if (rateReminderPojo.getmCompanyName() != null) {
                             title = rateReminderPojo.getmCompanyName() + " || New"
-                        }else{
+                        } else {
                             title = rateReminderPojo.getmDisplayName() + " || New"
                         }
                     }
-
                     var subTitle = ""
-                    if(rateReminderPojo.getmAction() == "call"){
+                    if (rateReminderPojo.getmAction() == "call") {
                         subTitle = getString(R.string.rate_after_call)
-                    }else{
+                    } else {
                         subTitle = getString(R.string.rate_after_chat)
                     }
-
                     Flashbar.Builder(this)
                             .gravity(Flashbar.Gravity.BOTTOM)
                             .title(title)
@@ -571,18 +577,18 @@ class AllTransportersActivity : LocalizationActivity() {
                                 override fun onDismissed(bar: Flashbar, event: Flashbar.DismissEvent) {
                                     Log.d("Directory", "Flashbar is dismissed with event $event")
                                     //not interested
-                                    val rateReminderPojoNew =  RateReminderPojo(rateReminderPojo.getmCompanyName(),
+                                    val rateReminderPojoNew = RateReminderPojo(rateReminderPojo.getmCompanyName(),
                                             rateReminderPojo.getmDisplayName(),
                                             rateReminderPojo.getmRMN(),
                                             rateReminderPojo.getmUID(),
                                             rateReminderPojo.getmFUID(),
                                             "call",
                                             rateReminderPojo.getmTimeStamp(),
-                                            rateReminderPojo.getmRatings(),false)
+                                            rateReminderPojo.getmRatings(), false)
 
                                     preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojoNew)
                                     val bundle = Bundle()
-                                    bundle.putInt("isRated",0)
+                                    bundle.putInt("isRated", 0)
                                     firebaseAnalytics.logEvent("z_rate_bottom_snackbar", bundle)
                                     isRatePopuped = false
                                 }
@@ -592,25 +598,25 @@ class AllTransportersActivity : LocalizationActivity() {
                                     bar.dismiss()
 
                                     val bundle = Bundle()
-                                    bundle.putInt("isRated",1)
+                                    bundle.putInt("isRated", 1)
                                     firebaseAnalytics.logEvent("z_rate_bottom_snackbar", bundle)
 
-                                    val rateReminderPojoNew =  RateReminderPojo(rateReminderPojo.getmCompanyName(),
+                                    val rateReminderPojoNew = RateReminderPojo(rateReminderPojo.getmCompanyName(),
                                             rateReminderPojo.getmDisplayName(),
                                             rateReminderPojo.getmRMN(),
                                             rateReminderPojo.getmUID(),
                                             rateReminderPojo.getmFUID(),
                                             "call",
                                             rateReminderPojo.getmTimeStamp(),
-                                            rateReminderPojo.getmRatings(),false)
+                                            rateReminderPojo.getmRatings(), false)
 
                                     preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojoNew)
 
                                     val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                                    i.putExtra("uid",rateReminderPojo.getmUID())
-                                    i.putExtra("rmn",rateReminderPojo.getmRMN())
-                                    i.putExtra("fuid",rateReminderPojo.getmFUID())
-                                    i.putExtra("action","direct_rate")
+                                    i.putExtra("uid", rateReminderPojo.getmUID())
+                                    i.putExtra("rmn", rateReminderPojo.getmRMN())
+                                    i.putExtra("fuid", rateReminderPojo.getmFUID())
+                                    i.putExtra("action", "direct_rate")
                                     startActivity(i)
                                     isRatePopuped = false
 
@@ -629,7 +635,6 @@ class AllTransportersActivity : LocalizationActivity() {
     private fun shownewlookfeedbackdialog() {
 
         val prettyDialog: PrettyDialog = PrettyDialog(this)
-
         prettyDialog
                 .setTitle("Filters and Sorting")
                 .setMessage("This feature is still in development, do you have any suggestion about how it should be?")
@@ -660,6 +665,10 @@ class AllTransportersActivity : LocalizationActivity() {
         }
         firebaseAnalytics.logEvent("z_respond_clicked", bundle)
     }
+
+    /**
+     * Method to open up chat with ILN Assistant
+     */
 
     private fun chatwithassistant() {
         val intent = Intent(this@AllTransportersActivity, ChatRoomActivity::class.java)

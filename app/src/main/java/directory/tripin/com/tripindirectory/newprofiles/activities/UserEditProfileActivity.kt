@@ -33,12 +33,16 @@ import org.json.JSONObject
 
 class UserEditProfileActivity : LocalizationActivity() {
 
+    /**
+     * UserEditProfileActivity is the display of userprofile
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
     lateinit var appUtils: AppUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var mixpanelAPI: MixpanelAPI
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

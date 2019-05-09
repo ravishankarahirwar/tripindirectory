@@ -19,6 +19,14 @@ import directory.tripin.com.tripindirectory.newprofiles.activities.NewLandingNav
 
 public class MainNewIntroActivity extends IntroScreensHelperActivity {
 
+    /**
+     * MainNewIntroActivity manages initial intro screens:
+     * 1)Transport Directory
+     * 2)Loadboard
+     * 3)Chat
+     * extends IntroScreensHelperActivity
+     */
+
     private PreferenceManager preferenceManager;
     private FirebaseAnalytics firebaseAnalytics;
 

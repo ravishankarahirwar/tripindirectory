@@ -9,6 +9,11 @@ import kotlinx.android.synthetic.main.activity_wallet.*
 
 class WalletActivity : LocalizationActivity() {
 
+    /**
+     * WalletActivity is not ready yet
+     * @author shubhamsardar
+     */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wallet)

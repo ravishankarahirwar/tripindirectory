@@ -26,6 +26,10 @@ import directory.tripin.com.tripindirectory.newprofiles.activities.NewLandingNav
 
 public class NewSplashActivity extends AppCompatActivity {
 
+    /**
+     * Splash activity to manage redirects based on login states
+     */
+
     private static int SPLASH_SHOW_TIME = 2000;
     private PreferenceManager preferenceManager;
     private FirebaseAnalytics firebaseAnalytics;
@@ -41,7 +45,7 @@ public class NewSplashActivity extends AppCompatActivity {
         preferenceManager = PreferenceManager.getInstance(this);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseAuth = FirebaseAuth.getInstance();
-        mixpanelAPI = MixpanelAPI.getInstance(this,MixPanelConstants.MIXPANEL_TOKEN);
+        mixpanelAPI = MixpanelAPI.getInstance(this, MixPanelConstants.MIXPANEL_TOKEN);
 
         internetCheck();
         Appsee.start();
@@ -51,10 +55,10 @@ public class NewSplashActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(preferenceManager.getPreferredLang() == 0L){
+        if (preferenceManager.getPreferredLang() == 0L) {
             Intent i = new Intent(NewSplashActivity.this, LangSelectActivity.class);
             startActivity(i);
-        }else {
+        } else {
             if (firebaseAuth.getCurrentUser() != null) {
 
                 splashInfo.setText(R.string.updating_presence);
@@ -134,12 +138,12 @@ public class NewSplashActivity extends AppCompatActivity {
 
     private void startMainNewActivity() {
         //mixpanel identify
-        if(preferenceManager.getRMN()!=null){
+        if (preferenceManager.getRMN() != null) {
             mixpanelAPI.identify(preferenceManager.getRMN());
             mixpanelAPI.getPeople().identify(preferenceManager.getRMN());
-            mixpanelAPI.getPeople().set("RMN",preferenceManager.getRMN());
-            if(preferenceManager.getDisplayName()!=null){
-                mixpanelAPI.getPeople().set("UserName",preferenceManager.getDisplayName());
+            mixpanelAPI.getPeople().set("RMN", preferenceManager.getRMN());
+            if (preferenceManager.getDisplayName() != null) {
+                mixpanelAPI.getPeople().set("UserName", preferenceManager.getDisplayName());
 
             }
         }
@@ -148,7 +152,6 @@ public class NewSplashActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
-
 
 
     /**

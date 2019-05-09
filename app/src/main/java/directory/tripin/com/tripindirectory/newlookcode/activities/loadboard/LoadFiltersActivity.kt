@@ -24,6 +24,15 @@ import kotlinx.android.synthetic.main.layout_fsfilterloads_actionbar.*
 
 class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
 
+
+    /**
+     * LoadFilterActivity manages the filters selection UI for Loadboard
+     * This activity saves the selected filters in preference manager
+     * and is applied when we set the main loadposts adapter
+     * @author shubhamsardar
+     *
+     */
+
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE = 3
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION = 4
     lateinit var context: Context
@@ -55,17 +64,11 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
             setInitialFilters()
         }
 
-
     }
-
-    override fun onResume() {
-        super.onResume()
-
-    }
-
 
 
     private fun setInitialFilters() {
+
         postpojo = Gson().fromJson(preferenceManager.prefLBFilter, LoadPostPojo::class.java)
         if(postpojo.getmSourceCity()!=null){
             select_source.text = postpojo.getmSourceCity()
@@ -98,20 +101,17 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
             spinnerlength.selectedIndex = spinnerlength.getItems<String>().indexOf(postpojo.getmVehichleLenghtUnit())
         }
 
-
-
     }
 
 
     private fun setListners() {
+
         backfslbf.setOnClickListener {
             finish()
         }
-
         setfilters.setOnClickListener {
             setFilters()
         }
-
         fab_clearall.setOnClickListener {
             clearroute()
         }
@@ -138,7 +138,6 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
             }else{
                 postpojo.setmPayload("")
             }
-
         }
         if(lengthf.text != null){
             //add unit
@@ -149,12 +148,9 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
             }else{
                 postpojo.setmVehichleLenght("")
             }
-
         }
 
         preferenceManager.prefLBFilter = Gson().toJson(postpojo)
-
-
         Logger.v(postpojo.toString())
         setResult(Activity.RESULT_OK)
         finish()
@@ -166,14 +162,19 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
         select_source.setOnClickListener {
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE)
         }
-
         select_destination.setOnClickListener {
             starttheplacesfragment(PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION)
         }
 
     }
 
+    /**
+     * Method that sets slectables in spinners
+     * for vehicle type, body type, payload and truck length
+     */
+
     private fun setSpinners() {
+
         spinnervehicle = findViewById<MaterialSpinner>(R.id.spinnervtypef)
         spinnervehicle.setItems("Select",
                 "LCV",
@@ -206,10 +207,10 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
                 "Trolla/Body Trailer",
                 "Refer",
                 "High Cube")
+
         spinnerbody.setOnItemSelectedListener { view, position, id, item ->
             postpojo.setmBodyType(item.toString())
         }
-
 
         spinnerweight = findViewById<MaterialSpinner>(R.id.spinnerweightf)
         spinnerweight.setItems(getString(R.string.kg), getString(R.string.ton), getString(R.string.mt))
@@ -255,12 +256,7 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
                     }else{
                         Toast.makeText(context,R.string.try_again, Toast.LENGTH_LONG).show()
                     }
-
-
                 }
-
-
-
             }
         }else{
             when (requestCode) {
@@ -270,6 +266,10 @@ class LoadFiltersActivity : LocalizationActivity(), HubFetchedCallback {
             }
         }
     }
+
+    /**
+     * Method that helps selecting city by opening Places Fragment by Google
+     */
 
     private fun starttheplacesfragment(code: Int) = try {
         val typeFilter = AutocompleteFilter.Builder()

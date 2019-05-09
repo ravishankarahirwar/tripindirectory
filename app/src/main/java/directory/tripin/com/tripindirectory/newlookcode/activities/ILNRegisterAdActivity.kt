@@ -17,9 +17,13 @@ import directory.tripin.com.tripindirectory.newlookcode.pojos.AdInterestedUser
 
 class ILNRegisterAdActivity : AppCompatActivity() {
 
+    /**
+     * This screen is just to show the ILN Register ad
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
-    lateinit var firebaseAnalytics : FirebaseAnalytics
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,34 +35,31 @@ class ILNRegisterAdActivity : AppCompatActivity() {
             preferenceManager.setToShowRegAd(false)
             gotosignuplink()
             val bundle = Bundle()
-            bundle.putString("responce","Tried")
+            bundle.putString("responce", "Tried")
             firebaseAnalytics.logEvent("z_ad_ilnreg", bundle)
         }
-
         nointerest.setOnClickListener {
             preferenceManager.setToShowRegAd(false)
             val bundle = Bundle()
-            bundle.putString("responce","No Interest")
+            bundle.putString("responce", "No Interest")
             firebaseAnalytics.logEvent("z_ad_ilnreg", bundle)
             finish()
         }
-
         internetCheck()
-
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         val bundle = Bundle()
-        bundle.putString("responce","Back Pressed")
+        bundle.putString("responce", "Back Pressed")
         firebaseAnalytics.logEvent("z_ad_ilnreg", bundle)
     }
 
     private fun gotosignuplink() {
 
         tryit.text = "..."
-        Toast.makeText(context,"Redirecting",Toast.LENGTH_SHORT).show()
-        val adInterestedUser : AdInterestedUser = AdInterestedUser()
+        Toast.makeText(context, "Redirecting", Toast.LENGTH_SHORT).show()
+        val adInterestedUser: AdInterestedUser = AdInterestedUser()
         adInterestedUser.setmAdname("ILN Register")
         adInterestedUser.setmUserRMN(preferenceManager.rmn)
         adInterestedUser.setmUserEmail(preferenceManager.email)
@@ -70,7 +71,7 @@ class ILNRegisterAdActivity : AppCompatActivity() {
             startActivity(i)
             finish()
         }.addOnCanceledListener {
-            Toast.makeText(context,"Please Try Again",Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Please Try Again", Toast.LENGTH_LONG).show()
             tryit.text = "Try It!"
         }
     }

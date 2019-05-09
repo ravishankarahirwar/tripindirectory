@@ -29,18 +29,20 @@ import kotlinx.android.synthetic.main.item_loadpost_input.*
 import kotlinx.android.synthetic.main.layout_fsnewload_actionbar.*
 import libs.mjn.prettydialog.PrettyDialog
 
-class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
+class NewLoadFormActivity : LocalizationActivity(), HubFetchedCallback {
 
 
+    /**
+     * NewLoadFormActivity is to generate and upload a new load post into firestore/loadposts
+     * @author shubhamsardar
+     */
 
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE = 3
     internal var PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION = 4
+    private lateinit var preferenceManager: PreferenceManager
 
     lateinit var context: Context
     lateinit var postpojo: LoadPostPojo
-    private val TAG = "LoadBoardActivity"
-    var fabrotation = 0f
-    private lateinit var preferenceManager: PreferenceManager
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var mSourceRouteCityPojo: RouteCityPojo
     lateinit var mDestinationRouteCityPojo: RouteCityPojo
@@ -77,18 +79,18 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
     }
 
     private fun getIntentData() {
-        if(intent.extras!=null){
-            if(intent.extras.getSerializable("query")!=null){
+        if (intent.extras != null) {
+            if (intent.extras.getSerializable("query") != null) {
 
-                val basicQueryPojo: BasicQueryPojo =  intent.extras.getSerializable("query") as BasicQueryPojo
-                if(!basicQueryPojo.mSourceCity.isEmpty()){
+                val basicQueryPojo: BasicQueryPojo = intent.extras.getSerializable("query") as BasicQueryPojo
+                if (!basicQueryPojo.mSourceCity.isEmpty()) {
                     select_sourcef.text = basicQueryPojo.mSourceCity
-                    select_sourcef.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
+                    select_sourcef.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_800))
                     postpojo.setmSourceCity(basicQueryPojo.mSourceCity)
                 }
-                if(!basicQueryPojo.mDestinationCity.isEmpty()){
+                if (!basicQueryPojo.mDestinationCity.isEmpty()) {
                     select_destinationf.text = basicQueryPojo.mDestinationCity
-                    select_destinationf.setTextColor(ContextCompat.getColor(context,R.color.blue_grey_800))
+                    select_destinationf.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_800))
                     postpojo.setmDestinationCity(basicQueryPojo.mDestinationCity)
                 }
             }
@@ -124,39 +126,39 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
-                    if(data!=null){
+                    if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
                         select_sourcef.text = ". ${place.name}"
                         mSourceRouteCityPojo.setmLatLang(place.latLng)
                         select_sourcef.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.setmSourceCity(place.name.toString())
-                    }else{
-                        Toast.makeText(context,"Try Again!",Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, "Try Again!", Toast.LENGTH_LONG).show()
                     }
 
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
-                    if(data!=null){
+                    if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
                         select_destinationf.text = ". ${place.name}"
                         mDestinationRouteCityPojo.setmLatLang(place.latLng)
                         select_destinationf.setTextColor(ContextCompat.getColor(context, R.color.blue_grey_900))
                         postpojo.setmDestinationCity(place.name.toString())
-                    }else{
-                        Toast.makeText(context,getString(R.string.try_again),Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_LONG).show()
                     }
 
 
                 }
 
-                3->{
+                3 -> {
                     Toast.makeText(applicationContext, getString(R.string.welcome), Toast.LENGTH_LONG).show()
                 }
 
             }
-        }else{
+        } else {
             when (requestCode) {
-                3->{
+                3 -> {
                     finish()
                 }
             }
@@ -185,38 +187,38 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
         }
 
         post.setOnClickListener {
-            if(postpojo.getmSourceHub()==null||postpojo.getmDestinationHub()==null){
-                Toast.makeText(context,getString(R.string.please_enter_route),Toast.LENGTH_LONG).show()
+            if (postpojo.getmSourceHub() == null || postpojo.getmDestinationHub() == null) {
+                Toast.makeText(context, getString(R.string.please_enter_route), Toast.LENGTH_LONG).show()
                 post.text = "POST NOW"
 
-            }else{
-                if(weight.text != null){
+            } else {
+                if (weight.text != null) {
                     //add unit
-                    if(!weight.text.isEmpty()){
+                    if (!weight.text.isEmpty()) {
                         val list = spinnerweight.getItems<String>()
                         postpojo.setmPayload(weight.text.toString())
                         postpojo.setmPayloadUnit(list.get(spinnerweight.selectedIndex))
-                    }else{
+                    } else {
                         postpojo.setmPayload("")
                     }
 
                 }
-                if(length.text != null){
+                if (length.text != null) {
                     //add unit
-                    if(!length.text.isEmpty()){
+                    if (!length.text.isEmpty()) {
                         val list = spinnerlength.getItems<String>()
                         postpojo.setmVehichleLenght(length.text.toString())
                         postpojo.setmVehichleLenghtUnit(list.get(spinnerlength.selectedIndex))
-                    }else{
+                    } else {
                         postpojo.setmVehichleLenght("")
                     }
 
 
                 }
-                if(otherreq.text != null){
-                    postpojo.setmRemark( otherreq.text.toString())
+                if (otherreq.text != null) {
+                    postpojo.setmRemark(otherreq.text.toString())
                 }
-                if(material.text != null){
+                if (material.text != null) {
                     postpojo.setmMaterial(material.text.toString())
                 }
 
@@ -224,19 +226,22 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
                 postpojo.setmUid(preferenceManager.userId)
                 postpojo.setmRmn(preferenceManager.rmn)
                 postpojo.setmPhotoUrl(preferenceManager.imageUrl)
-                Logger.v("image set: "+postpojo.getmPhotoUrl())
+                Logger.v("image set: " + postpojo.getmPhotoUrl())
                 postpojo.setmDisplayName(preferenceManager.displayName)
                 postpojo.setmCompanyName(preferenceManager.comapanyName)
 
 
-                 showaggrementdialog()
-
-
+                showaggrementdialog()
 
 
             }
         }
     }
+
+    /**
+     * Method that sets slectables in spinners
+     * for vehicle type, body type, payload and truck length
+     */
 
     private fun setSpinners() {
         val spinnervehicle = findViewById<MaterialSpinner>(R.id.spinnervtype)
@@ -282,6 +287,10 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
         spinnerlength.setOnItemSelectedListener { view, position, id, item -> }
     }
 
+    /**
+     * To show confermation dialog before uploading
+     */
+
     private fun showaggrementdialog() {
 
         val prettyDialog: PrettyDialog = PrettyDialog(this)
@@ -317,23 +326,28 @@ class NewLoadFormActivity : LocalizationActivity() , HubFetchedCallback {
 
     }
 
-    private fun writeNewPost( postpojo: LoadPostPojo) {
+    private fun writeNewPost(postpojo: LoadPostPojo) {
         post.text = "..."
         Toast.makeText(this, getString(R.string.posting), Toast.LENGTH_SHORT).show()
         postpojo.setmNumViews(2)
         FirebaseFirestore.getInstance()
                 .collection("loadposts")
                 .add(postpojo).addOnCompleteListener {
-            Toast.makeText(context,getString(R.string.after_load_post_success),Toast.LENGTH_LONG).show()
-            val bundle = Bundle()
-            firebaseAnalytics.logEvent("z_loadboard_post", bundle)
-            finish()
+                    Toast.makeText(context, getString(R.string.after_load_post_success), Toast.LENGTH_LONG).show()
+                    val bundle = Bundle()
+                    firebaseAnalytics.logEvent("z_loadboard_post", bundle)
+                    finish()
 
-        }.addOnCanceledListener {
-            Toast.makeText(context,getString(R.string.try_again),Toast.LENGTH_LONG).show()
-        }
+                }.addOnCanceledListener {
+                    Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_LONG).show()
+                }
 
     }
+
+    /**
+     * This method is use for checking internet connectivity
+     * If there is no internet it will show an snackbar to user
+     */
 
     private fun internetCheck() {
         NoNet.monitor(this)

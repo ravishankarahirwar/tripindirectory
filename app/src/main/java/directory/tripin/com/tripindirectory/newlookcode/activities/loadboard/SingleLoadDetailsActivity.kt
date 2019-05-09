@@ -32,6 +32,17 @@ import java.text.SimpleDateFormat
 
 class SingleLoadDetailsActivity : AppCompatActivity() {
 
+    /**
+     * SingleLoadDetailsActivity renders deatiails of a single load from
+     * firestore/loadposts/$loadid.
+     *
+     * increments the views on loadpost.
+     *
+     * shows number of views if its your own load.
+     *
+     * @author shubhamsardar
+     */
+
     lateinit var loadPostPojo: LoadPostPojo
     lateinit var context: Context
     lateinit var preferenceManager: PreferenceManager
@@ -58,53 +69,44 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
             if (intent.extras.getString("loadid") != null) {
                 if (intent.extras.getString("loadid").isNotEmpty()) {
                     loadid = intent.extras.getString("loadid")
-
                     FirebaseFirestore
                             .getInstance()
                             .collection("loadposts")
                             .document(loadid)
                             .get()
                             .addOnSuccessListener {
-
                                 if (it != null && it.exists()) {
-
                                     Logger.v("DocumentSnapshot data: " + it.data)
                                     loadPostPojo = it.toObject(LoadPostPojo::class.java)!!
                                     bindDetails(loadPostPojo)
-
-
                                 } else {
                                     Logger.d("No such document")
                                     finish()
                                     Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
                                 }
-
                             }.addOnFailureListener {
                                 finish()
                                 Toast.makeText(context, getString(R.string.try_again), Toast.LENGTH_SHORT).show()
                             }
-
-
                     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     notificationManager.cancel(intent.extras.getInt("notifid"))
-
                 } else {
                     finish()
                     Toast.makeText(context, getString(R.string.moble_not_available), Toast.LENGTH_SHORT).show()
-
                 }
             } else {
                 finish()
                 Toast.makeText(context, getString(R.string.moble_not_available), Toast.LENGTH_SHORT).show()
-
             }
         } else {
             finish()
             Toast.makeText(context, getString(R.string.moble_not_available), Toast.LENGTH_SHORT).show()
-
         }
     }
 
+    /**
+     * bind all the deatils from fetched load details in the UI
+     */
     private fun bindDetails(model: LoadPostPojo) {
         if (model.getmUid().equals(preferenceManager.userId)) {
             delete.visibility = View.VISIBLE
@@ -133,7 +135,6 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
             viewscount.visibility = View.GONE
         }
 
-
         share.setOnClickListener {
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_share_clicked_lb", bundle)
@@ -144,7 +145,6 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
 
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_call_clicked_lb", bundle)
-
             if (model.getmRmn() != null && model.getmRmn().isNotEmpty()) {
                 callNumber(model.getmRmn())
             } else {
@@ -156,7 +156,6 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
 
             val bundle = Bundle()
             firebaseAnalytics.logEvent("z_chat_clicked_lb", bundle)
-
             val intent = Intent(context, ChatRoomActivity::class.java)
             intent.putExtra("imsg", model.toString())
             intent.putExtra("ormn", model.getmRmn())
@@ -171,17 +170,15 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
             val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-
                         FirebaseFirestore.getInstance().collection("loadposts").document(loadid).delete().addOnCompleteListener {
                             Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show()
                         }
                         val bundle = Bundle()
                         firebaseAnalytics.logEvent("z_remove_clicked_lb", bundle)
                     }
-
                     DialogInterface.BUTTON_NEGATIVE -> {
                     }
-                }//No button clicked
+                }
             }
 
             val builder = AlertDialog.Builder(context)
@@ -227,11 +224,12 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
         loaddetailslayout.visibility = View.VISIBLE
         incrimentview()
 
-
     }
 
+    /**
+     * function to increment the number of views on a loadpost
+     */
     private fun incrimentview() {
-
         val interactionPojo = InteractionPojo(preferenceManager.userId,
                 preferenceManager.fuid,
                 preferenceManager.rmn,
@@ -250,14 +248,20 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
                         .document(loadid)
                         .collection("viewers")
                         .document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
-
+                            //view incrimented
                         }
             }
-
 
         }
 
     }
+
+    /**
+     * Method that makes sharing option available
+     * @param context application context
+     * @param subject the title of message
+     * @param body the details of the loadpost converted into string
+     */
 
     private fun shareMesssages(context: Context, subject: String, body: String) {
         try {
@@ -271,6 +275,11 @@ class SingleLoadDetailsActivity : AppCompatActivity() {
         }
 
     }
+
+    /**
+     * Method that makes system call on the given mobile number
+     * @param number The Given telephone number
+     */
 
     private fun callNumber(number: String) {
         val callIntent = Intent(Intent.ACTION_DIAL)

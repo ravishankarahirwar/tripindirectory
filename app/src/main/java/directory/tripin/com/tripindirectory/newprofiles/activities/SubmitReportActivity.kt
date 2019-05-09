@@ -21,12 +21,18 @@ import kotlinx.android.synthetic.main.activity_user_edit_profile.*
 
 class SubmitReportActivity : LocalizationActivity() {
 
-    lateinit var context : Context
-    lateinit var mCompUid : String
-    lateinit var mCompFuid : String
-    var mCompName : String = "Name"
-    var mCompRMN : String = "***"
-    lateinit var mCompPhotourl : String
+    /**
+     * SubmitReportActivity lets you create and submit report
+     * against a company
+     * @author shubhamsardar
+     */
+
+    lateinit var context: Context
+    lateinit var mCompUid: String
+    lateinit var mCompFuid: String
+    var mCompName: String = "Name"
+    var mCompRMN: String = "***"
+    lateinit var mCompPhotourl: String
     lateinit var preferenceManager: PreferenceManager
     lateinit var mReportTags: ArrayList<String>
 
@@ -45,26 +51,26 @@ class SubmitReportActivity : LocalizationActivity() {
 
     private fun getIntentData() {
         if (intent.extras != null) {
-            if (intent.extras.getString("uid") != null){
+            if (intent.extras.getString("uid") != null) {
                 mCompUid = intent.extras.getString("uid")
             }
-            if (intent.extras.getString("name") != null){
+            if (intent.extras.getString("name") != null) {
                 mCompName = intent.extras.getString("name")
                 compname_submitreport.text = mCompName
             }
-            if (intent.extras.getString("rmn") != null){
+            if (intent.extras.getString("rmn") != null) {
                 mCompRMN = intent.extras.getString("rmn")
                 rmn_submitreport.text = mCompRMN
             }
-            if (intent.extras.getString("photourl") != null){
+            if (intent.extras.getString("photourl") != null) {
                 mCompPhotourl = intent.extras.getString("photourl")
                 setUpImage()
             }
-            if (intent.extras.getString("fuid") != null){
+            if (intent.extras.getString("fuid") != null) {
                 mCompFuid = intent.extras.getString("fuid")
             }
         }
-        if(mCompUid==null){
+        if (mCompUid == null) {
             finish()
         }
     }
@@ -105,44 +111,48 @@ class SubmitReportActivity : LocalizationActivity() {
         }
 
         cbspam.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
                 mReportTags!!.add(cbspam.text.toString())
-            }else{
+            } else {
                 mReportTags!!.remove(cbspam.text.toString())
             }
         }
 
         cbicall.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
                 mReportTags!!.add(cbicall.text.toString())
-            }else{
+            } else {
                 mReportTags!!.remove(cbicall.text.toString())
             }
         }
         cbichat.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
                 mReportTags!!.add(cbichat.text.toString())
-            }else{
+            } else {
                 mReportTags!!.remove(cbichat.text.toString())
             }
         }
         cbifraud.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
                 mReportTags!!.add(cbifraud.text.toString())
-            }else{
+            } else {
                 mReportTags!!.remove(cbifraud.text.toString())
             }
         }
 
     }
 
+    /**
+     * Function to submit the report
+     */
+
     private fun submitReport() {
 
-        if(mReportTags.isNotEmpty()){
+        if (mReportTags.isNotEmpty()) {
 
 
             submitreport_button.text = "Sending..."
-            var reportTags : List<String> = ArrayList()
+            var reportTags: List<String> = ArrayList()
             reportTags = mReportTags
 
             val submittedReportPojo = SubmittedReportPojo(preferenceManager.comapanyName,
@@ -152,7 +162,7 @@ class SubmitReportActivity : LocalizationActivity() {
                     preferenceManager.fuid,
                     edittextreportcomment.text.toString().trim(),
                     mReportTags.size.toDouble(),
-                    reportTags,mCompName,mCompName,mCompUid,mCompRMN,mCompFuid)
+                    reportTags, mCompName, mCompName, mCompUid, mCompRMN, mCompFuid)
 
 
             FirebaseFirestore.getInstance()
@@ -162,16 +172,16 @@ class SubmitReportActivity : LocalizationActivity() {
                     .document(mCompUid)
                     .collection("reportslist").document(preferenceManager.userId).set(submittedReportPojo).addOnCompleteListener {
 
-                        Toast.makeText(applicationContext,"Reported!",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Reported!", Toast.LENGTH_SHORT).show()
                         finish()
 
                     }.addOnCanceledListener {
                         submitreport_button.text = getString(R.string.submit_report)
                     }
 
-        }else{
+        } else {
 
-            Toast.makeText(applicationContext,getString(R.string.select_a_cause),Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, getString(R.string.select_a_cause), Toast.LENGTH_SHORT).show()
 
         }
 

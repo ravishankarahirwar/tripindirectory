@@ -80,7 +80,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
+class MainScrollingActivity : LocalizationActivity(), HubFetchedCallback {
+
+    /**
+     * MainScrollingActivity is the main activity for ILN Directory
+     * shows first 12 results of directory
+     * Navigate to business profile/ user profile /recent chats/recent calls
+     * @author shubhamsardar
+     */
 
 
     val fleets: ArrayList<FleetSelectPojo> = ArrayList()
@@ -90,8 +97,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
     var fabrotation = 0f
     lateinit var adapter2: FirestorePagingAdapter<CompanyProfilePojo, PartnersViewHolder>
     lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
-//    lateinit var adapter3: FirestorePagingAdapter<PartnerInfoPojo, PartnersViewHolder>
-
 
     lateinit var basicQueryPojo: BasicQueryPojo
     private val SIGN_IN_FOR_CREATE_COMPANY = 123
@@ -139,8 +144,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
             }
         }
 
-
-
         fabFlip.setOnClickListener {
             flipthefab()
         }
@@ -151,27 +154,21 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         setRoutePickup()
         basicQueryPojo = BasicQueryPojo("", "", "", "", ArrayList<String>())
         getIntentData()
-
         setListners()
         setBottomNavogation()
-
         mSourceRouteCityPojo = RouteCityPojo(context, 1, 0, this)
         mDestinationRouteCityPojo = RouteCityPojo(context, 2, 0, this)
-
         internetCheck()
-
         if (!preferenceManager.isDirectoryGuided) {
             showIntro()
         }
-
-        Appsee.start();
-
+        Appsee.start()
 
     }
 
     private fun getIntentData() {
-        if(intent.extras!=null){
-            if(intent.extras.getSerializable("query")!=null){
+        if (intent.extras != null) {
+            if (intent.extras.getSerializable("query") != null) {
                 val directorySearchPojo = intent.extras.getSerializable("query") as DirectorySearchPojo
 
                 basicQueryPojo.mSourceCity = directorySearchPojo.getmSourceCity()
@@ -184,11 +181,11 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                 textViewSource.text = basicQueryPojo.mSourceCity
 
                 setMainAdapter(basicQueryPojo)
-            }else{
+            } else {
                 setMainAdapter(basicQueryPojo)
             }
 
-        }else{
+        } else {
             setMainAdapter(basicQueryPojo)
         }
     }
@@ -207,15 +204,14 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         firebaseAnalytics.logEvent("z_route_clear", bundle)
     }
 
-
-
-
-
-
     override fun onDestroy() {
         mixpanelAPI.flush()
         super.onDestroy()
     }
+
+    /**
+     * Function to start showing screen tutorial
+     */
 
     private fun showIntro() {
 
@@ -239,15 +235,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                 .drawShadow(true)
                                 .cancelable(true).outerCircleColor(R.color.primaryColor)
 
-//                        TapTarget.forView(posttoselected, "Post To Selected Transporters", "Now you can select multiple transporters in your results list and send your requirement to all of them in a single tap")
-//                                .transparentTarget(true)
-//                                .drawShadow(true)
-//                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-//                        TapTarget.forView(posttolb, "Post to Loadboard", "Not sure about the results? Don't worry, Post your requirement on Loadboard. All trusted transportes will be notified")
-//                                .transparentTarget(true)
-//                                .drawShadow(true)
-//                                .cancelable(true).outerCircleColor(R.color.primaryColor),
-
                 )
                 .listener(object : TapTargetSequence.Listener {
                     override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
@@ -266,35 +253,16 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         Toast.makeText(applicationContext, getString(R.string.restart_guide_from_menu), Toast.LENGTH_SHORT).show()
                     }
                 })
-
         tapTargetSequence.start()
     }
 
     override fun onResume() {
         super.onResume()
-
-
-
-//        if (preferenceManager.displayName != null) {
-//            var name = preferenceManager.displayName.substringBefore(" ")
-//            lookque.text = "Hello $name, how is the new look?"
-//        }
-
-//        if(preferenceManager.isInboxRead){
-//            chatbadge.visibility = View.INVISIBLE
-//        }else{
-//            chatbadge.visibility = View.VISIBLE
-//        }
-
-
         if (preferenceManager.isInsuranceResponded) {
             feedback.visibility = View.GONE
         } else {
             feedback.visibility = View.VISIBLE
         }
-
-
-
         showCompanyRatingSnackBar(preferenceManager.prefRateReminder)
     }
 
@@ -302,10 +270,8 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
         if (!prefRateReminder.isEmpty()) {
             val rateReminderPojo = Gson().fromJson(prefRateReminder, RateReminderPojo::class.java)
-
             if (rateReminderPojo.getmIsActive()) {
                 if (!isRatePopuped) {
-
                     var title = ""
                     if (rateReminderPojo.getmRatings() != null) {
                         if (rateReminderPojo.getmCompanyName() != null) {
@@ -313,7 +279,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         } else {
                             title = rateReminderPojo.getmDisplayName() + " || " + rateReminderPojo.getmRatings().toBigDecimal().setScale(1, RoundingMode.UP).toString()
                         }
-
                     } else {
                         if (rateReminderPojo.getmCompanyName() != null) {
                             title = rateReminderPojo.getmCompanyName() + " || New"
@@ -376,7 +341,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                             "call",
                                             rateReminderPojo.getmTimeStamp(),
                                             rateReminderPojo.getmRatings(), false)
-
                                     preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojoNew)
                                     val bundle = Bundle()
                                     bundle.putInt("isRated", 0)
@@ -410,7 +374,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                     i.putExtra("action", "direct_rate")
                                     startActivity(i)
                                     isRatePopuped = false
-
                                 }
                             })
                             .build().show()
@@ -424,54 +387,20 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
     }
 
 
-    override fun onBackPressed() {
-        //finishAffinity()
-        super.onBackPressed()
-    }
-
     private fun setBottomNavogation() {
 
-//        val ahBottomNavidATION: AHBottomNavigation
-//        ahBottomNavidATION = findViewById(R.id.bottom_navigation)
-//
-//        val item1 = AHBottomNavigationItem("Directory", ContextCompat.getDrawable(context, R.drawable.ic_home_black_24dp))
-//        val item2 = AHBottomNavigationItem("Loadboard", ContextCompat.getDrawable(context, R.drawable.ic_widgets_grey_24dp))
-//        val item3 = AHBottomNavigationItem("Profile", ContextCompat.getDrawable(context, R.drawable.ic_account_circle_black_24dp))
-//
-//        ahBottomNavidATION.addItem(item1)
-//        ahBottomNavidATION.addItem(item2)
-//        ahBottomNavidATION.addItem(item3)
-//        ahBottomNavidATION.defaultBackgroundColor = ContextCompat.getColor(context, R.color.blue_grey_100)
-//        ahBottomNavidATION.accentColor = ContextCompat.getColor(context, R.color.blue_grey_800)
-//        ahBottomNavidATION.inactiveColor = ContextCompat.getColor(context, R.color.blue_grey_300)
-
-
-
-
     }
 
 
+    /**
+     *  set click listners to the UI
+     */
 
     private fun setListners() {
-//        app_bar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-//
-//            if (Math.abs(verticalOffset)-appBarLayout.getTotalScrollRange() == 0)
-//            {
-//                //  Collapsed
-//                routeinput.visibility = View.GONE
-//
-//            }
-//            else
-//            {
-//                showroute.visibility = View.VISIBLE
-//
-//            }
-//        }
 
         showall.setOnClickListener {
             startAllTransportersActivity()
         }
-
 
         posttolb2.setOnClickListener {
             startLoadboardActivity("ActionBar")
@@ -484,12 +413,10 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         oldlook.setOnClickListener {
             startOldActivity()
         }
+
         givefeedback.setOnClickListener {
-//            shownewlookfeedbackdialog()
             openOfferActivity()
         }
-
-
 
         searchbyname.setOnClickListener {
             startSearchCompanyActivity()
@@ -500,68 +427,8 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         }
 
 
-
     }
 
-
-    private fun shownewlookfeedbackdialog() {
-
-        val prettyDialog: PrettyDialog = PrettyDialog(this)
-
-        prettyDialog
-                .setTitle("ILN New Look")
-                .setMessage("Do you like the new look?")
-                .addButton(
-                        "Yes! Keep it",
-                        R.color.pdlg_color_white,
-                        R.color.green_400
-                ) {
-
-                    Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
-                    preferenceManager.setisNewLookAccepted(true)
-                    feedback.visibility = View.GONE
-                    prettyDialog.dismiss()
-                    val bundle = Bundle()
-                    bundle.putString("responce", "KeepIt")
-                    firebaseAnalytics.logEvent("z_newlook_responce", bundle)
-
-                }.addButton(
-                        "Go Back to Old Look",
-                        R.color.pdlg_color_white,
-                        R.color.blue_grey_400
-                ) {
-                    Toast.makeText(context, "Launching Old Look!", Toast.LENGTH_LONG).show()
-                    prettyDialog.dismiss()
-                    preferenceManager.setisOnNewLook(false)
-                    startOldActivity()
-
-                    val bundle = Bundle()
-                    bundle.putString("responce", "GoBack")
-                    firebaseAnalytics.logEvent("z_newlook_responce", bundle)
-
-                }.addButton(
-                        "Cancel",
-                        R.color.pdlg_color_white,
-                        R.color.blue_grey_100,
-                        PrettyDialogCallback {
-                            prettyDialog.dismiss()
-
-                            val bundle = Bundle()
-                            bundle.putString("responce", "Cancel")
-                            firebaseAnalytics.logEvent("z_newlook_responce", bundle)
-
-                        }
-                )
-        prettyDialog.show()
-
-        val bundle = Bundle()
-        if (preferenceManager.displayName == null) {
-            bundle.putString("iswithname", "No")
-        } else {
-            bundle.putString("iswithname", "Yes")
-        }
-        firebaseAnalytics.logEvent("z_respond_clicked", bundle)
-    }
 
     private fun startPostToSelectedActivity() {
         val bundle = Bundle()
@@ -593,11 +460,11 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         startActivity(i)
         finishAffinity()
     }
+
     private fun openOfferActivity() {
         val i = Intent(this, NewOfferActivity::class.java)
         startActivity(i)
     }
-
 
 
     private fun startSearchCompanyActivity() {
@@ -688,10 +555,12 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
     }
 
 
-
+    /**
+     *  sets adapter according to the query
+     *  @param basicQueryPojo
+     */
 
     private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
-
 
         val bundle = Bundle()
         Logger.v(basicQueryPojo.toString())
@@ -751,15 +620,13 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
         //fitler and sort
         baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType", "1")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
-        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
-        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
-        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
-
-
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort", fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating", Query.Direction.DESCENDING)
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
@@ -847,10 +714,10 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                     if (model.getmDetails().getmProfileType() != null) {
                         if (model.getmDetails().getmProfileType().isNotEmpty()) {
                             var type = ""
-                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                            if (model.getmDetails().getmProfileType() == "0" || model.getmDetails().getmProfileType() == "0.5") {
                                 type = "LOAD PROVIDER"
                             }
-                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                            if (model.getmDetails().getmProfileType() == "2" || model.getmDetails().getmProfileType() == "2.5") {
                                 type = "FLEET PROVIDER"
                             }
                             holder.mRole.text = type
@@ -859,27 +726,16 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
 
                     //Premium
                     if (model.getmDetails().getmProfileType() == "0.5" ||
-                            model.getmDetails().getmProfileType() == "1.5"||
-                            model.getmDetails().getmProfileType() == "2.5" ) {
+                            model.getmDetails().getmProfileType() == "1.5" ||
+                            model.getmDetails().getmProfileType() == "2.5") {
                         holder.mIsSuper.visibility = View.VISIBLE
-                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.orange_50))
-                    }else{
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.orange_50))
+                    } else {
                         holder.mIsSuper.visibility = View.GONE
-                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext,R.color.browser_actions_bg_grey))
+                        holder.mActionsLayout.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.browser_actions_bg_grey))
 
                     }
 
-
-
-
-
-//                    if(model.getmAccountStatus()!=null){
-//                        if(model.getmAccountStatus()>=2){
-//                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_sreoke_yollo_bg)
-//                        }else{
-//                            holder.mThumbnail.background = ContextCompat.getDrawable(context,R.drawable.border_stroke_bg)
-//                        }
-//                    }
 
                     if (model.getmDetails().isActive != null) {
                         if (model.getmDetails().isActive) {
@@ -917,33 +773,25 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         }
                     }
 
-
-
                     holder.itemView.setOnClickListener {
-
                         val i = Intent(context, CompanyProfileDisplayActivity::class.java)
                         i.putExtra("uid", getItem(position)!!.id)
                         i.putExtra("rmn", model.getmDetails().getmRMN())
                         i.putExtra("fuid", model.getmDetails().getmFUID())
                         startActivity(i)
-
                     }
 
                     holder.mCall.setOnClickListener {
-
                         val interactionPojo = InteractionPojo(preferenceManager.userId,
                                 preferenceManager.fuid,
                                 preferenceManager.rmn,
                                 preferenceManager.comapanyName, preferenceManager.displayName,
                                 preferenceManager.fcmToken,
                                 model.getmDetails().getmUID(),
-                                model.getmDetails().getmFUID(),model.getmDetails().getmRMN(),model.getmDetails().getmCompanyName(),model.getmDetails().getmDisplayName(),model.getmDetails().getmFcmToken())
-
-
+                                model.getmDetails().getmFUID(), model.getmDetails().getmRMN(), model.getmDetails().getmCompanyName(), model.getmDetails().getmDisplayName(), model.getmDetails().getmFcmToken())
                         FirebaseFirestore.getInstance().collection("partners")
                                 .document(model.getmDetails().getmUID()).collection("mCallsDump").document(getDateString())
                                 .collection("interactors").document(preferenceManager.userId).set(interactionPojo)
-
                         FirebaseFirestore.getInstance().collection("partners")
                                 .document(model.getmDetails().getmUID())
                                 .collection("mCalls").document(preferenceManager.userId).set(interactionPojo).addOnCompleteListener {
@@ -983,12 +831,10 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                                 Date().time.toString(),
                                 model.getmDetails().getmAvgRating(), true)
 
-
-                        if(model.getmDetails().getmAvgRating()!=null){
-                            if(!model.getmDetails().getmAvgRating().isNaN())
+                        if (model.getmDetails().getmAvgRating() != null) {
+                            if (!model.getmDetails().getmAvgRating().isNaN())
                                 preferenceManager.prefRateReminder = Gson().toJson(rateReminderPojo)
                         }
-
 
                     }
 
@@ -1025,7 +871,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         bundle.putInt("fleets_queried", basicQueryPojo.mFleets!!.size)
                         firebaseAnalytics.logEvent("z_chat_clicked_pl", bundle)
 
-
                     }
                 }
 
@@ -1040,40 +885,37 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         loading.visibility = View.VISIBLE
                         showall.visibility = View.GONE
                         noresult.visibility = View.GONE
-
                     }
-
                     LoadingState.LOADING_MORE -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                     }
-
                     LoadingState.LOADED -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loading.visibility = View.GONE
                         showall.visibility = View.VISIBLE
                         noresult.visibility = View.GONE
-
                         val dPojo = DirectorySearchPojo(basicQueryPojo.mSourceCity
-                                ,basicQueryPojo.mDestinationCity
-                                ,basicQueryPojo.mSourceHub
-                                ,basicQueryPojo.mDestinationHub)
+                                , basicQueryPojo.mDestinationCity
+                                , basicQueryPojo.mSourceHub
+                                , basicQueryPojo.mDestinationHub)
 
-                        if(dPojo.getmSourceCity().isNotEmpty()&&dPojo.getmDestinationCity().isNotEmpty()){
+                        if (dPojo.getmSourceCity().isNotEmpty() && dPojo.getmDestinationCity().isNotEmpty()) {
                             FirebaseFirestore.getInstance().collection("partners")
                                     .document(preferenceManager.userId)
                                     .collection("mDirectoryUsage")
                                     .document("${dPojo.getmSourceHub().toUpperCase()}_${dPojo.getmDestinationHub().toUpperCase()}").set(dPojo).addOnCompleteListener {
                                         Logger.v("Collected in directory usage")
                                         FirebaseMessaging.getInstance().subscribeToTopic("${dPojo.getmSourceHub()
-                                                .replace(" ","")
+                                                .replace(" ", "")
                                                 .toUpperCase()}_${dPojo.getmDestinationHub()
-                                                .replace(" ","")
+                                                .replace(" ", "")
                                                 .toUpperCase()}")
                                     }
 
                         }
 
                     }
+
                     LoadingState.FINISHED -> {
                         Logger.v("onLoadingStateChanged ${state.name}")
                         loading.visibility = View.GONE
@@ -1095,14 +937,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                             if (itemCount < 12) {
                                 showall.visibility = View.GONE
                             }
-
-
-
-
-
-
-
-
                         }
                     }
 
@@ -1117,33 +951,22 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         rv_transporters_att.layoutManager = LinearLayoutManager(this) as RecyclerView.LayoutManager?
         rv_transporters_att.adapter = adapter
 
-
     }
 
     private fun getDateString(): String {
         return SimpleDateFormat("dd-MM-yyyy").format(Date())
     }
 
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-
             when (requestCode) {
 
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_SOURCE -> {
                     if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
-
                         basicQueryPojo.mSourceCity = place.name.toString()
                         textViewSource.text = ". ${basicQueryPojo.mSourceCity}"
-//                        fabFlip.visibility = View.VISIBLE
-//                        fabClear.visibility = View.VISIBLE
-
-//                    basicQueryPojo.mSourceCity = place.name.toString()
-//                    setMainAdapter(basicQueryPojo)
-
                         mSourceRouteCityPojo.setmLatLang(place.latLng)
                         loading.visibility = View.VISIBLE
                         val bundle = Bundle()
@@ -1153,20 +976,12 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                         Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show()
                     }
 
-
                 }
                 PLACE_AUTOCOMPLETE_REQUEST_CODE_DESTINATION -> {
                     if (data != null) {
                         val place = PlaceAutocomplete.getPlace(context, data)
-
                         basicQueryPojo.mDestinationCity = place.name.toString()
                         textViewDestination.text = ". ${basicQueryPojo.mDestinationCity}"
-//                        fabFlip.visibility = View.VISIBLE
-//                        fabClear.visibility = View.VISIBLE
-
-//                    basicQueryPojo.mDestinationCity = place.name.toString()
-//                    setMainAdapter(basicQueryPojo)
-
                         mDestinationRouteCityPojo.setmLatLang(place.latLng)
                         loading.visibility = View.VISIBLE
                         val bundle = Bundle()
@@ -1175,7 +990,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
                     } else {
                         Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show()
                     }
-
 
                 }
 
@@ -1253,7 +1067,7 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         rv_fleets.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // You can use GridLayoutManager if you want multiple columns. Enter the number of columns as a parameter.
-//        rv_animal_list.layoutManager = GridLayoutManager(this, 2)
+        //rv_animal_list.layoutManager = GridLayoutManager(this, 2)
 
         // Access the RecyclerView Adapter and load the data into it
         rv_fleets.adapter = FleetsSelectAdapter(fleets, this, object : OnFleetSelectedListner {
@@ -1301,7 +1115,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         fleets.add(FleetSelectPojo("Tusker", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_tuskerpng_round)!!, false))
         fleets.add(FleetSelectPojo("Taurus", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_tauruspng_round)!!, false))
         fleets.add(FleetSelectPojo("Trailers", ContextCompat.getDrawable(this, R.mipmap.ic_fleet_trailerpng_round)!!, false))
-
     }
 
     private fun starttheplacesfragment(code: Int) {
@@ -1323,7 +1136,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
             // TODO: Handle the error.
         }
 
-
     }
 
     private fun callNumber(number: String) {
@@ -1332,7 +1144,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(callIntent)
     }
-
 
 
     /**
@@ -1346,7 +1157,6 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
     }
 
 
-
     private fun mainPageAction(action: String) {
         val props = JSONObject()
         try {
@@ -1356,5 +1166,64 @@ class MainScrollingActivity : LocalizationActivity() , HubFetchedCallback {
         }
 
         mixpanelAPI.track(MixPanelConstants.EVENT_MAIN_PAGE_ACTION, props)
+    }
+
+    private fun shownewlookfeedbackdialog() {
+
+        val prettyDialog: PrettyDialog = PrettyDialog(this)
+
+        prettyDialog
+                .setTitle("ILN New Look")
+                .setMessage("Do you like the new look?")
+                .addButton(
+                        "Yes! Keep it",
+                        R.color.pdlg_color_white,
+                        R.color.green_400
+                ) {
+
+                    Toast.makeText(context, "Welcome!", Toast.LENGTH_LONG).show()
+                    preferenceManager.setisNewLookAccepted(true)
+                    feedback.visibility = View.GONE
+                    prettyDialog.dismiss()
+                    val bundle = Bundle()
+                    bundle.putString("responce", "KeepIt")
+                    firebaseAnalytics.logEvent("z_newlook_responce", bundle)
+
+                }.addButton(
+                        "Go Back to Old Look",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_400
+                ) {
+                    Toast.makeText(context, "Launching Old Look!", Toast.LENGTH_LONG).show()
+                    prettyDialog.dismiss()
+                    preferenceManager.setisOnNewLook(false)
+                    startOldActivity()
+
+                    val bundle = Bundle()
+                    bundle.putString("responce", "GoBack")
+                    firebaseAnalytics.logEvent("z_newlook_responce", bundle)
+
+                }.addButton(
+                        "Cancel",
+                        R.color.pdlg_color_white,
+                        R.color.blue_grey_100,
+                        PrettyDialogCallback {
+                            prettyDialog.dismiss()
+
+                            val bundle = Bundle()
+                            bundle.putString("responce", "Cancel")
+                            firebaseAnalytics.logEvent("z_newlook_responce", bundle)
+
+                        }
+                )
+        prettyDialog.show()
+
+        val bundle = Bundle()
+        if (preferenceManager.displayName == null) {
+            bundle.putString("iswithname", "No")
+        } else {
+            bundle.putString("iswithname", "Yes")
+        }
+        firebaseAnalytics.logEvent("z_respond_clicked", bundle)
     }
 }

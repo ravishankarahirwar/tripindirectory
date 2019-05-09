@@ -42,10 +42,19 @@ import java.text.SimpleDateFormat
 
 class InvitePhonebookActivity : LocalizationActivity() {
 
+
+    /**
+     * This Activity syncs the contacts with firestore database and
+     * provides functionality to send an invite to your contacts.
+     * Invitation is sent through an SMS.
+     * Sending SMS is managed in the Cloud Function.
+     * @author shubhamsardar
+     */
+
     private val PERMISSION_REQUEST_CONTACT: Int = 1
     lateinit var preferenceManager: PreferenceManager
     lateinit var adapter: FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>
-    lateinit var firebaseAnalytics :FirebaseAnalytics
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,8 +65,6 @@ class InvitePhonebookActivity : LocalizationActivity() {
         setListners()
         setAdapter()
         internetCheck()
-
-
     }
 
     private fun setAdapter() {
@@ -76,17 +83,14 @@ class InvitePhonebookActivity : LocalizationActivity() {
 
         adapter = object : FirestoreRecyclerAdapter<ContactPojo, RecentCallsViewHolder>(options) {
             public override fun onBindViewHolder(holder: RecentCallsViewHolder, position: Int, model: ContactPojo) {
-
                 Logger.v("onBindViewHolder")
                 holder.name.text = model.getmContactName()
                 holder.rmn.text = model.getmContactNumber()
-
                 if (model.alreadyonILN) {
                     holder.lable1.visibility = View.VISIBLE
                 } else {
                     holder.lable1.visibility = View.GONE
                 }
-
                 if (model.invited) {
                     holder.time.text = getString(R.string.invited)
                     val top = holder.time.paddingTop
@@ -102,11 +106,9 @@ class InvitePhonebookActivity : LocalizationActivity() {
                     val left = holder.time.paddingLeft
                     val right = holder.time.paddingRight
                     val bottom = holder.time.paddingBottom
-
                     holder.time.background = ContextCompat.getDrawable(applicationContext, R.drawable.border_sreoke_cyne_bg)
                     holder.time.setPadding(left, top, right, bottom)
                 }
-
                 holder.time.setOnClickListener {
                     holder.time.text = "..."
                     model.invited = true
@@ -129,20 +131,16 @@ class InvitePhonebookActivity : LocalizationActivity() {
                 // layout called R.layout.message for each item
                 val view = LayoutInflater.from(group.context)
                         .inflate(R.layout.item_invite_contact, group, false)
-
                 return RecentCallsViewHolder(view)
             }
 
             override fun onDataChanged() {
                 super.onDataChanged()
                 invitesloading.visibility = View.GONE
-
-//                invite_permission.visibility = View.GONE
                 skip_invite.text = getString(R.string.goto_iln_app)
                 invite_permission.visibility = View.GONE
                 contactslist.visibility = View.VISIBLE
                 sync_contacts.visibility = View.VISIBLE
-
 
                 if (itemCount == 0) {
                     allow_and_sync.text = getString(R.string.allow_and_sync)
@@ -151,9 +149,7 @@ class InvitePhonebookActivity : LocalizationActivity() {
                     contactslist.visibility = View.GONE
                     sync_contacts.visibility = View.GONE
                 }
-
             }
-
         }
 
         contactslist.layoutManager = LinearLayoutManager(this)
@@ -199,10 +195,8 @@ class InvitePhonebookActivity : LocalizationActivity() {
                         cur.getColumnIndex(ContactsContract.Contacts._ID))
                 val name = cur.getString(cur.getColumnIndex(
                         ContactsContract.Contacts.DISPLAY_NAME))
-
                 val timescontacted = cur.getString(cur.getColumnIndex(
                         ContactsContract.Contacts.TIMES_CONTACTED))
-
                 if (cur.getInt(cur.getColumnIndex(
                                 ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     val pCur = cr.query(
@@ -287,8 +281,6 @@ class InvitePhonebookActivity : LocalizationActivity() {
                                 arrayOf(Manifest.permission.READ_CONTACTS), PERMISSION_REQUEST_CONTACT)
                     }
                     builder.show()
-
-
                 } else {
 
                     // No explanation needed, we can request the permission.
@@ -296,7 +288,6 @@ class InvitePhonebookActivity : LocalizationActivity() {
                     ActivityCompat.requestPermissions(this,
                             arrayOf(Manifest.permission.READ_CONTACTS),
                             PERMISSION_REQUEST_CONTACT)
-
                     // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                     // app-defined int constant. The callback method gets the
                     // result of the request.
@@ -318,7 +309,6 @@ class InvitePhonebookActivity : LocalizationActivity() {
                     getContactList()
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
                 } else {
                     Toast.makeText(applicationContext, "No permission for contacts", Toast.LENGTH_LONG).show()
                     // permission denied, boo! Disable the

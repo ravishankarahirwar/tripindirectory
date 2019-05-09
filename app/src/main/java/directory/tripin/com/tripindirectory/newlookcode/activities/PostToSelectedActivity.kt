@@ -40,6 +40,11 @@ import kotlinx.android.synthetic.main.activity_post_to_selected.*
 
 class PostToSelectedActivity : LocalizationActivity() {
 
+    /**
+     * Activity to manage sending personal message for the selected transporters
+     * @author shubhamsardar
+     */
+
     lateinit var adapter: FirestorePagingAdapter<CompanyCardPojo, PartnersViewHolder>
     lateinit var basicQueryPojo: BasicQueryPojo
     lateinit var context: Context
@@ -49,11 +54,8 @@ class PostToSelectedActivity : LocalizationActivity() {
     lateinit var preferenceManager: PreferenceManager
     lateinit var textUtils: TextUtils
     lateinit var firebaseAnalytics: FirebaseAnalytics
-    lateinit var mAuth : FirebaseAuth
-    lateinit var  recyclerViewAnimator: RecyclerViewAnimator
-
-
-
+    lateinit var mAuth: FirebaseAuth
+    lateinit var recyclerViewAnimator: RecyclerViewAnimator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,14 +63,11 @@ class PostToSelectedActivity : LocalizationActivity() {
         context = this
         textUtils = TextUtils()
         recyclerViewAnimator = RecyclerViewAnimator(rv_transporterss)
-
-
         textUtils = TextUtils()
         hashmap = HashMap<String, ChatItemPojo>()
         preferenceManager = PreferenceManager.getInstance(context)
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         mAuth = FirebaseAuth.getInstance()
-
         if (mAuth.currentUser == null
                 || FirebaseAuth.getInstance().currentUser!!.phoneNumber == null
                 || !preferenceManager.isFacebooked) {
@@ -77,8 +76,6 @@ class PostToSelectedActivity : LocalizationActivity() {
             startActivityForResult(i, 3)
             Toast.makeText(applicationContext, getString(R.string.login_fb_required_pts), Toast.LENGTH_LONG).show()
         }
-
-
 
         if (intent.extras != null) {
             if (intent.extras.getSerializable("query") != null) {
@@ -118,15 +115,13 @@ class PostToSelectedActivity : LocalizationActivity() {
                 }
                 sendtothefirst(list)
                 sendtoaalfab.visibility = View.INVISIBLE
-
             }
-
 
         }
 
         internetCheck()
 
-        if(!preferenceManager.isPTSScreenGuided){
+        if (!preferenceManager.isPTSScreenGuided) {
             showIntro()
         }
 
@@ -134,20 +129,17 @@ class PostToSelectedActivity : LocalizationActivity() {
 
     private fun sendtothefirst(values: ArrayList<ChatItemPojo>) {
 
-
-
         if (values.size == 0) {
             //Sending Finished
             Toast.makeText(context, getString(R.string.sending_done), Toast.LENGTH_SHORT).show()
             val bundle = Bundle()
-            if(preferenceManager.rmn!=null){
-                bundle.putString("by_rmn",preferenceManager.rmn)
-            }else{
-                bundle.putString("by_rmn","Unknown")
+            if (preferenceManager.rmn != null) {
+                bundle.putString("by_rmn", preferenceManager.rmn)
+            } else {
+                bundle.putString("by_rmn", "Unknown")
             }
-            bundle.putString("status","Done")
+            bundle.putString("status", "Done")
             firebaseAnalytics.logEvent("z_posted_to_selected", bundle)
-
             finish()
 
         } else {
@@ -185,7 +177,6 @@ class PostToSelectedActivity : LocalizationActivity() {
 
 
                                 //#4 Chat head to the me
-
                                 val chatHeadPojo = ChatHeadPojo(chatroomid,
                                         values[0].getmORMN(),
                                         values[0].getmReciversUid(),
@@ -208,12 +199,12 @@ class PostToSelectedActivity : LocalizationActivity() {
                         Logger.v("onFailure: Checking Chat Heads")
                         Toast.makeText(context, "Sending Failed! Try Again", Toast.LENGTH_SHORT).show()
                         val bundle = Bundle()
-                        if(preferenceManager.rmn!=null){
-                            bundle.putString("by_rmn",preferenceManager.rmn)
-                        }else{
-                            bundle.putString("by_rmn","Unknown")
+                        if (preferenceManager.rmn != null) {
+                            bundle.putString("by_rmn", preferenceManager.rmn)
+                        } else {
+                            bundle.putString("by_rmn", "Unknown")
                         }
-                        bundle.putString("status","Failed")
+                        bundle.putString("status", "Failed")
                         firebaseAnalytics.logEvent("z_posted_to_selected", bundle)
                         finish()
                     }
@@ -240,6 +231,10 @@ class PostToSelectedActivity : LocalizationActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     *  sets adapter according to the query
+     *  @param basicQueryPojo
+     */
 
     private fun setMainAdapter(basicQueryPojo: BasicQueryPojo) {
 
@@ -276,7 +271,7 @@ class PostToSelectedActivity : LocalizationActivity() {
         list.sort()
         Logger.v("Selected Fleets : $list")
         for (fleet in list) {
-            fleetssorter = fleetssorter+fleet+"_"
+            fleetssorter = fleetssorter + fleet + "_"
         }
         Logger.v("mFleetsSorter: $fleetssorter")
         bundle.putInt("fleetsselected", numberofFleets)
@@ -284,13 +279,13 @@ class PostToSelectedActivity : LocalizationActivity() {
 
         //fitler and sort
         baseQuery = baseQuery.orderBy("mDetails.mProfileType", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType","1")
+        baseQuery = baseQuery.whereGreaterThanOrEqualTo("mDetails.mProfileType", "1")
         baseQuery = baseQuery.whereEqualTo("mDetails.isSpammed", false)
-        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort",fleetssorter)
-        baseQuery = baseQuery.orderBy("mBidValue",Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.isActive",Query.Direction.DESCENDING)
-        baseQuery =  baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
-        baseQuery = baseQuery.orderBy("mDetails.mAvgRating",Query.Direction.DESCENDING)
+        baseQuery = baseQuery.whereArrayContains("mDetails.mFleetsSort", fleetssorter)
+        baseQuery = baseQuery.orderBy("mBidValue", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.isActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mLastActive", Query.Direction.DESCENDING)
+        baseQuery = baseQuery.orderBy("mDetails.mAvgRating", Query.Direction.DESCENDING)
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
@@ -319,25 +314,25 @@ class PostToSelectedActivity : LocalizationActivity() {
                 Logger.v("onBind ${position}")
 
 
-                recyclerViewAnimator.onBindViewHolder(holder.itemView,position)
+                recyclerViewAnimator.onBindViewHolder(holder.itemView, position)
                 //CompName
                 if (model.getmDetails().getmCompanyName() != null) {
                     if (!model.getmDetails().getmCompanyName().isEmpty()) {
                         holder.mCompany.text = textUtils.toTitleCase(model.getmDetails().getmCompanyName())
                     } else {
-                        if(model.getmDetails().getmDisplayName()!=null){
-                            if(!model.getmDetails().getmDisplayName().isEmpty()){
+                        if (model.getmDetails().getmDisplayName() != null) {
+                            if (!model.getmDetails().getmDisplayName().isEmpty()) {
                                 holder.mCompany.text = model.getmDetails().getmDisplayName()
-                            }else{
+                            } else {
                                 holder.mCompany.text = "Unknown Name"
                             }
                         }
                     }
                 } else {
-                    if(model.getmDetails().getmDisplayName()!=null){
-                        if(!model.getmDetails().getmDisplayName().isEmpty()){
+                    if (model.getmDetails().getmDisplayName() != null) {
+                        if (!model.getmDetails().getmDisplayName().isEmpty()) {
                             holder.mCompany.text = model.getmDetails().getmDisplayName()
-                        }else{
+                        } else {
                             holder.mCompany.text = "Unknown Name"
                         }
                     }
@@ -346,8 +341,8 @@ class PostToSelectedActivity : LocalizationActivity() {
                 updatebottomview()
 
 
-                if(model.getmDetails().getmPhotoUrl()!=null){
-                    if(!model.getmDetails().getmPhotoUrl().isEmpty()){
+                if (model.getmDetails().getmPhotoUrl() != null) {
+                    if (!model.getmDetails().getmPhotoUrl().isEmpty()) {
                         Picasso.with(applicationContext)
                                 .load(model.getmDetails().getmPhotoUrl())
                                 .placeholder(ContextCompat.getDrawable(applicationContext, R.mipmap.ic_launcher_round))
@@ -366,8 +361,8 @@ class PostToSelectedActivity : LocalizationActivity() {
 
                     }
 
-                }else{
-                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.emoji_google_category_travel))
+                } else {
+                    holder.mThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.emoji_google_category_travel))
                 }
 
 
@@ -376,31 +371,31 @@ class PostToSelectedActivity : LocalizationActivity() {
                         holder.mAddress.text = model.getmDetails().getmLocationCity()
                 }
 
-                if(model.getmDetails().getmAvgRating()!=null){
+                if (model.getmDetails().getmAvgRating() != null) {
                     holder.mRatings.text = model.getmDetails().getmAvgRating().toString()
                 }
 
-                if(model.getmDetails().getmNumRatings()!=null){
+                if (model.getmDetails().getmNumRatings() != null) {
                     holder.mReviews.text = model.getmDetails().getmNumRatings().toInt().toString() + " reviews"
                 }
 
-                if(model.getmBidValue()!=null){
-                    if(model.getmBidValue() != 0.0){
+                if (model.getmBidValue() != null) {
+                    if (model.getmBidValue() != 0.0) {
                         holder.mIsPromoted.visibility = View.VISIBLE
-                    }else{
+                    } else {
                         holder.mIsPromoted.visibility = View.GONE //Role
-                    if (model.getmDetails().getmProfileType() != null) {
-                        if (model.getmDetails().getmProfileType().isNotEmpty()) {
-                            var type = ""
-                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
-                                type = "LOAD PROVIDER"
+                        if (model.getmDetails().getmProfileType() != null) {
+                            if (model.getmDetails().getmProfileType().isNotEmpty()) {
+                                var type = ""
+                                if (model.getmDetails().getmProfileType() == "0" || model.getmDetails().getmProfileType() == "0.5") {
+                                    type = "LOAD PROVIDER"
+                                }
+                                if (model.getmDetails().getmProfileType() == "2" || model.getmDetails().getmProfileType() == "2.5") {
+                                    type = "FLEET PROVIDER"
+                                }
+                                holder.mRole.text = type
                             }
-                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
-                                type = "FLEET PROVIDER"
-                            }
-                            holder.mRole.text = type
                         }
-                    }
                     }
                 }
 
@@ -408,10 +403,10 @@ class PostToSelectedActivity : LocalizationActivity() {
                     if (model.getmDetails().getmProfileType() != null) {
                         if (model.getmDetails().getmProfileType().isNotEmpty()) {
                             var type = ""
-                            if(model.getmDetails().getmProfileType()=="0"||model.getmDetails().getmProfileType()=="0.5"){
+                            if (model.getmDetails().getmProfileType() == "0" || model.getmDetails().getmProfileType() == "0.5") {
                                 type = "LOAD PROVIDER"
                             }
-                            if(model.getmDetails().getmProfileType()=="2"||model.getmDetails().getmProfileType()=="2.5"){
+                            if (model.getmDetails().getmProfileType() == "2" || model.getmDetails().getmProfileType() == "2.5") {
                                 type = "FLEET PROVIDER"
                             }
                             holder.mRole.text = type
@@ -434,9 +429,9 @@ class PostToSelectedActivity : LocalizationActivity() {
                 holder.mCompany.setOnClickListener {
 
                     val i = Intent(context, CompanyProfileDisplayActivity::class.java)
-                    i.putExtra("uid",getItem(position)!!.id)
-                    i.putExtra("rmn",model.getmDetails().getmRMN())
-                    i.putExtra("fuid",model.getmDetails().getmFUID())
+                    i.putExtra("uid", getItem(position)!!.id)
+                    i.putExtra("rmn", model.getmDetails().getmRMN())
+                    i.putExtra("fuid", model.getmDetails().getmFUID())
                     startActivity(i)
                 }
 
@@ -493,16 +488,9 @@ class PostToSelectedActivity : LocalizationActivity() {
                         chatItemPojo.selected = true
                         hashmap[model.getmDetails().getmRMN()] = chatItemPojo
                     }
-
                     notifyItemChanged(position)
-
                 }
-
-
-
-
             }
-
 
             override fun getItemViewType(position: Int): Int {
 
@@ -547,15 +535,13 @@ class PostToSelectedActivity : LocalizationActivity() {
             }
         }
 
-
-
         rv_transporterss.layoutManager = LinearLayoutManager(this)
         rv_transporterss.adapter = adapter
-
 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         if (resultCode == RESULT_OK) {
             if (requestCode == 3) {
                 Toast.makeText(applicationContext, "Welcome", Toast.LENGTH_SHORT).show()
@@ -575,7 +561,6 @@ class PostToSelectedActivity : LocalizationActivity() {
             if (hashmap[rmn]!!.selected == true) {
                 noc += 1
                 Logger.v("noc++ $noc")
-
             }
         }
         if (noc == 0) {
@@ -603,22 +588,23 @@ class PostToSelectedActivity : LocalizationActivity() {
 
     private fun showIntro() {
 
-        val tapTargetSequence : TapTargetSequence = TapTargetSequence(this)
+        val tapTargetSequence: TapTargetSequence = TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(sendtoaalfab, "Send to Selected feature","Select the transporters from the list and click on send. Your requirement details will be sent to all in the chat. You can proceed your transaction further with interested members. Tap on the target!")
+                        TapTarget.forView(sendtoaalfab, "Send to Selected feature", "Select the transporters from the list and click on send. Your requirement details will be sent to all in the chat. You can proceed your transaction further with interested members. Tap on the target!")
                                 .transparentTarget(true)
                                 .drawShadow(true)
                                 .cancelable(false).outerCircleColor(R.color.primaryColor)
 
                 )
-                .listener(object: TapTargetSequence.Listener {
+                .listener(object : TapTargetSequence.Listener {
                     override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
                     }
 
                     override fun onSequenceFinish() {
-                        Toast.makeText(applicationContext,"Use ILN wisely!",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Use ILN wisely!", Toast.LENGTH_SHORT).show()
                         preferenceManager.setisPTSScreenGuided(true)
                     }
+
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
                         // Boo
                         preferenceManager.setisPTSScreenGuided(true)

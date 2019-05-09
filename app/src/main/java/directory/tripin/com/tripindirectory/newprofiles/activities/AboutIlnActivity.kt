@@ -16,16 +16,22 @@ import directory.tripin.com.tripindirectory.helper.Logger
 import kotlinx.android.synthetic.main.activity_about_iln.*
 
 class AboutIlnActivity : LocalizationActivity() {
-    lateinit var firebaseAnalytics : FirebaseAnalytics
+    lateinit var firebaseAnalytics: FirebaseAnalytics
+
+    /**
+     * About ILN Activity contains
+     * 1) How ILN works
+     * 2) Video Tutorials Link
+     * 3) Social Media Links
+     * @author shubhamsardar
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about_iln)
-
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setListners()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
         Linkify.addLinks(fleetprovideriln, Linkify.ALL)
         Linkify.addLinks(loadprovideriln, Linkify.ALL)
         Linkify.addLinks(explaineriln, Linkify.ALL)
@@ -54,7 +60,7 @@ class AboutIlnActivity : LocalizationActivity() {
                 startActivity(intent)
             }
             val bundle = Bundle()
-            bundle.putInt("platform",2)
+            bundle.putInt("platform", 2)
             firebaseAnalytics.logEvent("z_social_clicked", bundle)
 
         }
@@ -65,7 +71,7 @@ class AboutIlnActivity : LocalizationActivity() {
             i.data = Uri.parse(url)
             startActivity(i)
             val bundle = Bundle()
-            bundle.putInt("platform",1)
+            bundle.putInt("platform", 1)
             firebaseAnalytics.logEvent("z_social_clicked", bundle)
         }
 
@@ -75,25 +81,25 @@ class AboutIlnActivity : LocalizationActivity() {
             i.data = Uri.parse(url)
             startActivity(i)
             val bundle = Bundle()
-            bundle.putInt("platform",3)
+            bundle.putInt("platform", 3)
             firebaseAnalytics.logEvent("z_social_clicked", bundle)
         }
 
         fleetprovideriln.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("whichVideo",3)
+            bundle.putInt("whichVideo", 3)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
 
         loadprovideriln.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("whichVideo",2)
+            bundle.putInt("whichVideo", 2)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
 
         explaineriln.setOnClickListener {
             val bundle = Bundle()
-            bundle.putInt("whichVideo",1)
+            bundle.putInt("whichVideo", 1)
             firebaseAnalytics.logEvent("z_video_tutorial_clicked", bundle)
         }
 

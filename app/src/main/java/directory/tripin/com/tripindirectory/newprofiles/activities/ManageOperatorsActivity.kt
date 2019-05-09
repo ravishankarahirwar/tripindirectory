@@ -7,6 +7,12 @@ import directory.tripin.com.tripindirectory.R
 
 class ManageOperatorsActivity : LocalizationActivity() {
 
+    /**
+     * To manage multiple operators of a profile
+     * Not in use yet
+     * @author shubhamsardar
+     */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_operators)

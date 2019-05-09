@@ -16,6 +16,13 @@ import kotlinx.android.synthetic.main.activity_wallet.*
 
 class SettingsActivity : LocalizationActivity() {
 
+    /**
+     * This is to allow users change app settings
+     * 1) language
+     * 2) load board notifications
+     * @author shubhamsardar
+     */
+
     lateinit var preferenceManager: PreferenceManager
     lateinit var context: Context
 
@@ -36,13 +43,13 @@ class SettingsActivity : LocalizationActivity() {
         }
 
         switch_lb_notif.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("newloadposts")
-                Toast.makeText(applicationContext,getString(R.string.you_will_be_notified_lb),Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.you_will_be_notified_lb), Toast.LENGTH_SHORT).show()
                 preferenceManager.settingLoadboardNotif = true
-            }else{
+            } else {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("newloadposts")
-                Toast.makeText(applicationContext,getString(R.string.no_lb_notif),Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.no_lb_notif), Toast.LENGTH_SHORT).show()
                 preferenceManager.settingLoadboardNotif = false
             }
         }
@@ -62,14 +69,14 @@ class SettingsActivity : LocalizationActivity() {
     }
 
     private fun setSelectedLang() {
-        when(preferenceManager.preferredLang){
-            1L ->{
+        when (preferenceManager.preferredLang) {
+            1L -> {
                 preferedlang.text = "English"
             }
-            2L ->{
+            2L -> {
                 preferedlang.text = "Hindi"
             }
-            3L ->{
+            3L -> {
                 preferedlang.text = "Marathi"
             }
         }
